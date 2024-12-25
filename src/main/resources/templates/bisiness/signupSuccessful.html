@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        /* main主內容 */
+        /* 主體樣式 */
+        /* Main */
+        main {
+            width: 800px;
+            background-color: #fff;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            margin: 30px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 水平置中 */
+            justify-content: center;
+            /* 垂直置中，這是可選的，視需求而定 */
+            text-align: center;
+        }
+
+        main h1 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 15px;
+        }
+
+        main h2 {
+            font-size: 2rem;
+            /* 副標題大小 */
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: normal;
+        }
+
+        main p {
+            font-size: 1.2rem;
+            /* 調整文字大小 */
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        /* 按鈕樣式 */
+        main .login-btn {
+            margin-top: 20px;
+            /* 增加按鈕與其他內容的距離 */
+            padding: 10px 20px;
+            /* 調整按鈕大小 */
+            background-color: #007bff;
+            /* 按鈕背景色 */
+            color: #fff;
+            /* 按鈕文字顏色 */
+            font-size: 1.2rem;
+            /* 按鈕文字大小 */
+            border: none;
+            /* 移除按鈕邊框 */
+            border-radius: 8px;
+            /* 圓角按鈕 */
+            cursor: pointer;
+            /* 指針變成手型 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* 增加按鈕陰影 */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            /* 增加動畫效果 */
+        }
+
+        main .login-btn:hover {
+            background-color: #0056b3;
+            /* 滑鼠懸停時改變背景色 */
+            transform: scale(1.05);
+            /* 滑鼠懸停時略微放大按鈕 */
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="#">
+                <img src="logo.png" alt="Logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+    </header>
+
+
+    <!-- 主體內容 -->
+    <div class="container">
+        <!-- Aside -->
+        <!-- <aside>
+        </aside> -->
+
+        <!-- Main -->
+        <main>
+            <h1>註冊成功</h1>
+            <h2>歡迎加入 Check in out！</h2>
+            <p>註冊資料驗證中，請留意信件資訊。</p>
+            <button class="login-btn">點我登入</button>
+        </main>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+
+    <script>
+        document.querySelector(".login-btn").addEventListener("click", function () {
+            document.location.href = "login-1.html";
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>飯店管理系統</title>
+    <style>
+        html {
+            overflow-y: overlay;
+        }
+
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            position: relative;
+        }
+
+        header .user .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hotel Button */
+        header .user .hotel-button {
+            background-color: #2c3e50;
+            /* 深藍色 */
+            color: #fff;
+            border: 1px solid #34495e;
+            /* 邊框顏色和背景稍微區分 */
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect */
+        header .user .hotel-button:hover {
+            background-color: #34495e;
+            /* 稍微變深的顏色 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            /* 更柔和的陰影 */
+        }
+
+        /* Active state */
+        header .user .hotel-button:active {
+            background-color: #1a252f;
+            /* 點擊時變得更深 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focused state (accessibility improvement) */
+        header .user .hotel-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            /* 聚焦時顯示藍色陰影 */
+        }
+
+
+        /* Dropdown menu */
+        header .user .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            overflow: hidden;
+        }
+
+        header .user .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        header .user .dropdown ul li {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        header .user .dropdown ul li:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user .dropdown ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* 登出的彈窗樣式 */
+        #logout-modal {
+            display: none;
+            /* 初始為隱藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 半透明背景 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #logout-modal.show {
+            display: flex;
+            /* 顯示彈窗 */
+        }
+
+        #logout-modal .logout-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        #logout-modal .logout-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        #logout-modal .logout-modal-content p {
+            margin: 10px 0;
+        }
+
+        #logout-modal .logout-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #logout-modal .logout-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-logout-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-switch-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+        /* x 按鈕 */
+        #logout-modal .logout-modal-content .logout-modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        #logout-modal .logout-modal-content .logout-modal-close-btn:hover {
+            color: #333;
+        }
+
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        aside {
+            width: 300px;
+            /* aside寬度保持300px */
+            padding: 20px;
+        }
+
+        aside nav {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        aside nav a {
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1rem;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        aside nav a.active,
+        aside nav a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* main主內容 */
+        /* 主體樣式 */
+        main {
+            width: 1500px;
+            /* 修改為1500px */
+            background-color: #fff;
+            padding: 30px;
+            margin-left: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        main h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            /* 增加底部間距 */
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            /* 加入底部邊框 */
+            padding-bottom: 10px;
+            /* 調整與底部邊框的間距 */
+        }
+
+        /* 主容器 */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* h2 標題 */
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        /* Section 樣式 */
+        section {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 表單樣式 */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group label {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.2);
+            outline: none;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 1rem;
+            color: white;
+            background-color: #0056b3;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #003f7f;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* 表格樣式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        table th {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        .cancel-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            color: white;
+            background-color: #d9534f;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background-color: #c9302c;
+        }
+
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="#">
+                <img alt="Logo" src="logo.png" />
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+        <nav>
+            <a href="1-1.html">櫃台系統</a>
+            <a href="2-1.html" class="active">飯店管理</a>
+            <a href="3-1.html">訂單管理</a>
+            <a href="#">評論管理</a>
+            <a href="#">客戶管理</a>
+            <a href="4-1.html">報表分析</a>
+        </nav>
+        <div class="user">
+            <span class="icon">🔔</span>
+            <span class="icon">💬</span>
+            <button class="hotel-button">台北君悅酒店</button>
+            <div class="dropdown">
+                <ul>
+                    <li><a href="account-1.html">帳號設定</a></li>
+                    <li id="logout-option">登出</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- 登出彈窗 -->
+    <div id="logout-modal" class="hidden">
+        <div class="logout-modal-content">
+            <span class="logout-modal-close-btn" id="logout-modal-close-btn">×</span>
+            <h2>登出選項</h2>
+            <p>您確定要登出或切換使用者嗎？</p>
+            <div class="logout-modal-actions">
+                <button id="logout-modal-logout-button">登出</button>
+                <button id="logout-modal-switch-button">切換使用者</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 主體內容 -->
+    <div class="container">
+        <!-- Aside -->
+        <aside>
+            <nav>
+                <a href="2-1.html">基本資料設定</a>
+                <a href="2-2.html">飯店介紹</a>
+                <a href="2-3.html">房型設定</a>
+                <a href="2-4.html">房間管理</a>
+                <a href="2-5.html" class="active">價格與促銷</a>
+            </nav>
+        </aside>
+        <!-- Main -->
+        <main>
+            <div class="main-container">
+                <h1>價格與促銷</h1>
+
+                <!-- Section 1: 價格 -->
+                <section class="pricing-section">
+                    <h2>價格</h2>
+                    <form>
+                        <div class="form-group">
+                            <label for="room-type">房型</label>
+                            <select id="room-type">
+                                <option value="standard">標準客房</option>
+                                <option value="deluxe">豪華客房</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="weekday-price">平日價格 (一~四)</label>
+                            <input type="text" id="weekday-price" placeholder="$ 3,000">
+                        </div>
+                        <div class="form-group">
+                            <label for="weekend-price">假日價格 (五~日)</label>
+                            <input type="text" id="weekend-price" placeholder="$ 5,000">
+                        </div>
+                        <div class="form-group">
+                            <label for="early-bird-price">早餐價格 (每人)</label>
+                            <input type="text" id="early-bird-price" placeholder="$ 200">
+                        </div>
+                        <button type="submit">提交</button>
+                    </form>
+                </section>
+
+                <!-- Section 2: 特殊價格 -->
+                <section class="special-pricing-section">
+                    <h2>特殊價格</h2>
+                    <form id="special-price-form">
+                        <div class="form-group">
+                            <label for="special-room-type">房型</label>
+                            <select id="special-room-type">
+                                <option value="standard">標準客房</option>
+                                <option value="deluxe">豪華客房</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="special-start-date">特價日期起始</label>
+                            <input type="date" id="special-start-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="special-end-date">特價日期結束</label>
+                            <input type="date" id="special-end-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="special-price">特價價格</label>
+                            <input type="text" id="special-price" placeholder="輸入價格" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="remarks">備註</label>
+                            <input type="text" id="remarks" placeholder="輸入備註">
+                        </div>
+                        <button type="submit">提交</button>
+                    </form>
+                </section>
+
+                <!-- Section 3: 修改記錄 -->
+                <section class="records-section">
+                    <h2>修改記錄</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>房型</th>
+                                <th>開始日期</th>
+                                <th>結束日期</th>
+                                <th>原始價格</th>
+                                <th>修改後促銷價格</th>
+                                <th>備註</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="records-body">
+                            <!-- Dynamic rows will be added here -->
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </main>
+    </div>
+    <!-- Footer -->
+    <footer>
+        © 2024 Check in out. All rights reserved.
+    </footer>
+    <script>
+        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
+        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
+        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
+
+        // Header 的 a 標籤點擊事件
+        headerLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                // 移除所有 header a 標籤的 active 樣式
+                headerLinks.forEach(navLink => navLink.classList.remove('active'));
+                // 為當前被點擊的 header a 標籤添加 active 樣式
+                // e.preventDefault(); // 阻止跳轉
+                this.classList.add('active');
+            });
+        });
+
+        // Aside 的 a 標籤點擊事件
+        asideLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                // 移除所有 aside a 標籤的 active 樣式
+                asideLinks.forEach(navLink => navLink.classList.remove('active'));
+                // 為當前被點擊的 aside a 標籤添加 active 樣式
+                // e.preventDefault(); // 阻止跳轉
+                this.classList.add('active');
+            });
+        });
+
+        //飯店彈窗
+        document.querySelector('.hotel-button').addEventListener('click', () => {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.querySelector('.dropdown');
+            if (!e.target.closest('.hotel-button') && !e.target.closest('.dropdown')) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // Special Price Form Submission
+        document.getElementById('special-price-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get form values
+            const roomType = document.getElementById('special-room-type').value;
+            const startDate = document.getElementById('special-start-date').value;
+            const endDate = document.getElementById('special-end-date').value;
+            const specialPrice = document.getElementById('special-price').value;
+            const remarks = document.getElementById('remarks').value;
+
+            // Validate inputs
+            if (!startDate || !endDate || !specialPrice) {
+                alert('請完整填寫所有必要資料！');
+                return;
+            }
+
+            // Default original price based on room type
+            const originalPrice = roomType === 'standard' ? '$3,000' : '$5,000';
+
+            // Create a new row for the records table
+            const recordsBody = document.getElementById('records-body');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+            <td>${roomType === 'standard' ? '標準客房' : '豪華客房'}</td>
+            <td>${startDate}</td>
+            <td>${endDate}</td>
+            <td>${originalPrice}</td>
+            <td>${specialPrice}</td>
+            <td>${remarks || '無'}</td>
+            <td><button class="cancel-btn">取消修改</button></td>
+        `;
+
+            // Add the row to the table
+            recordsBody.appendChild(newRow);
+
+            // Add event listener to the cancel button
+            newRow.querySelector('.cancel-btn').addEventListener('click', function () {
+                newRow.remove();
+            });
+
+            // Reset the form
+            document.getElementById('special-price-form').reset();
+        });
+
+        // 取得彈窗和按鈕
+        const logoutModal = document.getElementById("logout-modal");
+        const logoutModalCloseBtn = document.getElementById("logout-modal-close-btn");
+        const logoutModalLogoutButton = document.getElementById("logout-modal-logout-button");
+        const logoutModalSwitchButton = document.getElementById("logout-modal-switch-button");
+        const logoutOption = document.getElementById("logout-option"); // 假設觸發按鈕未修改 id
+
+        // 顯示彈窗
+        logoutOption.addEventListener("click", function () {
+            logoutModal.classList.add("show"); // 添加 class 顯示彈窗
+        });
+
+        // 關閉彈窗 (x 按鈕)
+        logoutModalCloseBtn.addEventListener("click", function () {
+            logoutModal.classList.remove("show"); // 移除 class 隱藏彈窗
+        });
+
+        // 登出按鈕功能
+        logoutModalLogoutButton.addEventListener("click", function () {
+            alert("您已登出！");
+            document.location.href = "login-1.html";
+        });
+
+        // 切換使用者按鈕功能
+        logoutModalSwitchButton.addEventListener("click", function () {
+            alert("切換使用者！");
+            document.location.href = "login-2.html";; // 隱藏彈窗
+        });
+
+        // 點擊彈窗外部關閉 (選擇性功能)
+        window.addEventListener("click", function (e) {
+            if (e.target === logoutModal) {
+                logoutModal.classList.remove("show"); // 隱藏彈窗
+            }
+        });
+
+    </script>
+</body>
+
+</html>

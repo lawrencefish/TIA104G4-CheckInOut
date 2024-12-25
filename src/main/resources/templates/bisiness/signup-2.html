@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* 步驟導覽樣式 */
+        .steps {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            background-color: #ddd;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 樣式 - 綠色 */
+        .step.completed .step-number {
+            background-color: #28a745;
+        }
+
+        /* 樣式 - 藍色 */
+        .step.active .step-number {
+            background-color: #007bff;
+        }
+
+        /* 樣式 - 禁用灰色 */
+        .step.disabled .step-number {
+            background-color: #ddd;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .step-title {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .step.completed .step-title {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .step.active .step-title {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .step.disabled .step-title {
+            color: #aaa;
+        }
+
+        /* 箭頭樣式 */
+        .arrow {
+            font-size: 1.5rem;
+            color: #ccc;
+        }
+
+        .steps .step.active+.arrow {
+            color: #007bff;
+        }
+
+        /* 禁用步驟指標 */
+        .disabled {
+            pointer-events: none;
+        }
+
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        /* main主內容 */
+        /* 主體樣式 */
+        /* Main */
+        main {
+            width: 800px;
+            background-color: #fff;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            margin: 30px auto;
+        }
+
+        main h1 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 15px;
+        }
+
+        /* 環境介紹 */
+        /* 增強 section 標題 h2 樣式 */
+        section h2 {
+            font-size: 1.4rem;
+            /* 增大標題字體 */
+            margin-bottom: 15px;
+            /* 增加底部間距 */
+            color: #007bff;
+            /* 改為藍色，讓標題更突出 */
+            font-weight: bold;
+            border-bottom: 1px solid #ccc;
+            /* 增加底部邊框，分隔不同區塊 */
+            padding-bottom: 5px;
+        }
+
+        /* 增加 section 的間距與框線 */
+        section {
+            margin-bottom: 30px;
+            /* 增加區塊之間的間距 */
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            /* 增加邊框 */
+            border-radius: 8px;
+            /* 圓角邊框 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            /* 微弱的陰影效果 */
+            background-color: #fafafa;
+            /* 背景顏色調整 */
+        }
+
+        /* 環境介紹 textarea */
+        /* 環境介紹 textarea */
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+            /* 禁止使用者手動縮放 */
+            background-color: #f9f9f9;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+
+        /* 照片上傳區塊 */
+        .photo-upload {
+            margin-bottom: 20px;
+            display: block;
+            /* 改為block，方便控制位置 */
+            /* text-align: center; */
+            /* 置中對齊 */
+        }
+
+        /* 上傳按鈕 */
+        .upload-btn {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+            /* 保持按鈕的行內顯示 */
+        }
+
+        .upload-btn-div {
+            text-align: center;
+        }
+
+        .upload-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* 已上傳圖片顯示 */
+        .uploaded-photos {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .photo-thumb {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 2px solid #ddd;
+            /* 增加邊框 */
+        }
+
+        /* 設施與服務 */
+        .facility-service {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        .facilities,
+        .services {
+            flex: 1;
+        }
+
+        .facilities label,
+        .services label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        /* 額外設施與服務 */
+        /* 表單區塊 */
+        .add-facility-service-form {
+            display: flex;
+            gap: 10px;
+            /* 間距 */
+            margin-bottom: 20px;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* 設置form group的寬度 */
+        .add-facility-service-form .form-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* 設置label樣式 */
+        .add-facility-service-form label {
+            font-size: 14px;
+        }
+
+        /* 使select、input、button填滿整個區域，並調整它們的大小 */
+        .add-facility-service-form select,
+        .add-facility-service-form input,
+        .add-facility-service-form button {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 0;
+        }
+
+        .add-facility-service-form select {
+            flex-basis: 20%;
+            /* 設置選單為20%的寬度 */
+        }
+
+        .add-facility-service-form input {
+            flex-grow: 1;
+            /* input佔據最多的空間 */
+        }
+
+        .add-facility-service-form button {
+            flex-basis: 25%;
+            /* 設置按鈕為25%的寬度 */
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .add-facility-service-form button:hover {
+            background-color: #45a049;
+        }
+
+        /* 已新增項目 */
+        .added-items {
+            margin-top: 20px;
+        }
+
+        .added-items h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .facilities,
+        .services {
+            margin-bottom: 20px;
+        }
+
+        .facilities h4,
+        .services h4 {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #facility-list,
+        #service-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        .item span {
+            font-size: 14px;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #e04e4e;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="#">
+                <img src="logo.png" alt="Logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+
+        <!-- 步驟導覽 -->
+        <div class="steps">
+            <a href="signup-1.html" class="step completed">
+                <div class="step-number">1</div>
+                <div class="step-title">設定基本資料</div>
+            </a>
+            <div class="arrow1">→</div>
+            <div class="step active">
+                <div class="step-number">2</div>
+                <div class="step-title">設定飯店介紹</div>
+            </div>
+            <div class="arrow2">→</div>
+            <div class="step disabled">
+                <div class="step-number">3</div>
+                <div class="step-title">設定管理員帳號</div>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- 主體內容 -->
+    <div class="container">
+        <!-- Aside -->
+        <!-- <aside>
+        </aside> -->
+
+        <!-- Main -->
+        <main>
+            <h1>設定飯店介紹</h1>
+
+            <!-- 環境介紹 -->
+            <section>
+                <h2>環境介紹</h2>
+                <textarea id="environment-description" rows="5" placeholder="請在此輸入飯店介紹..."></textarea>
+            </section>
+
+            <!-- 照片上傳 -->
+            <section>
+                <h2>照片上傳</h2>
+                <div class="photo-upload">
+                    <input type="file" id="photo-upload" multiple accept="image/*">
+                </div>
+                <div class="uploaded-photos">
+                    <img src="image1.jpg" alt="飯店圖片1" class="photo-thumb">
+                    <img src="image2.jpg" alt="飯店圖片2" class="photo-thumb">
+                    <!-- 更多圖片將會顯示在此 -->
+                </div>
+                <div class="upload-btn-div">
+                    <button class="upload-btn">上傳</button>
+                </div>
+            </section>
+
+            <!-- 設施與服務 -->
+            <section>
+                <h2>設施與服務</h2>
+                <div class="facility-service">
+                    <div class="facilities">
+                        <h3>設施</h3>
+                        <label><input type="checkbox"> 餐廳</label>
+                        <label><input type="checkbox"> 健身房</label>
+                        <label><input type="checkbox"> 游泳池</label>
+                        <label><input type="checkbox"> 停車場</label>
+                        <!-- 更多設施 -->
+                    </div>
+                    <div class="services">
+                        <h3>服務</h3>
+                        <label><input type="checkbox"> 客房服務</label>
+                        <label><input type="checkbox"> 機場接送</label>
+                        <label><input type="checkbox"> 快速入住</label>
+                        <label><input type="checkbox"> 代辦手續</label>
+                        <!-- 更多服務 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 額外設施與服務 -->
+            <section>
+                <h2>新增額外設施與服務</h2>
+                <form class="add-facility-service-form">
+                    <div class="form-group">
+                        <label for="selection-type">選擇類型</label>
+                        <select id="selection-type">
+                            <option value="facility">設施</option>
+                            <option value="service">服務</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item-name">名稱</label>
+                        <input type="text" id="item-name" placeholder="輸入設施或服務名稱">
+                    </div>
+
+                    <button type="button" id="add-item-btn">新增</button>
+                </form>
+
+                <!-- 顯示已新增的設施與服務清單 -->
+                <div class="added-items">
+                    <h3>已新增項目</h3>
+                    <div class="facilities">
+                        <h4>設施</h4>
+                        <ul id="facility-list">
+                            <!-- 設施項目會顯示在此 -->
+                        </ul>
+                    </div>
+                    <div class="services">
+                        <h4>服務</h4>
+                        <ul id="service-list">
+                            <!-- 服務項目會顯示在此 -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <button class="submit-btn" type="submit">下一步</button>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+
+    <script>
+        // 自動調整 textarea 高度
+        const textarea = document.getElementById('environment-description');
+
+        function autoResize() {
+            // 重置高度為自動以便調整
+            this.style.height = 'auto';
+            // 設置高度為 scrollHeight，讓 textarea 自動適應內容的高度
+            this.style.height = (this.scrollHeight) + 'px';
+        }
+
+        // 當使用者輸入內容時觸發自動調整
+        textarea.addEventListener('input', autoResize);
+
+        // 頁面加載時初始化 textarea 的大小
+        window.addEventListener('load', () => {
+            autoResize.call(textarea); // 呼叫 autoResize 以便初始化
+        });
+
+        // 取得元素，新增設施與服務
+        // 取得元素
+        const addItemBtn = document.getElementById('add-item-btn');
+        const itemNameInput = document.getElementById('item-name');
+        const selectionType = document.getElementById('selection-type');
+        const facilityList = document.getElementById('facility-list');
+        const serviceList = document.getElementById('service-list');
+
+        // 監聽新增按鈕
+        addItemBtn.addEventListener('click', () => {
+            const itemName = itemNameInput.value.trim();
+            const selectedType = selectionType.value;
+
+            if (itemName !== '') {
+                // 創建新的清單項目
+                const li = document.createElement('li');
+                li.classList.add('item');
+                li.innerHTML = `
+                <span>${itemName}</span>
+                <button class="delete-btn">刪除</button>
+            `;
+
+                // 根據選擇的類型將項目添加到對應清單
+                if (selectedType === 'facility') {
+                    facilityList.appendChild(li);
+                } else if (selectedType === 'service') {
+                    serviceList.appendChild(li);
+                }
+
+                // 清空輸入框
+                itemNameInput.value = '';
+
+                // 設置刪除按鈕的事件
+                const deleteBtn = li.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', () => {
+                    li.remove(); // 刪除項目
+                });
+            } else {
+                alert('請輸入名稱');
+            }
+        });
+
+        // 取得 input 和按鈕元素
+        const input = document.getElementById("item-input");
+        const button = document.getElementById("add-item-btn");
+
+        // 監聽 input 的 keydown 事件
+        // input.addEventListener("keydown", function (event) {
+        //     if (event.key === "Enter") {  // 如果按下的是 Enter 鍵
+        //         // event.preventDefault();  // 防止表單提交（如果在表單內）
+        //         // button.click();  // 觸發按鈕點擊事件
+        //     }
+        // });
+
+        document.querySelector(".submit-btn").addEventListener("click", function () {
+            document.location.href = "signup-3.html";
+        })
+    </script>
+</body>
+
+</html>
