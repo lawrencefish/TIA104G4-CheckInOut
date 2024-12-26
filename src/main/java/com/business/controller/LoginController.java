@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/checkinout/login")
+@RequestMapping("/login")
 public class LoginController {
 
     @Autowired
@@ -79,7 +79,7 @@ public class LoginController {
         request.getSession().setAttribute("hotel", hotel);
 
         // 導向後台頁面
-        return "redirect:/checkinout/login/employee";
+        return "redirect:/login/employee";
     }
 
     @GetMapping("/employee")
@@ -102,7 +102,7 @@ public class LoginController {
         HotelVO loggedInHotel = (HotelVO) request.getSession().getAttribute("hotel");
         if (loggedInHotel == null) {
             model.addAttribute("generalError", "請先以業者身份登入");
-            return "redirect:/checkinout/login/business";
+            return "redirect:/login/business";
         }
 
         // 1. 檢查是否有填寫欄位
@@ -133,7 +133,7 @@ public class LoginController {
         request.getSession().setAttribute("employee", employee);
 
         // 導向員工後台頁面
-        return "redirect:/checkinout/frontDesk";
+        return "redirect:/frontDesk";
     }
 
 }
