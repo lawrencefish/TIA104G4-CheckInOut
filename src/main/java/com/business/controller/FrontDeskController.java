@@ -5,12 +5,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/checkinout/frontDesk")
+@RequestMapping("/frontDesk")
 public class FrontDeskController {
 
     @GetMapping("")
     public String showFrontDesk() {
-        return "redirect:/checkinout/frontDesk/checkIn";
+        return "redirect:/frontDesk/checkIn";
     }
 
     @GetMapping("checkIn")

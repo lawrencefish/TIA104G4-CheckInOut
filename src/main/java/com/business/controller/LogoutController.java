@@ -14,7 +14,7 @@ public class LogoutController {
         session.invalidate();
 
         // 返回到 login-1 頁面
-        return "redirect:/checkinout/login/business";
+        return "redirect:/login/business";
     }
 
     @PostMapping("/switch-user")
@@ -30,6 +30,6 @@ public class LogoutController {
         newSession.setAttribute("hotel", hotel);
 
         // 返回到 login-2 頁面
-        return "redirect:/checkinout/login/employee";
+        return "redirect:/login/employee";
     }
 }
