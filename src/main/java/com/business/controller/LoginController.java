@@ -26,7 +26,7 @@ public class LoginController {
 
     @GetMapping("")
     public String show() {
-        return "redirect:/checkinout/login/business";
+        return "redirect:/login/business";
     }
 
     @GetMapping("/business")
