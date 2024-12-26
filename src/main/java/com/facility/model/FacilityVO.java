@@ -1,4 +1,4 @@
-package com.hotel.model;
+package com.facility.model;
 
 
 import com.hotelFacility.model.HotelFacilityVO;
