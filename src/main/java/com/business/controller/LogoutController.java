@@ -3,33 +3,38 @@ package com.business.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @Controller
 public class LogoutController {
 
     @PostMapping("/logout")
-    public String logout(HttpSession session) {
-        // 清除所有 Session 資訊
-        session.invalidate();
+    public String logout(HttpServletRequest request) {
+        // 清除 session 資料
+        HttpSession session = request.getSession(false); // 避免創建新會話
+        if (session != null) {
+            session.invalidate();
+        }
 
-        // 返回到 login-1 頁面
+        // 返回登入頁面
         return "redirect:/login/business";
     }
 
     @PostMapping("/switch-user")
-    public String switchUser(HttpSession session) {
-        // 保留需要的 hotel 資訊
+    public String switchUser(HttpSession session, HttpServletRequest request) {
+        // 暫存需要保留的資料
         Object hotel = session.getAttribute("hotel");
 
-        // 清除其他 Session 資訊
+        // 清除當前的 Session
         session.invalidate();
 
-        // 重新設置 hotel 資訊
-        HttpSession newSession = session; // 或使用其他方法重新初始化 Session
+        // 建立新的 Session
+        HttpSession newSession = request.getSession(true); // 重新建立新的 Session
         newSession.setAttribute("hotel", hotel);
 
         // 返回到 login-2 頁面
         return "redirect:/login/employee";
     }
+
 }

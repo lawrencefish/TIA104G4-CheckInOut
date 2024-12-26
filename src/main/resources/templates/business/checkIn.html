@@ -451,18 +451,18 @@
     <!-- Header -->
     <header>
         <div class="logo">
-            <a href="#">
-                <img src="logo.png" alt="Logo">
+            <a th:href="@{/frontDesk}">
+                <img src="/imgs/CheckInOut_logo.png" alt="Logo">
                 <span>飯店管理系統</span>
             </a>
         </div>
         <nav>
-            <a href="1-1.html" class="active">櫃台系統</a>
-            <a href="2-1.html">飯店管理</a>
-            <a href="3-1.html">訂單管理</a>
+            <a th:href="@{/frontDesk}" class="active">櫃台系統</a>
+            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/orders}">訂單管理</a>
             <a href="#">評論管理</a>
             <a href="#">客戶管理</a>
-            <a href="4-1.html">報表分析</a>
+            <a th:href="@{/report}">報表分析</a>
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
@@ -470,7 +470,7 @@
             <button class="hotel-button">台北君悅酒店</button>
             <div class="dropdown">
                 <ul>
-                    <li><a href="account-1.html">帳號設定</a></li>
+                    <li><a th:href="@{/account}">帳號設定</a></li>
                     <li id="logout-option">登出</li>
                 </ul>
             </div>
@@ -502,9 +502,9 @@
         <!-- Aside -->
         <aside>
             <nav>
-                <a th:href="@{/checkinout/frontDesk/checkIn}" class="active">Check in</a>
-                <a th:href="@{/checkinout/frontDesk/checkOut}">Check out</a>
-                <a th:href="@{/checkinout/frontDesk/roomStatus}">房間動態</a>
+                <a th:href="@{/frontDesk/checkIn}" class="active">Check in</a>
+                <a th:href="@{/frontDesk/checkOut}">Check out</a>
+                <a th:href="@{/frontDesk/roomStatus}">房間動態</a>
             </nav>
         </aside>
 
@@ -677,11 +677,51 @@
     <script>
         //假資料
         const orders = [
-            { id: "00048763", customerId: "00001", name: "Zeus", roomType: "豪華雙人房", room: null, people: 2, status: "尚未報到" },
-            { id: "00048764", customerId: "00002", name: "Oner", roomType: "標準雙人房", room: null, people: 1, status: "尚未報到" },
-            { id: "00048765", customerId: "00003", name: "Faker", roomType: "標準雙人房", room: "101", people: 1, status: "已報到" },
-            { id: "00048766", customerId: "00004", name: "Gumayusi", roomType: "豪華雙人房", room: "102", people: 2, status: "已報到" },
-            { id: "00048767", customerId: "00005", name: "Keria", roomType: "家庭房", room: "103", people: 4, status: "已報到" },
+            {
+                id: "00048763",
+                customerId: "00001",
+                name: "Zeus",
+                roomType: "豪華雙人房",
+                room: null,
+                people: 2,
+                status: "尚未報到"
+            },
+            {
+                id: "00048764",
+                customerId: "00002",
+                name: "Oner",
+                roomType: "標準雙人房",
+                room: null,
+                people: 1,
+                status: "尚未報到"
+            },
+            {
+                id: "00048765",
+                customerId: "00003",
+                name: "Faker",
+                roomType: "標準雙人房",
+                room: "101",
+                people: 1,
+                status: "已報到"
+            },
+            {
+                id: "00048766",
+                customerId: "00004",
+                name: "Gumayusi",
+                roomType: "豪華雙人房",
+                room: "102",
+                people: 2,
+                status: "已報到"
+            },
+            {
+                id: "00048767",
+                customerId: "00005",
+                name: "Keria",
+                roomType: "家庭房",
+                room: "103",
+                people: 4,
+                status: "已報到"
+            },
         ];
 
 
@@ -835,7 +875,7 @@
             function bindTableEvents() {
                 document.querySelectorAll("table tbody tr").forEach((row) => {
                     row.addEventListener("click", function () {
-                        const { id, name, roomType, room, note, status } = this.dataset;
+                        const {id, name, roomType, room, note, status} = this.dataset;
                         currentOrder = orders.find((order) => order.id === id);
 
                         if (status === "尚未報到") {
@@ -941,7 +981,8 @@
         // 切換使用者按鈕功能
         logoutModalSwitchButton.addEventListener("click", function () {
             alert("切換使用者！");
-            document.location.href = "login-2.html";; // 隱藏彈窗
+            document.location.href = "login-2.html";
+            ; // 隱藏彈窗
         });
 
         // 點擊彈窗外部關閉 (選擇性功能)
@@ -950,7 +991,6 @@
                 logoutModal.classList.remove("show"); // 隱藏彈窗
             }
         });
-
 
     </script>
 </body>

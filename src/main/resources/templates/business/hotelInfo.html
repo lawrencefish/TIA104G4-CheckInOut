@@ -299,7 +299,7 @@
             text-align: center;
         }
 
-        form {
+        #mianform {
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -311,14 +311,14 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        form label {
+        #mianform label {
             font-weight: bold;
             margin-bottom: 8px;
             color: #555;
         }
 
-        form input,
-        form select {
+        #mianform input,
+        #mianform select {
             width: 100%;
             padding: 10px;
             font-size: 1rem;
@@ -327,14 +327,14 @@
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        form input:focus,
-        form select:focus {
+        #mianform input:focus,
+        #mianform select:focus {
             border-color: #007bff;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
             outline: none;
         }
 
-        form button {
+        #mianform button {
             padding: 12px;
             background-color: #007bff;
             color: #fff;
@@ -346,12 +346,12 @@
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        form button:hover {
+        #mianform button:hover {
             background-color: #0056b3;
             box-shadow: 0 4px 8px rgba(0, 91, 187, 0.3);
         }
 
-        form button:active {
+        #mianform button:active {
             background-color: #003f88;
             box-shadow: none;
         }
@@ -388,18 +388,18 @@
     <!-- Header -->
     <header>
         <div class="logo">
-            <a href="#">
-                <img src="logo.png" alt="Logo">
+            <a th:href="@{/frontDesk}">
+                <img src="/imgs/CheckInOut_logo.png" alt="Logo">
                 <span>飯店管理系統</span>
             </a>
         </div>
         <nav>
-            <a href="1-1.html">櫃台系統</a>
-            <a href="2-1.html" class="active">飯店管理</a>
-            <a href="3-1.html">訂單管理</a>
+            <a th:href="@{/frontDesk}">櫃台系統</a>
+            <a th:href="@{/business}" class="active">飯店管理</a>
+            <a th:href="@{/orders}">訂單管理</a>
             <a href="#">評論管理</a>
             <a href="#">客戶管理</a>
-            <a href="4-1.html">報表分析</a>
+            <a th:href="@{/report}">報表分析</a>
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
@@ -407,7 +407,7 @@
             <button class="hotel-button">台北君悅酒店</button>
             <div class="dropdown">
                 <ul>
-                    <li><a href="account-1.html">帳號設定</a></li>
+                    <li><a th:href="@{/account}">帳號設定</a></li>
                     <li id="logout-option">登出</li>
                 </ul>
             </div>
@@ -421,8 +421,14 @@
             <h2>登出選項</h2>
             <p>您確定要登出或切換使用者嗎？</p>
             <div class="logout-modal-actions">
-                <button id="logout-modal-logout-button">登出</button>
-                <button id="logout-modal-switch-button">切換使用者</button>
+                <!-- 登出按鈕 -->
+                <form action="/logout" method="POST" id="logout-form">
+                    <button type="submit" id="logout-modal-logout-button">登出</button>
+                </form>
+                <!-- 切換使用者按鈕 -->
+                <form action="/switch-user" method="POST" id="switch-user-form">
+                    <button type="submit" id="logout-modal-switch-button">切換使用者</button>
+                </form>
             </div>
         </div>
     </div>
@@ -432,18 +438,18 @@
         <!-- Aside -->
         <aside>
             <nav>
-                <a href="2-1.html" class="active">基本資料設定</a>
-                <a href="2-2.html">飯店介紹</a>
-                <a href="2-3.html">房型設定</a>
-                <a href="2-4.html">房間管理</a>
-                <a href="2-5.html">價格與促銷</a>
+                <a th:href="@{/business/hotelInfo}" class="active">基本資料設定</a>
+                <a th:href="@{/business/hotelIntroduce}">飯店介紹</a>
+                <a th:href="@{/business/roomTypeSet}">房型設定</a>
+                <a th:href="@{/business/roomManagement}">房間管理</a>
+                <a th:href="@{/business/priceSet}">價格與促銷</a>
             </nav>
         </aside>
 
         <!-- Main -->
         <main>
             <h1>基本資料設定</h1>
-            <form>
+            <form id="mianform">
                 <label for="name">飯店名稱</label>
                 <input type="text" id="name" value="台北君悅酒店">
 

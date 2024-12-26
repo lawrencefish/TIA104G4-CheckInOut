@@ -450,8 +450,8 @@
 <!-- Header -->
 <header>
     <div class="logo">
-        <a href="#">
-            <img src="logo.png" alt="Logo">
+        <a th:href="@{/frontDesk}">
+            <img src="/imgs/CheckInOut_logo.png" alt="Logo">
             <span>飯店管理系統</span>
         </a>
     </div>
@@ -471,7 +471,7 @@
     <!-- Main -->
     <main>
         <h1>業者登入</h1>
-        <form th:action="@{/checkinout/login/business}" method="post">
+        <form th:action="@{/login/business}" method="post">
             <!-- 統一編號 -->
             <div class="form-group">
                 <label for="login-company-id">統一編號</label>
