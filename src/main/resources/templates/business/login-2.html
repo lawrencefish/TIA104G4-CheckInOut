@@ -340,8 +340,8 @@
     <!-- Header -->
     <header>
         <div class="logo">
-            <a href="#">
-                <img src="logo.png" alt="Logo">
+            <a th:href="@{/frontDesk}">
+                <img src="/imgs/CheckInOut_logo.png" alt="Logo">
                 <span>飯店管理系統</span>
             </a>
         </div>
@@ -362,7 +362,7 @@
         <main>
             <h1>員工登入</h1>
             <!-- 注意: 路徑要符合後端 Controller: @PostMapping("/employeeLogin") under @RequestMapping("/business") -->
-            <form th:action="@{/checkinout/login/employee}" method="post">
+            <form th:action="@{/login/employee}" method="post">
 
                 <!-- 員工編號欄位 -->
                 <div class="form-group">
