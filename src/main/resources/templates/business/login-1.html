@@ -447,214 +447,222 @@
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <a href="#">
-                <img src="logo.png" alt="Logo">
-                <span>飯店管理系統</span>
-            </a>
-        </div>
-    </header>
+<!-- Header -->
+<header>
+    <div class="logo">
+        <a href="#">
+            <img src="logo.png" alt="Logo">
+            <span>飯店管理系統</span>
+        </a>
+    </div>
+</header>
 
 
-    <!-- 主體內容 -->
-    <div class="container">
-        <!-- Aside -->
-        <!-- <aside>
-            <nav>
-                <a href="4-1.html">銷售額</a>
-                <a href="4-2.html" class="active">訂單量</a>
-            </nav>
-        </aside> -->
+<!-- 主體內容 -->
+<div class="container">
+    <!-- Aside -->
+    <!-- <aside>
+        <nav>
+            <a href="4-1.html">銷售額</a>
+            <a href="4-2.html" class="active">訂單量</a>
+        </nav>
+    </aside> -->
 
-        <!-- Main -->
-        <main>
-            <h1>業者登入</h1>
-            <form>
-                <div class="form-group">
-                    <label for="login-company-id">統一編號</label>
-                    <input type="text" id="login-company-id" placeholder="請輸入統一編號">
-                </div>
-                <div class="form-group">
-                    <label for="login-password">密碼</label>
-                    <input type="password" id="login-password" placeholder="請輸入密碼">
-                </div>
-                <div class="form-group">
-                    <label for="company-id">電子信箱</label>
-                    <input type="text" id="email" placeholder="請輸入電子信箱">
-                </div>
-                <div class="form-group">
-                    <div class="form-inline">
-                        <label for="verification-code">驗證碼</label>
-                        <button class="send_btn" type="button">寄送驗證碼</button>
-                    </div>
-                    <input type="text" id="verification-code" placeholder="請輸入驗證碼">
-                </div>
-                <button type="button" id="login-button">登入</button>
-            </form>
-            <div class="links">
-                <a href="signup-1.html">加入我們</a>
-                <a id="forgot-password-link" href="#">忘記密碼</a>
+    <!-- Main -->
+    <main>
+        <h1>業者登入</h1>
+        <form th:action="@{/checkinout/login/business}" method="post">
+            <!-- 統一編號 -->
+            <div class="form-group">
+                <label for="login-company-id">統一編號</label>
+                <input type="text" id="login-company-id" name="taxId" placeholder="請輸入統一編號">
+                <!-- 在此顯示欄位錯誤 -->
+                <p th:if="${taxIdError != null}"
+                   th:text="${taxIdError}"
+                   style="color:red;"></p>
             </div>
-        </main>
-        <!-- 忘記密碼彈窗 -->
-        <div id="forgot-password-modal" class="modal">
-            <div class="modal-content">
-                <h2>忘記密碼</h2>
-                <div class="form-group">
-                    <label for="forgot-company-id">統一編號</label>
-                    <input type="text" id="forgot-company-id" placeholder="請輸入統一編號">
-                </div>
-                <div class="form-group">
-                    <label for="forgot-email">電子信箱</label>
-                    <input type="email" id="forgot-email" placeholder="請輸入電子信箱">
-                </div>
-                <div class="form-group">
-                    <button type="button" id="send-code-button">寄送驗證碼</button>
-                </div>
-                <div class="form-group">
-                    <label for="forgot-verification-code">驗證碼</label>
-                    <input type="text" id="forgot-verification-code" placeholder="請輸入驗證碼">
-                </div>
-                <div class="button-group">
-                    <button class="btn-secondary" id="cancel-forgot-password">取消</button>
-                    <button class="btn-primary" id="confirm-code">確認</button>
-                </div>
-            </div>
-        </div>
 
-        <!-- 重設密碼彈窗 -->
-        <div id="reset-password-modal" class="modal">
-            <div class="modal-content">
-                <h2>重設密碼</h2>
-                <div class="form-group">
-                    <label for="new-password">新密碼</label>
-                    <input type="password" id="new-password" placeholder="請輸入新密碼">
-                </div>
-                <div class="form-group">
-                    <label for="confirm-new-password">再次輸入新密碼</label>
-                    <input type="password" id="confirm-new-password" placeholder="請再次輸入新密碼">
-                </div>
-                <div class="button-group">
-                    <button class="btn-secondary" id="cancel-reset-password">取消</button>
-                    <button class="btn-primary" id="confirm-reset-password">確認</button>
-                </div>
+            <!-- 密碼 -->
+            <div class="form-group">
+                <label for="login-password">密碼</label>
+                <input type="password" id="login-password" name="password" placeholder="請輸入密碼">
+                <!-- 在此顯示欄位錯誤 -->
+                <p th:if="${passwordError != null}"
+                   th:text="${passwordError}"
+                   style="color:red;"></p>
+            </div>
+
+            <button type="submit" id="login-button">登入</button>
+        </form>
+        <!-- 一次顯示所有錯誤 -->
+        <ul th:if="${errors != null}">
+            <li th:each="err : ${errors}"
+                th:text="${err}"
+                style="color:red;"></li>
+        </ul>
+
+        <div class="links">
+            <a href="signup-1.html">加入我們</a>
+            <a id="forgot-password-link" href="#">忘記密碼</a>
+        </div>
+    </main>
+    <!-- 忘記密碼彈窗 -->
+    <div id="forgot-password-modal" class="modal">
+        <div class="modal-content">
+            <h2>忘記密碼</h2>
+            <div class="form-group">
+                <label for="forgot-company-id">統一編號</label>
+                <input type="text" id="forgot-company-id" placeholder="請輸入統一編號">
+            </div>
+            <div class="form-group">
+                <label for="forgot-email">電子信箱</label>
+                <input type="email" id="forgot-email" placeholder="請輸入電子信箱">
+            </div>
+            <div class="form-group">
+                <button type="button" id="send-code-button">寄送驗證碼</button>
+            </div>
+            <div class="form-group">
+                <label for="forgot-verification-code">驗證碼</label>
+                <input type="text" id="forgot-verification-code" placeholder="請輸入驗證碼">
+            </div>
+            <div class="button-group">
+                <button class="btn-secondary" id="cancel-forgot-password">取消</button>
+                <button class="btn-primary" id="confirm-code">確認</button>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        &copy; 2024 Check in out. All rights reserved.
-    </footer>
+    <!-- 重設密碼彈窗 -->
+    <div id="reset-password-modal" class="modal">
+        <div class="modal-content">
+            <h2>重設密碼</h2>
+            <div class="form-group">
+                <label for="new-password">新密碼</label>
+                <input type="password" id="new-password" placeholder="請輸入新密碼">
+            </div>
+            <div class="form-group">
+                <label for="confirm-new-password">再次輸入新密碼</label>
+                <input type="password" id="confirm-new-password" placeholder="請再次輸入新密碼">
+            </div>
+            <div class="button-group">
+                <button class="btn-secondary" id="cancel-reset-password">取消</button>
+                <button class="btn-primary" id="confirm-reset-password">確認</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script>
-        document.querySelector(".send_btn").addEventListener("click", function () {
-            const emailInput = document.querySelector("#email");
-            if (emailInput.value.trim() === "") {
-                alert("請輸入信箱");
-            } else {
-                alert("寄送成功");
-            }
-        });
+<!-- Footer -->
+<footer>
+    &copy; 2024 Check in out. All rights reserved.
+</footer>
 
-        // document.querySelector("form").addEventListener("submit", function (e) {
-        //     // e.preventDefault(); // 防止表單默認提交行為
+<script>
+    document.querySelector(".send_btn").addEventListener("click", function () {
+        const emailInput = document.querySelector("#email");
+        if (emailInput.value.trim() === "") {
+            alert("請輸入信箱");
+        } else {
+            alert("寄送成功");
+        }
+    });
 
-        //     // 獲取每個欄位的輸入值
-        //     const companyId = document.querySelector("#company-id").value.trim();
-        //     const password = document.querySelector("#password").value.trim();
-        //     const email = document.querySelector("#email").value.trim();
-        //     const verificationCode = document.querySelector("#verification-code").value.trim();
+    // document.querySelector("form").addEventListener("submit", function (e) {
+    //     // e.preventDefault(); // 防止表單默認提交行為
 
-        //     // 驗證每個欄位是否有輸入內容
-        //     if (!companyId) {
-        //         alert("請輸入統一編號");
-        //         return;
-        //     }
-        //     if (!password) {
-        //         alert("請輸入密碼");
-        //         return;
-        //     }
-        //     if (!email) {
-        //         alert("請輸入電子信箱");
-        //         return;
-        //     }
-        //     if (!verificationCode) {
-        //         alert("請輸入驗證碼");
-        //         return;
-        //     }
+    //     // 獲取每個欄位的輸入值
+    //     const companyId = document.querySelector("#company-id").value.trim();
+    //     const password = document.querySelector("#password").value.trim();
+    //     const email = document.querySelector("#email").value.trim();
+    //     const verificationCode = document.querySelector("#verification-code").value.trim();
 
-        //     // 如果所有欄位都有值，跳轉到 login-2.html
-        //     window.location.href = "login-2.html";
-        // });
+    //     // 驗證每個欄位是否有輸入內容
+    //     if (!companyId) {
+    //         alert("請輸入統一編號");
+    //         return;
+    //     }
+    //     if (!password) {
+    //         alert("請輸入密碼");
+    //         return;
+    //     }
+    //     if (!email) {
+    //         alert("請輸入電子信箱");
+    //         return;
+    //     }
+    //     if (!verificationCode) {
+    //         alert("請輸入驗證碼");
+    //         return;
+    //     }
 
-        document.querySelector("#login-button").addEventListener("click",function(){
-            window.location.href = "login-2.html";
-        })
+    //     // 如果所有欄位都有值，跳轉到 login-2.html
+    //     window.location.href = "login-2.html";
+    // });
+
+    document.querySelector("#login-button").addEventListener("click",function(){
+        window.location.href = "login-2.html";
+    })
 
 
 
-        // 忘記密碼按鈕
-        document.getElementById("forgot-password-link").addEventListener("click", () => {
-            document.getElementById("forgot-password-modal").classList.add("show");
-        });
+    // 忘記密碼按鈕
+    document.getElementById("forgot-password-link").addEventListener("click", () => {
+        document.getElementById("forgot-password-modal").classList.add("show");
+    });
 
-        // 寄送驗證碼
-        document.getElementById("send-code-button").addEventListener("click", () => {
-            const email = document.getElementById("forgot-email").value.trim();
-            if (!email) {
-                alert("請輸入電子信箱");
-                return;
-            }
-            alert("驗證碼已寄送至您的信箱");
-        });
+    // 寄送驗證碼
+    document.getElementById("send-code-button").addEventListener("click", () => {
+        const email = document.getElementById("forgot-email").value.trim();
+        if (!email) {
+            alert("請輸入電子信箱");
+            return;
+        }
+        alert("驗證碼已寄送至您的信箱");
+    });
 
-        // 確認驗證碼並切換到重設密碼表單
-        document.getElementById("confirm-code").addEventListener("click", () => {
-            const verificationCode = document.getElementById("forgot-verification-code").value.trim();
-            if (!verificationCode) {
-                alert("請輸入驗證碼");
-                return;
-            }
-            alert("驗證成功");
-            document.getElementById("forgot-password-modal").classList.remove("show");
-            document.getElementById("reset-password-modal").classList.add("show");
-        });
+    // 確認驗證碼並切換到重設密碼表單
+    document.getElementById("confirm-code").addEventListener("click", () => {
+        const verificationCode = document.getElementById("forgot-verification-code").value.trim();
+        if (!verificationCode) {
+            alert("請輸入驗證碼");
+            return;
+        }
+        alert("驗證成功");
+        document.getElementById("forgot-password-modal").classList.remove("show");
+        document.getElementById("reset-password-modal").classList.add("show");
+    });
 
-        // 重設密碼
-        document.getElementById("confirm-reset-password").addEventListener("click", () => {
-            const newPassword = document.getElementById("reset-new-password").value.trim();
-            const confirmNewPassword = document.getElementById("reset-confirm-new-password").value.trim();
+    // 重設密碼
+    document.getElementById("confirm-reset-password").addEventListener("click", () => {
+        const newPassword = document.getElementById("reset-new-password").value.trim();
+        const confirmNewPassword = document.getElementById("reset-confirm-new-password").value.trim();
 
-            if (!newPassword || !confirmNewPassword) {
-                alert("請輸入新密碼");
-                return;
-            }
+        if (!newPassword || !confirmNewPassword) {
+            alert("請輸入新密碼");
+            return;
+        }
 
-            if (newPassword !== confirmNewPassword) {
-                alert("兩次輸入的密碼不一致");
-                return;
-            }
+        if (newPassword !== confirmNewPassword) {
+            alert("兩次輸入的密碼不一致");
+            return;
+        }
 
-            alert("密碼已成功重設");
-            document.getElementById("reset-password-modal").classList.remove("show");
-        });
+        alert("密碼已成功重設");
+        document.getElementById("reset-password-modal").classList.remove("show");
+    });
 
-        // 關閉彈窗
-        document.getElementById("cancel-forgot-password").addEventListener("click", () => {
-            document.getElementById("forgot-password-modal").classList.remove("show");
-        });
-        document.getElementById("cancel-reset-password").addEventListener("click", () => {
-            document.getElementById("reset-password-modal").classList.remove("show");
-        });
+    // 關閉彈窗
+    document.getElementById("cancel-forgot-password").addEventListener("click", () => {
+        document.getElementById("forgot-password-modal").classList.remove("show");
+    });
+    document.getElementById("cancel-reset-password").addEventListener("click", () => {
+        document.getElementById("reset-password-modal").classList.remove("show");
+    });
 
-        document.querySelector("#confirm-reset-password").addEventListener("click",function(){
-            alert("變更成功！");
-            document.getElementById("reset-password-modal").classList.remove("show");
-        })
-    </script>
+    document.querySelector("#confirm-reset-password").addEventListener("click",function(){
+        alert("變更成功！");
+        document.getElementById("reset-password-modal").classList.remove("show");
+    })
+</script>
 </body>
 
 </html>

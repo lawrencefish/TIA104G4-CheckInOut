@@ -361,17 +361,32 @@
         <!-- Main -->
         <main>
             <h1>員工登入</h1>
-            <form>
+            <!-- 注意: 路徑要符合後端 Controller: @PostMapping("/employeeLogin") under @RequestMapping("/business") -->
+            <form th:action="@{/checkinout/login/employee}" method="post">
+
+                <!-- 員工編號欄位 -->
                 <div class="form-group">
-                    <label for="employee-id">員工編號</label>
-                    <input type="text" id="employee-id" placeholder="請輸入員工編號">
+                    <label for="employee-number">員工編號</label>
+                    <input type="text" id="employee-number" name="employeeNumber" placeholder="請輸入員工編號">
+                    <!-- 這裡顯示「員工編號」相關錯誤訊息 -->
+                    <p th:if="${employeeNumberError != null}"
+                       th:text="${employeeNumberError}"
+                       style="color:red;"></p>
                 </div>
+
+                <!-- 密碼欄位 -->
                 <div class="form-group">
                     <label for="password">密碼</label>
-                    <input type="password" id="password" placeholder="請輸入密碼">
+                    <input type="password" id="password" name="password" placeholder="請輸入密碼">
+                    <!-- 這裡顯示「密碼」相關錯誤訊息 -->
+                    <p th:if="${passwordError != null}"
+                       th:text="${passwordError}"
+                       style="color:red;"></p>
                 </div>
+
                 <button type="submit">登入</button>
             </form>
+
             <div class="links">
                 <a href="#">忘記密碼</a>
             </div>
@@ -385,27 +400,7 @@
 
 
     <script>
-        document.querySelector("form").addEventListener("submit", function (e) {
-            e.preventDefault(); // 防止表單默認提交行為
 
-            // 獲取員工編號和密碼的輸入值
-            const employeeId = document.querySelector("#employee-id").value.trim();
-            const password = document.querySelector("#password").value.trim();
-
-            // 檢查是否輸入值
-            if (!employeeId) {
-                alert("請輸入員工編號");
-                return;
-            }
-
-            if (!password) {
-                alert("請輸入密碼");
-                return;
-            }
-
-            // 如果都有輸入，跳轉到 1-1.html
-            window.location.href = "1-1.html";
-        });
     </script>
 </body>
 
