@@ -443,6 +443,23 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        /* 全局錯誤訊息樣式 */
+        .error {
+            color: red;
+            font-size: 14px;
+            text-align: center; /* 左右居中 */
+            margin: 5px auto; /* 與上下元素間隔 */
+        }
+
+        /* 針對欄位錯誤的額外樣式 */
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px; /* 與輸入框的距離 */
+            display: block; /* 讓其占滿一行 */
+            text-align: left; /* 可選：改為左對齊 */
+        }
     </style>
 </head>
 
@@ -471,38 +488,31 @@
     <!-- Main -->
     <main>
         <h1>業者登入</h1>
+
+        <!-- 全局錯誤提示 -->
+        <p th:if="${generalError != null}" th:text="${generalError}" class="error"></p>
+
         <form th:action="@{/login/business}" method="post">
             <!-- 統一編號 -->
             <div class="form-group">
                 <label for="login-company-id">統一編號</label>
-                <input type="text" id="login-company-id" name="taxId" placeholder="請輸入統一編號">
-                <!-- 在此顯示欄位錯誤 -->
-                <p th:if="${taxIdError != null}"
-                   th:text="${taxIdError}"
-                   style="color:red;"></p>
+                <input type="text" id="login-company-id" name="taxId"
+                       placeholder="請輸入統一編號" th:value="${taxId}">
+                <p th:if="${taxIdError != null}" th:text="${taxIdError}" class="error"></p>
             </div>
 
             <!-- 密碼 -->
             <div class="form-group">
                 <label for="login-password">密碼</label>
-                <input type="password" id="login-password" name="password" placeholder="請輸入密碼">
-                <!-- 在此顯示欄位錯誤 -->
-                <p th:if="${passwordError != null}"
-                   th:text="${passwordError}"
-                   style="color:red;"></p>
+                <input type="password" id="login-password" name="password"
+                       placeholder="請輸入密碼">
+                <p th:if="${passwordError != null}" th:text="${passwordError}" class="error"></p>
             </div>
 
             <button type="submit" id="login-button">登入</button>
         </form>
-        <!-- 一次顯示所有錯誤 -->
-        <ul th:if="${errors != null}">
-            <li th:each="err : ${errors}"
-                th:text="${err}"
-                style="color:red;"></li>
-        </ul>
-
         <div class="links">
-            <a href="signup-1.html">加入我們</a>
+            <a th:href="@{/signUp}">加入我們</a>
             <a id="forgot-password-link" href="#">忘記密碼</a>
         </div>
     </main>

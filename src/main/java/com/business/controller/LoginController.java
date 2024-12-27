@@ -30,110 +30,128 @@ public class LoginController {
     }
 
     @GetMapping("/business")
-    public String showLogin1() {
-        // 回傳的字串會對應 resources/templates/business/login-1.html
+    public String showLogin1(HttpServletRequest request) {
+        // 檢查是否已登入業者
+        HotelVO loggedInHotel = (HotelVO) request.getSession().getAttribute("hotel");
+        if (loggedInHotel != null) {
+            // 如果業者已登入，直接跳轉到系統頁面
+            return "redirect:/login/employee"; // 替換為業者進入的頁面
+        }
+        // 如果未登入，顯示登入頁面
         return "business/login-1";
     }
 
     @PostMapping("/business")
     public String processBusinessLogin(
-            @RequestParam("taxId") String taxId,
-            @RequestParam("password") String password,
+            @RequestParam(value = "taxId", required = false) String taxId,
+            @RequestParam(value = "password", required = false) String password,
             HttpServletRequest request,
             Model model
     ) {
+        // 回填用戶輸入
+        model.addAttribute("taxId", taxId);
+
+        // 清理輸入
+        taxId = taxId == null ? "" : taxId.trim();
+        password = password == null ? "" : password.trim();
+
+        // 驗證輸入是否為空
         boolean hasError = false;
-
-        // 檢查 taxId
-        if (taxId == null || taxId.isBlank()) {
-            model.addAttribute("taxIdError", "必填");
+        if (taxId.isEmpty()) {
+            model.addAttribute("taxIdError", "統一編號必填");
+            hasError = true;
+        }
+        if (password.isEmpty()) {
+            model.addAttribute("passwordError", "密碼必填");
             hasError = true;
         }
 
-        // 檢查 password
-        if (password == null || password.isBlank()) {
-            model.addAttribute("passwordError", "必填");
-            hasError = true;
-        }
-
-        // 如果有任何欄位錯誤，回到登入頁面
         if (hasError) {
             return "business/login-1";
         }
 
-        // 查詢資料庫
+        // 查詢業者
         Optional<HotelVO> hotelOpt = hotelService.findByTaxId(taxId);
         if (hotelOpt.isEmpty()) {
-            model.addAttribute("taxIdError", "統一編號不存在");
+            model.addAttribute("generalError", "統一編號或密碼錯誤");
             return "business/login-1";
         }
 
-        // 驗證密碼
         HotelVO hotel = hotelOpt.get();
         if (!hotel.getPassword().equals(password)) {
-            model.addAttribute("passwordError", "密碼錯誤");
+            model.addAttribute("generalError", "統一編號或密碼錯誤");
             return "business/login-1";
         }
 
-        // 驗證成功，直接存入 Session
+        // 驗證成功 -> 存入 Session
         request.getSession().setAttribute("hotel", hotel);
 
-        // 導向後台頁面
+        // 導向員工登入頁
         return "redirect:/login/employee";
     }
 
     @GetMapping("/employee")
-    public String showLogin2() {
-        // 回傳的字串會對應 resources/templates/business/login-1.html
+    public String showLogin2(HttpServletRequest request) {
+        // 檢查是否已登入員工
+        EmployeeVO loggedInEmployee = (EmployeeVO) request.getSession().getAttribute("employee");
+        if (loggedInEmployee != null) {
+            // 如果員工已登入，直接跳轉到員工的系統頁面
+            return "redirect:/frontDesk"; // 替換為員工的主頁
+        }
+        // 如果未登入，顯示登入頁面
         return "business/login-2";
     }
 
 
     @PostMapping("/employee")
     public String processEmployeeLogin(
-            @RequestParam("employeeNumber") String employeeNumber,
-            @RequestParam("password") String password,
+            @RequestParam(value = "employeeNumber", required = false) String employeeNumber,
+            @RequestParam(value = "password", required = false) String password,
             HttpServletRequest request,
             Model model
     ) {
-        boolean hasError = false;
+        // 回填用戶輸入
+        model.addAttribute("employeeNumber", employeeNumber);
 
-        // 檢查是否有業者的 Session 資訊
+        // 清理輸入
+        employeeNumber = employeeNumber == null ? "" : employeeNumber.trim();
+        password = password == null ? "" : password.trim();
+
+        // 驗證業者是否已登入
         HotelVO loggedInHotel = (HotelVO) request.getSession().getAttribute("hotel");
         if (loggedInHotel == null) {
-            model.addAttribute("generalError", "請先以業者身份登入");
             return "redirect:/login/business";
         }
 
-        // 1. 檢查是否有填寫欄位
-        if (employeeNumber == null || employeeNumber.isBlank()) {
+        // 驗證輸入是否為空
+        boolean hasError = false;
+        if (employeeNumber.isEmpty()) {
             model.addAttribute("employeeNumberError", "員工編號必填");
             hasError = true;
         }
-        if (password == null || password.isBlank()) {
+        if (password.isEmpty()) {
             model.addAttribute("passwordError", "密碼必填");
             hasError = true;
         }
 
-        // 2. 有錯誤就回到同一頁
         if (hasError) {
-            return "employeeLogin"; // 對應 src/main/resources/templates/employeeLogin.html
+            return "business/login-2";
         }
 
-        // 3. 查資料庫: 檢查是否有這個員工編號，且隸屬於當前旅館
+        // 查詢員工
         Optional<EmployeeVO> employeeOpt = employeeService.findByEmployeeNumberAndHotel_HotelId(employeeNumber, loggedInHotel.getHotelId());
         if (employeeOpt.isEmpty() || !employeeOpt.get().getPassword().equals(password)) {
-            // 找不到或密碼錯 -> 統一顯示在 passwordError
-            model.addAttribute("passwordError", "員工編號或密碼錯誤");
-            return "employeeLogin";
+            model.addAttribute("generalError", "員工編號或密碼錯誤");
+            return "business/login-2";
         }
 
-        // 4. 驗證成功 -> 存入 Session
+        // 驗證成功 -> 存入 Session
         EmployeeVO employee = employeeOpt.get();
         request.getSession().setAttribute("employee", employee);
 
-        // 導向員工後台頁面
+        // 導向員工後台
         return "redirect:/frontDesk";
     }
+
 
 }
