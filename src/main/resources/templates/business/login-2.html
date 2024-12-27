@@ -333,6 +333,23 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        /* 全局錯誤訊息樣式 */
+        .error {
+            color: red;
+            font-size: 14px;
+            text-align: center; /* 左右居中 */
+            margin: 5px auto; /* 與上下元素間隔 */
+        }
+
+        /* 針對欄位錯誤的額外樣式 */
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px; /* 與輸入框的距離 */
+            display: block; /* 讓其占滿一行 */
+            text-align: left; /* 可選：改為左對齊 */
+        }
     </style>
 </head>
 
@@ -361,27 +378,24 @@
         <!-- Main -->
         <main>
             <h1>員工登入</h1>
-            <!-- 注意: 路徑要符合後端 Controller: @PostMapping("/employeeLogin") under @RequestMapping("/business") -->
-            <form th:action="@{/login/employee}" method="post">
 
+            <!-- 全局錯誤訊息 -->
+            <p th:if="${generalError != null}" th:text="${generalError}" class="error"></p>
+
+            <form th:action="@{/login/employee}" method="post">
                 <!-- 員工編號欄位 -->
                 <div class="form-group">
                     <label for="employee-number">員工編號</label>
-                    <input type="text" id="employee-number" name="employeeNumber" placeholder="請輸入員工編號">
-                    <!-- 這裡顯示「員工編號」相關錯誤訊息 -->
-                    <p th:if="${employeeNumberError != null}"
-                       th:text="${employeeNumberError}"
-                       style="color:red;"></p>
+                    <input type="text" id="employee-number" name="employeeNumber"
+                           placeholder="請輸入員工編號" th:value="${employeeNumber}">
+                    <p th:if="${employeeNumberError != null}" th:text="${employeeNumberError}" class="field-error"></p>
                 </div>
 
                 <!-- 密碼欄位 -->
                 <div class="form-group">
                     <label for="password">密碼</label>
                     <input type="password" id="password" name="password" placeholder="請輸入密碼">
-                    <!-- 這裡顯示「密碼」相關錯誤訊息 -->
-                    <p th:if="${passwordError != null}"
-                       th:text="${passwordError}"
-                       style="color:red;"></p>
+                    <p th:if="${passwordError != null}" th:text="${passwordError}" class="field-error"></p>
                 </div>
 
                 <button type="submit">登入</button>
