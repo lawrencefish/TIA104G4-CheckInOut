@@ -28,6 +28,7 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String path = httpRequest.getServletPath();
+        String contextPath = httpRequest.getContextPath();
 
         // 排除靜態資源
         if (path.startsWith("/static/") || path.startsWith("/imgs/")) {
@@ -47,9 +48,9 @@ public class AuthenticationFilter implements Filter {
 
         if (hotel == null) {
             // 如果未登入，跳轉到登入頁
-            httpResponse.sendRedirect("/login");
+            httpResponse.sendRedirect(contextPath + "/login");
         } else if(employee == null){
-            httpResponse.sendRedirect("/login/employee");
+            httpResponse.sendRedirect(contextPath + "/login/employee");
         } else {
             // 如果已登入，繼續處理請求
 //            System.out.println("有經過登入驗證");

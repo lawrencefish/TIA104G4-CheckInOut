@@ -652,11 +652,11 @@
             <p>您確定要登出或切換使用者嗎？</p>
             <div class="logout-modal-actions">
                 <!-- 登出按鈕 -->
-                <form action="/logout" method="POST" id="logout-form">
+                <form th:action="@{/logout}" method="POST" id="logout-form">
                     <button type="submit" id="logout-modal-logout-button">登出</button>
                 </form>
                 <!-- 切換使用者按鈕 -->
-                <form action="/switch-user" method="POST" id="switch-user-form">
+                <form th:action="@{/switch-user}" method="POST" id="switch-user-form">
                     <button type="submit" id="logout-modal-switch-button">切換使用者</button>
                 </form>
             </div>
