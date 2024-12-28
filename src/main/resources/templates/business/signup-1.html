@@ -586,11 +586,12 @@
 
     //  縣市api
     document.addEventListener("DOMContentLoaded", function () {
+    	const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         const citySelect = document.getElementById("city");
         const districtSelect = document.getElementById("district");
 
         // 載入縣市選項
-        fetch("/api/locations/cities")
+        fetch(`${contextPath}/api/locations/cities`)
             .then(response => response.json())
             .then(cities => {
                 cities.forEach(city => {
@@ -606,11 +607,11 @@
             const selectedCity = this.value;
 
             // 清空並禁用地區選項
-            districtSelect.innerHTML = '<option value="">請先選擇縣市</option>';
+//             districtSelect.innerHTML = '<option value="">請先選擇縣市</option>';
             districtSelect.disabled = !selectedCity;
 
             if (selectedCity) {
-                fetch(`/api/locations/districts?city=${selectedCity}`)
+                fetch(`${contextPath}/api/locations/districts?city=${selectedCity}`)
                     .then(response => response.json())
                     .then(districts => {
                         districts.forEach(district => {

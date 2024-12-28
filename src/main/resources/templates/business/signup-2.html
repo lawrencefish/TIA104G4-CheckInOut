@@ -445,6 +445,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+        	const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
             const photoUpload = document.getElementById("photo-upload");
             const uploadedPhotosContainer = document.getElementById("uploaded-photos");
             const clearButton = document.querySelector(".clear-btn");
@@ -462,7 +463,7 @@
             // console.log("servicesContainer:", servicesContainer);
 
             // 獲取設施
-            fetch("/api/facilities/hotel/facilities")
+            fetch(`${contextPath}/api/facilities/hotel/facilities`)
                 .then(response => {
                     if (!response.ok) throw new Error("設施資料撈取失敗");
                     return response.json();
@@ -490,7 +491,7 @@
                 .catch(err => console.error("設施 API 錯誤：", err));
 
 // 獲取服務
-            fetch("/api/facilities/hotel/services")
+            fetch(`${contextPath}/api/facilities/hotel/services`)
                 .then(response => {
                     if (!response.ok) throw new Error("服務資料撈取失敗");
                     return response.json();
