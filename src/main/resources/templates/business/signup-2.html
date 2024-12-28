@@ -223,55 +223,58 @@
             /* 背景顏色調整 */
         }
 
-        /* 環境介紹 textarea */
-        /* 環境介紹 textarea */
-        textarea {
-            width: 100%;
-            padding: 10px;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            resize: none;
-            /* 禁止使用者手動縮放 */
-            background-color: #f9f9f9;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
 
         /* 照片上傳區塊 */
-        .photo-upload {
-            margin-bottom: 20px;
-            display: block;
-            /* 改為block，方便控制位置 */
-            /* text-align: center; */
-            /* 置中對齊 */
+        .photo-upload-container {
+            position: relative;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
         }
 
-        /* 上傳按鈕 */
-        .upload-btn {
+        .photo-upload-buttons {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .upload-btn,
+        .clear-btn {
             padding: 10px 15px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
+            font-size: 14px;
             border-radius: 4px;
             cursor: pointer;
-            display: inline-block;
-            /* 保持按鈕的行內顯示 */
+            border: none;
         }
 
-        .upload-btn-div {
-            text-align: center;
+        .upload-btn {
+            background-color: #007bff;
+            color: white;
         }
 
         .upload-btn:hover {
             background-color: #0056b3;
         }
 
-        /* 已上傳圖片顯示 */
+        .clear-btn {
+            background-color: #ff4d4d;
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background-color: #e04e4e;
+        }
+
         .uploaded-photos {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
+            margin-top: 20px;
         }
 
         .photo-thumb {
@@ -280,7 +283,6 @@
             object-fit: cover;
             border-radius: 4px;
             border: 2px solid #ddd;
-            /* 增加邊框 */
         }
 
         /* 設施與服務 */
@@ -302,73 +304,6 @@
             margin-bottom: 10px;
         }
 
-        /* 額外設施與服務 */
-        /* 表單區塊 */
-        .add-facility-service-form {
-            display: flex;
-            gap: 10px;
-            /* 間距 */
-            margin-bottom: 20px;
-            align-items: center;
-            width: 100%;
-        }
-
-        /* 設置form group的寬度 */
-        .add-facility-service-form .form-group {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-
-        /* 設置label樣式 */
-        .add-facility-service-form label {
-            font-size: 14px;
-        }
-
-        /* 使select、input、button填滿整個區域，並調整它們的大小 */
-        .add-facility-service-form select,
-        .add-facility-service-form input,
-        .add-facility-service-form button {
-            padding: 10px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            min-width: 0;
-        }
-
-        .add-facility-service-form select {
-            flex-basis: 20%;
-            /* 設置選單為20%的寬度 */
-        }
-
-        .add-facility-service-form input {
-            flex-grow: 1;
-            /* input佔據最多的空間 */
-        }
-
-        .add-facility-service-form button {
-            flex-basis: 25%;
-            /* 設置按鈕為25%的寬度 */
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .add-facility-service-form button:hover {
-            background-color: #45a049;
-        }
-
-        /* 已新增項目 */
-        .added-items {
-            margin-top: 20px;
-        }
-
-        .added-items h3 {
-            margin-bottom: 10px;
-            font-size: 18px;
-            font-weight: bold;
-        }
 
         .facilities,
         .services {
@@ -382,41 +317,11 @@
             font-weight: bold;
         }
 
-        #facility-list,
-        #service-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border: 1px solid #ddd;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-        }
 
         .item span {
             font-size: 14px;
         }
 
-        .delete-btn {
-            padding: 5px 10px;
-            font-size: 12px;
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .delete-btn:hover {
-            background-color: #e04e4e;
-        }
 
         /* Submit Button */
         .submit-btn {
@@ -453,27 +358,27 @@
     <!-- Header -->
     <header>
         <div class="logo">
-            <a href="#">
-                <img src="logo.png" alt="Logo">
+            <a th:href="@{/login}">
+                <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
                 <span>飯店管理系統</span>
             </a>
         </div>
 
         <!-- 步驟導覽 -->
         <div class="steps">
-            <a href="signup-1.html" class="step completed">
+            <a th:href="@{/signUp/signUp-1}" class="step completed">
                 <div class="step-number">1</div>
-                <div class="step-title">設定基本資料</div>
+                <div class="step-title">基本資料</div>
             </a>
             <div class="arrow1">→</div>
             <div class="step active">
                 <div class="step-number">2</div>
-                <div class="step-title">設定飯店介紹</div>
+                <div class="step-title">飯店設定</div>
             </div>
             <div class="arrow2">→</div>
             <div class="step disabled">
                 <div class="step-number">3</div>
-                <div class="step-title">設定管理員帳號</div>
+                <div class="step-title">管理員帳號</div>
             </div>
         </div>
     </header>
@@ -489,90 +394,47 @@
         <main>
             <h1>設定飯店介紹</h1>
 
-            <!-- 環境介紹 -->
-            <section>
-                <h2>環境介紹</h2>
-                <textarea id="environment-description" rows="5" placeholder="請在此輸入飯店介紹..."></textarea>
-            </section>
+            <form id="hotel-introduction-form" th:action="@{/signUp/signUp-2}" method="POST" enctype="multipart/form-data">
+                <!-- 照片上傳 -->
+                <section>
+                    <h2>照片上傳</h2>
+                    <div class="photo-upload-container">
+                        <!-- 照片上傳欄位 -->
+                        <div class="photo-upload">
+                            <input type="file" id="photo-upload" name="photos" multiple accept="image/*">
+                        </div>
+                        <div class="uploaded-photos" id="uploaded-photos">
+                            <!-- 已上傳照片將顯示在這 -->
+                        </div>
+                        <!-- 清除按鈕 -->
+                        <div class="photo-upload-buttons">
+                            <button type="button" class="clear-btn">清除</button>
+                        </div>
+                    </div>
+                </section>
 
-            <!-- 照片上傳 -->
-            <section>
-                <h2>照片上傳</h2>
-                <div class="photo-upload">
-                    <input type="file" id="photo-upload" multiple accept="image/*">
+                <!-- 設施與服務 -->
+                <section>
+                    <h2>設施與服務</h2>
+                    <div class="facility-service">
+                        <div class="facilities">
+                            <h3>設施</h3>
+                            <!-- 動態插入設施 -->
+                            <!-- 使用 hidden input 儲存勾選的設施 -->
+                        </div>
+                        <div class="services">
+                            <h3>服務</h3>
+                            <!-- 動態插入服務 -->
+                            <!-- 使用 hidden input 儲存勾選的服務 -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 提交按鈕 -->
+                <div class="form-actions">
+                    <button class="submit-btn" type="submit">下一步</button>
                 </div>
-                <div class="uploaded-photos">
-                    <img src="image1.jpg" alt="飯店圖片1" class="photo-thumb">
-                    <img src="image2.jpg" alt="飯店圖片2" class="photo-thumb">
-                    <!-- 更多圖片將會顯示在此 -->
-                </div>
-                <div class="upload-btn-div">
-                    <button class="upload-btn">上傳</button>
-                </div>
-            </section>
-
-            <!-- 設施與服務 -->
-            <section>
-                <h2>設施與服務</h2>
-                <div class="facility-service">
-                    <div class="facilities">
-                        <h3>設施</h3>
-                        <label><input type="checkbox"> 餐廳</label>
-                        <label><input type="checkbox"> 健身房</label>
-                        <label><input type="checkbox"> 游泳池</label>
-                        <label><input type="checkbox"> 停車場</label>
-                        <!-- 更多設施 -->
-                    </div>
-                    <div class="services">
-                        <h3>服務</h3>
-                        <label><input type="checkbox"> 客房服務</label>
-                        <label><input type="checkbox"> 機場接送</label>
-                        <label><input type="checkbox"> 快速入住</label>
-                        <label><input type="checkbox"> 代辦手續</label>
-                        <!-- 更多服務 -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- 額外設施與服務 -->
-            <section>
-                <h2>新增額外設施與服務</h2>
-                <form class="add-facility-service-form">
-                    <div class="form-group">
-                        <label for="selection-type">選擇類型</label>
-                        <select id="selection-type">
-                            <option value="facility">設施</option>
-                            <option value="service">服務</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="item-name">名稱</label>
-                        <input type="text" id="item-name" placeholder="輸入設施或服務名稱">
-                    </div>
-
-                    <button type="button" id="add-item-btn">新增</button>
-                </form>
-
-                <!-- 顯示已新增的設施與服務清單 -->
-                <div class="added-items">
-                    <h3>已新增項目</h3>
-                    <div class="facilities">
-                        <h4>設施</h4>
-                        <ul id="facility-list">
-                            <!-- 設施項目會顯示在此 -->
-                        </ul>
-                    </div>
-                    <div class="services">
-                        <h4>服務</h4>
-                        <ul id="service-list">
-                            <!-- 服務項目會顯示在此 -->
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <button class="submit-btn" type="submit">下一步</button>
+            </form>
         </main>
     </div>
 
@@ -582,81 +444,82 @@
     </footer>
 
     <script>
-        // 自動調整 textarea 高度
-        const textarea = document.getElementById('environment-description');
+        document.addEventListener("DOMContentLoaded", function () {
+            const photoUpload = document.getElementById("photo-upload");
+            const uploadedPhotosContainer = document.getElementById("uploaded-photos");
+            const clearButton = document.querySelector(".clear-btn");
+            const facilitiesContainer = document.querySelector(".facilities");
+            const servicesContainer = document.querySelector(".services");
 
-        function autoResize() {
-            // 重置高度為自動以便調整
-            this.style.height = 'auto';
-            // 設置高度為 scrollHeight，讓 textarea 自動適應內容的高度
-            this.style.height = (this.scrollHeight) + 'px';
-        }
-
-        // 當使用者輸入內容時觸發自動調整
-        textarea.addEventListener('input', autoResize);
-
-        // 頁面加載時初始化 textarea 的大小
-        window.addEventListener('load', () => {
-            autoResize.call(textarea); // 呼叫 autoResize 以便初始化
-        });
-
-        // 取得元素，新增設施與服務
-        // 取得元素
-        const addItemBtn = document.getElementById('add-item-btn');
-        const itemNameInput = document.getElementById('item-name');
-        const selectionType = document.getElementById('selection-type');
-        const facilityList = document.getElementById('facility-list');
-        const serviceList = document.getElementById('service-list');
-
-        // 監聽新增按鈕
-        addItemBtn.addEventListener('click', () => {
-            const itemName = itemNameInput.value.trim();
-            const selectedType = selectionType.value;
-
-            if (itemName !== '') {
-                // 創建新的清單項目
-                const li = document.createElement('li');
-                li.classList.add('item');
-                li.innerHTML = `
-                <span>${itemName}</span>
-                <button class="delete-btn">刪除</button>
-            `;
-
-                // 根據選擇的類型將項目添加到對應清單
-                if (selectedType === 'facility') {
-                    facilityList.appendChild(li);
-                } else if (selectedType === 'service') {
-                    serviceList.appendChild(li);
-                }
-
-                // 清空輸入框
-                itemNameInput.value = '';
-
-                // 設置刪除按鈕的事件
-                const deleteBtn = li.querySelector('.delete-btn');
-                deleteBtn.addEventListener('click', () => {
-                    li.remove(); // 刪除項目
-                });
-            } else {
-                alert('請輸入名稱');
+            // 確認容器是否存在
+            if (!photoUpload || !uploadedPhotosContainer || !facilitiesContainer || !servicesContainer) {
+                console.error("某些 DOM 元素未正確初始化，請檢查 HTML 結構");
+                return;
             }
+
+            // console.log("DOM 已完全加載");
+            // console.log("facilitiesContainer:", facilitiesContainer);
+            // console.log("servicesContainer:", servicesContainer);
+
+            // 獲取設施
+            fetch("/api/facilities/hotel/facilities")
+                .then(response => {
+                    if (!response.ok) throw new Error("設施資料撈取失敗");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("設施資料：", data);
+
+                    // 清除舊的設施項目（保留 <h3>）
+                    const labels = facilitiesContainer.querySelectorAll("label");
+                    labels.forEach(label => label.remove());
+
+                    data.forEach(item => {
+                        if (!item.facilityId || !item.facilityName) {
+                            console.warn("設施資料不完整：", item);
+                            return;
+                        }
+                        const label = document.createElement("label");
+                        label.innerHTML = `
+                <input type="checkbox" name="facility" value="${item.facilityId}">
+                ${item.facilityName}
+            `;
+                        facilitiesContainer.appendChild(label);
+                    });
+                })
+                .catch(err => console.error("設施 API 錯誤：", err));
+
+// 獲取服務
+            fetch("/api/facilities/hotel/services")
+                .then(response => {
+                    if (!response.ok) throw new Error("服務資料撈取失敗");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("服務資料：", data);
+
+                    // 清除舊的服務項目（保留 <h3>）
+                    const labels = servicesContainer.querySelectorAll("label");
+                    labels.forEach(label => label.remove());
+
+                    data.forEach(item => {
+                        if (!item.facilityId || !item.facilityName) {
+                            console.warn("服務資料不完整：", item);
+                            return;
+                        }
+                        const label = document.createElement("label");
+                        label.innerHTML = `
+                <input type="checkbox" name="service" value="${item.facilityId}">
+                ${item.facilityName}
+            `;
+                        servicesContainer.appendChild(label);
+                    });
+                })
+                .catch(err => console.error("服務 API 錯誤：", err));
+
+
         });
 
-        // 取得 input 和按鈕元素
-        const input = document.getElementById("item-input");
-        const button = document.getElementById("add-item-btn");
-
-        // 監聽 input 的 keydown 事件
-        // input.addEventListener("keydown", function (event) {
-        //     if (event.key === "Enter") {  // 如果按下的是 Enter 鍵
-        //         // event.preventDefault();  // 防止表單提交（如果在表單內）
-        //         // button.click();  // 觸發按鈕點擊事件
-        //     }
-        // });
-
-        document.querySelector(".submit-btn").addEventListener("click", function () {
-            document.location.href = "signup-3.html";
-        })
     </script>
 </body>
 

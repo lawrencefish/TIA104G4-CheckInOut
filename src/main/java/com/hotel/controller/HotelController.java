@@ -29,4 +29,12 @@ public class HotelController {
         // ...
         return "redirect:/hotel/all";
     }
+
+    @GetMapping("/introduce/{hotelId}")
+    public String showHotelIntroduce(@PathVariable Integer hotelId, Model model) {
+        // 使用服務層獲取酒店及其圖片數據
+        HotelVO hotelWithImages = hotelService.getHotelWithImages(hotelId);
+        model.addAttribute("hotel", hotelWithImages);
+        return "business/hotelIntroduce"; // Thymeleaf模板名稱
+    }
 }

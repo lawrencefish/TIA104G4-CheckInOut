@@ -130,7 +130,7 @@
             color: #ccc;
         }
 
-        .steps .step.active+.arrow {
+        .steps .step.active + .arrow {
             color: #007bff;
         }
 
@@ -145,7 +145,7 @@
 
         /* main主內容 */
         /* 主體樣式 */
-        /* Main */
+        /* 主體樣式 */
         main {
             width: 800px;
             background-color: #fff;
@@ -181,39 +181,30 @@
             padding-bottom: 10px;
         }
 
-        form {
+        .basic-info, .additional-info {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 20px;
         }
 
         .form-group {
-            flex: 1 1 calc(50% - 20px);
-            /* 預設每行顯示兩個欄位 */
             display: flex;
             flex-direction: column;
-        }
-
-        .form-group.full-width {
-            flex: 1 1 100%;
-            /* 單獨占一整行 */
         }
 
         .form-group label {
             margin-bottom: 8px;
             font-weight: bold;
             color: #555;
-            font-size: 1rem;
         }
 
         .form-group input,
         .form-group select {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #ccc;
+            padding: 10px;
             border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 100%;
             font-size: 1rem;
-            background-color: #fff;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -224,20 +215,113 @@
             outline: none;
         }
 
-        /* 寄送驗證碼按鈕美化 */
+        .separator {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 30px 0;
+        }
+
+        /* 環境介紹 textarea */
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+            /* 禁止使用者手動縮放 */
+            background-color: #f9f9f9;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 調整上傳照片預覽區域 */
+        .upload-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .upload-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .upload-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%; /* 修改為全寬 */
+            max-width: 100%; /* 防止寬度超出容器 */
+            background-color: #f9f9f9;
+            cursor: pointer;
+            text-align: center;
+            overflow: hidden; /* 防止溢出 */
+        }
+
+        .upload-preview img {
+            max-width: 100%; /* 確保圖片不超出框架 */
+            max-height: 200px; /* 限制高度，避免過大 */
+            margin-top: 10px;
+            border-radius: 5px;
+            object-fit: contain; /* 確保圖片縮放時保持比例 */
+        }
+
+        .upload-preview input[type="file"] {
+            display: none;
+        }
+
+        /* 調整按鈕間隔 */
+        .submit-btn {
+            margin-top: 40px;
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
         .form-inline {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 10px; /* 控制按鈕與輸入框之間的間距 */
+            justify-content: flex-start; /* 確保按鈕和輸入框在同一行排列 */
+        }
+
+        .form-inline input {
+            flex: 1; /* 讓輸入框佔據剩餘空間 */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-inline input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+            outline: none;
         }
 
         .form-inline button {
-            padding: 8px 12px;
+            padding: 10px 20px;
             background-color: #007bff;
             color: #fff;
             border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
+            border-radius: 8px;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
@@ -253,62 +337,6 @@
             transform: translateY(0);
         }
 
-        /* 單獨一列欄位樣式 (電子信箱、驗證碼) */
-        .form-group.wide {
-            flex: 1 1 100%;
-        }
-
-        .upload-group {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .upload-group label {
-            font-weight: bold;
-            color: #555;
-            font-size: 1rem;
-        }
-
-        .upload-group input[type="file"] {
-            border: 2px dashed #ccc;
-            padding: 25px;
-            text-align: center;
-            border-radius: 12px;
-            background-color: #fff;
-            cursor: pointer;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
-        }
-
-        .upload-group input[type="file"]:hover {
-            border-color: #007bff;
-            background-color: #f0f8ff;
-        }
-
-        button[type="submit"] {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #0056b3;
-            transform: translateY(-3px);
-        }
-
-        button[type="submit"]:active {
-            background-color: #003f7f;
-            transform: translateY(0);
-        }
 
         /* Footer 樣式 */
         footer {
@@ -321,177 +349,294 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        /* 錯誤訊息樣式 */
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <a href="#">
-                <img src="logo.png" alt="Logo">
-                <span>飯店管理系統</span>
-            </a>
+<!-- Header -->
+<header>
+    <div class="logo">
+        <a th:href="@{/login}">
+            <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
+            <span>飯店管理系統</span>
+        </a>
+    </div>
+
+    <!-- 步驟導覽 -->
+    <div class="steps">
+        <div class="step active">
+            <div class="step-number">1</div>
+            <div class="step-title">基本資料</div>
         </div>
-
-        <!-- 步驟導覽 -->
-        <div class="steps">
-            <div class="step active">
-                <div class="step-number">1</div>
-                <div class="step-title">設定基本資料</div>
-            </div>
-            <div class="arrow1">→</div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <div class="step-title">設定飯店介紹</div>
-            </div>
-            <div class="arrow2">→</div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <div class="step-title">設定管理員帳號</div>
-            </div>
+        <div class="arrow1">→</div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-title">飯店設定</div>
         </div>
-    </header>
+        <div class="arrow2">→</div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-title">管理員帳號</div>
+        </div>
+    </div>
+</header>
 
 
-    <!-- 主體內容 -->
-    <div class="container">
-        <!-- Aside -->
-        <!-- <aside>
-        </aside> -->
+<!-- 主體內容 -->
+<div class="container">
+    <!-- Aside -->
+    <!-- <aside>
+    </aside> -->
 
-        <!-- Main -->
-        <main>
-            <h1>設定基本資料</h1>
+    <!-- Main -->
+    <main>
+        <h1>設定基本資料</h1>
+        <form th:action="@{/signUp/signUp-1}" th:object="${hotelVO}" method="post" enctype="multipart/form-data">
 
-            <!-- 基本資料 Section -->
             <section>
                 <h2>基本資料</h2>
-                <form>
+                <!-- 上方基本資料 -->
+                <div class="basic-info">
                     <!-- 統一編號 -->
                     <div class="form-group">
-                        <label for="company-id">統一編號</label>
-                        <input type="text" id="company-id" placeholder="請輸入統一編號">
+                        <label for="taxId">統一編號</label>
+                        <input type="text" id="taxId" th:field="*{taxId}" placeholder="請輸入統一編號">
+                        <span th:if="${#fields.hasErrors('taxId')}" th:errors="*{taxId}" class="error-message"></span>
                     </div>
+
                     <!-- 公司名稱 -->
                     <div class="form-group">
-                        <label for="company-name">公司名稱</label>
-                        <input type="text" id="company-name" placeholder="請輸入公司名稱">
+                        <label for="name">公司名稱</label>
+                        <input type="text" id="name" th:field="*{name}" placeholder="請輸入公司名稱">
+                        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></span>
                     </div>
+
                     <!-- 密碼 -->
                     <div class="form-group">
                         <label for="password">密碼</label>
-                        <input type="password" id="password" placeholder="請輸入密碼">
+                        <input type="password" id="password" th:field="*{password}" placeholder="請輸入密碼">
+                        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+                              class="error-message"></span>
                     </div>
+
                     <!-- 再次輸入密碼 -->
                     <div class="form-group">
-                        <label for="confirm-password">再次輸入密碼</label>
-                        <input type="password" id="confirm-password" placeholder="請再次輸入密碼">
+                        <label for="confirmPassword">再次輸入密碼</label>
+                        <input type="password" id="confirmPassword" placeholder="請再次輸入密碼">
+                        <span id="confirmPasswordError" class="error-message"></span>
                     </div>
+
                     <!-- 縣市 -->
                     <div class="form-group">
                         <label for="city">縣市</label>
-                        <select id="city">
+                        <select id="city" th:field="*{city}">
                             <option value="">請選擇縣市</option>
-                            <option value="taipei">台北市</option>
-                            <option value="kaohsiung">高雄市</option>
-                            <option value="taichung">台中市</option>
+                            <!-- 動態選項 -->
                         </select>
+                        <span th:if="${#fields.hasErrors('city')}" th:errors="*{city}" class="error-message"></span>
                     </div>
+
                     <!-- 地區 -->
                     <div class="form-group">
                         <label for="district">地區</label>
-                        <select id="district" disabled>
-                            <option value="">請先選擇縣市</option>
+                        <select id="district" th:field="*{district}">
+                            <option value="">請選擇地區</option>
+                            <!-- 動態選項 -->
                         </select>
+                        <span th:if="${#fields.hasErrors('district')}" th:errors="*{district}"
+                              class="error-message"></span>
                     </div>
+
                     <!-- 地址 -->
                     <div class="form-group full-width">
                         <label for="address">地址</label>
-                        <input type="text" id="address" placeholder="請輸入地址">
+                        <input type="text" id="address" th:field="*{address}" placeholder="請輸入地址">
+                        <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}"
+                              class="error-message"></span>
                     </div>
-                    <!-- 負責人 -->
-                    <div class="form-group">
-                        <label for="person-in-charge">負責人</label>
-                        <input type="text" id="person-in-charge" placeholder="請輸入負責人姓名">
-                    </div>
+
                     <!-- 連絡電話 -->
                     <div class="form-group">
-                        <label for="phone">連絡電話</label>
-                        <input type="text" id="phone" placeholder="請輸入連絡電話">
+                        <label for="phoneNumber">連絡電話</label>
+                        <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="請輸入連絡電話">
+                        <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"
+                              class="error-message"></span>
                     </div>
+
                     <!-- 電子信箱 -->
-                    <div class="form-group wide">
+                    <div class="form-group">
                         <label for="email">電子信箱</label>
-                        <input type="email" id="email" placeholder="請輸入電子信箱">
+                        <input type="email" id="email" th:field="*{email}" placeholder="請輸入電子信箱">
+                        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
                     </div>
+
                     <!-- 驗證碼 -->
                     <div class="form-group wide">
+                        <label for="verificationCode">驗證碼</label>
                         <div class="form-inline">
-                            <label for="verification-code">驗證碼</label>
+                            <input type="text" id="verificationCode" name="verificationCode" placeholder="請輸入驗證碼">
                             <button type="button" id="send-code">寄送驗證碼</button>
                         </div>
-                        <input type="text" id="verification-code" placeholder="請輸入驗證碼">
+                        <span th:if="${verificationCodeError != null}" th:text="${verificationCodeError}"
+                              class="error-message"></span>
                     </div>
-                </form>
-            </section>
-
-            <!-- 上傳照片 Section -->
-            <section>
-                <h2>上傳文件</h2>
-                <div class="upload-group">
-                    <label for="id-front">公司負責人身份證正面</label>
-                    <input type="file" id="id-front" accept=".jpg, .jpeg, .png">
-
-                    <label for="id-back">公司負責人身份證反面</label>
-                    <input type="file" id="id-back" accept=".jpg, .jpeg, .png">
-
-                    <label for="license">旅館業登記證 / 民宿登記證</label>
-                    <input type="file" id="license" accept=".jpg, .jpeg, .png">
                 </div>
             </section>
 
-            <!-- 提交按鈕 -->
-            <button class="submit-btn" type="submit">下一步</button>
-        </main>
-    </div>
+            <section>
 
-    <!-- Footer -->
-    <footer>
-        &copy; 2024 Check in out. All rights reserved.
-    </footer>
+                <!-- 環境介紹 -->
+                <div>
+                    <h2>旅館介紹</h2>
+                    <textarea id="environment-description" th:field="*{infoText}" rows="5" placeholder="請在此輸入旅館介紹..."></textarea>
+                    <span th:if="${#fields.hasErrors('infoText')}" th:errors="*{infoText}" class="error-message"></span>
+                </div>
+            </section>
 
-    <script>
-        const cityDistricts = {
-            taipei: ["中正區", "大同區", "中山區", "松山區", "大安區", "萬華區"],
-            kaohsiung: ["新興區", "前金區", "苓雅區", "鹽埕區", "鼓山區"],
-            taichung: ["中區", "東區", "南區", "西區", "北區"]
-        };
+            <section>
+                <!-- 下方負責人及上傳照片 -->
+                <div class="additional-info">
+                    <!-- 負責人 -->
+                    <div class="form-group">
+                        <label for="owner">負責人</label>
+                        <input type="text" id="owner" th:field="*{owner}" placeholder="請輸入負責人姓名">
+                        <span th:if="${#fields.hasErrors('owner')}" th:errors="*{owner}" class="error-message"></span>
+                    </div>
 
+                    <!-- 上傳照片 -->
+                    <div class="upload-group">
+                        <div>
+                            <label for="idFront">公司負責人身份證正面</label>
+                            <div class="upload-preview" onclick="document.getElementById('idFront').click()">
+                                <span>選擇檔案後會顯示預覽</span>
+                            </div>
+                            <input type="file" id="idFront" name="idFront" accept=".jpg, .jpeg, .png"
+                                   onchange="previewImage(this, this.previousElementSibling)">
+                            <span th:if="${idFrontError != null}" th:text="${idFrontError}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div>
+                            <label for="idBack">公司負責人身份證反面</label>
+                            <div class="upload-preview" onclick="document.getElementById('idBack').click()">
+                                <span>選擇檔案後會顯示預覽</span>
+                            </div>
+                            <input type="file" id="idBack" name="idBack" accept=".jpg, .jpeg, .png"
+                                   onchange="previewImage(this, this.previousElementSibling)">
+                            <span th:if="${idBackError != null}" th:text="${idBackError}" class="error-message"></span>
+                        </div>
+
+                        <div>
+                            <label for="license">旅館業登記證 / 民宿登記證</label>
+                            <div class="upload-preview" onclick="document.getElementById('license').click()">
+                                <span>選擇檔案後會顯示預覽</span>
+                            </div>
+                            <input type="file" id="license" name="license" accept=".jpg, .jpeg, .png"
+                                   onchange="previewImage(this, this.previousElementSibling)">
+                            <span th:if="${licenseError != null}" th:text="${licenseError}"
+                                  class="error-message"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 提交按鈕 -->
+                <button class="submit-btn" type="submit">下一步</button>
+            </section>
+        </form>
+    </main>
+</div>
+
+<!-- Footer -->
+<footer>
+    &copy; 2024 Check in out. All rights reserved.
+</footer>
+
+<script>
+    // 預覽上傳的圖片
+    function previewImage(input) {
+        const file = input.files[0];
+        const previewContainer = input.previousElementSibling; // 找到緊鄰的預覽區域
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                // 創建圖片元素
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.alt = "預覽圖片";
+
+                // 清空並加入新圖片
+                previewContainer.innerHTML = "";
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // 清空預覽容器並恢復默認文字
+            previewContainer.innerHTML = "<span>選擇檔案後會顯示預覽</span>";
+        }
+    }
+
+    //  縣市api
+    document.addEventListener("DOMContentLoaded", function () {
         const citySelect = document.getElementById("city");
         const districtSelect = document.getElementById("district");
 
+        // 載入縣市選項
+        fetch("/api/locations/cities")
+            .then(response => response.json())
+            .then(cities => {
+                cities.forEach(city => {
+                    const option = document.createElement("option");
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+            });
+
+        // 當選擇縣市時，更新地區選項
         citySelect.addEventListener("change", function () {
             const selectedCity = this.value;
-            districtSelect.innerHTML = "";
-            if (selectedCity && cityDistricts[selectedCity]) {
-                districtSelect.disabled = false;
-                cityDistricts[selectedCity].forEach(district => {
-                    const option = document.createElement("option");
-                    option.value = district;
-                    option.textContent = district;
-                    districtSelect.appendChild(option);
-                });
-            } else {
-                districtSelect.disabled = true;
-                districtSelect.innerHTML = `<option value="">請先選擇縣市</option>`;
+
+            // 清空並禁用地區選項
+            districtSelect.innerHTML = '<option value="">請先選擇縣市</option>';
+            districtSelect.disabled = !selectedCity;
+
+            if (selectedCity) {
+                fetch(`/api/locations/districts?city=${selectedCity}`)
+                    .then(response => response.json())
+                    .then(districts => {
+                        districts.forEach(district => {
+                            const option = document.createElement("option");
+                            option.value = district;
+                            option.textContent = district;
+                            districtSelect.appendChild(option);
+                        });
+                        districtSelect.disabled = false;
+                    });
             }
         });
+    });
 
-        document.querySelector(".submit-btn").addEventListener("click", function () {
-            document.location.href = "signup-2.html";
-        })
-    </script>
+    document.getElementById("confirmPassword").addEventListener("change", function () {
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const confirmPasswordError = document.getElementById("confirmPasswordError");
+
+        if (password !== confirmPassword) {
+            confirmPasswordError.textContent = "密碼不一致";
+        } else {
+            confirmPasswordError.textContent = ""; // 清空錯誤訊息
+        }
+    });
+</script>
 </body>
 
 </html>

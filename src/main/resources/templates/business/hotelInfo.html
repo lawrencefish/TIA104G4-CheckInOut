@@ -404,7 +404,7 @@
         <div class="user">
             <span class="icon">🔔</span>
             <span class="icon">💬</span>
-            <button class="hotel-button">台北君悅酒店</button>
+            <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
                     <li><a th:href="@{/account}">帳號設定</a></li>
@@ -449,38 +449,31 @@
         <!-- Main -->
         <main>
             <h1>基本資料設定</h1>
-            <form id="mianform">
+            <form id="mianform" th:action="@{/business/hotelInfo}" method="post">
                 <label for="name">飯店名稱</label>
-                <input type="text" id="name" value="台北君悅酒店">
+                <input type="text" id="name" name="name" th:value="${#httpSession.getAttribute('hotel').name}">
 
                 <label for="tax-id">統一編號</label>
-                <input type="text" id="tax-id" value="12464047">
+                <input type="text" id="tax-id" name="taxId" th:value="${#httpSession.getAttribute('hotel').taxId}" readonly> <!-- 統一編號通常不可修改 -->
 
                 <label for="phone">電話</label>
-                <input type="tel" id="phone" value="+886 2 2720 1234">
+                <input type="tel" id="phone" name="phone" th:value="${#httpSession.getAttribute('hotel').phoneNumber}">
 
                 <label for="email">信箱</label>
-                <input type="email" id="email" value="junyue@gmail.com">
+                <input type="email" id="email" name="email" th:value="${#httpSession.getAttribute('hotel').email}">
 
                 <label for="city">縣市</label>
-                <select id="city">
+                <select id="city" name="city">
                     <option value="">請選擇縣市</option>
-                    <option value="台北市">台北市</option>
-                    <option value="新北市">新北市</option>
-                    <option value="桃園市">桃園市</option>
-                    <option value="台中市">台中市</option>
-                    <option value="台南市">台南市</option>
-                    <option value="高雄市">高雄市</option>
-                    <!-- 可依需求添加其他縣市 -->
                 </select>
 
                 <label for="district">地區</label>
-                <select id="district">
-                    <option value="">請先選擇縣市</option>
+                <select id="district" name="district">
+                    <option value="">請選擇地區</option>
                 </select>
 
                 <label for="address-detail">詳細地址</label>
-                <input type="text" id="address-detail" placeholder="請輸入詳細地址">
+                <input type="text" id="address-detail" name="address" th:value="${#httpSession.getAttribute('hotel').address}">
 
                 <button class="submit" type="submit">儲存設定</button>
             </form>
@@ -493,31 +486,31 @@
     </footer>
 
     <script>
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
+        // // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
+        // const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
+        // const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
+        //
+        // // Header 的 a 標籤點擊事件
+        // headerLinks.forEach(link => {
+        //     link.addEventListener('click', function (e) {
+        //         // 移除所有 header a 標籤的 active 樣式
+        //         headerLinks.forEach(navLink => navLink.classList.remove('active'));
+        //         // 為當前被點擊的 header a 標籤添加 active 樣式
+        //         // e.preventDefault(); // 阻止跳轉
+        //         this.classList.add('active');
+        //     });
+        // });
+        //
+        // // Aside 的 a 標籤點擊事件
+        // asideLinks.forEach(link => {
+        //     link.addEventListener('click', function (e) {
+        //         // 移除所有 aside a 標籤的 active 樣式
+        //         asideLinks.forEach(navLink => navLink.classList.remove('active'));
+        //         // 為當前被點擊的 aside a 標籤添加 active 樣式
+        //         // e.preventDefault(); // 阻止跳轉
+        //         this.classList.add('active');
+        //     });
+        // });
 
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
@@ -569,38 +562,78 @@
             }
         });
 
-        // 縣市對應的地區資料
-        const cityDistrictMap = {
-            "台北市": ["中正區", "大同區", "中山區", "松山區", "大安區", "萬華區", "信義區", "士林區", "北投區", "內湖區", "南港區", "文山區"],
-            "新北市": ["板橋區", "三重區", "中和區", "永和區", "新莊區", "新店區", "土城區", "蘆洲區", "汐止區", "樹林區", "三峽區", "淡水區"],
-            "桃園市": ["桃園區", "中壢區", "平鎮區", "八德區", "楊梅區", "蘆竹區", "大溪區", "龜山區", "大園區", "觀音區", "新屋區", "龍潭區"],
-            "台中市": ["中區", "東區", "南區", "西區", "北區", "北屯區", "西屯區", "南屯區", "豐原區", "大里區", "太平區", "清水區"],
-            "台南市": ["中西區", "東區", "南區", "北區", "安平區", "安南區", "永康區", "仁德區", "歸仁區", "新化區", "善化區", "新營區"],
-            "高雄市": ["楠梓區", "三民區", "左營區", "鼓山區", "鹽埕區", "前金區", "新興區", "苓雅區", "前鎮區", "小港區", "鳳山區", "林園區"]
-        };
-
-        // DOM 元素
-        const citySelect = document.getElementById("city");
-        const districtSelect = document.getElementById("district");
-
-        // 當縣市選擇改變時，更新地區選單
-        citySelect.addEventListener("change", function () {
-            const selectedCity = this.value;
-            districtSelect.innerHTML = '<option value="">請選擇地區</option>'; // 清空地區選單
-
-            if (cityDistrictMap[selectedCity]) {
-                cityDistrictMap[selectedCity].forEach(district => {
-                    const option = document.createElement("option");
-                    option.value = district;
-                    option.textContent = district;
-                    districtSelect.appendChild(option);
-                });
-            }
-        });
-
         document.querySelector(".submit").addEventListener("click",function(){
             alert("儲存成功！");
         })
+
+        //縣市api
+        document.addEventListener("DOMContentLoaded", function () {
+            const citySelect = document.getElementById("city");
+            const districtSelect = document.getElementById("district");
+
+            // 從 Session 中獲取預設值（由後端 Thymeleaf 渲染）
+            const defaultCity = "[[${#httpSession.getAttribute('hotel').city}]]";
+            const defaultDistrict = "[[${#httpSession.getAttribute('hotel').district}]]";
+
+            // 縣市選單初始化
+            fetch("/api/locations/cities")
+                .then(response => response.json())
+                .then(cities => {
+                    cities.forEach(city => {
+                        const option = document.createElement("option");
+                        option.value = city;
+                        option.textContent = city;
+                        citySelect.appendChild(option);
+                    });
+
+                    // 設定縣市預設值
+                    if (defaultCity) {
+                        citySelect.value = defaultCity;
+                        loadDistricts(defaultCity, defaultDistrict); // 載入對應地區並設置預設值
+                    }
+                })
+                .catch(error => console.error("載入縣市資料失敗：", error));
+
+            // 當縣市選擇改變時，更新地區選項
+            citySelect.addEventListener("change", function () {
+                const selectedCity = this.value;
+
+                // 清空並禁用地區選項
+                districtSelect.innerHTML = '<option value="">請選擇地區</option>';
+                districtSelect.disabled = true;
+
+                if (selectedCity) {
+                    loadDistricts(selectedCity);
+                }
+            });
+
+            // 載入地區選單並設置預設值
+            function loadDistricts(city, defaultDistrict = null) {
+                fetch(`/api/locations/districts?city=${city}`)
+                    .then(response => response.json())
+                    .then(districts => {
+                        districtSelect.innerHTML = '<option value="">請選擇地區</option>'; // 清空地區選單
+
+                        districts.forEach(district => {
+                            const option = document.createElement("option");
+                            option.value = district;
+                            option.textContent = district;
+                            districtSelect.appendChild(option);
+                        });
+
+                        // 設置地區預設值
+                        if (defaultDistrict) {
+                            districtSelect.value = defaultDistrict;
+                        }
+
+                        districtSelect.disabled = false; // 啟用地區選單
+                    })
+                    .catch(error => console.error("載入地區資料失敗：", error));
+            }
+        });
+
+
+
     </script>
 </body>
 

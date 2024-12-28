@@ -467,7 +467,7 @@
         <div class="user">
             <span class="icon">🔔</span>
             <span class="icon">💬</span>
-            <button class="hotel-button">台北君悅酒店</button>
+            <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
                     <li><a th:href="@{/account}">帳號設定</a></li>
