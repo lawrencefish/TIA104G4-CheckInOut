@@ -268,27 +268,27 @@
     <!-- Header -->
     <header>
         <div class="logo">
-            <a href="#">
-                <img src="logo.png" alt="Logo">
+            <a th:href="@{/login}">
+                <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
                 <span>飯店管理系統</span>
             </a>
         </div>
 
         <!-- 步驟導覽 -->
         <div class="steps">
-            <a href="signup-1.html" class="step completed">
+            <a th:href="@{/signUp/signUp-1}" class="step completed">
                 <div class="step-number">1</div>
-                <div class="step-title">設定基本資料</div>
+                <div class="step-title">基本資料</div>
             </a>
             <div class="arrow1">→</div>
-            <a href="signup-2.html" class="step completed">
+            <a th:href="@{/signUp/signUp-2}" class="step completed">
                 <div class="step-number">2</div>
-                <div class="step-title">設定飯店介紹</div>
+                <div class="step-title">飯店設定</div>
             </a>
             <div class="arrow2">→</div>
             <div class="step active">
                 <div class="step-number">3</div>
-                <div class="step-title">設定管理員帳號</div>
+                <div class="step-title">管理員帳號</div>
             </div>
         </div>
     </header>
@@ -303,7 +303,7 @@
         <!-- Main -->
         <main>
             <h1>設定管理員帳號</h1>
-            <form id="admin-form">
+            <form id="admin-form" th:action="@{/signUp/signUp-3}" method="POST">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="employee-id">員工編號</label>

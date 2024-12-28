@@ -380,17 +380,35 @@
         /* 已上傳圖片顯示 */
         .uploaded-photos {
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap; /* 禁止換行 */
+            overflow-x: auto; /* 如果圖片過多，允許橫向滾動 */
+            gap: 15px; /* 圖片之間的間距 */
+            padding: 10px 0; /* 上下留空 */
         }
 
-        .photo-thumb {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
+        .uploaded-photos img {
+            width: 150px; /* 固定每張圖片的寬度 */
+            height: auto; /* 自動調整高度以保持比例 */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .uploaded-photos {
+            scrollbar-width: thin; /* 適用於 Firefox */
+            scrollbar-color: #007bff #e0e0e0; /* 滾動條顏色 */
+        }
+
+        .uploaded-photos::-webkit-scrollbar {
+            height: 8px; /* 滾動條高度 */
+        }
+
+        .uploaded-photos::-webkit-scrollbar-thumb {
+            background-color: #007bff; /* 滾動條顏色 */
             border-radius: 4px;
-            border: 2px solid #ddd;
-            /* 增加邊框 */
+        }
+
+        .uploaded-photos::-webkit-scrollbar-track {
+            background-color: #e0e0e0; /* 滾動條背景 */
         }
 
         /* 設施與服務 */
@@ -580,7 +598,7 @@
         <div class="user">
             <span class="icon">🔔</span>
             <span class="icon">💬</span>
-            <button class="hotel-button">台北君悅酒店</button>
+            <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
                     <li><a th:href="@{/account}">帳號設定</a></li>
@@ -631,7 +649,7 @@
             <!-- 環境介紹 -->
             <section>
                 <h2>環境介紹</h2>
-                <textarea id="environment-description" rows="5" placeholder="請在此輸入飯店介紹..."></textarea>
+                <textarea id="environment-description" rows="5" th:text="${#httpSession.getAttribute('hotel').infoText}"></textarea>
             </section>
 
             <!-- 照片上傳 -->
@@ -641,9 +659,8 @@
                     <input type="file" id="photo-upload" multiple accept="image/*">
                 </div>
                 <div class="uploaded-photos">
-                    <img src="image1.jpg" alt="飯店圖片1" class="photo-thumb">
-                    <img src="image2.jpg" alt="飯店圖片2" class="photo-thumb">
-                    <!-- 更多圖片將會顯示在此 -->
+                    <!-- 遍歷圖片集合 -->
+                    <img th:src="@{/api/hotel-images/image/{imageId}(imageId=${imageId})}" width="100px" th:each="imageId : ${images}">
                 </div>
                 <div class="upload-btn-div">
                     <button class="upload-btn">上傳</button>

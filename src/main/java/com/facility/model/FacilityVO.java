@@ -1,6 +1,6 @@
 package com.facility.model;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hotelFacility.model.HotelFacilityVO;
 import com.roomTypeFacility.model.RoomTypeFacilityVO;
 
@@ -22,7 +22,12 @@ public class FacilityVO {
     // facility_type TINYINT NOT NULL
     @NotNull(message = "設施類型不可為空")
     @Column(name = "facility_type", nullable = false)
-    private Byte facilityType; // 1=旅館, 2=房型
+    private Integer facilityType; // 1=旅館, 2=房型
+
+    // is_service TINYINT NOT NULL
+    @NotNull(message = "是否為服務不可為空")
+    @Column(name = "is_service", nullable = false)
+    private Integer isService; // 0=設施, 1=服務
 
     // facility_name VARCHAR(20) NOT NULL UNIQUE
     @NotBlank(message = "設施名稱不可為空")
@@ -36,10 +41,12 @@ public class FacilityVO {
     //   不同需求可以自行增添
     // 例：hotel_facility (一對多)
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<HotelFacilityVO> hotelFacilities;
 
     // 例：room_type_facility (一對多)
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<RoomTypeFacilityVO> roomTypeFacilities;
 
     // ----------------------------------------
@@ -55,11 +62,18 @@ public class FacilityVO {
         this.facilityId = facilityId;
     }
 
-    public Byte getFacilityType() {
+    public Integer getFacilityType() {
         return facilityType;
     }
-    public void setFacilityType(Byte facilityType) {
+    public void setFacilityType(Integer facilityType) {
         this.facilityType = facilityType;
+    }
+
+    public Integer getIsService() {
+        return isService;
+    }
+    public void setIsService(Integer isService) {
+        this.isService = isService;
     }
 
     public String getFacilityName() {

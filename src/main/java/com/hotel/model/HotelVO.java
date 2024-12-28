@@ -71,9 +71,8 @@ public class HotelVO {
     private String email;
 
     // status TINYINT NOT NULL COMMENT '0=未審核, 1=啟動, 2=審核沒通過'
-    @NotNull(message = "狀態不可為空")
-    @Column(name = "status", nullable = false)
-    private Byte status; // 可以用 Byte 或 Integer 來對應 TINYINT
+    @Column(name = "status", nullable = false, insertable = false)
+    private Integer status; // 可以用 Byte 或 Integer 來對應 TINYINT
 
     // create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
     @Column(name = "create_time", nullable = false, insertable = false, updatable = false)
@@ -114,6 +113,13 @@ public class HotelVO {
     @Column(name = "update_time", insertable = false, updatable = false)
     private Timestamp updateTime;
 
+    // latitude DOUBLE COMMENT '緯度'
+    @Column(name = "latitude", nullable = true)
+    private Double latitude;
+
+    // longitude DOUBLE COMMENT '經度'
+    @Column(name = "longitude", nullable = true)
+    private Double longitude;
 
     // ----------------------------------
     // 其他表與 hotel 的一對多關係 (示例)
@@ -223,11 +229,11 @@ public class HotelVO {
         this.email = email;
     }
 
-    public Byte getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Byte status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -293,6 +299,24 @@ public class HotelVO {
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    // Getter and Setter for latitude
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    // Getter and Setter for longitude
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public List<EmployeeVO> getEmployees() {
