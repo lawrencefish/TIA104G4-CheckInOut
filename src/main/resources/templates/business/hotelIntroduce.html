@@ -673,19 +673,11 @@
                 <div class="facility-service">
                     <div class="facilities">
                         <h3>設施</h3>
-                        <label><input type="checkbox"> 餐廳</label>
-                        <label><input type="checkbox"> 健身房</label>
-                        <label><input type="checkbox"> 游泳池</label>
-                        <label><input type="checkbox"> 停車場</label>
-                        <!-- 更多設施 -->
+                        <!-- 動態生成內容 -->
                     </div>
                     <div class="services">
                         <h3>服務</h3>
-                        <label><input type="checkbox"> 客房服務</label>
-                        <label><input type="checkbox"> 機場接送</label>
-                        <label><input type="checkbox"> 快速入住</label>
-                        <label><input type="checkbox"> 代辦手續</label>
-                        <!-- 更多服務 -->
+                        <!-- 動態生成內容 -->
                     </div>
                 </div>
             </section>
@@ -738,31 +730,31 @@
     </footer>
 
     <script>
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
+        // // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
+        // const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
+        // const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
+        //
+        // // Header 的 a 標籤點擊事件
+        // headerLinks.forEach(link => {
+        //     link.addEventListener('click', function (e) {
+        //         // 移除所有 header a 標籤的 active 樣式
+        //         headerLinks.forEach(navLink => navLink.classList.remove('active'));
+        //         // 為當前被點擊的 header a 標籤添加 active 樣式
+        //         // e.preventDefault(); // 阻止跳轉
+        //         this.classList.add('active');
+        //     });
+        // });
+        //
+        // // Aside 的 a 標籤點擊事件
+        // asideLinks.forEach(link => {
+        //     link.addEventListener('click', function (e) {
+        //         // 移除所有 aside a 標籤的 active 樣式
+        //         asideLinks.forEach(navLink => navLink.classList.remove('active'));
+        //         // 為當前被點擊的 aside a 標籤添加 active 樣式
+        //         // e.preventDefault(); // 阻止跳轉
+        //         this.classList.add('active');
+        //     });
+        // });
 
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
@@ -884,6 +876,96 @@
                 logoutModal.classList.remove("show"); // 隱藏彈窗
             }
         });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // 定義容器
+            const facilitiesContainer = document.querySelector('.facilities');
+            const servicesContainer = document.querySelector('.services');
+
+            // 設定 API 根路徑
+            const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
+
+            // 獲取設施
+            fetch(`${contextPath}/api/facilities/hotel/facilities`)
+                .then(response => {
+                    if (!response.ok) throw new Error("設施資料撈取失敗");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("設施資料：", data);
+
+                    // 清除舊的設施項目（保留 <h3>）
+                    facilitiesContainer.querySelectorAll("label").forEach(label => label.remove());
+
+                    // 動態生成設施
+                    data.forEach(item => {
+                        if (!item.facilityId || !item.facilityName) {
+                            console.warn("設施資料不完整：", item);
+                            return;
+                        }
+                        const label = document.createElement("label");
+                        label.innerHTML = `
+                    <input type="checkbox" name="facility" value="${item.facilityId}">
+                    ${item.facilityName}
+                `;
+                        facilitiesContainer.appendChild(label);
+                    });
+                })
+                .catch(err => console.error("設施 API 錯誤：", err));
+
+            // 獲取服務
+            fetch(`${contextPath}/api/facilities/hotel/services`)
+                .then(response => {
+                    if (!response.ok) throw new Error("服務資料撈取失敗");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("服務資料：", data);
+
+                    // 清除舊的服務項目（保留 <h3>）
+                    servicesContainer.querySelectorAll("label").forEach(label => label.remove());
+
+                    // 動態生成服務
+                    data.forEach(item => {
+                        if (!item.facilityId || !item.facilityName) {
+                            console.warn("服務資料不完整：", item);
+                            return;
+                        }
+                        const label = document.createElement("label");
+                        label.innerHTML = `
+                    <input type="checkbox" name="service" value="${item.facilityId}">
+                    ${item.facilityName}
+                `;
+                        servicesContainer.appendChild(label);
+                    });
+                })
+                .catch(err => console.error("服務 API 錯誤：", err))
+                .finally(() => {
+                    checkSelectedItems(contextPath); // 加一點延遲以確保 DOM 更新完成
+                });
+        });
+
+        // 勾選邏輯函數
+        function checkSelectedItems(contextPath) {
+            const hotelId = "[[${hotelId}]]"; // 使用 Thymeleaf 表達式注入 hotelId
+            fetch(`${contextPath}/api/hotelFacilities/current?hotelId=${hotelId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("現有項目資料撈取失敗");
+                    return response.json();
+                })
+                .then(currentItems => {
+                    console.log("現有項目：", currentItems);
+
+                    // 勾選現有設施
+                    currentItems.forEach(itemId => {
+                        const checkbox = document.querySelector(`input[type="checkbox"][value="${itemId}"]`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                        }
+                    });
+                })
+                .catch(err => console.error("勾選現有項目時出錯：", err));
+        }
 
 
     </script>
