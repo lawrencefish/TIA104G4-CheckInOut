@@ -25,7 +25,9 @@ public class LoginController {
     private EmployeeService employeeService;
 
     @GetMapping("")
-    public String show() {
+    public String show(HttpServletRequest request) {
+        // 獲取 session 並清除所有屬性
+        request.getSession().invalidate();
         return "redirect:/login/business";
     }
 

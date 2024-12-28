@@ -500,7 +500,10 @@
         <aside>
             <nav>
                 <a th:href="@{/account}" class="active">個人帳號設定</a>
-                <a th:href="@{/account/accountSet}">管理員專區</a>
+                <a th:href="@{/account/accountSet}"
+                   th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理' ||
+          #httpSession.getAttribute('employee').title == '經理'}">管理員專區</a>
             </nav>
         </aside>
 
@@ -509,49 +512,53 @@
             <h1>個人帳號設定</h1>
             <div class="form-container">
                 <h2>個人資料</h2>
-                <div class="form-group">
-                    <label for="employee-id">員工編號</label>
-                    <input type="text" id="employee-id" value="180912" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="employee-name">姓名</label>
-                    <input type="text" id="employee-name" value="黃家瑜">
-                </div>
-                <div class="form-group">
-                    <label for="employee-phone">連絡電話</label>
-                    <input type="text" id="employee-phone" value="0912-345-678">
-                </div>
-                <div class="form-group">
-                    <label for="employee-email">電子信箱</label>
-                    <input type="email" id="employee-email" value="abc123456@gmail.com">
-                </div>
-                <div class="button-group">
-                    <button id="change-password-button">密碼變更</button>
-                    <button id="update-info-button">儲存設定</button>
-                </div>
+                <form th:action="@{/employee/update}" method="post">
+                    <div class="form-group">
+                        <label for="employee-id">員工編號</label>
+                        <input type="text" id="employee-id" th:value="${#httpSession.getAttribute('employee').employeeNumber}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-name">姓名</label>
+                        <input type="text" id="employee-name" th:value="${#httpSession.getAttribute('employee').name}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-phone">連絡電話</label>
+                        <input type="text" id="employee-phone" name="phone" th:value="${#httpSession.getAttribute('employee').phoneNumber}">
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-email">電子信箱</label>
+                        <input type="email" id="employee-email" name="email" th:value="${#httpSession.getAttribute('employee').email}">
+                    </div>
+                    <div class="button-group">
+                        <button id="change-password-button">密碼變更</button>
+                        <button id="update-info-button" type="submit">儲存設定</button>
+                    </div>
+                </form>
             </div>
         </main>
         <!-- 密碼變更彈窗 -->
         <div id="password-modal" class="hidden">
-            <div class="password-modal-content">
-                <h2>密碼變更</h2>
-                <div class="form-group">
-                    <label for="old-password">舊密碼</label>
-                    <input type="password" id="old-password">
+            <post>
+                <div class="password-modal-content">
+                    <h2>密碼變更</h2>
+                    <div class="form-group">
+                        <label for="old-password">舊密碼</label>
+                        <input type="password" id="old-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">新密碼</label>
+                        <input type="password" id="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">再次輸入新密碼</label>
+                        <input type="password" id="confirm-password">
+                    </div>
+                    <div class="password-modal-actions">
+                        <button id="password-save-button">儲存設定</button>
+                        <button id="password-close-button">關閉</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="new-password">新密碼</label>
-                    <input type="password" id="new-password">
-                </div>
-                <div class="form-group">
-                    <label for="confirm-password">再次輸入新密碼</label>
-                    <input type="password" id="confirm-password">
-                </div>
-                <div class="password-modal-actions">
-                    <button id="password-save-button">儲存設定</button>
-                    <button id="password-close-button">關閉</button>
-                </div>
-            </div>
+            </post>
         </div>
     </div>
 
@@ -666,7 +673,6 @@
         document.querySelector("#update-info-button").addEventListener("click",function(){
             alert("儲存成功！");
         })
-
     </script>
 </body>
 

@@ -80,6 +80,7 @@ public class BusinessController {
         if (hotel != null) {
             // 基於 hotelId 查詢圖片列表
             Integer hotelId = hotel.getHotelId();
+            model.addAttribute("hotelId", hotelId);
             List<Integer> imageIds = hotelImgService.getImagesByHotelId(hotelId)
                     .stream()
                     .map(HotelImgVO::getHotelImgId)

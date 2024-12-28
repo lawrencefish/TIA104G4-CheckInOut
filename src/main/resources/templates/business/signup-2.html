@@ -490,7 +490,7 @@
                 })
                 .catch(err => console.error("設施 API 錯誤：", err));
 
-// 獲取服務
+            // 獲取服務
             fetch(`${contextPath}/api/facilities/hotel/services`)
                 .then(response => {
                     if (!response.ok) throw new Error("服務資料撈取失敗");

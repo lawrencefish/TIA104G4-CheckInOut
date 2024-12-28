@@ -26,4 +26,8 @@ public class EmployeeService {
     public Optional<EmployeeVO> findByEmployeeNumberAndHotel_HotelId(String employeeNumber, Integer hotelId) {
         return employeeRepository.findByEmployeeNumberAndHotel_HotelId(employeeNumber, hotelId);
     }
+
+    public void updateEmployee(EmployeeVO employee) {
+        employeeRepository.save(employee); // 使用 JPA 保存更新後的資料
+    }
 }

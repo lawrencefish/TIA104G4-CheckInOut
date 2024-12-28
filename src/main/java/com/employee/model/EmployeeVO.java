@@ -9,6 +9,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 
@@ -67,13 +68,13 @@ public class EmployeeVO {
     // create_date DATETIME NOT NULL
     // 建議使用 LocalDateTime (Hibernate 5+ / JPA 2.2+ 皆可)
     @NotNull(message = "建立日期不可為空")
-    @Column(name = "create_date", nullable = false)
-    private LocalDateTime createDate;
+    @Column(name = "create_date", nullable = false, insertable = false, updatable = false)
+    private Timestamp createDate;
 
     // last_login_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
     // DB 端自動帶入當前時間，可選擇 insertable=false, updatable=false
     @Column(name = "last_login_date", nullable = false, insertable = false)
-    private LocalDateTime lastLoginDate;
+    private Timestamp lastLoginDate;
 
 
     // -----------------------------------------
@@ -146,19 +147,19 @@ public class EmployeeVO {
         this.title = title;
     }
 
-    public LocalDateTime getCreateDate() {
+    public Timestamp getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
+    public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
     }
 
-    public LocalDateTime getLastLoginDate() {
+    public Timestamp getLastLoginDate() {
         return lastLoginDate;
     }
 
-    public void setLastLoginDate(LocalDateTime lastLoginDate) {
+    public void setLastLoginDate(Timestamp lastLoginDate) {
         this.lastLoginDate = lastLoginDate;
     }
 }

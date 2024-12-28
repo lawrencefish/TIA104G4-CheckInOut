@@ -132,7 +132,7 @@ CREATE TABLE coupon (
 );
 
 INSERT INTO coupon (
-    active_date, expiry_date, coupon_name, coupon_code, min_spend, 
+    active_date, expiry_date, coupon_name, coupon_code, min_spend,
     travel_city_num, coupon_detail, discount_amount
 ) VALUES
 ('2024-12-10 00:00:00', '2024-12-31 23:59:59', '年終折扣', 'YEAR2024', 1000, 3, '適用於三個城市的旅遊訂單，最低消費1000元可享折扣。', 200),
@@ -188,25 +188,49 @@ INSERT INTO facility (facility_type, is_service, facility_name) VALUES
 CREATE TABLE employee (
     employee_id INT AUTO_INCREMENT PRIMARY KEY,
     hotel_id INT NOT NULL,
-    employee_number VARCHAR(10) NOT NULL UNIQUE,
+    employee_number VARCHAR(10) NOT NULL,
     name VARCHAR(50) NOT NULL,
     password VARCHAR(20) NOT NULL,
     phone_number VARCHAR(15) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
-    title VARCHAR(50) NOT NULL,
-    create_date DATETIME NOT NULL,
-    last_login_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    title ENUM('負責人', '總經理', '經理', '襄理', '員工') NOT NULL,
+    create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_login_date TIMESTAMP,
     FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id)
 );
 
-INSERT INTO employee (
-    hotel_id, employee_number, name, password, phone_number, email, title, create_date
-) VALUES
-(1, 'EMP0001', '張小明', 'password123', '0912345678', 'xiao.ming@example.com', '前台接待', '2024-12-01 08:00:00'),
-(1, 'EMP0002', '李美麗', 'securepwd456', '0922334455', 'mei.li@example.com', '房務經理', '2024-12-02 09:00:00'),
-(2, 'EMP0003', '王大華', 'mypassword789', '0933445566', 'da.hua@example.com', '廚房主管', '2024-12-03 10:00:00'),
-(2, 'EMP0004', '陳志強', 'adminpass', '0966112233', 'zhi.qiang@example.com', '保安', '2024-12-04 11:00:00'),
-(3, 'EMP0005', '林佳佳', 'simplepwd', '0987654321', 'jia.jia@example.com', '行銷專員', '2024-12-05 12:00:00');
+INSERT INTO employee (hotel_id, employee_number, name, password, phone_number, email, title)
+VALUES
+(1, 'E0001', '張小明', 'password01', '0912345678', 'xiao.ming@example.com', '負責人'),
+(2, 'E0002', '王大華', 'password02', '0923456789', 'da.hua@example.com', '總經理'),
+(3, 'E0003', '陳美麗', 'password03', '0934567890', 'mei.li@example.com', '經理'),
+(4, 'E0004', '李偉成', 'password04', '0945678901', 'wei.cheng@example.com', '襄理'),
+(5, 'E0005', '林雅芳', 'password05', '0956789012', 'ya.fang@example.com', '員工'),
+(6, 'E0006', '黃志強', 'password06', '0967890123', 'zhi.qiang@example.com', '負責人'),
+(7, 'E0007', '蔡佳穎', 'password07', '0978901234', 'jia.ying@example.com', '總經理'),
+(8, 'E0008', '吳忠誠', 'password08', '0989012345', 'zhong.cheng@example.com', '經理'),
+(9, 'E0009', '何淑芬', 'password09', '0990123456', 'shu.fen@example.com', '襄理'),
+(10, 'E0010', '許文彬', 'password10', '0911123456', 'wen.bin@example.com', '員工'),
+(11, 'E0011', '周清源', 'password11', '0922123456', 'qing.yuan@example.com', '負責人'),
+(1, 'E0012', '鄭秀慧', 'password12', '0933123456', 'xiu.hui@example.com', '總經理'),
+(2, 'E0013', '曾俊傑', 'password13', '0944123456', 'jun.jie@example.com', '經理'),
+(3, 'E0014', '馮麗華', 'password14', '0955123456', 'li.hua@example.com', '襄理'),
+(4, 'E0015', '謝建中', 'password15', '0966123456', 'jian.zhong@example.com', '員工'),
+(5, 'E0016', '唐素梅', 'password16', '0977123456', 'su.mei@example.com', '負責人'),
+(6, 'E0017', '盧志偉', 'password17', '0988123456', 'zhi.wei@example.com', '總經理'),
+(7, 'E0018', '呂小芳', 'password18', '0999123456', 'xiao.fang@example.com', '經理'),
+(8, 'E0019', '梁曉東', 'password19', '0912233445', 'xiao.dong@example.com', '襄理'),
+(9, 'E0020', '潘欣怡', 'password20', '0922233445', 'xin.yi@example.com', '員工'),
+(10, 'E0021', '韓光明', 'password21', '0933233445', 'guang.ming@example.com', '負責人'),
+(11, 'E0022', '趙秀蘭', 'password22', '0944233445', 'xiu.lan@example.com', '總經理'),
+(1, 'E0023', '錢正義', 'password23', '0955233445', 'zheng.yi@example.com', '經理'),
+(2, 'E0024', '周怡君', 'password24', '0966233445', 'yi.jun@example.com', '襄理'),
+(3, 'E0025', '宋俊豪', 'password25', '0977233445', 'jun.hao@example.com', '員工'),
+(4, 'E0026', '陸美珍', 'password26', '0988233445', 'mei.zhen@example.com', '負責人'),
+(5, 'E0027', '柯文哲', 'password27', '0999233445', 'wen.zhe@example.com', '總經理'),
+(6, 'E0028', '朱敏華', 'password28', '0913344556', 'min.hua@example.com', '經理'),
+(7, 'E0029', '鄧建文', 'password29', '0923344556', 'jian.wen@example.com', '襄理'),
+(8, 'E0030', '阮愛玲', 'password30', '0933344556', 'ai.ling@example.com', '員工');
 
 CREATE TABLE hotel_img (
     hotel_img_id INT AUTO_INCREMENT PRIMARY KEY,
