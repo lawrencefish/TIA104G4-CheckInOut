@@ -1,0 +1,42 @@
+<header th:fragment="header">
+    <div class="header-container">
+        <!-- 左側 Logo 和網站名稱 -->
+        <div class="logo-section">
+            <a href="#"><img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo"></a>
+            <div class="site-name">Check In Out</div>
+        </div>
+
+        <!-- 右側導航和頭像 -->
+        <div class="right-section">
+            <!-- 導航選單 -->
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li><a href="admin-backend.html">管理員管理</a></li>
+                    <li><a href="user-backend.html">用戶管理</a></li>
+                    <li><a href="review-backend.html">審核</a></li>
+                    <li><a href="latest-news.html">最新消息</a></li>
+                    <li><a href="appeal-management.html">申訴管理</a></li>
+                    <li><a href="coupon-management.html">優惠管理</a></li>
+                </ul>
+            </nav>
+
+            <!-- 管理員頭像和下拉選單 -->
+            <div class="admin-profile-wrapper">
+                <div class="admin-profile-trigger">
+                    <img src="./img/管理員頭像.jpg" alt="管理員頭像">
+                </div>
+                <div class="admin-dropdown-menu">
+                    <ul>
+                        <li><a href="profile.html">個人資料</a></li>
+                        <li><a href="#" onclick="handleLogout()">登出</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+

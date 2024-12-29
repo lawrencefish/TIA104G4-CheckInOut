@@ -15,7 +15,12 @@ public class AdminController {
     
     @Autowired
     private AdminService adminService; // 注入Service層
-
+    
+    @GetMapping("/login")
+    public String showAdminLoginPage() {
+        return "admin/adminlogin";  // 這裡返回的是 templates 目錄下的 adminlogin.html
+    }
+    
     // 列出所有管理員
     @GetMapping("/list")  // 處理GET /admin/list 請求
     public String list(@RequestParam(defaultValue = "1") Integer page, Model model) {

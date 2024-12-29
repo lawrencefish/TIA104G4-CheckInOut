@@ -1,0 +1,693 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0 20px;
+    box-sizing: border-box;
+    max-width: auto;
+}
+
+
+/* 主要內容 */
+.main {
+    padding: 20px;
+}
+
+/* 新增 root 變數 */
+:root {
+    --primary-color: #2196f3;
+    --primary-dark: #1976d2;
+    --primary-light: #e3f2fd;
+    --secondary-color: #ffc107;
+    --text-primary: #333;
+    --text-secondary: #666;
+    --background-primary: #fff;
+    --background-secondary: #f8f9fa;
+}
+
+/* 更新 admin-banner 樣式 */
+.admin-banner {
+    background-color: var(--primary-color);
+    padding: 1.5rem 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(3, 150, 255, 0.2);
+    text-align: center;
+    margin: 20px 40px;
+    color: white;
+    letter-spacing: 1px;
+    transition: transform 0.3s ease;
+}
+
+
+
+h2 {
+    text-align: center;
+}
+
+/* 搜尋篩選框 */
+#searchForm {
+    padding: 0 100px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* 讓表單靠右對齊 */
+    gap: 10px; /* 控制元素之間的間距 */
+  }
+  
+  #searchForm label {
+    margin: 0;
+  }
+  
+  #searchForm input, 
+  #searchForm select, 
+  #searchForm button {
+    margin: 0;
+    padding: 5px;
+    font-size: 14px;
+  }
+  
+  #searchForm button {
+    cursor: pointer;
+  }
+
+/* 管理員表格 */
+.table-container {
+    position: relative;
+    margin-bottom: 60px;
+    height: 800px; /* 設定固定高度，減去其他元素的高度 */
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+/* 固定表格標題 */
+#adminTable {
+    width: 100%;
+    border-collapse: separate; /* 改用 separate 來避免邊框合併問題 */
+    border-spacing: 0;
+}
+
+#adminTable thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #f8f9fa;
+}
+
+#adminTable th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 2;
+    padding: 15px;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 2px solid #dee2e6;
+    white-space: nowrap; /* 防止文字換行 */
+}
+
+/* 確保標題有實體背景 */
+#adminTable th::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background-color: #dee2e6;
+}
+
+/* 表格內容樣式 */
+#adminTable td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #fff; /* 確保內容有背景色 */
+}
+
+/* 確保最後一列不會有多餘的邊框 */
+#adminTable tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* 優化滾動條樣式 */
+.table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* 確保滾動時標題列的邊框可見 */
+#adminTable thead::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background-color: #dee2e6;
+}
+
+/* 優化表格內容的滾動體驗 */
+#adminTable tbody tr:first-child td {
+    border-top: none;
+}
+
+/* 確保排序圖標在固定標題中正確顯示 */
+.sortable {
+    position: relative;
+}
+
+.sort-icon {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 奇偶行背景顏色 */
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #e9e9e900;
+}
+
+/* 更新按鈕樣式 */
+.button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-3px);
+}
+
+/* 更新表格樣式 */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+th {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    font-weight: 600;
+    padding: 15px;
+}
+
+td {
+    padding: 12px;
+    color: var(--text-secondary);
+}
+
+/* 新增管理員使視窗覆蓋整個頁面 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+}
+
+/* 表單輸入框樣式調整 */
+form div {
+    margin-bottom: 10px; /* 減少間距 */
+    text-align: left; /* 確保標籤和輸入框靠左 */
+}
+
+/* 輸入框寬度和對齊 */
+input[type="text"], 
+input[type="email"], 
+input[type="password"] {
+    width: 100%;
+    padding: 6px; /* 稍微減少內部填充 */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* 確保寬度包含邊框 */
+}
+
+/* 表單標籤樣式 */
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+/* 錯誤訊息樣式 */
+.error-message {
+    color: red;
+    font-size: 0.8rem;
+    text-align: left;
+    margin-top: 5px;
+}
+
+/* 提交按鈕樣式 */
+button[type="submit"] {
+    width: 100%; /* 使按鈕橫跨整個寬度 */
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* 關閉按鈕樣式 */
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    z-index: 1002;
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+/* 表單內容置中 */
+#addAdminForm {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* 錯誤訊息樣式 */
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+}
+
+/* 提交按鈕樣式 */
+button[type="submit"] {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+
+/* 操作日誌 */
+.log-section {
+    background-color: var(--background-secondary);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 100px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.log-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+#logContainer {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.log-item {
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease;
+}
+
+.log-item:hover {
+    background-color: #e9ecef;
+}
+
+.log-header .timestamp {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.log-header .admin-name {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.log-header .action {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.log-details {
+    margin-top: 5px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.log-item:hover {
+    transform: translateY(-3px);
+    background-color: var(--primary-light);
+}
+   
+
+/* 載入動畫 */
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+}
+
+/* 分頁控制 */
+.pagination {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    padding: 15px 0;
+    text-align: center;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    margin-top: 20px;
+}
+
+.pagination button {
+    margin: 0 5px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pagination button:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination button.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.pagination button:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+/* 表格操作按鈕 */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    min-height: 40px; /* 確保有最小高度 */
+}
+
+.detail-btn, .edit-btn, .status-btn {
+    padding: 5px 10px;
+    font-size: 0.9em;
+}
+
+/* 搜尋表單樣式 */
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px;
+    background-color: var(--background-secondary);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-actions {
+    margin-left: auto;
+}
+   
+
+/* 更新按鈕顏色 */
+.disable-btn {
+    background-color: #dc3545 !important;
+}
+
+.disable-btn:hover {
+    background-color: #c82333 !important;
+}
+
+.enable-btn {
+    background-color: #28a745 !important;
+}
+
+.enable-btn:hover {
+    background-color: #218838 !important;
+}
+
+/* 詳細資訊模態框樣式 */
+.admin-details {
+    width: 500px !important;
+    padding: 30px !important;
+}
+
+.admin-details .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.admin-details label {
+    width: 100px;
+    margin-right: 10px;
+}
+
+.admin-details input,
+.admin-details select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.admin-details input:disabled {
+    background-color: #f5f5f5;
+}
+
+/* 操作日誌樣式優化 */
+.log-item {
+    background-color: white;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.log-header {
+    margin-bottom: 5px;
+}
+
+.log-header .timestamp {
+    color: #666;
+}
+
+.log-header .admin-name {
+    font-weight: bold;
+}
+
+.log-header .action {
+    color: #007bff;
+}
+
+.log-details {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.log-details .target {
+    margin-right: 10px;
+}
+
+.log-details .ip {
+    color: #999;
+}
+   
+
+/* 可排序的表格標題樣式 */
+.sortable {
+    cursor: pointer;
+    position: relative;
+    padding-right: 20px !important;
+}
+
+.sortable:hover {
+    background-color: var(--primary-light);
+}
+
+.sort-icon {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+
+.sort-icon.asc {
+    border-bottom: 5px solid var(--primary-color);
+    border-top: none;
+}
+
+.sort-icon.desc {
+    border-top: 5px solid var(--primary-color);
+    border-bottom: none;
+}
+
+/* 表格標題懸停效果 */
+th.sortable:hover {
+    background-color: var(--primary-light);
+    transition: background-color 0.2s ease;
+}
+
+/* 當前排序列的樣式 */
+th.sortable.active {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+/* 表格內容置中 */
+#adminTable th,
+#adminTable td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* 操作按鈕欄位特別處理 */
+#adminTable td.action-buttons {
+    display: table-cell; /* 改回表格單元格預設顯示方式 */
+    padding: 8px;
+    vertical-align: middle;
+}
+
+/* 確保按鈕容器在單元格中置中 */
+#adminTable td .action-buttons {
+    margin: 0 auto;
+}
+
+/* 按鈕樣式優化 */
+.action-buttons .button {
+    margin: 0 2px;
+    padding: 6px 12px;
+    height: auto;
+    line-height: normal;
+}
+
+/* 確保表格行高一致 */
+#adminTable tr {
+    height: 50px;
+}
+
+/* 無日誌時的提示樣式 */
+.no-logs {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* 狀態標籤樣式 */
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.status-active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.status-disabled {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+/* 確保狀態標籤在表格中置中 */
+#adminTable td .status-badge {
+    margin: 0 auto;
+}
+
+/* 確保表格內容可以正常滾動 */
+#adminTable tbody {
+    position: relative;
+}
+
+
+
+
+
+ 
