@@ -441,6 +441,13 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            text-align: center; /* 左右居中 */
+            margin: 5px auto; /* 與上下元素間隔 */
+        }
     </style>
 </head>
 
@@ -530,35 +537,44 @@
                         <input type="email" id="employee-email" name="email" th:value="${#httpSession.getAttribute('employee').email}">
                     </div>
                     <div class="button-group">
-                        <button id="change-password-button">密碼變更</button>
+                        <button id="change-password-button" type="button">密碼變更</button>
                         <button id="update-info-button" type="submit">儲存設定</button>
                     </div>
                 </form>
             </div>
         </main>
         <!-- 密碼變更彈窗 -->
-        <div id="password-modal" class="hidden">
-            <post>
-                <div class="password-modal-content">
-                    <h2>密碼變更</h2>
+        <div id="password-modal" th:classappend="${error != null || success != null ? 'show' : 'hidden'}">
+            <div class="password-modal-content">
+                <h2>密碼變更</h2>
+
+                <!-- 顯示錯誤或成功訊息 -->
+                <div th:if="${error}" class="error">
+                    <p th:text="${error}"></p>
+                </div>
+                <div th:if="${success}" class="alert alert-success">
+                    <p th:text="${success}"></p>
+                </div>
+
+                <form th:action="@{/employee/updatePassword}" method="post">
                     <div class="form-group">
                         <label for="old-password">舊密碼</label>
-                        <input type="password" id="old-password">
+                        <input type="password" name="oldPassword" id="old-password">
                     </div>
                     <div class="form-group">
                         <label for="new-password">新密碼</label>
-                        <input type="password" id="new-password">
+                        <input type="password" name="newPassword" id="new-password">
                     </div>
                     <div class="form-group">
                         <label for="confirm-password">再次輸入新密碼</label>
-                        <input type="password" id="confirm-password">
+                        <input type="password" name="newPasswordCheck" id="confirm-password">
                     </div>
                     <div class="password-modal-actions">
-                        <button id="password-save-button">儲存設定</button>
-                        <button id="password-close-button">關閉</button>
+                        <button id="password-save-button" type="submit">儲存設定</button>
+                        <button id="password-close-button" type="button">關閉</button>
                     </div>
-                </div>
-            </post>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -568,31 +584,31 @@
     </footer>
 
     <script>
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
+        // // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
+        // const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
+        // const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
+        //
+        // // Header 的 a 標籤點擊事件
+        // headerLinks.forEach(link => {
+        //     link.addEventListener('click', function (e) {
+        //         // 移除所有 header a 標籤的 active 樣式
+        //         headerLinks.forEach(navLink => navLink.classList.remove('active'));
+        //         // 為當前被點擊的 header a 標籤添加 active 樣式
+        //         // e.preventDefault(); // 阻止跳轉
+        //         this.classList.add('active');
+        //     });
+        // });
+        //
+        // // Aside 的 a 標籤點擊事件
+        // asideLinks.forEach(link => {
+        //     link.addEventListener('click', function (e) {
+        //         // 移除所有 aside a 標籤的 active 樣式
+        //         asideLinks.forEach(navLink => navLink.classList.remove('active'));
+        //         // 為當前被點擊的 aside a 標籤添加 active 樣式
+        //         // e.preventDefault(); // 阻止跳轉
+        //         this.classList.add('active');
+        //     });
+        // });
 
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
@@ -646,21 +662,6 @@
         document.getElementById('password-close-button').addEventListener('click', () => {
             const passwordModal = document.getElementById('password-modal');
             passwordModal.classList.remove('show');
-        });
-
-        // 儲存密碼變更設定
-        document.getElementById('password-save-button').addEventListener('click', () => {
-            const oldPassword = document.getElementById('old-password').value;
-            const newPassword = document.getElementById('new-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-
-            if (newPassword !== confirmPassword) {
-                alert('新密碼與確認密碼不一致，請重新輸入');
-                return;
-            }
-
-            alert('密碼已成功更新！');
-            document.getElementById('password-modal').classList.remove('show');
         });
 
         // 點擊彈窗外部關閉 (選擇性功能)

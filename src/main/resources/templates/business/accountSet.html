@@ -651,6 +651,20 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            margin: 5px auto;
+        }
+
+        .alert.alert-success {
+            color: green;
+            font-size: 14px;
+            text-align: center;
+            margin: 5px auto;
+        }
     </style>
 </head>
 
@@ -724,154 +738,179 @@
             <div class="table-container">
                 <table>
                     <thead>
-                        <tr>
-                            <th>員工名稱</th>
-                            <th>狀態</th>
-                            <th>職稱</th>
-                            <th>電話</th>
-                            <th>信箱</th>
-                            <th>上次登入時間</th>
-                        </tr>
+                    <tr>
+                        <th>員工編號</th>
+                        <th>員工名稱</th>
+                        <th>職稱</th>
+                        <th>電話</th>
+                        <th>信箱</th>
+                        <th>上次登入時間</th>
+                    </tr>
                     </thead>
                     <tbody id="employee-table-body">
-                        <tr data-id="9527" data-name="黃家瑜" data-status="啟用中" data-role="管理員" data-phone="0912-345-678"
-                            data-email="abc123456@gmail.com" data-login="2024/11/9">
-                            <td>黃家瑜</td>
-                            <td>啟用中</td>
-                            <td>管理員</td>
-                            <td>0912-345-678</td>
-                            <td>abc123456@gmail.com</td>
-                            <td>2024/11/9</td>
-                        </tr>
-                        <tr data-id="9528" data-name="李佳勳" data-status="啟用中" data-role="經理" data-phone="0912-123-456"
-                            data-email="jiaxun@example.com" data-login="2024/11/9">
-                            <td>李佳勳</td>
-                            <td>啟用中</td>
-                            <td>經理</td>
-                            <td>0912-123-456</td>
-                            <td>jiaxun@example.com</td>
-                            <td>2024/11/9</td>
-                        </tr>
+                    <!-- 使用 Thymeleaf 動態渲染員工列表 -->
+                    <tr th:each="employee : ${employees}"
+                        th:data-employee-id="${employee.employeeId}"
+                        th:data-employee-number="${employee.employeeNumber}"
+                        th:data-name="${employee.name}"
+                        th:data-title="${employee.title}"
+                        th:data-phone-number="${employee.phoneNumber}"
+                        th:data-email="${employee.email}">
+                        <td th:text="${employee.employeeNumber}">員工編號</td>
+                        <td th:text="${employee.name}">員工名稱</td>
+                        <td th:text="${employee.title}">職稱</td>
+                        <td th:text="${employee.phoneNumber}">電話</td>
+                        <td th:text="${employee.email}">信箱</td>
+                        <td th:text="${#dates.format(employee.lastLoginDate, 'yyyy-MM-dd HH:mm:ss')}">上次登入時間</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
         </main>
         <!-- 員工資料彈窗 -->
+        <!-- 員工資料彈窗 -->
         <div id="employee-modal" class="hidden">
             <div class="employee-modal-content">
                 <h2>員工資料</h2>
-                <div class="form-group">
-                    <label for="employee-modal-id">員工編號</label>
-                    <input type="text" id="employee-modal-id" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="employee-modal-name">姓名</label>
-                    <input type="text" id="employee-modal-name" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="employee-modal-role">職稱</label>
-                    <select id="employee-modal-role">
-                        <option value="管理員">管理員</option>
-                        <option value="主管">主管</option>
-                        <option value="員工">員工</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="employee-modal-phone">電話</label>
-                    <input type="text" id="employee-modal-phone" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="employee-modal-email">信箱</label>
-                    <input type="text" id="employee-modal-email" readonly>
-                </div>
-                <div class="employee-modal-actions">
-                    <button id="reset-password-button">重設密碼</button>
-                    <button id="suspend-employee-button">停權</button>
-                    <button id="employee-save-button">儲存設定</button>
-                    <button id="employee-close-button">關閉</button>
-                </div>
+                <form th:action="@{/employee/set}" method="post">
+                    <div class="form-group">
+                        <input type="hidden" id="employee-modal-id" name="employeeId" readonly>
+
+                        <label for="employee-modal-number" >員工編號</label>
+                        <input type="text" id="employee-modal-number" name="employeeNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-modal-name">姓名</label>
+                        <input type="text" id="employee-modal-name" name="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-modal-title">職稱</label>
+                        <select id="employee-modal-title" name="title">
+                            <option value="負責人">負責人</option>
+                            <option value="總經理">總經理</option>
+                            <option value="經理">經理</option>
+                            <option value="襄理">襄理</option>
+                            <option value="員工">員工</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-modal-phone">電話</label>
+                        <input type="text" id="employee-modal-phone" name="phoneNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-modal-email">信箱</label>
+                        <input type="text" id="employee-modal-email" name="email">
+                    </div>
+                    <div class="employee-modal-actions">
+                        <button id="reset-password-button" type="button">重設密碼</button>
+                        <button id="suspend-employee-button" type="button">停權</button>
+                        <button id="employee-save-button" type="submit">儲存設定</button>
+                        <button id="employee-close-button" type="button">關閉</button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <!-- 變更密碼彈窗 -->
         <div id="reset-password-modal" class="hidden">
             <div class="reset-password-modal-content">
+                <!-- 在彈窗內顯示錯誤訊息 -->
                 <h2>重設密碼</h2>
-                <div class="form-group">
-                    <label for="new-password">新密碼</label>
-                    <input type="password" id="new-password">
-                </div>
-                <div class="form-group">
-                    <label for="confirm-password">再次輸入新密碼</label>
-                    <input type="password" id="confirm-password">
-                </div>
-                <div class="reset-password-modal-actions">
-                    <button id="confirm-reset-button">確認</button>
-                    <button id="cancel-reset-button">取消</button>
-                </div>
+                <form th:action="@{/employee/setPassword}" method="post">
+                    <div class="form-group">
+                        <label for="new-password">新密碼</label>
+                        <input type="password" id="new-password" name="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">再次輸入新密碼</label>
+                        <input type="password" id="confirm-password" name="newPasswordCheck" required>
+                    </div>
+                    <div class="reset-password-modal-actions">
+                        <button id="confirm-reset-button" type="submit">確認</button>
+                        <button id="cancel-reset-button" type="button">取消</button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <!-- 新增員工彈窗 -->
-        <div id="add-employee-modal" class="hidden">
+        <div id="add-employee-modal" th:classappend="${addError != null || addSuccess != null ? 'show' : 'hidden'}">
             <div class="add-employee-modal-content">
                 <h2>新增員工</h2>
-                <div class="form-group">
-                    <label for="add-employee-id">員工編號</label>
-                    <input type="text" id="add-employee-id" placeholder="請輸入員工編號">
+
+                <!-- 顯示錯誤或成功訊息 -->
+                <div th:if="${addError}" class="error">
+                    <p th:text="${addError}"></p>
                 </div>
-                <div class="form-group">
-                    <label for="add-employee-password">初始密碼</label>
-                    <input type="password" id="add-employee-password" placeholder="請輸入初始密碼">
+                <div th:if="${addSuccess}" class="alert alert-success">
+                    <p th:text="${addSuccess}"></p>
                 </div>
-                <div class="form-group">
-                    <label for="add-employee-name">員工姓名</label>
-                    <input type="text" id="add-employee-name" placeholder="請輸入員工姓名">
-                </div>
-                <div class="form-group">
-                    <label for="add-employee-role">職稱</label>
-                    <select id="add-employee-role">
-                        <option value="管理員">管理員</option>
-                        <option value="主管">主管</option>
-                        <option value="員工">員工</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="add-employee-phone">電話</label>
-                    <input type="text" id="add-employee-phone" placeholder="請輸入電話">
-                </div>
-                <div class="form-group">
-                    <label for="add-employee-email">信箱</label>
-                    <input type="email" id="add-employee-email" placeholder="請輸入信箱">
-                </div>
-                <div class="add-employee-modal-actions">
-                    <button id="save-employee-button">新增</button>
-                    <button id="cancel-add-employee-button">取消</button>
-                </div>
+
+                <form th:action="@{/employee/add}" method="post">
+                    <div class="form-group">
+                        <label for="add-employee-id">員工編號</label>
+                        <input type="text" id="add-employee-id" name="employeeNumber" placeholder="請輸入員工編號">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-employee-password">初始密碼</label>
+                        <input type="password" id="add-employee-password" name="password" placeholder="請輸入初始密碼">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-employee-name">員工姓名</label>
+                        <input type="text" id="add-employee-name" name="name" placeholder="請輸入員工姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-employee-role">職稱</label>
+                        <input type="text" id="add-employee-role" name="title" value="員工" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-employee-phone">電話</label>
+                        <input type="text" id="add-employee-phone" name="phoneNumber" placeholder="請輸入電話">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-employee-email">信箱</label>
+                        <input type="email" id="add-employee-email" name="email" placeholder="請輸入信箱">
+                    </div>
+                    <div class="add-employee-modal-actions">
+                        <button id="save-employee-button" type="submit">新增</button>
+                        <button id="cancel-add-employee-button" type="button">取消</button>
+                    </div>
+                </form>
             </div>
         </div>
 
 
         <!-- 變更公司密碼 -->
-        <div id="update-hotel-password-modal" class="hidden">
+        <div id="update-hotel-password-modal" th:classappend="${error != null || success != null ? 'show' : 'hidden'}">
             <div class="update-hotel-password-modal-content">
                 <h2>變更公司密碼</h2>
-                <div class="form-group">
-                    <label for="current-password">舊密碼</label>
-                    <input type="password" id="current-password" placeholder="請輸入舊密碼">
+
+                <!-- 顯示錯誤或成功訊息 -->
+                <div th:if="${error}" class="error">
+                    <p th:text="${error}"></p>
                 </div>
-                <div class="form-group">
-                    <label for="update-new-password">新密碼</label>
-                    <input type="password" id="update-new-password" placeholder="請輸入新密碼">
+                <div th:if="${success}" class="alert alert-success">
+                    <p th:text="${success}"></p>
                 </div>
-                <div class="form-group">
-                    <label for="update-confirm-new-password">再次輸入新密碼</label>
-                    <input type="password" id="update-confirm-new-password" placeholder="請再次輸入新密碼">
-                </div>
-                <div class="update-hotel-password-modal-actions">
-                    <button id="save-hotel-password-button">確認變更</button>
-                    <button id="cancel-update-hotel-password-button">取消</button>
-                </div>
+
+                <form th:action="@{/hotel/setPassword}" method="post">
+                    <div class="form-group">
+                        <label for="current-password">舊密碼</label>
+                        <input type="password" id="current-password" name="oldPassword" placeholder="請輸入舊密碼">
+                    </div>
+                    <div class="form-group">
+                        <label for="update-new-password">新密碼</label>
+                        <input type="password" id="update-new-password" name="newPassword" placeholder="請輸入新密碼">
+                    </div>
+                    <div class="form-group">
+                        <label for="update-confirm-new-password">再次輸入新密碼</label>
+                        <input type="password" id="update-confirm-new-password" name="newPasswordCheck" placeholder="請再次輸入新密碼">
+                    </div>
+                    <div class="update-hotel-password-modal-actions">
+                        <button id="save-hotel-password-button" type="submit">確認變更</button>
+                        <button id="cancel-update-hotel-password-button" type="button">取消</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -950,26 +989,30 @@
             }
         });
 
-        // 員工資料彈窗
+        // 員工資料設定
         document.querySelectorAll('#employee-table-body tr').forEach(row => {
             row.addEventListener('click', () => {
-                const id = row.dataset.id;
+                const id = row.dataset.employeeId;
+                const number = row.dataset.employeeNumber;
                 const name = row.dataset.name;
-                const role = row.dataset.role;
-                const phone = row.dataset.phone;
+                const title = row.dataset.title; // 取得 data-title 的值
+                const phone = row.dataset.phoneNumber;
                 const email = row.dataset.email;
 
+                // 設定彈窗中的欄位值
                 document.getElementById('employee-modal-id').value = id;
+                document.getElementById('employee-modal-number').value = number;
                 document.getElementById('employee-modal-name').value = name;
-                document.getElementById('employee-modal-role').value = role;
+                document.getElementById('employee-modal-title').value = title; // 設置職稱
                 document.getElementById('employee-modal-phone').value = phone;
                 document.getElementById('employee-modal-email').value = email;
 
+                // 顯示彈窗
                 document.getElementById('employee-modal').classList.add('show');
             });
         });
 
-        // 關閉員工資料彈窗
+        // 關閉彈窗按鈕
         document.getElementById('employee-close-button').addEventListener('click', () => {
             document.getElementById('employee-modal').classList.remove('show');
         });
@@ -1031,30 +1074,30 @@
         });
 
         // 點擊新增按鈕保存員工資料
-        saveEmployeeButton.addEventListener('click', () => {
-            const id = document.getElementById('add-employee-id').value.trim();
-            const password = document.getElementById('add-employee-password').value.trim();
-            const name = document.getElementById('add-employee-name').value.trim();
-            const role = document.getElementById('add-employee-role').value;
-            const phone = document.getElementById('add-employee-phone').value.trim();
-            const email = document.getElementById('add-employee-email').value.trim();
-
-            if (!id || !password || !name || !phone || !email) {
-                alert('所有欄位都為必填！');
-                return;
-            }
-
-            // 模擬新增員工成功
-            alert("新增員工成功！");
-
-            // 清空輸入欄位並關閉彈窗
-            document.getElementById('add-employee-id').value = '';
-            document.getElementById('add-employee-password').value = '';
-            document.getElementById('add-employee-name').value = '';
-            document.getElementById('add-employee-phone').value = '';
-            document.getElementById('add-employee-email').value = '';
-            addEmployeeModal.classList.remove('show');
-        });
+        // saveEmployeeButton.addEventListener('click', () => {
+        //     const id = document.getElementById('add-employee-id').value.trim();
+        //     const password = document.getElementById('add-employee-password').value.trim();
+        //     const name = document.getElementById('add-employee-name').value.trim();
+        //     const role = document.getElementById('add-employee-role').value;
+        //     const phone = document.getElementById('add-employee-phone').value.trim();
+        //     const email = document.getElementById('add-employee-email').value.trim();
+        //
+        //     if (!id || !password || !name || !phone || !email) {
+        //         alert('所有欄位都為必填！');
+        //         return;
+        //     }
+        //
+        //     // // 模擬新增員工成功
+        //     // alert("新增員工成功！");
+        //
+        //     // // 清空輸入欄位並關閉彈窗
+        //     // document.getElementById('add-employee-id').value = '';
+        //     // document.getElementById('add-employee-password').value = '';
+        //     // document.getElementById('add-employee-name').value = '';
+        //     // document.getElementById('add-employee-phone').value = '';
+        //     // document.getElementById('add-employee-email').value = '';
+        //     // addEmployeeModal.classList.remove('show');
+        // });
 
         // 點擊取消按鈕關閉彈窗
         cancelAddEmployeeButton.addEventListener('click', () => {
@@ -1073,29 +1116,28 @@
         });
 
         // 確認變更公司密碼
-        saveHotelPasswordButton.addEventListener('click', () => {
+        saveHotelPasswordButton.addEventListener('click', (e) => {
             const currentPassword = document.getElementById('current-password').value.trim();
             const newPassword = document.getElementById('update-new-password').value.trim();
             const confirmNewPassword = document.getElementById('update-confirm-new-password').value.trim();
 
             if (!currentPassword || !newPassword || !confirmNewPassword) {
                 alert('所有欄位都為必填！');
+                e.preventDefault(); // 防止表單提交
                 return;
             }
 
             if (newPassword !== confirmNewPassword) {
                 alert('新密碼與再次輸入的新密碼不一致！');
+                e.preventDefault(); // 防止表單提交
                 return;
             }
 
-            // 模擬密碼變更成功
-            alert('公司密碼已成功變更！');
-
             // 清空輸入欄位並關閉彈窗
-            document.getElementById('current-password').value = '';
-            document.getElementById('update-new-password').value = '';
-            document.getElementById('update-confirm-new-password').value = '';
-            updateHotelPasswordModal.classList.remove('show'); // 正確關閉彈窗
+            // document.getElementById('current-password').value = '';
+            // document.getElementById('update-new-password').value = '';
+            // document.getElementById('update-confirm-new-password').value = '';
+            // updateHotelPasswordModal.classList.remove('show'); // 正確關閉彈窗
         });
 
         // 點擊取消按鈕關閉彈窗
