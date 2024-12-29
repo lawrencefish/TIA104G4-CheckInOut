@@ -67,7 +67,6 @@ public class EmployeeVO {
 
     // create_date DATETIME NOT NULL
     // 建議使用 LocalDateTime (Hibernate 5+ / JPA 2.2+ 皆可)
-    @NotNull(message = "建立日期不可為空")
     @Column(name = "create_date", nullable = false, insertable = false, updatable = false)
     private Timestamp createDate;
 

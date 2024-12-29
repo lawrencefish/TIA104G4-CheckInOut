@@ -682,43 +682,43 @@
                 </div>
             </section>
 
-            <!-- 額外設施與服務 -->
-            <section>
-                <h2>新增額外設施與服務</h2>
-                <form class="add-facility-service-form">
-                    <div class="form-group">
-                        <label for="selection-type">選擇類型</label>
-                        <select id="selection-type">
-                            <option value="facility">設施</option>
-                            <option value="service">服務</option>
-                        </select>
-                    </div>
+<!--            &lt;!&ndash; 額外設施與服務 &ndash;&gt;-->
+<!--            <section>-->
+<!--                <h2>新增額外設施與服務</h2>-->
+<!--                <form class="add-facility-service-form">-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="selection-type">選擇類型</label>-->
+<!--                        <select id="selection-type">-->
+<!--                            <option value="facility">設施</option>-->
+<!--                            <option value="service">服務</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
 
-                    <div class="form-group">
-                        <label for="item-name">名稱</label>
-                        <input type="text" id="item-name" placeholder="輸入設施或服務名稱">
-                    </div>
+<!--                    <div class="form-group">-->
+<!--                        <label for="item-name">名稱</label>-->
+<!--                        <input type="text" id="item-name" placeholder="輸入設施或服務名稱">-->
+<!--                    </div>-->
 
-                    <button type="button" id="add-item-btn">新增</button>
-                </form>
+<!--                    <button type="button" id="add-item-btn">新增</button>-->
+<!--                </form>-->
 
                 <!-- 顯示已新增的設施與服務清單 -->
-                <div class="added-items">
-                    <h3>已新增項目</h3>
-                    <div class="facilities">
-                        <h4>設施</h4>
-                        <ul id="facility-list">
-                            <!-- 設施項目會顯示在此 -->
-                        </ul>
-                    </div>
-                    <div class="services">
-                        <h4>服務</h4>
-                        <ul id="service-list">
-                            <!-- 服務項目會顯示在此 -->
-                        </ul>
-                    </div>
-                </div>
-            </section>
+<!--                <div class="added-items">-->
+<!--                    <h3>已新增項目</h3>-->
+<!--                    <div class="facilities">-->
+<!--                        <h4>設施</h4>-->
+<!--                        <ul id="facility-list">-->
+<!--                            &lt;!&ndash; 設施項目會顯示在此 &ndash;&gt;-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                    <div class="services">-->
+<!--                        <h4>服務</h4>-->
+<!--                        <ul id="service-list">-->
+<!--                            &lt;!&ndash; 服務項目會顯示在此 &ndash;&gt;-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </section>-->
 
             <button class="submit-btn">儲存設定</button>
         </main>
@@ -796,38 +796,38 @@
         const serviceList = document.getElementById('service-list');
 
         // 監聽新增按鈕
-        addItemBtn.addEventListener('click', () => {
-            const itemName = itemNameInput.value.trim();
-            const selectedType = selectionType.value;
-
-            if (itemName !== '') {
-                // 創建新的清單項目
-                const li = document.createElement('li');
-                li.classList.add('item');
-                li.innerHTML = `
-                <span>${itemName}</span>
-                <button class="delete-btn">刪除</button>
-            `;
-
-                // 根據選擇的類型將項目添加到對應清單
-                if (selectedType === 'facility') {
-                    facilityList.appendChild(li);
-                } else if (selectedType === 'service') {
-                    serviceList.appendChild(li);
-                }
-
-                // 清空輸入框
-                itemNameInput.value = '';
-
-                // 設置刪除按鈕的事件
-                const deleteBtn = li.querySelector('.delete-btn');
-                deleteBtn.addEventListener('click', () => {
-                    li.remove(); // 刪除項目
-                });
-            } else {
-                alert('請輸入名稱');
-            }
-        });
+        // addItemBtn.addEventListener('click', () => {
+        //     const itemName = itemNameInput.value.trim();
+        //     const selectedType = selectionType.value;
+        //
+        //     if (itemName !== '') {
+        //         // 創建新的清單項目
+        //         const li = document.createElement('li');
+        //         li.classList.add('item');
+        //         li.innerHTML = `
+        //         <span>${itemName}</span>
+        //         <button class="delete-btn">刪除</button>
+        //     `;
+        //
+        //         // 根據選擇的類型將項目添加到對應清單
+        //         if (selectedType === 'facility') {
+        //             facilityList.appendChild(li);
+        //         } else if (selectedType === 'service') {
+        //             serviceList.appendChild(li);
+        //         }
+        //
+        //         // 清空輸入框
+        //         itemNameInput.value = '';
+        //
+        //         // 設置刪除按鈕的事件
+        //         const deleteBtn = li.querySelector('.delete-btn');
+        //         deleteBtn.addEventListener('click', () => {
+        //             li.remove(); // 刪除項目
+        //         });
+        //     } else {
+        //         alert('請輸入名稱');
+        //     }
+        // });
 
         // 取得 input 和按鈕元素
         const input = document.getElementById("item-input");

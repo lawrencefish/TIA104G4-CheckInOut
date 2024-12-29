@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 @Controller
@@ -149,6 +150,10 @@ public class LoginController {
 
         // 驗證成功 -> 存入 Session
         EmployeeVO employee = employeeOpt.get();
+
+        // 通過 service 保存（內部更新 lastLoginDate）
+        employeeService.updateLastLogin(employee);
+
         request.getSession().setAttribute("employee", employee);
 
         // 導向員工後台

@@ -96,4 +96,20 @@ public class HotelService {
     public boolean existsByEmail(String email) {
         return hotelRepository.existsByEmail(email);
     }
+
+    @Transactional
+    public void updateHotelPassword(Integer hotelId, String newPassword) {
+        if (hotelId == null || newPassword == null || newPassword.trim().isEmpty()) {
+            throw new IllegalArgumentException("Invalid hotel ID or password.");
+        }
+
+        HotelVO existingHotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new IllegalArgumentException("Hotel not found with ID: " + hotelId));
+
+        // 更新密碼
+        existingHotel.setPassword(newPassword);
+
+        // 保存變更
+        hotelRepository.save(existingHotel);
+    }
 }
