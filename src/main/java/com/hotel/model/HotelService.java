@@ -1,5 +1,9 @@
 package com.hotel.model;
 
+import com.facility.model.FacilityRepository;
+import com.facility.model.FacilityVO;
+import com.hotelFacility.model.HotelFacilityRepository;
+import com.hotelFacility.model.HotelFacilityVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +16,10 @@ public class HotelService {
 
     @Autowired
     private HotelRepository hotelRepository;
+    @Autowired
+    private HotelFacilityRepository hotelFacilityRepository;
+    @Autowired
+    private FacilityRepository facilityRepository;
 
     @Transactional
     public HotelVO addHotel(HotelVO hotel) {
@@ -111,5 +119,57 @@ public class HotelService {
 
         // 保存變更
         hotelRepository.save(existingHotel);
+    }
+
+    public void updateHotelInfo(Integer hotelId, String infoText) {
+        // 驗證飯店是否存在
+        HotelVO hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new IllegalArgumentException("無效的飯店 ID"));
+
+        // 更新 infoText
+        hotel.setInfoText(infoText);
+        hotelRepository.save(hotel);
+    }
+
+    public void saveHotelInfoText(HotelVO hotel) {
+        // 只更新 infoText，保留其他字段不變
+        hotelRepository.save(hotel);
+    }
+
+    /**
+     * 更新飯店的設施與服務
+     * @param hotel 當前飯店
+     * @param facilityIds 設施 ID 列表
+     * @param serviceIds 服務 ID 列表
+     */
+    public void updateFacilities(HotelVO hotel, List<Integer> facilityIds, List<Integer> serviceIds) {
+        // 清空當前飯店的所有設施與服務
+        hotelFacilityRepository.deleteByHotelId(hotel.getHotelId());
+
+        // 新增設施
+        if (facilityIds != null && !facilityIds.isEmpty()) {
+            facilityIds.forEach(facilityId -> {
+                FacilityVO facility = facilityRepository.findById(facilityId)
+                        .orElseThrow(() -> new IllegalArgumentException("無效的設施 ID: " + facilityId));
+
+                HotelFacilityVO hotelFacility = new HotelFacilityVO();
+                hotelFacility.setHotel(hotel);
+                hotelFacility.setFacility(facility);
+                hotelFacilityRepository.save(hotelFacility);
+            });
+        }
+
+        // 新增服務
+        if (serviceIds != null && !serviceIds.isEmpty()) {
+            serviceIds.forEach(serviceId -> {
+                FacilityVO service = facilityRepository.findById(serviceId)
+                        .orElseThrow(() -> new IllegalArgumentException("無效的服務 ID: " + serviceId));
+
+                HotelFacilityVO hotelService = new HotelFacilityVO();
+                hotelService.setHotel(hotel);
+                hotelService.setFacility(service);
+                hotelFacilityRepository.save(hotelService);
+            });
+        }
     }
 }

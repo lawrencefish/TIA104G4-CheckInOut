@@ -4,13 +4,17 @@ import com.employee.model.EmployeeVO;
 import com.hotel.model.HotelService;
 import com.hotel.model.HotelVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/hotel")
@@ -79,5 +83,25 @@ public class HotelController {
         request.getSession().setAttribute("hotel", hotel);
 
         return "redirect:/account/accountSet"; // 返回頁面以顯示成功消息
+    }
+
+    @PostMapping("/update-info")
+    public String updateHotelInfo(@RequestParam String infoText, HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            HotelVO hotel = (HotelVO) session.getAttribute("hotel");
+            if (hotel == null) {
+                throw new IllegalArgumentException("未找到飯店資料");
+            }
+
+            hotel.setInfoText(infoText);
+            hotelService.saveHotelInfoText(hotel);
+            session.setAttribute("hotel", hotel);
+
+            redirectAttributes.addFlashAttribute("message", "更新成功！");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "更新失敗！");
+        }
+
+        return "redirect:/business/hotelIntroduce";
     }
 }
