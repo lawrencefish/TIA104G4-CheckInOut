@@ -3,15 +3,15 @@ package com.hotelImg.controller;
 import com.hotelImg.model.HotelImgService;
 import com.hotelImg.model.HotelImgVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,6 +38,31 @@ public class HotelImgController {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(hotelImg.getPicture());
+    }
+
+    // 新增圖片上傳功能
+    @PostMapping("/hotel/{hotelId}/upload")
+    public ResponseEntity<?> uploadImages(@PathVariable Integer hotelId,
+                                          @RequestParam("photos") List<MultipartFile> photos) {
+        try {
+            List<HotelImgVO> savedImages = hotelImgService.uploadImages(photos, hotelId);
+            return ResponseEntity.ok(savedImages.stream()
+                    .map(HotelImgVO::getHotelImgId)
+                    .collect(Collectors.toList())); // 回傳儲存的圖片 ID
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("圖片上傳失敗：" + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/image/{imageId}")
+    public ResponseEntity<?> deleteImage(@PathVariable Integer imageId) {
+        try {
+            hotelImgService.deleteImage(imageId); // 調用 Service 刪除圖片
+            return ResponseEntity.ok(Map.of("message", "圖片已刪除")); // 返回 JSON 格式
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "刪除失敗：" + e.getMessage()));
+        }
     }
 }
 

@@ -350,4 +350,5 @@ public class HotelVO {
     public void setRoomTypes(List<RoomTypeVO> roomTypes) {
         this.roomTypes = roomTypes;
     }
+
 }
