@@ -30,4 +30,8 @@ public class HotelFacilityService {
     public List<Integer> findFacilityIdsByHotelId(Integer hotelId) {
         return hotelFacilityRepository.findFacilityIdsByHotelId(hotelId);
     }
+
+    public void save(HotelFacilityVO hotelFacility) {
+        hotelFacilityRepository.save(hotelFacility);
+    }
 }

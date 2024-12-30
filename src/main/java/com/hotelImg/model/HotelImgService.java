@@ -51,4 +51,11 @@ public class HotelImgService {
         }
         hotelImgRepository.deleteById(imageId);
     }
+
+    public void save(HotelImgVO hotelImgVO) {
+        if (hotelImgVO == null) {
+            throw new IllegalArgumentException("HotelImgVO cannot be null");
+        }
+        hotelImgRepository.save(hotelImgVO);
+    }
 }

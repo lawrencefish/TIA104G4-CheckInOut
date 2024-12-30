@@ -302,38 +302,47 @@
 
         <!-- Main -->
         <main>
-            <h1>設定管理員帳號</h1>
+            <h1>設定負責人帳號</h1>
             <form id="admin-form" th:action="@{/signUp/signUp-3}" method="POST">
+                <!-- 隱藏職稱欄位 -->
+                <input type="hidden" name="title" value="負責人">
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="employee-id">員工編號</label>
-                        <input type="text" id="employee-id" placeholder="180912" required>
+                        <input type="text" id="employee-id" name="employeeNumber" placeholder="請輸入員工編號" required>
+                        <span th:if="${#fields.hasErrors('employeeNumber')}" th:errors="*{employeeNumber}" class="error-message"></span>
                     </div>
                     <div class="form-group">
                         <label for="name">姓名</label>
-                        <input type="text" id="name" placeholder="請輸入姓名" required>
+                        <input type="text" id="name" name="name" placeholder="請輸入姓名" required>
+                        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="password">密碼</label>
-                        <input type="password" id="password" placeholder="請輸入密碼" required>
+                        <input type="password" id="password" name="password" placeholder="請輸入密碼" required>
+                        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></span>
                     </div>
                     <div class="form-group">
                         <label for="confirm-password">再次輸入密碼</label>
-                        <input type="password" id="confirm-password" placeholder="請再次輸入密碼" required>
+                        <input type="password" id="confirm-password" name="confirmPassword" placeholder="請再次輸入密碼" required>
+                        <span id="confirm-password-error" class="error-message"></span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="phone">連絡電話</label>
-                        <input type="tel" id="phone" placeholder="0912-345-678" required>
+                        <input type="tel" id="phone" name="phoneNumber" placeholder="請輸入電話" required>
+                        <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error-message"></span>
                     </div>
                     <div class="form-group">
                         <label for="email">電子信箱</label>
-                        <input type="email" id="email" placeholder="abc123456@gmail.com" required>
+                        <input type="email" id="email" name="email" placeholder="請輸入信箱" required>
+                        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
                     </div>
                 </div>
 

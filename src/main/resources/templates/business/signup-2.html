@@ -403,12 +403,13 @@
                         <div class="photo-upload">
                             <input type="file" id="photo-upload" name="photos" multiple accept="image/*">
                         </div>
+                        <!-- 照片預覽區域 -->
                         <div class="uploaded-photos" id="uploaded-photos">
                             <!-- 已上傳照片將顯示在這 -->
                         </div>
-                        <!-- 清除按鈕 -->
+                        <!-- 按鈕區域 -->
                         <div class="photo-upload-buttons">
-                            <button type="button" class="clear-btn">清除</button>
+                            <button type="button" id="clear-all-btn" class="clear-btn">清除所有照片</button>
                         </div>
                     </div>
                 </section>
@@ -521,6 +522,71 @@
 
         });
 
+
+        //下面是圖片部分
+        let selectedFiles = []; // 儲存已選擇的檔案
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const photoUploadInput = document.getElementById("photo-upload");
+            const uploadedPhotosDiv = document.getElementById("uploaded-photos");
+            const clearAllButton = document.getElementById("clear-all-btn");
+
+            // 當使用者選擇圖片時
+            photoUploadInput.addEventListener("change", (event) => {
+                const files = Array.from(event.target.files);
+                selectedFiles = [...selectedFiles, ...files];
+                renderUploadedPhotos();
+            });
+
+            // 渲染已上傳的圖片
+            function renderUploadedPhotos() {
+                uploadedPhotosDiv.innerHTML = ""; // 清空縮略圖
+
+                selectedFiles.forEach((file, index) => {
+                    const fileReader = new FileReader();
+                    fileReader.onload = (e) => {
+                        const wrapper = document.createElement("div");
+                        wrapper.style.position = "relative";
+                        wrapper.style.margin = "10px";
+
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.alt = `圖片${index + 1}`;
+                        img.style.width = "150px";
+                        img.style.borderRadius = "8px";
+                        img.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.1)";
+
+                        const deleteBtn = document.createElement("button");
+                        deleteBtn.textContent = "✖";
+                        deleteBtn.style.position = "absolute";
+                        deleteBtn.style.top = "-10px";
+                        deleteBtn.style.right = "-10px";
+                        deleteBtn.style.width = "20px";
+                        deleteBtn.style.height = "20px";
+                        deleteBtn.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+                        deleteBtn.style.color = "white";
+                        deleteBtn.style.border = "none";
+                        deleteBtn.style.cursor = "pointer";
+
+                        deleteBtn.addEventListener("click", () => {
+                            selectedFiles.splice(index, 1); // 刪除該圖片
+                            renderUploadedPhotos();
+                        });
+
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(deleteBtn);
+                        uploadedPhotosDiv.appendChild(wrapper);
+                    };
+                    fileReader.readAsDataURL(file);
+                });
+            }
+
+            // 清除所有照片
+            clearAllButton.addEventListener("click", () => {
+                selectedFiles = []; // 清空檔案陣列
+                renderUploadedPhotos(); // 更新顯示
+            });
+        });
     </script>
 </body>
 

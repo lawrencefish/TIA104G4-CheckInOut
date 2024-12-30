@@ -72,4 +72,16 @@ public class EmployeeService {
     public boolean existsByHotelIdAndEmployeeNumber(Integer hotelId, String employeeNumber) {
         return employeeRepository.existsByHotel_HotelIdAndEmployeeNumber(hotelId, employeeNumber);
     }
+
+    public boolean existsByEmployeeNumberAndHotel(String employeeNumber, Integer hotelId) {
+        return employeeRepository.existsByEmployeeNumberAndHotel_HotelId(employeeNumber, hotelId);
+    }
+
+    public boolean existsByEmailAndHotel(String email, Integer hotelId) {
+        return employeeRepository.existsByEmailAndHotel_HotelId(email, hotelId);
+    }
+
+    public void save(EmployeeVO employee) {
+        employeeRepository.save(employee);
+    }
 }

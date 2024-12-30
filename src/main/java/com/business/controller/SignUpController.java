@@ -7,6 +7,10 @@ import com.facility.model.FacilityVO;
 import com.googleAPI.GeocodingService;
 import com.hotel.model.HotelService;
 import com.hotel.model.HotelVO;
+import com.hotelFacility.model.HotelFacilityService;
+import com.hotelFacility.model.HotelFacilityVO;
+import com.hotelImg.model.HotelImgService;
+import com.hotelImg.model.HotelImgVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,10 +18,14 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 @Controller
@@ -32,6 +40,10 @@ public class SignUpController {
     private FacilityService facilityService;
     @Autowired
     private GeocodingService geocodingService;
+    @Autowired
+    private HotelImgService hotelImgService;
+    @Autowired
+    private HotelFacilityService hotelFacilityService;
 
 
     @GetMapping("")
@@ -47,124 +59,146 @@ public class SignUpController {
     }
 
     @PostMapping("/signUp-1")
-    public String handleSignUp1(
-            @Valid HotelVO hotelVO, // 綁定表單
-            BindingResult result, // 用於檢查驗證結果
-            ModelMap model,
-            @RequestParam("idFront") MultipartFile idFront,
-            @RequestParam("idBack") MultipartFile idBack,
-            @RequestParam("license") MultipartFile license,
-            HttpSession session
-    ) {
-        // 表單驗證
-        if (result.hasErrors()) {
-            result.getFieldErrors().forEach(error -> {
-                System.out.println("Field: " + error.getField() + ", Error: " + error.getDefaultMessage());
-            });
-            model.addAttribute("hotelDraft", hotelVO); // 確保錯誤資料返回前端
-            return "business/signup-1";
+    public String createHotel(
+            @Valid @ModelAttribute("hotelVO") HotelVO hotelVO,
+            BindingResult bindingResult,
+            @RequestParam("idFront") MultipartFile idFrontFile,
+            @RequestParam("idBack") MultipartFile idBackFile,
+            @RequestParam("license") MultipartFile licenseFile,
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request,
+            Model model) {
+        System.out.println("有接受到");
+
+//        // 1. 表單驗證
+//        if (bindingResult.hasErrors()) {
+//            System.out.println("表單驗證不通過");
+//            return "business/signUp-1"; // 返回頁面
+//        }
+
+        // 2. 驗證檔案
+        if (idFrontFile.isEmpty()) {
+            model.addAttribute("idFrontError", "請上傳公司負責人身份證正面！");
+            System.out.println("沒有照片");
+            return "business/signUp-1";
+        }
+        if (idBackFile.isEmpty()) {
+            model.addAttribute("idBackError", "請上傳公司負責人身份證反面！");
+            System.out.println("沒有照片");
+            return "business/signUp-1";
+        }
+        if (licenseFile.isEmpty()) {
+            model.addAttribute("licenseError", "請上傳旅館業登記證或民宿登記證！");
+            System.out.println("沒有照片");
+            return "business/signUp-1";
         }
 
-        // 驗證 taxId、name、address、phoneNumber、email 的唯一性
+        // 3. 檢查唯一性約束
         if (hotelService.existsByTaxId(hotelVO.getTaxId())) {
-            model.addAttribute("taxIdError", "此統一編號已存在");
-            return "business/signup-1";
-        }
-        if (hotelService.existsByName(hotelVO.getName())) {
-            model.addAttribute("nameError", "此公司名稱已存在");
-            return "business/signup-1";
-        }
-        if (hotelService.existsByAddress(hotelVO.getAddress())) {
-            model.addAttribute("addressError", "此地址已存在");
-            return "business/signup-1";
-        }
-        if (hotelService.existsByPhoneNumber(hotelVO.getPhoneNumber())) {
-            model.addAttribute("phoneNumberError", "此電話號碼已存在");
-            return "business/signup-1";
+            model.addAttribute("duplicateError", "統一編號已存在，請確認資料！");
+            return "business/signUp-1";
         }
         if (hotelService.existsByEmail(hotelVO.getEmail())) {
-            model.addAttribute("emailError", "此電子信箱已存在");
-            return "business/signup-1";
+            model.addAttribute("duplicateError", "電子郵件已存在，請確認資料！");
+            return "business/signUp-1";
+        }
+        if (hotelService.existsByPhoneNumber(hotelVO.getPhoneNumber())) {
+            model.addAttribute("duplicateError", "電話號碼已存在，請確認資料！");
+            return "business/signUp-1";
         }
 
-        // 上傳照片處理
-        boolean hasFileError = false;
-
-        // 處理 idFront 文件
-        if (idFront.isEmpty()) {
-            System.out.println("未選擇圖片");
-            model.addAttribute("idFrontError", "負責人身份證正面不可為空");
-            hasFileError = true;
-        } else {
-            try {
-                hotelVO.setIdFront(idFront.getBytes());
-            } catch (IOException e) {
-                model.addAttribute("idFrontError", "上傳負責人身份證正面失敗");
-                hasFileError = true;
-            }
+        // 4. 處理文件上傳
+        try {
+            hotelVO.setIdFront(idFrontFile.getBytes());
+            hotelVO.setIdBack(idBackFile.getBytes());
+            hotelVO.setLicense(licenseFile.getBytes());
+        } catch (IOException e) {
+            model.addAttribute("fileError", "文件上傳過程中出錯，請重新嘗試！");
+            System.out.println("文件上傳過程中出錯");
+            return "business/signUp-1";
         }
 
-        // 處理 idBack 文件
-        if (idBack.isEmpty()) {
-            System.out.println("未選擇圖片");
-            model.addAttribute("idBackError", "負責人身份證反面不可為空");
-            hasFileError = true;
-        } else {
-            try {
-                hotelVO.setIdBack(idBack.getBytes());
-            } catch (IOException e) {
-                model.addAttribute("idBackError", "上傳負責人身份證反面失敗");
-                hasFileError = true;
-            }
+        // 5. 保存資料
+        try {
+            hotelService.save(hotelVO);
+        } catch (Exception e) {
+            model.addAttribute("saveError", "保存資料時發生錯誤，請稍後再試！");
+            System.out.println("保存資料時發生錯誤");
+            return "business/signUp-1";
         }
 
-        // 處理 license 文件
-        if (license.isEmpty()) {
-            System.out.println("未選擇圖片");
-            model.addAttribute("licenseError", "旅館業登記證 / 民宿登記證不可為空");
-            hasFileError = true;
-        } else {
-            try {
-                hotelVO.setLicense(license.getBytes());
-            } catch (IOException e) {
-                model.addAttribute("licenseError", "上傳旅館業登記證失敗");
-                hasFileError = true;
-            }
-        }
+        // 6. 添加成功訊息並跳轉
+        redirectAttributes.addFlashAttribute("successMessage", "旅館新增成功！");
+        // 驗證成功 -> 存入 Session
+        request.getSession().setAttribute("hotel", hotelVO);
 
-        // 如果有檔案錯誤，返回頁面
-        if (hasFileError) {
-            System.out.println("錯誤QQ");
-            return "business/signup-1";
-        }
-
-        // 暫存 VO 至 Session
-        hotelService.addHotel(hotelVO);
-
-
-        return "redirect:/signUp/signUp-2";
+        System.out.println("旅館新增成功");
+        return "redirect:/signUp/signUp-2"; // 跳轉到下一步
     }
 
-
-
     @GetMapping("/signUp-2")
-    public String showSignUp2() {
+    public String showSignUp2(ModelMap model) {
         return "business/signup-2";
     }
 
+
     @PostMapping("/signUp-2")
-    public String handleSignUp2(@RequestParam("infoText") String infoText, HttpSession session) {
-        HotelVO hotel = (HotelVO) session.getAttribute("hotelDraft");
-        if (hotel == null) {
-            return "redirect:/signUp/signUp-1";
+    public String handleStepTwo(
+            @RequestParam("photos") List<MultipartFile> photos,
+            @RequestParam(value = "facilities", required = false) List<Integer> facilityIds,
+            HttpSession session,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+        try {
+            // 從 Session 中獲取 hotelVO
+            HotelVO hotelVO = (HotelVO) session.getAttribute("hotel");
+            if (hotelVO == null) {
+                redirectAttributes.addFlashAttribute("error", "未找到旅館信息，請重新開始註冊流程！");
+                return "redirect:/signUp/signUp-1";
+            }
+
+            // 處理照片上傳並存入 HotelImgVO
+            if (photos != null && !photos.isEmpty()) {
+                for (MultipartFile photo : photos) {
+                    if (!photo.isEmpty()) {
+                        HotelImgVO hotelImg = new HotelImgVO();
+                        hotelImg.setHotel(hotelVO);
+                        hotelImg.setPicture(photo.getBytes());
+                        // 保存到資料庫
+                        hotelImgService.save(hotelImg);
+                    }
+                }
+            }
+
+            // 處理設施並存入 HotelFacilityVO
+            if (facilityIds != null && !facilityIds.isEmpty()) {
+                for (Integer facilityId : facilityIds) {
+                    FacilityVO facility = facilityService.findById(facilityId)
+                            .orElseThrow(() -> new IllegalArgumentException("無效的設施 ID: " + facilityId));
+
+                    HotelFacilityVO hotelFacility = new HotelFacilityVO();
+                    hotelFacility.setHotel(hotelVO);
+                    hotelFacility.setFacility(facility);
+
+                    // 保存到資料庫
+                    hotelFacilityService.save(hotelFacility);
+                }
+            }
+
+            redirectAttributes.addFlashAttribute("success", "照片與設施已成功儲存！");
+
+            System.out.println("成功");
+            request.getSession().setAttribute("hotel", hotelVO);
+            return "redirect:/signUp/signUp-3"; // 跳轉到下一步
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "照片上傳失敗，請稍後再試！");
+            return "redirect:/signUp/signUp-2";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "設施更新失敗：" + e.getMessage());
+            return "redirect:/signUp/signUp-2";
         }
-
-        // 保存額外信息
-        hotel.setInfoText(infoText);
-        session.setAttribute("hotelDraft", hotel);
-
-        return "redirect:/signUp/signUp-3";
     }
+
 
     @GetMapping("/signUp-3")
     public String showSignUp3() {
@@ -173,69 +207,49 @@ public class SignUpController {
 
 
     @PostMapping("/signUp-3")
-    public String handleSignUp3(
+    public String handleSignUpStepThree(
             @RequestParam("employeeNumber") String employeeNumber,
             @RequestParam("name") String name,
             @RequestParam("password") String password,
-            @RequestParam("title") String title,
-            @RequestParam("phone") String phone,
+            @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("email") String email,
-            HttpSession session
-    ) {
-        HotelVO hotel = (HotelVO) session.getAttribute("hotelDraft");
-        if (hotel == null) {
+            @RequestParam("title") String title,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        // 從 Session 中獲取 HotelVO
+        HotelVO hotelVO = (HotelVO) session.getAttribute("hotel");
+        if (hotelVO == null) {
+            redirectAttributes.addFlashAttribute("error", "無法取得飯店資訊，請重新登入。");
             return "redirect:/signUp/signUp-1";
         }
 
-        // 調用 GeocodingService 獲取經緯度
-        try {
-            String fullAddress = hotel.getCity() + hotel.getDistrict() + hotel.getAddress();
-            Double[] coordinates = geocodingService.getCoordinatesFromAddress(fullAddress);
-            if (coordinates != null) {
-                hotel.setLatitude(coordinates[0]);
-                hotel.setLongitude(coordinates[1]);
-            } else {
-                // 如果地址無法解析，返回錯誤提示
-                session.setAttribute("errorMessage", "無法解析地址，請確認地址是否正確。");
-                return "redirect:/signUp/signUp-3";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            session.setAttribute("errorMessage", "無法獲取經緯度，請稍後重試。");
+        // 檢查員工編號或 Email 是否在該飯店中重複
+        if (employeeService.existsByEmployeeNumberAndHotel(employeeNumber, hotelVO.getHotelId())) {
+            redirectAttributes.addFlashAttribute("error", "該員工編號在此飯店中已存在，請使用其他編號。");
             return "redirect:/signUp/signUp-3";
         }
 
-        // 保存員工信息
+        if (employeeService.existsByEmailAndHotel(email, hotelVO.getHotelId())) {
+            redirectAttributes.addFlashAttribute("error", "該電子信箱在此飯店中已存在，請更換其他信箱。");
+            return "redirect:/signUp/signUp-3";
+        }
+
+        // 創建新 EmployeeVO
         EmployeeVO employee = new EmployeeVO();
         employee.setEmployeeNumber(employeeNumber);
         employee.setName(name);
         employee.setPassword(password);
-        employee.setTitle(title);
-        employee.setPhoneNumber(phone);
+        employee.setPhoneNumber(phoneNumber);
         employee.setEmail(email);
+        employee.setTitle(title);
+        employee.setHotel(hotelVO);
 
-        // 最後一步，保存到資料庫
-        // 保存 HotelVO 和 EmployeeVO 到資料庫
+        // 保存員工資訊
+        employeeService.save(employee);
 
-
-        // 清除暫存資料
-        session.removeAttribute("hotelDraft");
-
-
-
-
-
-
-
-
-
-
-
-
-        // 清除暫存資料
-        session.removeAttribute("hotelDraft");
-
-        return "redirect:/signUp/successful";
+        redirectAttributes.addFlashAttribute("success", "負責人帳號已成功設定！");
+        return "redirect:/signUp/signUp-4";
     }
 
     @GetMapping("/successful")
