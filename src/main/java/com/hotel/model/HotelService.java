@@ -98,6 +98,7 @@ public class HotelService {
     }
 
     public boolean existsByPhoneNumber(String phoneNumber) {
+
         return hotelRepository.existsByPhoneNumber(phoneNumber);
     }
 
@@ -171,5 +172,13 @@ public class HotelService {
                 hotelFacilityRepository.save(hotelService);
             });
         }
+    }
+
+    public void save(HotelVO hotelVO) {
+        hotelRepository.save(hotelVO);
+    }
+
+    public List<HotelVO> findAll() {
+        return hotelRepository.findAll();
     }
 }
