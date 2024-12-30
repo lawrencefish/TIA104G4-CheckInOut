@@ -13,6 +13,11 @@ public class AuthenticationFilter implements Filter {
     private static final List<String> PROTECTED_PATHS = Arrays.asList(
             "/business", "/frontDesk", "/orders", "/report", "/account", "employee"
     );
+    
+    // 管理員需要登入的頁面 -byBarry
+    private static final List<String> ADMIN_PROTECTED_PATHS = Arrays.asList(
+    		"/admin/admin-backend", "/admin/list", "/admin/edit"
+    		); 
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -43,6 +48,15 @@ public class AuthenticationFilter implements Filter {
                 httpResponse.sendRedirect(contextPath + "/login/employee");
                 return;
             }
+        }
+        
+        // 管理員路徑驗證 -byBarry
+        if (ADMIN_PROTECTED_PATHS.stream().anyMatch(path::startsWith)) {
+        	Object admin = httpRequest.getSession().getAttribute("adminId");
+        	if(admin == null ) {
+        		httpResponse.sendRedirect(contextPath + "/admin/login");
+        		return;
+        	}
         }
 
         // 如果路徑不需要認證或已通過驗證，繼續處理請求

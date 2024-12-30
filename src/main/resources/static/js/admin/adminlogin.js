@@ -60,14 +60,14 @@ async function handleLogin() {
 
     try {
         // 這裡應該是實際的 API 呼叫
-        // const response = await fetch('your-api-endpoint', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ email, password, rememberMe })
-        // });
+//         const response = await fetch('your-api-endpoint', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ email, password, rememberMe })
+//         });
 
         // 模擬登入成功
-        const loginSuccessful = true; // 這應該是基於 API 響應
+         const loginSuccessful = true; // 這應該是基於 API 響應
 
         if (loginSuccessful) {
             // 儲存登入狀態

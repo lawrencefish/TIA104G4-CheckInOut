@@ -4,10 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.admin.model.Admin;
 import com.admin.model.*;
 
 import java.util.List;
+
+import javax.servlet.http.HttpSession;
 
 @Controller  // 標示這是一個控制器
 @RequestMapping("/admin")  // 所有路徑都會以/admin 開頭
@@ -69,6 +73,29 @@ public class AdminController {
     public String delete(@PathVariable Integer id) {
         adminService.delete(id);
         return "redirect:/admin/list";  // 刪除完成後重導向到列表頁
+    }
+    
+    //
+    @GetMapping("/adminBackend")
+    public String showAdminBackend() {
+    	return "admin/admin-backend";
+    }
+    
+    // 處理登入表單提交
+    @PostMapping("/login")
+    public String handleLogin(@RequestParam String email, @RequestParam String password, HttpSession session, RedirectAttributes redirectAttributes) {
+    	Admin admin = adminService.adminLogin(email, password);
+    	
+    	if (admin != null) {
+    		// 登入成功 管理員ID存入session
+    		session.setAttribute("adminId", admin.getAdminId());
+    		session.setAttribute("adminEmail", admin.getEmail());
+    		return "redirect:/admin/admin-backend"; // 登入成功後轉到管理員頁面
+    	} else {
+    		// 登入失敗 錯誤訊息
+    		redirectAttributes.addFlashAttribute("error", "帳號或密碼錯誤");
+    		return "redirect:/admin/login"; // 回到登入頁面
+    	}
     }
     
 //    @GetMapping("/test")
