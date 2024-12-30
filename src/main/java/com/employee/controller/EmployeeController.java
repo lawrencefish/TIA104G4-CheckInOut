@@ -94,10 +94,34 @@ public class EmployeeController {
 
     @PostMapping("/set")
     public String setEmployee(@ModelAttribute EmployeeVO employeeVO, RedirectAttributes redirectAttributes) {
+        // 驗證輸入欄位
+        StringBuilder errorMessage = new StringBuilder();
+        if (employeeVO.getEmployeeNumber() == null || employeeVO.getEmployeeNumber().trim().isEmpty()) {
+            errorMessage.append("員工編號不可為空！<br>");
+        }
+        if (employeeVO.getName() == null || employeeVO.getName().trim().isEmpty()) {
+            errorMessage.append("姓名不可為空！<br>");
+        }
+        if (employeeVO.getTitle() == null || employeeVO.getTitle().trim().isEmpty()) {
+            errorMessage.append("職位不可為空！<br>");
+        }
+        if (employeeVO.getPhoneNumber() == null || employeeVO.getPhoneNumber().trim().isEmpty()) {
+            errorMessage.append("電話號碼不可為空！<br>");
+        }
+        if (employeeVO.getEmail() == null || employeeVO.getEmail().trim().isEmpty()) {
+            errorMessage.append("電子郵件不可為空！<br>");
+        }
+
+        // 若有錯誤訊息，回傳至頁面並顯示錯誤
+        if (errorMessage.length() > 0) {
+            redirectAttributes.addFlashAttribute("employeeError", errorMessage.toString());
+            return "redirect:/account/accountSet";
+        }
+
         // 根據 employeeId 查詢現有的員工資料
         EmployeeVO existingEmployee = employeeService.getEmployeeById(employeeVO.getEmployeeId());
         if (existingEmployee == null) {
-            redirectAttributes.addFlashAttribute("error", "未找到對應的員工資料！");
+            redirectAttributes.addFlashAttribute("employeeError", "未找到對應的員工資料！");
             return "redirect:/account/accountSet"; // 跳轉回員工列表頁面或其他適合的頁面
         }
 
@@ -112,7 +136,7 @@ public class EmployeeController {
         employeeService.updateEmployee(existingEmployee);
 
         // 添加成功訊息
-        redirectAttributes.addFlashAttribute("success", "員工資料更新成功！");
+//        redirectAttributes.addFlashAttribute("employeeSuccess", "員工資料更新成功！");
         return "redirect:/account/accountSet"; // 跳轉回員工列表頁面或其他適合的頁面
     }
 

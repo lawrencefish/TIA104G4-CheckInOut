@@ -32,10 +32,6 @@ public class HotelFacilityController {
     private HotelFacilityService hotelFacilityService;
     @Autowired
     private HotelService hotelService;
-    @Autowired
-    private HotelFacilityRepository hotelFacilityRepository;
-    @Autowired
-    private FacilityRepository facilityRepository;
 
     /**
      * 查詢飯店已關聯的設施與服務

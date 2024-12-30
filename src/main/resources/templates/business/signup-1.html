@@ -519,8 +519,10 @@
                             </div>
                             <input type="file" id="idFront" name="idFront" accept=".jpg, .jpeg, .png"
                                    onchange="previewImage(this, this.previousElementSibling)">
-                            <span th:if="${idFrontError != null}" th:text="${idFrontError}"
-                                  class="error-message"></span>
+                            <div>
+                                <span th:if="${idFrontError != null}" th:text="${idFrontError}"
+                                      class="error-message"></span>
+                            </div>
                         </div>
 
                         <div>
@@ -530,7 +532,10 @@
                             </div>
                             <input type="file" id="idBack" name="idBack" accept=".jpg, .jpeg, .png"
                                    onchange="previewImage(this, this.previousElementSibling)">
-                            <span th:if="${idBackError != null}" th:text="${idBackError}" class="error-message"></span>
+                            <div>
+                                <span th:if="${idBackError != null}" th:text="${idBackError}"
+                                      class="error-message"></span>
+                            </div>
                         </div>
 
                         <div>
@@ -540,8 +545,10 @@
                             </div>
                             <input type="file" id="license" name="license" accept=".jpg, .jpeg, .png"
                                    onchange="previewImage(this, this.previousElementSibling)">
-                            <span th:if="${licenseError != null}" th:text="${licenseError}"
-                                  class="error-message"></span>
+                            <div>
+                                <span th:if="${licenseError != null}" th:text="${licenseError}"
+                                      class="error-message"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -563,26 +570,26 @@
     // 預覽上傳的圖片
     function previewImage(input) {
         const file = input.files[0];
-        const previewContainer = input.previousElementSibling; // 找到緊鄰的預覽區域
+        const previewContainer = input.previousElementSibling;
 
         if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                // 創建圖片元素
-                const img = document.createElement("img");
-                img.src = e.target.result;
-                img.alt = "預覽圖片";
-
-                // 清空並加入新圖片
-                previewContainer.innerHTML = "";
-                previewContainer.appendChild(img);
+                previewContainer.innerHTML = `<img src="${e.target.result}" alt="預覽圖片">`;
             };
             reader.readAsDataURL(file);
         } else {
-            // 清空預覽容器並恢復默認文字
             previewContainer.innerHTML = "<span>選擇檔案後會顯示預覽</span>";
         }
     }
+
+    document.querySelector("form").addEventListener("submit", function (event) {
+        const idFrontFile = document.getElementById("idFront").files[0];
+        if (!idFrontFile) {
+            alert("請上傳公司負責人身份證正面！");
+            event.preventDefault(); // 阻止表單提交
+        }
+    });
 
     //  縣市api
     document.addEventListener("DOMContentLoaded", function () {
@@ -607,7 +614,7 @@
             const selectedCity = this.value;
 
             // 清空並禁用地區選項
-//             districtSelect.innerHTML = '<option value="">請先選擇縣市</option>';
+            districtSelect.innerHTML = '<option value="">選擇地區</option>';
             districtSelect.disabled = !selectedCity;
 
             if (selectedCity) {
@@ -626,15 +633,12 @@
         });
     });
 
-    document.getElementById("confirmPassword").addEventListener("change", function () {
+    document.querySelector("form").addEventListener("submit", function (event) {
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
-        const confirmPasswordError = document.getElementById("confirmPasswordError");
-
         if (password !== confirmPassword) {
-            confirmPasswordError.textContent = "密碼不一致";
-        } else {
-            confirmPasswordError.textContent = ""; // 清空錯誤訊息
+            alert("密碼不一致，請重新確認！");
+            event.preventDefault(); // 阻止表單提交
         }
     });
 </script>
