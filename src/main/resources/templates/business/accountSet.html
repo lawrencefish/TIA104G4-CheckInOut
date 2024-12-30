@@ -769,9 +769,18 @@
         </main>
         <!-- 員工資料彈窗 -->
         <!-- 員工資料彈窗 -->
-        <div id="employee-modal" class="hidden">
+        <div id="employee-modal" th:classappend="${employeeError != null || employeeSuccess != null ? 'show' : 'hidden'}">
             <div class="employee-modal-content">
                 <h2>員工資料</h2>
+                
+                <!-- 顯示錯誤或成功訊息 -->
+                <div th:if="${employeeError}" class="error">
+                    <p th:text="${employeeError}"></p>
+                </div>
+                <div th:if="${employeeSuccess}" class="alert alert-success">
+                    <p th:text="${employeeSuccess}"></p>
+                </div>
+                
                 <form th:action="@{/employee/set}" method="post">
                     <div class="form-group">
                         <input type="hidden" id="employee-modal-id" name="employeeId" readonly>
@@ -881,16 +890,16 @@
 
 
         <!-- 變更公司密碼 -->
-        <div id="update-hotel-password-modal" th:classappend="${error != null || success != null ? 'show' : 'hidden'}">
+        <div id="update-hotel-password-modal" th:classappend="${hotelError != null || hotelSuccess != null ? 'show' : 'hidden'}">
             <div class="update-hotel-password-modal-content">
                 <h2>變更公司密碼</h2>
 
                 <!-- 顯示錯誤或成功訊息 -->
-                <div th:if="${error}" class="error">
-                    <p th:text="${error}"></p>
+                <div th:if="${hotelError}" class="error">
+                    <p th:text="${hotelError}"></p>
                 </div>
-                <div th:if="${success}" class="alert alert-success">
-                    <p th:text="${success}"></p>
+                <div th:if="${hotelSuccess}" class="alert alert-success">
+                    <p th:text="${hotelSuccess}"></p>
                 </div>
 
                 <form th:action="@{/hotel/setPassword}" method="post">
@@ -1050,7 +1059,7 @@
                 return;
             }
 
-            alert('密碼已成功變更！');
+//             alert('密碼已成功變更！');
             resetPasswordModal.classList.remove('show');
             employeeModal.classList.add('show');
         });
