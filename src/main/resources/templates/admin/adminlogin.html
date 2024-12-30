@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理員登入</title>
+    <link rel="stylesheet" th:href="@{/css/admin/adminlogin.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="~{admin/backend-header :: header}"></div>
+	
+    <main class="main-container">
+        <div class="login-container">
+            <h1>管理員登入</h1>
+            <form id="loginForm" th:action="@{/admin/login}" method="post">
+                <div class="form-group">
+                    <label for="email">電子郵件</label>
+                    <input type="email" id="email" required>
+                    <span class="error-message"></span>
+                </div>
+                <div class="form-group">
+                    <label for="password">密碼</label>
+                    <input type="password" id="password" required>
+                    <span class="error-message"></span>
+                </div>
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">記住我</label>
+                    </div>
+                    <a href="#" id="forgotPassword" class="forgot-password">忘記密碼?</a>
+                </div>
+                <div id="errorMessage" class="error-alert hidden"></div>
+                <button type="submit" class="submit-button">登入</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{admin/backend-footer :: footer}"></div>
+	
+	<script th:src="@{/js/header.js}"></script>
+    <script th:src="@{/js/adminlogin.js}"></script>
+</body>
+</html>

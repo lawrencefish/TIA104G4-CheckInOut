@@ -16,6 +16,15 @@ public class AdminService {
 //	@Autowired
 //	private SessionFactory sessionFactory;
 	
+	public Admin adminLogin(String email, String password) {
+		// 從資料庫查詢管理員帳號
+		Admin admin = AdminRepository.findByEmail(email);
+		if (admin != null && admin.getAdminPassword().equals(password)) {
+			return admin; // 帳密正確 回傳管理員資料
+		}
+		return null; // 登入失敗
+	}
+	
 	// 新增管理員
 	public Admin insert (Admin admin) {
 		return repository.save(admin);

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理員管理</title>
+  <link rel="stylesheet" th:href="@{/css/admin-backend.css}">
+  <link rel="stylesheet" th:href="@{/css/headerfooter.css}">
+  
+</head>
+<body>
+  <!-- Header -->
+    <div th:replace="~{admin/backend-header :: header}"></div>
+
+  <main>
+    <div class="admin-banner">
+      <h1>管理員管理</h1>
+    </div>
+    
+    <section>
+      <h2>搜尋與篩選</h2>
+      <form id="searchForm" class="search-form">
+        <div class="form-group">
+          <label for="keyword">關鍵字搜尋：</label>
+          <input type="text" id="keyword" placeholder="輸入姓名、信箱或電話">
+        </div>
+        <div class="form-group">
+          <label for="filterStatus">篩選狀態：</label>
+          <select id="filterStatus">
+            <option value="all">全部</option>
+            <option value="正常">正常</option>
+            <option value="停用">停用</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="filterRole">篩選權限：</label>
+          <select id="filterRole">
+            <option value="all">全部</option>
+            <option value="一般管理員">一般管理員</option>
+            <option value="高階管理員">高階管理員</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="button search-btn" id="searchBtn">搜尋</button>
+          <button type="button" class="button add-btn" id="addAdminBtn">＋新增管理員</button>
+        </div>
+      </form>
+
+      <!-- 新增管理員視窗 -->
+      <div id="addAdminModal" class="modal">
+        <div class="modal-content">
+          <span class="close-btn" id="closeBtn">&times;</span>
+          <h2>新增管理員</h2>
+          <form id="addAdminForm" autocomplete="on">
+            <div>
+              <label for="username">帳號</label>
+              <input type="text" id="username" name="username" required autocomplete="username">
+              <span id="usernameError" class="error-message"></span>
+            </div>
+            <div>
+              <label for="name">姓名</label>
+              <input type="text" id="name" name="name" required autocomplete="name">
+            </div>
+            <div>
+              <label for="role">權限</label>
+              <select id="role" name="role" required>
+                <option value="初階管理員">一般管理員</option>
+                <option value="高階管理員">高階管理員</option>
+              </select>
+            </div>
+            <div>
+              <label for="phone">電話</label>
+              <input type="text" id="phone" name="phone" required autocomplete="tel">
+            </div>
+            <div>
+              <label for="email">電子信箱</label>
+              <input type="email" id="email" name="email" required autocomplete="email">
+              <span id="emailError" class="error-message"></span>
+            </div>
+            <div>
+              <label for="password">密碼</label>
+              <input type="password" id="password" name="password" required autocomplete="new-password">
+            </div>
+            <div>
+              <label for="confirmPassword">確認密碼</label>
+              <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password">
+              <span id="passwordError" class="error-message"></span>
+            </div>
+            <button type="submit" id="submitBtn">完成新增</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="table-container">
+        <div class="loading-spinner" id="loadingSpinner">載入中...</div>
+        <table id="adminTable">
+          <thead>
+            <tr>
+              <th>管理員編號</th>
+              <th>管理員名稱</th>
+              <th>權限</th>
+              <th>狀態</th>
+              <th>新增日期</th>
+              <th>電話</th>
+              <th>電子信箱</th>
+              <th>上次登入時間</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody"></tbody>
+        </table>
+        <div class="pagination" id="pagination"></div>
+      </div>      
+    </section>
+
+    <section class="log-section">
+      <h2>操作日誌</h2>
+      <div id="logContainer"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+    <div th:replace="~{admin/backend-footer :: footer}"></div>
+	
+	<script th:src="@{/js/header.js}"></script>
+  <script th:src="@{/js/admin-backend.js}"></script>
+  <script th:src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</body>
+</html>
