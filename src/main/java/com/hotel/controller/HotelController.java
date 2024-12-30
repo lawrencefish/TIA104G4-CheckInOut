@@ -59,27 +59,23 @@ public class HotelController {
         if (oldPassword == null || oldPassword.trim().isEmpty() ||
                 newPassword == null || newPassword.trim().isEmpty() ||
                 newPasswordCheck == null || newPasswordCheck.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "所有欄位均為必填");
-            System.out.println("錯誤1");
+            redirectAttributes.addFlashAttribute("hotelError", "所有欄位均為必填");
             return "redirect:/account/accountSet"; // 返回包含彈窗的頁面
         }
 
         if (!newPassword.equals(newPasswordCheck)) {
-            redirectAttributes.addFlashAttribute("error", "新密碼與確認密碼不一致");
-            System.out.println("錯誤2");
+            redirectAttributes.addFlashAttribute("hotelError", "新密碼與確認密碼不一致");
             return "redirect:/account/accountSet";
         }
 
         if (!oldPassword.equals(hotel.getPassword())) {
-            redirectAttributes.addFlashAttribute("error", "舊密碼不正確");
-            System.out.println("錯誤3");
+            redirectAttributes.addFlashAttribute("hotelError", "舊密碼不正確");
             return "redirect:/account/accountSet";
         }
 
         // 更新密碼
         hotel.setPassword(newPassword);
         hotelService.updateHotelPassword(hotel.getHotelId(), newPassword);
-        System.out.println("成功");
         request.getSession().setAttribute("hotel", hotel);
 
         return "redirect:/account/accountSet"; // 返回頁面以顯示成功消息
