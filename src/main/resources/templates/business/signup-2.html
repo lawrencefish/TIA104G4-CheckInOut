@@ -271,18 +271,34 @@
         }
 
         .uploaded-photos {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px; /* 圖片間距 */
+            justify-items: center; /* 水平居中對齊 */
         }
 
-        .photo-thumb {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 2px solid #ddd;
+        .uploaded-photos img {
+            width: 150px; /* 固定寬度 */
+            height: 150px; /* 固定高度 */
+            object-fit: cover; /* 確保圖片保持比例，不變形 */
+            border-radius: 8px; /* 圓角 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加陰影 */
+        }
+
+        .uploaded-photos button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* 設施與服務 */
@@ -394,23 +410,17 @@
         <main>
             <h1>設定飯店介紹</h1>
 
-            <form id="hotel-introduction-form" th:action="@{/signUp/signUp-2}" method="POST" enctype="multipart/form-data">
+            <form id="hotel-introduction-form" enctype="multipart/form-data">
                 <!-- 照片上傳 -->
                 <section>
                     <h2>照片上傳</h2>
                     <div class="photo-upload-container">
-                        <!-- 照片上傳欄位 -->
                         <div class="photo-upload">
                             <input type="file" id="photo-upload" name="photos" multiple accept="image/*">
                         </div>
-                        <!-- 照片預覽區域 -->
-                        <div class="uploaded-photos" id="uploaded-photos">
-                            <!-- 已上傳照片將顯示在這 -->
-                        </div>
-                        <!-- 按鈕區域 -->
+                        <div class="uploaded-photos" id="uploaded-photos"></div>
                         <div class="photo-upload-buttons">
-                            <button type="button" id="clear-all-btn" class="clear-btn">清除所有照片</button>
-                        </div>
+                            <button type="button" id="clear-all-btn" class="clear-btn">清除所有照片</button>                        </div>
                     </div>
                 </section>
 
@@ -421,19 +431,17 @@
                         <div class="facilities">
                             <h3>設施</h3>
                             <!-- 動態插入設施 -->
-                            <!-- 使用 hidden input 儲存勾選的設施 -->
                         </div>
                         <div class="services">
                             <h3>服務</h3>
                             <!-- 動態插入服務 -->
-                            <!-- 使用 hidden input 儲存勾選的服務 -->
                         </div>
                     </div>
                 </section>
 
                 <!-- 提交按鈕 -->
                 <div class="form-actions">
-                    <button class="submit-btn" type="submit">下一步</button>
+                    <button class="submit-btn" type="button" id="submit-form">下一步</button>
                 </div>
             </form>
         </main>
@@ -449,10 +457,14 @@
         	const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
             const photoUpload = document.getElementById("photo-upload");
             const uploadedPhotosContainer = document.getElementById("uploaded-photos");
-            const clearButton = document.querySelector(".clear-btn");
+            const clearAllButton = document.querySelector(".clear-btn");
             const facilitiesContainer = document.querySelector(".facilities");
             const servicesContainer = document.querySelector(".services");
-
+            const submitButton = document.getElementById("submit-form");
+            const photoUploadInput = document.getElementById("photo-upload");
+            const uploadedPhotosDiv = document.getElementById("uploaded-photos");
+            const hotelId = "[[${hotelId}]]";
+            let selectedFiles = [];
             // 確認容器是否存在
             if (!photoUpload || !uploadedPhotosContainer || !facilitiesContainer || !servicesContainer) {
                 console.error("某些 DOM 元素未正確初始化，請檢查 HTML 結構");
@@ -470,22 +482,14 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log("設施資料：", data);
-
-                    // 清除舊的設施項目（保留 <h3>）
-                    const labels = facilitiesContainer.querySelectorAll("label");
-                    labels.forEach(label => label.remove());
-
+                    facilitiesContainer.querySelectorAll("label").forEach(label => label.remove());
                     data.forEach(item => {
-                        if (!item.facilityId || !item.facilityName) {
-                            console.warn("設施資料不完整：", item);
-                            return;
-                        }
+                        if (!item.facilityId || !item.facilityName) return;
                         const label = document.createElement("label");
                         label.innerHTML = `
-                <input type="checkbox" name="facility" value="${item.facilityId}">
-                ${item.facilityName}
-            `;
+                    <input type="checkbox" name="facilities" value="${item.facilityId}">
+                    ${item.facilityName}
+                `;
                         facilitiesContainer.appendChild(label);
                     });
                 })
@@ -498,40 +502,20 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log("服務資料：", data);
-
-                    // 清除舊的服務項目（保留 <h3>）
-                    const labels = servicesContainer.querySelectorAll("label");
-                    labels.forEach(label => label.remove());
-
+                    servicesContainer.querySelectorAll("label").forEach(label => label.remove());
                     data.forEach(item => {
-                        if (!item.facilityId || !item.facilityName) {
-                            console.warn("服務資料不完整：", item);
-                            return;
-                        }
+                        if (!item.facilityId || !item.facilityName) return;
                         const label = document.createElement("label");
                         label.innerHTML = `
-                <input type="checkbox" name="service" value="${item.facilityId}">
-                ${item.facilityName}
-            `;
+                    <input type="checkbox" name="services" value="${item.facilityId}">
+                    ${item.facilityName}
+                `;
                         servicesContainer.appendChild(label);
                     });
                 })
-                .catch(err => console.error("服務 API 錯誤：", err));
+                .catch(err => console.error("服務 API 錯誤：", err))
 
-
-        });
-
-
-        //下面是圖片部分
-        let selectedFiles = []; // 儲存已選擇的檔案
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const photoUploadInput = document.getElementById("photo-upload");
-            const uploadedPhotosDiv = document.getElementById("uploaded-photos");
-            const clearAllButton = document.getElementById("clear-all-btn");
-
-            // 當使用者選擇圖片時
+            // 當選擇照片時，處理顯示
             photoUploadInput.addEventListener("change", (event) => {
                 const files = Array.from(event.target.files);
                 selectedFiles = [...selectedFiles, ...files];
@@ -585,6 +569,54 @@
             clearAllButton.addEventListener("click", () => {
                 selectedFiles = []; // 清空檔案陣列
                 renderUploadedPhotos(); // 更新顯示
+            });
+
+            // 提交設施與服務 API
+            async function submitFacilities() {
+                const selectedFacilities = Array.from(document.querySelectorAll('input[name="facilities"]:checked')).map(el => el.value);
+                const selectedServices = Array.from(document.querySelectorAll('input[name="services"]:checked')).map(el => el.value);
+
+                const payload = { facilities: selectedFacilities, services: selectedServices };
+
+                const response = await fetch(`${contextPath}/api/hotelFacilities/update-facilities`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!response.ok) throw new Error("設施與服務更新失敗！");
+            }
+
+            // 提交照片 API
+            async function submitPhotos() {
+                if (selectedFiles.length === 0) {
+                    throw new Error("請至少選擇一張照片！");
+                }
+
+                const formData = new FormData();
+                selectedFiles.forEach(file => formData.append("photos", file));
+
+                const response = await fetch(`${contextPath}/api/hotel-images/hotel/${hotelId}/upload`, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (!response.ok) throw new Error("照片上傳失敗！");
+            }
+
+            // 提交表單
+            submitButton.addEventListener("click", async () => {
+                try {
+                    await submitFacilities();
+                    console.log("設施與服務更新成功！");
+                    await submitPhotos();
+                    console.log("照片上傳成功！");
+                    alert("設施與照片已成功更新！");
+                    window.location.href = "/signUp/signUp-3"; // 跳轉到下一步
+                } catch (error) {
+                    console.error(error);
+                    alert(error.message || "提交失敗，請稍後再試！");
+                }
             });
         });
     </script>

@@ -398,10 +398,14 @@
     <!-- Main -->
     <main>
         <h1>設定基本資料</h1>
-        <form th:action="@{/signUp/signUp-1}" th:object="${hotelVO}" method="post" enctype="multipart/form-data">
-
+        <form th:action="@{/signUp/signUp-1}" th:object="${hotelVO}" method="post" enctype="multipart/form-data" autocomplete="off">
             <section>
                 <h2>基本資料</h2>
+
+                <!-- 全局錯誤訊息 -->
+                <span th:if="${#httpServletRequest.getAttribute('duplicateError') != null}"
+                      th:text="${#httpServletRequest.getAttribute('duplicateError')}"
+                      class="error-message"></span>
                 <!-- 上方基本資料 -->
                 <div class="basic-info">
                     <!-- 統一編號 -->
@@ -421,9 +425,8 @@
                     <!-- 密碼 -->
                     <div class="form-group">
                         <label for="password">密碼</label>
-                        <input type="password" id="password" th:field="*{password}" placeholder="請輸入密碼">
-                        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-                              class="error-message"></span>
+                        <input type="password" id="password" th:field="*{password}" placeholder="請輸入密碼" autocomplete="new-password">
+                        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></span>
                     </div>
 
                     <!-- 再次輸入密碼 -->
@@ -450,30 +453,27 @@
                             <option value="">請選擇地區</option>
                             <!-- 動態選項 -->
                         </select>
-                        <span th:if="${#fields.hasErrors('district')}" th:errors="*{district}"
-                              class="error-message"></span>
+                        <span th:if="${#fields.hasErrors('district')}" th:errors="*{district}" class="error-message"></span>
                     </div>
 
                     <!-- 地址 -->
                     <div class="form-group full-width">
                         <label for="address">地址</label>
                         <input type="text" id="address" th:field="*{address}" placeholder="請輸入地址">
-                        <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}"
-                              class="error-message"></span>
+                        <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="error-message"></span>
                     </div>
 
                     <!-- 連絡電話 -->
                     <div class="form-group">
                         <label for="phoneNumber">連絡電話</label>
                         <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="請輸入連絡電話">
-                        <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"
-                              class="error-message"></span>
+                        <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error-message"></span>
                     </div>
 
                     <!-- 電子信箱 -->
                     <div class="form-group">
                         <label for="email">電子信箱</label>
-                        <input type="email" id="email" th:field="*{email}" placeholder="請輸入電子信箱">
+                        <input type="email" id="email" th:field="*{email}" placeholder="請輸入電子信箱" autocomplete="off">
                         <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
                     </div>
 
@@ -484,14 +484,12 @@
                             <input type="text" id="verificationCode" name="verificationCode" placeholder="請輸入驗證碼">
                             <button type="button" id="send-code">寄送驗證碼</button>
                         </div>
-                        <span th:if="${verificationCodeError != null}" th:text="${verificationCodeError}"
-                              class="error-message"></span>
+                        <span th:if="${verificationCodeError != null}" th:text="${verificationCodeError}" class="error-message"></span>
                     </div>
                 </div>
             </section>
 
             <section>
-
                 <!-- 環境介紹 -->
                 <div>
                     <h2>旅館介紹</h2>
@@ -512,52 +510,46 @@
 
                     <!-- 上傳照片 -->
                     <div class="upload-group">
+                        <!-- 身份證正面 -->
                         <div>
                             <label for="idFront">公司負責人身份證正面</label>
-                            <div class="upload-preview" onclick="document.getElementById('idFront').click()">
+                            <div class="upload-preview" id="idFrontPreview" th:data-src="${idFront}">
                                 <span>選擇檔案後會顯示預覽</span>
                             </div>
                             <input type="file" id="idFront" name="idFront" accept=".jpg, .jpeg, .png"
-                                   onchange="previewImage(this, this.previousElementSibling)">
-                            <div>
-                                <span th:if="${idFrontError != null}" th:text="${idFrontError}"
-                                      class="error-message"></span>
-                            </div>
+                                   onchange="previewImage(this, document.getElementById('idFrontPreview'))">
+                            <span th:if="${idFrontError != null}" th:text="${idFrontError}" class="error-message"></span>
                         </div>
 
+                        <!-- 身份證反面 -->
                         <div>
                             <label for="idBack">公司負責人身份證反面</label>
-                            <div class="upload-preview" onclick="document.getElementById('idBack').click()">
+                            <div class="upload-preview" id="idBackPreview" th:data-src="${idBack}">
                                 <span>選擇檔案後會顯示預覽</span>
                             </div>
                             <input type="file" id="idBack" name="idBack" accept=".jpg, .jpeg, .png"
-                                   onchange="previewImage(this, this.previousElementSibling)">
-                            <div>
-                                <span th:if="${idBackError != null}" th:text="${idBackError}"
-                                      class="error-message"></span>
-                            </div>
+                                   onchange="previewImage(this, document.getElementById('idBackPreview'))">
+                            <span th:if="${idBackError != null}" th:text="${idBackError}" class="error-message"></span>
                         </div>
 
+                        <!-- 登記證 -->
                         <div>
                             <label for="license">旅館業登記證 / 民宿登記證</label>
-                            <div class="upload-preview" onclick="document.getElementById('license').click()">
+                            <div class="upload-preview" id="licensePreview" th:data-src="${license}">
                                 <span>選擇檔案後會顯示預覽</span>
                             </div>
                             <input type="file" id="license" name="license" accept=".jpg, .jpeg, .png"
-                                   onchange="previewImage(this, this.previousElementSibling)">
-                            <div>
-                                <span th:if="${licenseError != null}" th:text="${licenseError}"
-                                      class="error-message"></span>
-                            </div>
+                                   onchange="previewImage(this, document.getElementById('licensePreview'))">
+                            <span th:if="${licenseError != null}" th:text="${licenseError}" class="error-message"></span>
                         </div>
                     </div>
                 </div>
-
 
                 <!-- 提交按鈕 -->
                 <button class="submit-btn" type="submit">下一步</button>
             </section>
         </form>
+
     </main>
 </div>
 
@@ -567,29 +559,38 @@
 </footer>
 
 <script>
-    // 預覽上傳的圖片
-    function previewImage(input) {
+    function previewImage(input, previewContainer) {
         const file = input.files[0];
-        const previewContainer = input.previousElementSibling;
 
         if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                previewContainer.innerHTML = `<img src="${e.target.result}" alt="預覽圖片">`;
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.alt = "預覽圖片";
+                img.style.maxWidth = "100%";
+                img.style.maxHeight = "200px";
+                img.style.borderRadius = "5px";
+
+                // 清空並插入新圖片
+                previewContainer.innerHTML = "";
+                previewContainer.appendChild(img);
             };
             reader.readAsDataURL(file);
         } else {
+            // 若未選擇檔案，顯示提示文字
             previewContainer.innerHTML = "<span>選擇檔案後會顯示預覽</span>";
         }
     }
 
-    document.querySelector("form").addEventListener("submit", function (event) {
-        const idFrontFile = document.getElementById("idFront").files[0];
-        if (!idFrontFile) {
-            alert("請上傳公司負責人身份證正面！");
-            event.preventDefault(); // 阻止表單提交
-        }
-    });
+
+    // document.querySelector("form").addEventListener("submit", function (event) {
+    //     const idFrontFile = document.getElementById("idFront").files[0];
+    //     if (!idFrontFile) {
+    //         alert("請上傳公司負責人身份證正面！");
+    //         event.preventDefault(); // 阻止表單提交
+    //     }
+    // });
 
     //  縣市api
     document.addEventListener("DOMContentLoaded", function () {
