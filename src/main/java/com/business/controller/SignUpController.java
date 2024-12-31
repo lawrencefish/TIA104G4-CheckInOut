@@ -78,17 +78,17 @@ public class SignUpController {
 
         // 2. 驗證檔案
         if (idFrontFile.isEmpty()) {
-            model.addAttribute("idFrontError", "請上傳公司負責人身份證正面！");
+            model.addAttribute("duplicateError", "所有照片皆需上傳！");
             System.out.println("沒有照片");
             return "business/signUp-1";
         }
         if (idBackFile.isEmpty()) {
-            model.addAttribute("idBackError", "請上傳公司負責人身份證反面！");
+            model.addAttribute("duplicateError", "所有照片皆需上傳！");
             System.out.println("沒有照片");
             return "business/signUp-1";
         }
         if (licenseFile.isEmpty()) {
-            model.addAttribute("licenseError", "請上傳旅館業登記證或民宿登記證！");
+            model.addAttribute("duplicateError", "所有照片皆需上傳！");
             System.out.println("沒有照片");
             return "business/signUp-1";
         }
@@ -96,6 +96,10 @@ public class SignUpController {
         // 3. 檢查唯一性約束
         if (hotelService.existsByTaxId(hotelVO.getTaxId())) {
             model.addAttribute("duplicateError", "統一編號已存在，請確認資料！");
+            return "business/signUp-1";
+        }
+        if (hotelService.existsByName(hotelVO.getName())) { // 檢查 hotel.name 的唯一性
+            model.addAttribute("duplicateError", "旅館名稱已存在，請確認資料！");
             return "business/signUp-1";
         }
         if (hotelService.existsByEmail(hotelVO.getEmail())) {
@@ -113,7 +117,7 @@ public class SignUpController {
             hotelVO.setIdBack(idBackFile.getBytes());
             hotelVO.setLicense(licenseFile.getBytes());
         } catch (IOException e) {
-            model.addAttribute("fileError", "文件上傳過程中出錯，請重新嘗試！");
+            model.addAttribute("duplicateError", "文件上傳過程中出錯，請重新嘗試！");
             System.out.println("文件上傳過程中出錯");
             return "business/signUp-1";
         }
@@ -122,98 +126,115 @@ public class SignUpController {
         try {
             hotelService.save(hotelVO);
         } catch (Exception e) {
-            model.addAttribute("saveError", "保存資料時發生錯誤，請稍後再試！");
+            model.addAttribute("duplicateError", "保存資料時發生錯誤，請稍後再試！");
             System.out.println("保存資料時發生錯誤");
             return "business/signUp-1";
         }
 
         // 6. 添加成功訊息並跳轉
-        redirectAttributes.addFlashAttribute("successMessage", "旅館新增成功！");
+//        redirectAttributes.addFlashAttribute("successMessage", "旅館新增成功！");
         // 驗證成功 -> 存入 Session
-        request.getSession().setAttribute("hotel", hotelVO);
+//        HotelVO refreshedHotel = hotelService.findByTaxId(hotelVO.getTaxId())
+//                .orElseThrow(() -> new IllegalStateException("保存後無法找到旅館信息！"));
 
+        // 保存到 Session
+        request.getSession().setAttribute("hotel", hotelVO);
         System.out.println("旅館新增成功");
         return "redirect:/signUp/signUp-2"; // 跳轉到下一步
     }
 
+
     @GetMapping("/signUp-2")
-    public String showSignUp2(ModelMap model) {
+    public String showSignUp2(HttpServletRequest request, Model model) {
+        HotelVO hotel = (HotelVO) request.getSession().getAttribute("hotel");
+        Integer hotelId = hotel.getHotelId();
+        model.addAttribute("hotelId", hotelId);
         return "business/signup-2";
     }
-
-
-    @PostMapping("/signUp-2")
-    public String handleStepTwo(
-            @RequestParam("photos") List<MultipartFile> photos,
-            @RequestParam(value = "facilities", required = false) List<Integer> facilityIds,
-            HttpSession session,
-            HttpServletRequest request,
-            RedirectAttributes redirectAttributes) {
-        try {
-            // 從 Session 中獲取 hotelVO
-            HotelVO hotelVO = (HotelVO) session.getAttribute("hotel");
-            if (hotelVO == null) {
-                redirectAttributes.addFlashAttribute("error", "未找到旅館信息，請重新開始註冊流程！");
-                return "redirect:/signUp/signUp-1";
-            }
-
-            // 處理照片上傳並存入 HotelImgVO
-            if (photos != null && !photos.isEmpty()) {
-                for (MultipartFile photo : photos) {
-                    if (!photo.isEmpty()) {
-                        HotelImgVO hotelImg = new HotelImgVO();
-                        hotelImg.setHotel(hotelVO);
-                        hotelImg.setPicture(photo.getBytes());
-                        // 保存到資料庫
-                        hotelImgService.save(hotelImg);
-                    }
-                }
-            }
-
-            // 處理設施並存入 HotelFacilityVO
-            if (facilityIds != null && !facilityIds.isEmpty()) {
-                for (Integer facilityId : facilityIds) {
-                    FacilityVO facility = facilityService.findById(facilityId)
-                            .orElseThrow(() -> new IllegalArgumentException("無效的設施 ID: " + facilityId));
-
-                    HotelFacilityVO hotelFacility = new HotelFacilityVO();
-                    hotelFacility.setHotel(hotelVO);
-                    hotelFacility.setFacility(facility);
-
-                    // 保存到資料庫
-                    hotelFacilityService.save(hotelFacility);
-                }
-            }
-
-            redirectAttributes.addFlashAttribute("success", "照片與設施已成功儲存！");
-
-            System.out.println("成功");
-            request.getSession().setAttribute("hotel", hotelVO);
-            return "redirect:/signUp/signUp-3"; // 跳轉到下一步
-        } catch (IOException e) {
-            redirectAttributes.addFlashAttribute("error", "照片上傳失敗，請稍後再試！");
-            return "redirect:/signUp/signUp-2";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "設施更新失敗：" + e.getMessage());
-            return "redirect:/signUp/signUp-2";
-        }
-    }
-
+//
+//    @PostMapping("/signUp-2")
+//    public String handleStepTwo(
+//            @RequestParam("photos") List<MultipartFile> photos,
+//            @RequestParam(value = "facilities", required = false) List<Integer> facilityIds,
+//            HttpSession session,
+//            HttpServletRequest request,
+//            RedirectAttributes redirectAttributes) {
+//        try {
+//            // 從 Session 中獲取 hotelVO
+//            HotelVO hotelVO = (HotelVO) session.getAttribute("hotel");
+//            if (hotelVO == null) {
+//                redirectAttributes.addFlashAttribute("error", "未找到旅館信息，請重新開始註冊流程！");
+//                return "redirect:/signUp/signUp-1";
+//            }
+//
+//            // 處理照片上傳並存入 HotelImgVO
+//            if (photos != null && !photos.isEmpty()) {
+//                for (MultipartFile photo : photos) {
+//                    if (!photo.isEmpty()) {
+//                        try {
+//                            HotelImgVO hotelImg = new HotelImgVO();
+//                            hotelImg.setHotel(hotelVO);
+//                            hotelImg.setPicture(photo.getBytes());
+//                            // 保存照片至資料庫
+//                            hotelImgService.save(hotelImg);
+//                            System.out.println("照片保存成功");
+//                        } catch (IOException e) {
+//                            redirectAttributes.addFlashAttribute("error", "照片保存失敗：" + e.getMessage());
+//                            return "redirect:/signUp/signUp-2";
+//                        }
+//                    }
+//                }
+//            }
+//
+//            // 處理設施並存入 HotelFacilityVO
+//            // 3. 處理設施並存入 HotelFacilityVO
+//            if (facilityIds != null && !facilityIds.isEmpty()) {
+//                for (Integer facilityId : facilityIds) {
+//                    try {
+//                        FacilityVO facility = facilityService.findById(facilityId)
+//                                .orElseThrow(() -> new IllegalArgumentException("無效的設施 ID: " + facilityId));
+//
+//                        HotelFacilityVO hotelFacility = new HotelFacilityVO();
+//                        hotelFacility.setHotel(hotelVO); // 關聯 HotelVO
+//                        hotelFacility.setFacility(facility); // 關聯 FacilityVO
+//
+//                        // 保存設施至資料庫
+//                        hotelFacilityService.save(hotelFacility);
+//                        System.out.println("設施 ID: " + facilityId + " 保存成功");
+//                    } catch (Exception e) {
+//                        System.err.println("設施處理失敗，ID: " + facilityId + "，錯誤：" + e.getMessage());
+//                        redirectAttributes.addFlashAttribute("error", "設施處理失敗，ID: " + facilityId);
+//                        return "redirect:/signUp/signUp-2";
+//                    }
+//                }
+//            }
+//
+//
+////            redirectAttributes.addFlashAttribute("success", "照片與設施已成功儲存！");
+//
+//            System.out.println("成功");
+//            request.getSession().setAttribute("hotel", hotelVO);
+//            return "redirect:/signUp/signUp-3"; // 跳轉到下一步
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("error", "設施更新失敗：" + e.getMessage());
+//            return "redirect:/signUp/signUp-2";
+//        }
+//    }
+//
 
     @GetMapping("/signUp-3")
-    public String showSignUp3() {
+    public String showSignUp3(ModelMap model) {
+        EmployeeVO employeeVO = new EmployeeVO();
+        model.addAttribute("employeeVO", employeeVO);
         return "business/signup-3";
     }
 
 
     @PostMapping("/signUp-3")
     public String handleSignUpStepThree(
-            @RequestParam("employeeNumber") String employeeNumber,
-            @RequestParam("name") String name,
-            @RequestParam("password") String password,
-            @RequestParam("phoneNumber") String phoneNumber,
-            @RequestParam("email") String email,
-            @RequestParam("title") String title,
+            @Valid @ModelAttribute("employeeVO") EmployeeVO employeeVO,
+            BindingResult bindingResult,
+            @RequestParam("confirmPassword") String confirmPassword,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
@@ -224,36 +245,46 @@ public class SignUpController {
             return "redirect:/signUp/signUp-1";
         }
 
+        // 檢查表單驗證錯誤
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.employeeVO", bindingResult);
+            redirectAttributes.addFlashAttribute("employeeVO", employeeVO);
+            return "business/signUp-3";
+        }
+
+        // 確認密碼是否匹配
+        if (!employeeVO.getPassword().equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "密碼與確認密碼不一致！");
+            redirectAttributes.addFlashAttribute("employeeVO", employeeVO);
+            return "business/signUp-3";
+        }
+
         // 檢查員工編號或 Email 是否在該飯店中重複
-        if (employeeService.existsByEmployeeNumberAndHotel(employeeNumber, hotelVO.getHotelId())) {
+        if (employeeService.existsByEmployeeNumberAndHotel(employeeVO.getEmployeeNumber(), hotelVO.getHotelId())) {
             redirectAttributes.addFlashAttribute("error", "該員工編號在此飯店中已存在，請使用其他編號。");
-            return "redirect:/signUp/signUp-3";
+            redirectAttributes.addFlashAttribute("employeeVO", employeeVO);
+            return "business/signUp-3";
         }
 
-        if (employeeService.existsByEmailAndHotel(email, hotelVO.getHotelId())) {
+        if (employeeService.existsByEmailAndHotel(employeeVO.getEmail(), hotelVO.getHotelId())) {
             redirectAttributes.addFlashAttribute("error", "該電子信箱在此飯店中已存在，請更換其他信箱。");
-            return "redirect:/signUp/signUp-3";
+            redirectAttributes.addFlashAttribute("employeeVO", employeeVO);
+            return "business/signUp-3";
         }
 
-        // 創建新 EmployeeVO
-        EmployeeVO employee = new EmployeeVO();
-        employee.setEmployeeNumber(employeeNumber);
-        employee.setName(name);
-        employee.setPassword(password);
-        employee.setPhoneNumber(phoneNumber);
-        employee.setEmail(email);
-        employee.setTitle(title);
-        employee.setHotel(hotelVO);
+        // 設置 HotelVO 到 EmployeeVO 並保存
+        employeeVO.setHotel(hotelVO);
+        employeeService.save(employeeVO);
 
-        // 保存員工資訊
-        employeeService.save(employee);
-
-        redirectAttributes.addFlashAttribute("success", "負責人帳號已成功設定！");
-        return "redirect:/signUp/signUp-4";
+//        redirectAttributes.addFlashAttribute("success", "負責人帳號已成功設定！");
+        return "redirect:/signUp/successful";
     }
 
+
     @GetMapping("/successful")
-    public String showSuccessful() {
+    public String showSuccessful(HttpSession session) {
+        // 清除整個 session
+        session.invalidate();
         return "business/signupSuccessful";
     }
 }
