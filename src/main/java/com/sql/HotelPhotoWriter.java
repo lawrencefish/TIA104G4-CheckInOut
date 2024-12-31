@@ -8,17 +8,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.Arrays;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.util.Arrays;
+public class HotelPhotoWriter {
 
-public class HotelImageUploader {
-
-    public static void main(String[] args) {
+    public static void run() {
         Connection con = null;
         PreparedStatement pstmt = null;
         InputStream fin = null;
