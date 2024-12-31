@@ -4,6 +4,8 @@ import com.hotel.model.HotelService;
 import com.hotel.model.HotelVO;
 import com.hotelImg.model.HotelImgService;
 import com.hotelImg.model.HotelImgVO;
+import com.roomType.model.RoomTypeService;
+import com.roomType.model.RoomTypeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +26,8 @@ public class BusinessController {
     HotelService hotelService;
     @Autowired
     HotelImgService hotelImgService;
+    @Autowired
+    private RoomTypeService roomTypeService;
 
     @GetMapping("")
     public String showHotel() {
@@ -94,7 +98,23 @@ public class BusinessController {
     }
 
     @GetMapping("/roomTypeSet")
-    public String showRoomTypeSet() {
+    public String getRoomTypes(HttpServletRequest request, Model model) {
+        // 從 session 中獲取 hotel
+        HotelVO hotel = (HotelVO) request.getSession().getAttribute("hotel");
+        Integer hotelId = hotel.getHotelId();
+
+        // 從服務層獲取指定飯店的房型列表
+        List<RoomTypeVO> roomTypes = roomTypeService.findByHotelId(hotelId);
+        
+
+        // 檢查集合是否為空
+        if (roomTypes == null || roomTypes.isEmpty()) {
+            model.addAttribute("message", "目前尚未設定任何房型！");
+        } else {
+            model.addAttribute("roomTypes", roomTypes);
+        }
+
+        // 返回對應的 Thymeleaf 頁面
         return "business/roomTypeSet";
     }
 

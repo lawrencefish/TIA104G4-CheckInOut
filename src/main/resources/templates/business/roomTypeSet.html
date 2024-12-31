@@ -327,30 +327,36 @@
 
         /* 房型區塊樣式 */
         .room-section {
-            background-color: #fafafa;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
             cursor: pointer;
-            transition: box-shadow 0.3s ease, transform 0.2s ease;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* 文字置中 */
         }
 
         .room-section:hover {
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
         }
 
         .room-section h2 {
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-            color: #007bff;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #0056b3;
+            text-transform: capitalize;
         }
 
         .room-section p {
-            font-size: 0.95rem;
-            color: #555;
+            font-size: 1rem;
+            color: #6c757d;
+            margin: 10px 0; /* 增加段落間距 */
+            line-height: 1.6;
         }
+
 
         /* 彈窗背景樣式 */
         .modal-overlay {
@@ -611,6 +617,89 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        /*12/31以後新增內容*/
+        /* 已上傳圖片顯示 */
+        .uploaded-photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px; /* 圖片間距 */
+            justify-items: center; /* 水平居中對齊 */
+        }
+
+        .uploaded-photos img {
+            width: 150px; /* 固定寬度 */
+            height: 150px; /* 固定高度 */
+            object-fit: cover; /* 確保圖片保持比例，不變形 */
+            border-radius: 8px; /* 圓角 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加陰影 */
+        }
+
+        .uploaded-photos button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .uploaded-photos::-webkit-scrollbar {
+            height: 8px; /* 滾動條高度 */
+        }
+
+        .uploaded-photos::-webkit-scrollbar-thumb {
+            background-color: #007bff; /* 滾動條顏色 */
+            border-radius: 4px;
+        }
+
+        .uploaded-photos::-webkit-scrollbar-track {
+            background-color: #e0e0e0; /* 滾動條背景 */
+        }
+
+
+        .breakfast-options {
+            display: flex; /* 使用彈性佈局 */
+            align-items: center; /* 垂直居中 */
+            gap: 20px; /* 控制選項之間的距離 */
+            justify-content: flex-start; /* 水平靠左排列 */
+        }
+
+        .breakfast-options label {
+            display: flex;
+            align-items: center;
+            font-size: 1rem; /* 增加字體大小 */
+            font-weight: 500; /* 增加字體粗細 */
+            gap: 5px; /* 圖標和文字間距 */
+            cursor: pointer; /* 鼠標移到文字上時顯示為可點擊 */
+        }
+
+        .breakfast-options input[type="radio"] {
+            margin: 0; /* 移除默認 margin */
+            accent-color: #007bff; /* 設置單選框的主題色為藍色 */
+            transform: scale(1.2); /* 放大單選框大小，便於點擊 */
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #e04e4e;
+        }
     </style>
 </head>
 
@@ -682,13 +771,32 @@
             <button class="add-room-btn" id="addRoomBtn">新增房型</button>
 
             <!-- 房型列表 -->
-            <div class="room-section" data-room-id="1">
-                <h2>房型 1 (審核通過)</h2>
-                <p>可容納 2 人，20 間房</p>
+            <div th:if="${message != null}">
+                <p th:text="${message}" class="warning-message"></p>
             </div>
-            <div class="room-section" data-room-id="2">
-                <h2>房型 2 (待審核)</h2>
-                <p>可容納 2 人，20 間房</p>
+            <div th:if="${roomTypes != null}">
+                <div th:each="roomType : ${roomTypes}" class="room-section"
+                    th:data-room-id="${roomType.roomTypeId}"
+                    th:data-room-name="${roomType.roomName}"
+                    th:data-room-max-person="${roomType.maxPerson}"
+                    th:data-room-num="${roomType.roomNum}"
+                    th:data-room-breakfast="${roomType.breakfast}"
+                    th:data-room-status="${roomType.status}">
+                    <h2 th:text="${roomType.roomName}">房型名稱</h2>
+                    <p th:text="'人數: ' + ${roomType.maxPerson}"></p>
+                    <p th:text="'房數: ' + ${roomType.roomNum}"></p>
+                    <p>
+                        早餐:
+                        <span th:if="${roomType.breakfast == 0}" th:text="'無'">無</span>
+                        <span th:if="${roomType.breakfast == 1}" th:text="'有'">有</span>
+                    </p>
+                    <p>
+                        狀態:
+                        <span th:if="${roomType.status == 0}" th:text="'待審核'" style="color: gray;">待審核</span>
+                        <span th:if="${roomType.status == 1}" th:text="'審核通過'" style="color: green; font-weight: bold;">審核通過</span>
+                        <span th:if="${roomType.status == 2}" th:text="'審核不通過'" style="color: red; font-weight: bold;">審核不通過</span>
+                    </p>
+                </div>
             </div>
 
             <!-- 彈窗 -->
@@ -697,6 +805,9 @@
                     <h2>房型詳細設定</h2>
                     <form>
                         <!-- 基本資訊 -->
+<!--                        <label for="room-id">房型ID</label>-->
+                        <input type="hidden" id="room-id">
+
                         <label for="room-name">房型名稱</label>
                         <input type="text" id="room-name" placeholder="輸入房型名稱">
 
@@ -706,37 +817,38 @@
                         <label for="room-number">房間數量</label>
                         <input type="number" id="room-number" placeholder="輸入房間數">
 
-                        <!-- 圖片上傳區 -->
-                        <label for="photo-upload">照片上傳</label>
-                        <div class="photo-upload">
-                            <input type="file" id="photo-upload" multiple>
-                            <div class="uploaded-photos">
-                                <!-- 已上傳的照片會顯示在此 -->
-                            </div>
+                        <label>早餐</label>
+                        <div class="breakfast-options">
+                            <label for="breakfast-no">
+                                無
+                                <input type="radio" id="breakfast-no" name="room-breakfast" value="0" checked />
+                            </label>
+                            <label for="breakfast-yes">
+                                有
+                                <input type="radio" id="breakfast-yes" name="room-breakfast" value="1" />
+                            </label>
+                        </div>
+
+<!--                        <label for="room-status">狀態</label>-->
+                        <input type="hidden" id="room-status" value="0" readonly>
+
+                        <h3>圖片上傳區</h3>
+                        <div th:each="image : ${images}" style="position: relative; display: inline-block; margin: 10px;">
+                            <!-- 圖片 -->
+                            <img th:src="@{'/api/roomImages/' + ${image.roomTypeImgId}}" width="150px"
+                                 style="border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+
+                            <!-- 刪除按鈕 -->
+                            <button class="delete-btn"
+                                    style="position: absolute; top: -10px; right: -10px; background-color: rgba(0, 0, 0, 0.7); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                                    th:attr="data-id=${image.roomTypeImgId}">
+                                ✖
+                            </button>
                         </div>
 
                         <!-- 設施選項 -->
                         <h3>設施與服務</h3>
                         <div class="facility-options">
-                            <label><input type="checkbox"> WiFi</label>
-                            <label><input type="checkbox"> 早餐</label>
-                            <label><input type="checkbox"> 禁菸房</label>
-                            <label><input type="checkbox"> 街景</label>
-                            <label><input type="checkbox"> 保險箱</label>
-                            <label><input type="checkbox"> 免費停車</label>
-                        </div>
-
-                        <h3>新增設施</h3>
-                        <div class="add-facility-form">
-                            <input type="text" id="facility-name" placeholder="輸入設施名稱">
-                            <button type="button" id="add-facility-btn">新增</button>
-                        </div>
-
-                        <div class="added-items">
-                            <h4>已新增設施</h4>
-                            <ul id="facility-list">
-                                <!-- 動態新增的設施將顯示在此 -->
-                            </ul>
                         </div>
 
                         <div class="btn-group">
@@ -745,7 +857,6 @@
                         </div>
                     </form>
                 </div>
-
             </div>
         </main>
     </div>
@@ -756,55 +867,38 @@
     </footer>
 
     <script>
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        //飯店彈窗
-        document.querySelector('.hotel-button').addEventListener('click', () => {
-            const dropdown = document.querySelector('.dropdown');
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
-
-        document.addEventListener('click', (e) => {
-            const dropdown = document.querySelector('.dropdown');
-            if (!e.target.closest('.hotel-button') && !e.target.closest('.dropdown')) {
-                dropdown.style.display = 'none';
-            }
-        });
-
-        //房型設定
-        // 選取需要的元素
-        const addRoomBtn = document.getElementById('addRoomBtn'); // 新增房型按鈕
+        //談窗部分
+        // 取得需要的元素
+        const roomSections = document.querySelectorAll('.room-section'); // 所有房型區塊
         const modalOverlay = document.getElementById('modalOverlay'); // 彈窗背景
         const closeModalBtn = document.getElementById('closeModalBtn'); // 關閉彈窗按鈕
-        const roomSections = document.querySelectorAll('.room-section'); // 所有房型區塊
 
-        // 打開彈窗的函數
-        function openModal() {
+        // 彈窗內的輸入框
+        const roomIdInput = document.getElementById('room-id');
+        const roomNameInput = document.getElementById('room-name');
+        const roomGuestInput = document.getElementById('room-guest');
+        const roomNumberInput = document.getElementById('room-number');
+        const roomStatusInput = document.getElementById('room-status');
+        const roomBreakfastNo = document.getElementById('breakfast-no');
+        const roomBreakfastYes = document.getElementById('breakfast-yes');
+
+        // 打開彈窗並填入資料
+        function openModal(roomData) {
             modalOverlay.style.display = 'block'; // 顯示彈窗
+
+            // 填入房型資料
+            roomIdInput.value = roomData.id;
+            roomNameInput.value = roomData.name;
+            roomGuestInput.value = roomData.maxPerson;
+            roomNumberInput.value = roomData.roomNum;
+            roomStatusInput.value = roomData.status;
+
+            // 根據早餐的值選中對應的單選按鈕
+            if (roomData.breakfast) {
+                roomBreakfastYes.checked = true;
+            } else {
+                roomBreakfastNo.checked = true;
+            }
         }
 
         // 關閉彈窗的函數
@@ -812,12 +906,22 @@
             modalOverlay.style.display = 'none'; // 隱藏彈窗
         }
 
-        // 綁定新增房型按鈕的點擊事件
-        addRoomBtn.addEventListener('click', openModal);
-
-        // 為每個房型區塊添加點擊事件，打開彈窗
+        // 綁定每個房型區塊的點擊事件
         roomSections.forEach(section => {
-            section.addEventListener('click', openModal);
+            section.addEventListener('click', function () {
+                // 從 data-* 屬性中獲取房型資料
+                const roomData = {
+                    id: this.getAttribute('data-room-id'),
+                    name: this.querySelector('h2').textContent,
+                    maxPerson: this.querySelector('p:nth-child(2)').textContent.replace('人數: ', ''),
+                    roomNum: this.querySelector('p:nth-child(3)').textContent.replace('房數: ', ''),
+                    breakfast: this.querySelector('p:nth-child(4) span').textContent === '有',
+                    status: this.querySelector('p:nth-child(5) span').textContent
+                };
+
+                // 打開彈窗並填入資料
+                openModal(roomData);
+            });
         });
 
         // 綁定關閉按鈕的點擊事件
@@ -830,38 +934,17 @@
             }
         });
 
-        // 取得新增按鈕與輸入框
-        const addFacilityBtn = document.getElementById('add-facility-btn');
-        const facilityNameInput = document.getElementById('facility-name');
-        const facilityList = document.getElementById('facility-list');
 
-        // 點擊新增按鈕的事件
-        addFacilityBtn.addEventListener('click', () => {
-            const facilityName = facilityNameInput.value.trim(); // 取得輸入的設施名稱
 
-            if (!facilityName) {
-                alert('請輸入設施名稱');
-                return;
-            }
 
-            // 創建設施列表項目
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `
-            <span>${facilityName}</span>
-            <button type="button" class="delete-btn">刪除</button>
-        `;
 
-            // 為刪除按鈕添加功能
-            listItem.querySelector('.delete-btn').addEventListener('click', () => {
-                listItem.remove();
-            });
 
-            // 添加到設施列表
-            facilityList.appendChild(listItem);
 
-            // 清空輸入框
-            facilityNameInput.value = '';
-        });
+
+
+
+
+
 
         // 取得彈窗和按鈕
         const logoutModal = document.getElementById("logout-modal");
