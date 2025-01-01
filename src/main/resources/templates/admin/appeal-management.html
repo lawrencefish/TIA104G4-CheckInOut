@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>申訴管理</title>
+    <link rel="stylesheet" href="./css/appeal-management.css">
+    <link rel="stylesheet" href="./css/headerfooter.css">
+</head>
+<body>
+    <!-- 動態導入header -->
+    <div id="header"></div>
+
+    <section class="admin-banner">
+        <div class="container">
+            <h1>申訴管理</h1>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- 統計卡片區 -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-title">總申訴數</div>
+                <div class="stat-value" id="totalComplaints">128</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">待處理</div>
+                <div class="stat-value pending" id="pendingComplaints">45</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">處理中</div>
+                <div class="stat-value processing" id="processingComplaints">32</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">已完成</div>
+                <div class="stat-value completed" id="completedComplaints">51</div>
+            </div>
+        </div>
+
+        <div class="toggle-buttons">
+            <button id="memberComplaintsBtn" class="toggle-btn active">會員申訴</button>
+            <button id="businessComplaintsBtn" class="toggle-btn">業者申訴</button>
+        </div>
+
+        <!-- 搜尋篩選區 -->
+        <div class="filter-container">
+            <input type="text" id="searchInput" placeholder="搜尋關鍵字..." class="search-input">
+            <select id="statusFilter" class="status-select">
+                <option value="">全部狀態</option>
+                <option value="0">待處理</option>
+                <option value="1">處理中</option>
+                <option value="2">已完成</option>
+                <option value="3">已關閉</option>
+            </select>
+            <input type="date" id="startDate" class="date-input">
+            <input type="date" id="endDate" class="date-input">
+            <button id="filterBtn" class="filter-btn">篩選</button>
+        </div>
+
+        <!-- 申訴列表 -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>申訴編號</th>
+                        <th>提交時間</th>
+                        <th>會員帳號</th>
+                        <th>飯店名稱</th>
+                        <th>申訴內容</th>
+                        <th>處理狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="complaintsTable">
+                    <!-- 動態插入資料 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 分頁控制 -->
+        <div class="pagination">
+            <button id="prevPage" class="page-btn">上一頁</button>
+            <span id="pageInfo">第 1 頁，共 10 頁</span>
+            <button id="nextPage" class="page-btn">下一頁</button>
+        </div>
+    </div>
+
+    <!-- 申訴詳情彈窗 -->
+    <div id="complaintModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>申訴詳情</h2>
+            <div class="complaint-detail">
+                <div class="detail-row">
+                    <label>申訴編號：</label>
+                    <span id="modalComplaintId"></span>
+                </div>
+                <div class="detail-row">
+                    <label>提交時間：</label>
+                    <span id="modalSubmitTime"></span>
+                </div>
+                <div class="detail-row">
+                    <label>會員名稱：</label>
+                    <span id="modalMemberName"></span>
+                </div>
+                <div class="detail-row">
+                    <label>會員信箱：</label>
+                    <span id="modalMemberEmail"></span>
+                </div>
+                <div class="detail-row">
+                    <label>飯店名稱：</label>
+                    <span id="modalHotelName"></span>
+                </div>
+                <div class="detail-row">
+                    <label>訂單編號：</label>
+                    <span id="modalOrderId"></span>
+                </div>
+                <div class="detail-row">
+                    <label>入住日期：</label>
+                    <span id="modalCheckInDate"></span>
+                </div>
+                <div class="detail-row">
+                    <label>申訴圖片：</label>
+                    <div id="modalImage" class="image-container"></div>
+                </div>
+                <!-- 圖片放大模態窗 -->
+                <div id="imageModal" class="image-modal">
+                    <img id="enlargedImg" src="" alt="放大圖片">
+                    <div id="imageCounter" class="image-counter"></div>
+                </div>
+                <div class="detail-row">
+                    <label>申訴內容：</label>
+                    <p id="modalContent"></p>
+                </div>
+                <div class="detail-row">
+                    <label>處理狀態：</label>
+                    <select id="modalStatus" class="status-select">
+                        <option value="0">待處理</option>
+                        <option value="1">處理中</option>
+                        <option value="2">已完成</option>
+                        <option value="3">已關閉</option>
+                    </select>
+                </div>
+                <div class="detail-row">
+                    <label>處理方式：</label>
+                    <textarea id="modalMethod" rows="3"></textarea>
+                </div>
+                <div class="detail-row">
+                    <label>回覆內容：</label>
+                    <textarea id="modalReply" rows="5"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button id="modalSubmit" class="submit-btn">提交處理</button>
+                    <button id="modalCancel" class="cancel-btn">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 動態導入footer -->
+    <div id="footer"></div>
+
+    <script src="./js/header.js"></script>
+    <script src="./js/appeal-management.js"></script>
+</body>
+</html>
