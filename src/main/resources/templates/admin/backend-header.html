@@ -11,12 +11,12 @@
             <!-- 導航選單 -->
             <nav class="main-nav">
                 <ul class="nav-list">
-                    <li><a href="admin-backend.html">管理員管理</a></li>
-                    <li><a href="user-backend.html">用戶管理</a></li>
-                    <li><a href="review-backend.html">審核</a></li>
-                    <li><a href="latest-news.html">最新消息</a></li>
-                    <li><a href="appeal-management.html">申訴管理</a></li>
-                    <li><a href="coupon-management.html">優惠管理</a></li>
+                    <li><a th:href="@{admin-backend.html}">管理員管理</a></li>
+                    <li><a th:href="@{user-backend.html}">用戶管理</a></li>
+                    <li><a th:href="@{review-backend.html}">審核</a></li>
+                    <li><a th:href="@{latest-news.html}">最新消息</a></li>
+                    <li><a th:href="@{appeal-management.html}">申訴管理</a></li>
+                    <li><a th:href="@{coupon-management.html}">優惠管理</a></li>
                 </ul>
             </nav>
 
@@ -27,7 +27,7 @@
                 </div>
                 <div class="admin-dropdown-menu">
                     <ul>
-                        <li><a href="profile.html">個人資料</a></li>
+                        <li><a th:href="@{profile.html}">個人資料</a></li>
                         <li><a href="#" onclick="handleLogout()">登出</a></li>
                     </ul>
                 </div>
