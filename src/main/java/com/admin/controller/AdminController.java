@@ -20,10 +20,6 @@ public class AdminController {
     @Autowired
     private AdminService adminService; // 注入Service層
     
-    @GetMapping("/login")
-    public String showAdminLoginPage() {
-        return "admin/adminlogin";  // 這裡返回的是 templates 目錄下的 adminlogin.html
-    }
     
     // 列出所有管理員
     @GetMapping("/list")  // 處理GET /admin/list 請求
@@ -81,17 +77,34 @@ public class AdminController {
     	return "admin/admin-backend";
     }
     
+    @GetMapping("/userBackend")
+    public String showUserBackend() {
+    	return "admin/user-backend";
+    }
+    
+    @GetMapping("/login")
+    public String showAdminLoginPage() {
+        return "admin/adminlogin";  // 這裡返回的是 templates 目錄下的 adminlogin.html
+    }
+    
     // 處理登入表單提交
     @PostMapping("/login")
     public String handleLogin(@RequestParam String email, @RequestParam String password, HttpSession session, RedirectAttributes redirectAttributes) {
+    	
+    	System.out.println("Received email:" + email);
+    	System.out.println("Received password:" + password);
+    	
     	Admin admin = adminService.adminLogin(email, password);
     	
     	if (admin != null) {
+    		
+    		System.out.println("登入成功" + admin.getEmail());
     		// 登入成功 管理員ID存入session
     		session.setAttribute("adminId", admin.getAdminId());
     		session.setAttribute("adminEmail", admin.getEmail());
-    		return "redirect:/admin/adminBackend"; // 登入成功後轉到管理員頁面
+    		return "redirect:/admin/admin-backend"; // 登入成功後轉到管理員頁面
     	} else {
+    		System.out.println("登入失敗:" + email);
     		// 登入失敗 錯誤訊息
     		redirectAttributes.addFlashAttribute("error", "帳號或密碼錯誤");
     		return "redirect:/admin/login"; // 回到登入頁面

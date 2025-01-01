@@ -43,57 +43,60 @@ body {
 /* 登入容器樣式 */
 .login-container {
     background-color: var(--background-primary);
-    padding: 2.5rem;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    padding: clamp(1rem, 2vw, 2rem);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: none;
     width: 100%;
-    max-width: 400px;
+    max-width: 360px;  /* 降低最大寬度 */
+    margin: 0 auto;
 }
 
 .login-container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 h1 {
     text-align: center;
     color: var(--primary-color);
-    font-size: 2.2rem;
-    margin-bottom: 2rem;
+    font-size: clamp(1.5rem, 3vw, 1.8rem);  /* 調小字體大小範圍 */
+    margin-bottom: 1.5rem;  /* 減少下方間距 */
     font-weight: 600;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* 表單樣式 */
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
     color: #333;
     font-weight: 500;
+    font-size: 0.9rem;
 }
 
 input[type="email"],
 input[type="password"] {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.6rem;
     border: 2px solid var(--background-secondary);
     border-radius: 10px;
-    font-size: 1rem;
+    font-size: 0.9rem;
     background-color: var(--background-secondary);
     transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 input[type="email"]:focus,
 input[type="password"]:focus {
     border-color: var(--primary-color);
     background-color: var(--background-primary);
-    box-shadow: 0 0 15px rgba(33, 150, 243, 0.1);
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.1);
+    outline: none;
 }
 
 /* 記住我和忘記密碼區域 */
@@ -101,20 +104,22 @@ input[type="password"]:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.8rem 0;  /* 調整間距 */
+    font-size: 0.85rem;  /* 減小字體大小 */
 }
 
 .remember-me {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.3rem;
 }
 
 .forgot-password {
     color: var(--primary-color);
     text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 0.85rem;
 }
 
 .forgot-password:hover {
@@ -125,12 +130,12 @@ input[type="password"]:focus {
 /* 按鈕樣式 */
 .submit-button {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.7rem;
     background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 25px;
-    font-size: 1.1rem;
+    border-radius: 20px;
+    font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -146,20 +151,20 @@ input[type="password"]:focus {
 /* 錯誤訊息樣式 */
 .error-message {
     color: #dc3545;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     margin-top: 0.25rem;
     display: block;
 }
 
 .error-alert {
-    padding: 0.75rem;
-    margin-bottom: 1rem;
+    padding: 0.6rem;
+    margin-bottom: 0.8rem;
     border: none;
     background-color: var(--primary-light);
     color: var(--primary-dark);
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.1);
     border-radius: 10px;
-    font-weight: 500;
+    font-size: 0.85rem;
 }
 
 .hidden {
@@ -167,10 +172,53 @@ input[type="password"]:focus {
 }
 
 /* 響應式設計 */
-@media (max-width: 576px) {
+@media (max-width: 768px) {
     .login-container {
-        margin: 1rem;
-        padding: 1.5rem;
+        max-width: 320px;  /* 平板尺寸稍微縮小 */
+    }
+}
+
+@media (max-width: 480px) {
+    .main-container {
+        padding: 0.5rem;
+    }
+
+    .login-container {
+        max-width: 100%;  /* 手機尺寸滿寬度 */
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+        padding: 0.5rem;  /* 更小的輸入框高度 */
+        font-size: 0.9rem;
+    }
+
+    .submit-button {
+        padding: 0.6rem;  /* 更小的按鈕高度 */
+    }
+}
+
+/* 超小螢幕優化 */
+@media (max-width: 320px) {
+    .login-container {
+        padding: 0.8rem;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.8rem;
     }
 }
 

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用戶管理</title>
+  <link rel="stylesheet" th:href="@{/css/admin/user-backend.css}">
+  <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
+  
+  <!-- DataTables CSS -->
+  <link th:href="'https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css'" rel="stylesheet">
+
+</head>
+<body>
+  <!-- Header -->
+    <div th:replace="~{admin/backend-header :: header}"></div>
+
+  <main>
+    
+      <div class="admin-banner">
+        <h1>用戶管理</h1>
+      </div>
+    
+
+      <!-- 控制面板區域 -->
+<div class="control-panel">
+    <!-- 左側按鈕組 -->
+    <div class="button-group">
+        <button id="businessNameBtn">業者名稱</button>
+        <button id="memberNameBtn">會員名稱</button>
+    </div>
+    
+    <!-- 右側搜尋區域 -->
+    <div class="search-area">
+        <div class="search-box">
+            <input type="text" id="globalSearch" placeholder="搜尋所有資訊...">
+            <button id="searchBtn">搜尋</button>
+        </div>
+        <select id="statusFilter">
+            <option value="">所有狀態</option>
+            <option value="啟用中">啟用中</option>
+            <option value="尚未審核">尚未審核</option>
+            <option value="停權">停權</option>
+        </select>
+    </div>
+</div>
+
+<!-- 表格區域 -->
+<div class="table-wrapper">
+    <!-- 業者表格 -->
+    <table id="businessTable" class="display">
+        <thead>
+            <tr>
+                <th>業者名稱</th>
+                <th>狀態</th>
+                <th>待審核</th>
+                <th>電話</th>
+                <th>Email</th>
+                <th>最後登入時間</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+    </table>
+
+    <!-- 會員表格 -->
+    <table id="memberTable" class="display">
+        <thead>
+            <tr>
+                <th>會員姓名</th>
+                <th>會員編號</th>
+                <th>狀態</th>
+                <th>電話</th>
+                <th>最後登入時間</th>
+                <th>Email</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBodyMember"></tbody>
+    </table>
+</div>
+
+    <section class="admin-banner">
+      <div>
+        <h1>資料分析</h1>
+      </div>
+    </section>
+    <section>
+      <div class="stats-container">
+        <div class="stat-box" id="totalStats">
+            <h3>總人數</h3>
+            <p id="totalCount">--</p>
+        </div>
+        <div class="stat-box" id="memberStats">
+            <h3>會員人數</h3>
+            <p id="memberCount">--</p>
+        </div>
+        <div class="stat-box" id="businessStats">
+            <h3>業者人數</h3>
+            <p id="businessCount">--</p>
+        </div>
+    </div>
+    <div class="chart-container">
+        <canvas id="combinedChart"></canvas>
+    </div>
+</main>
+
+<!-- Footer -->
+    <div th:replace="~{admin/backend-footer :: footer}"></div>
+    
+<script th:src="'https://cdn.jsdelivr.net/npm/chart.js'"></script>
+  
+  <!-- jQuery (required for DataTables) -->
+<script th:src="'https://code.jquery.com/jquery-3.7.1.min.js'"></script>
+
+<!-- DataTables JS -->
+<script th:src="'https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js'"></script>
+
+<script th:src="@{/js/admin/header.js}"></script>
+<script th:src="@{/js/admin/user-backend.js}"></script>
+</body>
+</html>

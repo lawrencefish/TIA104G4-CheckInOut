@@ -206,8 +206,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="form-group">
                         <label>角色：</label>
                         <select name="role">
-                            <option value="高階管理員" ${admin.role === '系統管理員' ? 'selected' : ''}>系統管理員</option>
-                            <option value="一般管理員" ${admin.role === '一般管理員' ? 'selected' : ''}>一般管理員</option>
+                            <option value="資深管理員" ${admin.role === '管理員' ? 'selected' : ''}>管理員</option>
+                            <option value="管理員" ${admin.role === '管理員' ? 'selected' : ''}>管理員</option>
                             
                         </select>
                     </div>
