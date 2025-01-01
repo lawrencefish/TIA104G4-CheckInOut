@@ -686,6 +686,14 @@ th.sortable.active {
     position: relative;
 }
 
+/* 響應式設計 */
+@media (max-width: 576px) {
+    .login-container {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+}
+
 
 
 

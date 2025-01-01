@@ -6,10 +6,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Integer> {
 
-	static Admin findByEmail(String email) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	Admin findByEmail(String email);
+	
     // 基本的 CRUD 操作都會自動實現
     // 可以加入自定義的查詢方法
 }

@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>管理員管理</title>
-  <link rel="stylesheet" th:href="@{/css/admin-backend.css}">
-  <link rel="stylesheet" th:href="@{/css/headerfooter.css}">
+  <link rel="stylesheet" th:href="@{/css/admin/admin-backend.css}">
+  <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
   
 </head>
 <body>
@@ -64,8 +64,8 @@
             <div>
               <label for="role">權限</label>
               <select id="role" name="role" required>
-                <option value="初階管理員">一般管理員</option>
-                <option value="高階管理員">高階管理員</option>
+                <option value="管理員">管理員</option>
+                <option value="資深管理員">資深管理員</option>
               </select>
             </div>
             <div>
@@ -124,8 +124,8 @@
   <!-- Footer -->
     <div th:replace="~{admin/backend-footer :: footer}"></div>
 	
-	<script th:src="@{/js/header.js}"></script>
-  <script th:src="@{/js/admin-backend.js}"></script>
-  <script th:src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script th:src="@{/js/admin/header.js}"></script>
+	<script th:src="@{/js/admin/admin-backend.js}"></script>
+	<script th:src="'https://code.jquery.com/jquery-3.7.1.min.js'"></script>
 </body>
 </html>

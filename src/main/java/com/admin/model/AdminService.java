@@ -17,10 +17,19 @@ public class AdminService {
 //	private SessionFactory sessionFactory;
 	
 	public Admin adminLogin(String email, String password) {
+		System.out.println("嘗試使用信箱登入:" + email);
+		
 		// 從資料庫查詢管理員帳號
-		Admin admin = AdminRepository.findByEmail(email);
-		if (admin != null && admin.getAdminPassword().equals(password)) {
-			return admin; // 帳密正確 回傳管理員資料
+		Admin admin = repository.findByEmail(email);
+		if (admin != null) {
+			System.out.println("尋找管理員:" + admin.getEmail());
+			if (admin.getAdminPassword().equals(password)) {
+				System.out.println("密碼正確");
+				return admin; // 帳密正確 回傳管理員資料				
+			}
+			System.out.println("查無密碼");
+		} else {
+			System.out.println("查無管理員信箱:" + email);
 		}
 		return null; // 登入失敗
 	}
