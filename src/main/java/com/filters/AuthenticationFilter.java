@@ -16,7 +16,7 @@ public class AuthenticationFilter implements Filter {
     
     // 管理員需要登入的頁面 -byBarry
     private static final List<String> ADMIN_PROTECTED_PATHS = Arrays.asList(
-    		"/admin/admin-backend", "/admin/list", "/admin/edit"
+    		"/admin/adminBackend", "/admin/list", "/admin/edit"
     		); 
 
     @Override

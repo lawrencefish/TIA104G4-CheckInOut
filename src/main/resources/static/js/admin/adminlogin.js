@@ -1,46 +1,47 @@
 document.addEventListener('DOMContentLoaded', () => {
-    initializeApp();
+//    initializeApp();
+	setupEventListeners();
 });
 
-function initializeApp() {
-    loadHeaderFooter();
-    setupFormValidation();
-    setupEventListeners();
-}
+//function initializeApp() {
+//    loadHeaderFooter();
+//    setupFormValidation();
+//    setupEventListeners();
+//}
 
-function loadHeaderFooter() {
-    // 載入 header
-    fetch('backend-header.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('header').innerHTML = data;
-        })
-        .catch(error => console.error('載入 header 失敗:', error));
+//function loadHeaderFooter() {
+//    // 載入 header
+//    fetch('backend-header.html')
+//        .then(response => response.text())
+//        .then(data => {
+//            document.getElementById('header').innerHTML = data;
+//        })
+//        .catch(error => console.error('載入 header 失敗:', error));
+//
+//    // 載入 footer
+//    fetch('backend-footer.html')
+//        .then(response => response.text())
+//        .then(data => {
+//            document.getElementById('footer').innerHTML = data;
+//        })
+//        .catch(error => console.error('載入 footer 失敗:', error));
+//}
 
-    // 載入 footer
-    fetch('backend-footer.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('footer').innerHTML = data;
-        })
-        .catch(error => console.error('載入 footer 失敗:', error));
-}
-
-function setupFormValidation() {
-    const form = document.getElementById('loginForm');
-    if (!form) return;
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (form.checkValidity()) {
-            await handleLogin();
-        }
-
-        form.classList.add('was-validated');
-    });
-}
+//function setupFormValidation() {
+//    const form = document.getElementById('loginForm');
+//    if (!form) return;
+//
+//    form.addEventListener('submit', async (e) => {
+//        e.preventDefault();
+//        e.stopPropagation();
+//
+//        if (form.checkValidity()) {
+//            await handleLogin();
+//        }
+//
+//        form.classList.add('was-validated');
+//    });
+//}
 
 function setupEventListeners() {
     const forgotPasswordLink = document.getElementById('forgotPassword');
@@ -81,9 +82,7 @@ async function handleLogin() {
             }
 
             // 重定向到原始請求頁面或預設頁面
-            const redirectUrl = localStorage.getItem('redirectUrl') || 'admin-backend.html';
-            localStorage.removeItem('redirectUrl'); // 清除重定向 URL
-            window.location.href = redirectUrl;
+            window.location.href = '/admin/adminBackend';
         } else {
             showError('登入失敗，請檢查您的帳號密碼。');
         }
@@ -98,10 +97,10 @@ function handleForgotPassword() {
     alert('忘記密碼功能即將推出');
 }
 
-function showError(message) {
-    const errorElement = document.getElementById('errorMessage');
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.classList.remove('d-none');
-    }
-}
+//function showError(message) {
+//    const errorElement = document.getElementById('errorMessage');
+//    if (errorElement) {
+//        errorElement.textContent = message;
+//        errorElement.classList.remove('d-none');
+//    }
+//}

@@ -90,7 +90,7 @@ public class AdminController {
     		// 登入成功 管理員ID存入session
     		session.setAttribute("adminId", admin.getAdminId());
     		session.setAttribute("adminEmail", admin.getEmail());
-    		return "redirect:/admin/admin-backend"; // 登入成功後轉到管理員頁面
+    		return "redirect:/admin/adminBackend"; // 登入成功後轉到管理員頁面
     	} else {
     		// 登入失敗 錯誤訊息
     		redirectAttributes.addFlashAttribute("error", "帳號或密碼錯誤");
