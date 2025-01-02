@@ -22,7 +22,7 @@ public class NewsService {
 	}
 
     public Optional<NewsVO> getNewsByTitle(String newsTitle) {
-        return newsRepository.findByTitle(newsTitle);
+        return newsRepository.findByNewsTitle(newsTitle);
     }
     
     public void addNews(NewsVO newsVO) {
