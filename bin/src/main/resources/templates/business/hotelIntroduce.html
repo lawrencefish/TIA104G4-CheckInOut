@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            position: relative;
+        }
+
+        header .user .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hotel Button */
+        header .user .hotel-button {
+            background-color: #2c3e50;
+            /* 深藍色 */
+            color: #fff;
+            border: 1px solid #34495e;
+            /* 邊框顏色和背景稍微區分 */
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect */
+        header .user .hotel-button:hover {
+            background-color: #34495e;
+            /* 稍微變深的顏色 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            /* 更柔和的陰影 */
+        }
+
+        /* Active state */
+        header .user .hotel-button:active {
+            background-color: #1a252f;
+            /* 點擊時變得更深 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focused state (accessibility improvement) */
+        header .user .hotel-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            /* 聚焦時顯示藍色陰影 */
+        }
+
+
+        /* Dropdown menu */
+        header .user .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            overflow: hidden;
+        }
+
+        header .user .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        header .user .dropdown ul li {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        header .user .dropdown ul li:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user .dropdown ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* 登出的彈窗樣式 */
+        #logout-modal {
+            display: none;
+            /* 初始為隱藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 半透明背景 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #logout-modal.show {
+            display: flex;
+            /* 顯示彈窗 */
+        }
+
+        #logout-modal .logout-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        #logout-modal .logout-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        #logout-modal .logout-modal-content p {
+            margin: 10px 0;
+        }
+
+        #logout-modal .logout-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #logout-modal .logout-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-logout-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-switch-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+        /* x 按鈕 */
+        #logout-modal .logout-modal-content .logout-modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        #logout-modal .logout-modal-content .logout-modal-close-btn:hover {
+            color: #333;
+        }
+
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        aside {
+            width: 300px;
+            /* aside寬度保持300px */
+            padding: 20px;
+        }
+
+        aside nav {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        aside nav a {
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1rem;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        aside nav a.active,
+        aside nav a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* main主內容 */
+        /* 主體樣式 */
+        main {
+            width: 1500px;
+            /* 修改為1500px */
+            background-color: #fff;
+            padding: 30px;
+            margin-left: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        main h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            /* 增加底部間距 */
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            /* 加入底部邊框 */
+            padding-bottom: 10px;
+            /* 調整與底部邊框的間距 */
+        }
+
+        /* 環境介紹 */
+        /* 增強 section 標題 h2 樣式 */
+        section h2 {
+            font-size: 1.4rem;
+            /* 增大標題字體 */
+            margin-bottom: 15px;
+            /* 增加底部間距 */
+            color: #007bff;
+            /* 改為藍色，讓標題更突出 */
+            font-weight: bold;
+            border-bottom: 1px solid #ccc;
+            /* 增加底部邊框，分隔不同區塊 */
+            padding-bottom: 5px;
+        }
+
+        /* 增加 section 的間距與框線 */
+        section {
+            margin-bottom: 30px;
+            /* 增加區塊之間的間距 */
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            /* 增加邊框 */
+            border-radius: 8px;
+            /* 圓角邊框 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            /* 微弱的陰影效果 */
+            background-color: #fafafa;
+            /* 背景顏色調整 */
+        }
+
+        /* 環境介紹 textarea */
+        /* 環境介紹 textarea */
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+            /* 禁止使用者手動縮放 */
+            background-color: #f9f9f9;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+
+        /* 照片上傳區塊 */
+        .photo-upload {
+            margin-bottom: 20px;
+            display: block;
+            /* 改為block，方便控制位置 */
+            /* text-align: center; */
+            /* 置中對齊 */
+        }
+
+        /* 上傳按鈕 */
+        .upload-btn {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+            /* 保持按鈕的行內顯示 */
+        }
+
+        .upload-btn-div {
+            text-align: center;
+        }
+
+        .upload-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* 已上傳圖片顯示 */
+        .uploaded-photos {
+            display: flex;
+            flex-wrap: wrap; /* 改為允許換行 */
+            gap: 15px; /* 圖片之間的間距 */
+            padding: 10px 0; /* 上下留空 */
+        }
+
+        .uploaded-photos img {
+            width: 150px; /* 固定每張圖片的寬度 */
+            height: auto; /* 自動調整高度以保持比例 */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .uploaded-photos::-webkit-scrollbar {
+            height: 8px; /* 滾動條高度 */
+        }
+
+        .uploaded-photos::-webkit-scrollbar-thumb {
+            background-color: #007bff; /* 滾動條顏色 */
+            border-radius: 4px;
+        }
+
+        .uploaded-photos::-webkit-scrollbar-track {
+            background-color: #e0e0e0; /* 滾動條背景 */
+        }
+
+        /* 設施與服務 */
+        .facility-service {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        .facilities,
+        .services {
+            flex: 1;
+        }
+
+        .facilities label,
+        .services label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        /* 額外設施與服務 */
+        /* 表單區塊 */
+        .add-facility-service-form {
+            display: flex;
+            gap: 10px;
+            /* 間距 */
+            margin-bottom: 20px;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* 設置form group的寬度 */
+        .add-facility-service-form .form-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* 設置label樣式 */
+        .add-facility-service-form label {
+            font-size: 14px;
+        }
+
+        /* 使select、input、button填滿整個區域，並調整它們的大小 */
+        .add-facility-service-form select,
+        .add-facility-service-form input,
+        .add-facility-service-form button {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 0;
+        }
+
+        .add-facility-service-form select {
+            flex-basis: 20%;
+            /* 設置選單為20%的寬度 */
+        }
+
+        .add-facility-service-form input {
+            flex-grow: 1;
+            /* input佔據最多的空間 */
+        }
+
+        .add-facility-service-form button {
+            flex-basis: 25%;
+            /* 設置按鈕為25%的寬度 */
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .add-facility-service-form button:hover {
+            background-color: #45a049;
+        }
+
+        /* 已新增項目 */
+        .added-items {
+            margin-top: 20px;
+        }
+
+        .added-items h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .facilities,
+        .services {
+            margin-bottom: 20px;
+        }
+
+        .facilities h4,
+        .services h4 {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #facility-list,
+        #service-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        .item span {
+            font-size: 14px;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #e04e4e;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            width: 20%;
+            margin: 20px auto 0; /* 自動水平居中，並設定上方間距 */
+            text-align: center;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        /* 通用樣式 */
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* 成功提示樣式 */
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        /* 錯誤提示樣式 */
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a th:href="@{/frontDesk}">
+                <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+        <nav>
+            <a th:href="@{/frontDesk}">櫃台系統</a>
+            <a th:href="@{/business}" class="active">飯店管理</a>
+            <a th:href="@{/orders}">訂單管理</a>
+            <a href="#">評論管理</a>
+            <a href="#">客戶管理</a>
+            <a th:href="@{/report}">報表分析</a>
+        </nav>
+        <div class="user">
+            <span class="icon">🔔</span>
+            <span class="icon">💬</span>
+            <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
+            <div class="dropdown">
+                <ul>
+                    <li><a th:href="@{/account}">帳號設定</a></li>
+                    <li id="logout-option">登出</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- 登出彈窗 -->
+    <div id="logout-modal" class="hidden">
+        <div class="logout-modal-content">
+            <span class="logout-modal-close-btn" id="logout-modal-close-btn">×</span>
+            <h2>登出選項</h2>
+            <p>您確定要登出或切換使用者嗎？</p>
+            <div class="logout-modal-actions">
+                <!-- 登出按鈕 -->
+                <form th:action="@{/logout}" method="POST" id="logout-form">
+                    <button type="submit" id="logout-modal-logout-button">登出</button>
+                </form>
+                <!-- 切換使用者按鈕 -->
+                <form th:action="@{/switch-user}" method="POST" id="switch-user-form">
+                    <button type="submit" id="logout-modal-switch-button">切換使用者</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 主體內容 -->
+    <div class="container">
+        <!-- Aside -->
+        <aside>
+            <nav>
+                <a th:href="@{/business/hotelInfo}">基本資料設定</a>
+                <a th:href="@{/business/hotelIntroduce}" class="active">飯店介紹</a>
+                <a th:href="@{/business/roomTypeSet}">房型設定</a>
+                <a th:href="@{/business/roomManagement}">房間管理</a>
+                <a th:href="@{/business/priceSet}">價格與促銷</a>
+            </nav>
+        </aside>
+
+        <!-- Main -->
+        <main>
+            <h1>飯店介紹</h1>
+
+            <!-- 環境介紹 -->
+            <section>
+                <h2>環境介紹</h2>
+                <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                <!-- 表單 -->
+                <form th:action="@{/hotel/update-info}" method="post">
+                    <!-- Textarea 綁定當前環境介紹 -->
+                    <textarea id="environment-description" name="infoText" rows="5"
+                              th:text="${#httpSession.getAttribute('hotel').infoText}">
+                    </textarea>
+                    <!-- 提交按鈕 -->
+                    <button type="submit" class="submit-btn">儲存</button>
+                </form>
+            </section>
+
+            <!-- 照片上傳 -->
+            <section>
+                <h2>照片上傳</h2>
+                <div class="photo-upload">
+                    <input type="file" id="photo-upload" multiple accept="image/*">
+                </div>
+                <div class="uploaded-photos" id="uploaded-photos">
+                    <!-- 這裡會動態顯示已上傳圖片的縮略圖 -->
+                </div>
+                <div class="upload-btn-div">
+                    <button id="upload-btn" class="upload-btn">上傳</button>
+                </div>
+                <div class="uploaded-photos">
+                    <div th:each="imageId : ${images}" style="position: relative; display: inline-block; margin: 10px;">
+                        <!-- 圖片 -->
+                        <img th:src="@{/api/hotel-images/image/{imageId}(imageId=${imageId})}" width="150px" style="border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+
+                        <!-- 刪除按鈕 -->
+                        <button class="delete-btn"
+                                style="position: absolute; top: -10px; right: -10px; background-color: rgba(0, 0, 0, 0.7); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                                th:attr="onclick=|deleteImage(${imageId})|">
+                            ✖
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 設施與服務 -->
+            <section>
+                <h2>設施與服務</h2>
+                <form id="facility-service-form">
+                    <div class="facility-service">
+                        <div class="facilities">
+                            <h3>設施</h3>
+                            <!-- 動態生成內容 -->
+                        </div>
+                        <div class="services">
+                            <h3>服務</h3>
+                            <!-- 動態生成內容 -->
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">儲存</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+
+    <script>
+        const hotelId = "[[${hotelId}]]";
+        const contextPath = "[[${#httpServletRequest.contextPath}]]";
+        // // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
+        // const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
+        // const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
+        //
+        // // Header 的 a 標籤點擊事件
+        // headerLinks.forEach(link => {
+        //     link.addEventListener('click', function (e) {
+        //         // 移除所有 header a 標籤的 active 樣式
+        //         headerLinks.forEach(navLink => navLink.classList.remove('active'));
+        //         // 為當前被點擊的 header a 標籤添加 active 樣式
+        //         // e.preventDefault(); // 阻止跳轉
+        //         this.classList.add('active');
+        //     });
+        // });
+        //
+        // // Aside 的 a 標籤點擊事件
+        // asideLinks.forEach(link => {
+        //     link.addEventListener('click', function (e) {
+        //         // 移除所有 aside a 標籤的 active 樣式
+        //         asideLinks.forEach(navLink => navLink.classList.remove('active'));
+        //         // 為當前被點擊的 aside a 標籤添加 active 樣式
+        //         // e.preventDefault(); // 阻止跳轉
+        //         this.classList.add('active');
+        //     });
+        // });
+
+        //飯店彈窗
+        document.querySelector('.hotel-button').addEventListener('click', () => {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.querySelector('.dropdown');
+            if (!e.target.closest('.hotel-button') && !e.target.closest('.dropdown')) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // 自動調整 textarea 高度
+        const textarea = document.getElementById('environment-description');
+
+        function autoResize() {
+            // 重置高度為自動以便調整
+            this.style.height = 'auto';
+            // 設置高度為 scrollHeight，讓 textarea 自動適應內容的高度
+            this.style.height = (this.scrollHeight) + 'px';
+        }
+
+        // 當使用者輸入內容時觸發自動調整
+        textarea.addEventListener('input', autoResize);
+
+        // 頁面加載時初始化 textarea 的大小
+        window.addEventListener('load', () => {
+            autoResize.call(textarea); // 呼叫 autoResize 以便初始化
+        });
+
+        // 取得元素，新增設施與服務
+        // 取得元素
+        const addItemBtn = document.getElementById('add-item-btn');
+        const itemNameInput = document.getElementById('item-name');
+        const selectionType = document.getElementById('selection-type');
+        const facilityList = document.getElementById('facility-list');
+        const serviceList = document.getElementById('service-list');
+
+        // 監聽新增按鈕
+        // addItemBtn.addEventListener('click', () => {
+        //     const itemName = itemNameInput.value.trim();
+        //     const selectedType = selectionType.value;
+        //
+        //     if (itemName !== '') {
+        //         // 創建新的清單項目
+        //         const li = document.createElement('li');
+        //         li.classList.add('item');
+        //         li.innerHTML = `
+        //         <span>${itemName}</span>
+        //         <button class="delete-btn">刪除</button>
+        //     `;
+        //
+        //         // 根據選擇的類型將項目添加到對應清單
+        //         if (selectedType === 'facility') {
+        //             facilityList.appendChild(li);
+        //         } else if (selectedType === 'service') {
+        //             serviceList.appendChild(li);
+        //         }
+        //
+        //         // 清空輸入框
+        //         itemNameInput.value = '';
+        //
+        //         // 設置刪除按鈕的事件
+        //         const deleteBtn = li.querySelector('.delete-btn');
+        //         deleteBtn.addEventListener('click', () => {
+        //             li.remove(); // 刪除項目
+        //         });
+        //     } else {
+        //         alert('請輸入名稱');
+        //     }
+        // });
+
+        // 取得 input 和按鈕元素
+        const input = document.getElementById("item-input");
+        const button = document.getElementById("add-item-btn");
+
+        // 監聽 input 的 keydown 事件
+        // input.addEventListener("keydown", function (event) {
+        //     if (event.key === "Enter") {  // 如果按下的是 Enter 鍵
+        //         // event.preventDefault();  // 防止表單提交（如果在表單內）
+        //         // button.click();  // 觸發按鈕點擊事件
+        //     }
+        // });
+
+        // 取得彈窗和按鈕
+        const logoutModal = document.getElementById("logout-modal");
+        const logoutModalCloseBtn = document.getElementById("logout-modal-close-btn");
+        const logoutModalLogoutButton = document.getElementById("logout-modal-logout-button");
+        const logoutModalSwitchButton = document.getElementById("logout-modal-switch-button");
+        const logoutOption = document.getElementById("logout-option"); // 假設觸發按鈕未修改 id
+
+        // 顯示彈窗
+        logoutOption.addEventListener("click", function () {
+            logoutModal.classList.add("show"); // 添加 class 顯示彈窗
+        });
+
+        // 關閉彈窗 (x 按鈕)
+        logoutModalCloseBtn.addEventListener("click", function () {
+            logoutModal.classList.remove("show"); // 移除 class 隱藏彈窗
+        });
+
+        // 登出按鈕功能
+        logoutModalLogoutButton.addEventListener("click", function () {
+            alert("您已登出！");
+            document.location.href = "login-1.html";
+        });
+
+        // 切換使用者按鈕功能
+        logoutModalSwitchButton.addEventListener("click", function () {
+            alert("切換使用者！");
+            document.location.href = "login-2.html";; // 隱藏彈窗
+        });
+
+        // 點擊彈窗外部關閉 (選擇性功能)
+        window.addEventListener("click", function (e) {
+            if (e.target === logoutModal) {
+                logoutModal.classList.remove("show"); // 隱藏彈窗
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const facilitiesContainer = document.querySelector('.facilities');
+            const servicesContainer = document.querySelector('.services');
+            const form = document.getElementById('facility-service-form');
+            const contextPath = "[[${#httpServletRequest.contextPath}]]";
+
+            // 獲取設施
+            fetch(`${contextPath}/api/facilities/hotel/facilities`)
+                .then(response => {
+                    if (!response.ok) throw new Error("設施資料撈取失敗");
+                    return response.json();
+                })
+                .then(data => {
+                    facilitiesContainer.querySelectorAll("label").forEach(label => label.remove());
+                    data.forEach(item => {
+                        if (!item.facilityId || !item.facilityName) return;
+                        const label = document.createElement("label");
+                        label.innerHTML = `
+                    <input type="checkbox" name="facilities" value="${item.facilityId}">
+                    ${item.facilityName}
+                `;
+                        facilitiesContainer.appendChild(label);
+                    });
+                })
+                .catch(err => console.error("設施 API 錯誤：", err));
+
+            // 獲取服務
+            fetch(`${contextPath}/api/facilities/hotel/services`)
+                .then(response => {
+                    if (!response.ok) throw new Error("服務資料撈取失敗");
+                    return response.json();
+                })
+                .then(data => {
+                    servicesContainer.querySelectorAll("label").forEach(label => label.remove());
+                    data.forEach(item => {
+                        if (!item.facilityId || !item.facilityName) return;
+                        const label = document.createElement("label");
+                        label.innerHTML = `
+                    <input type="checkbox" name="services" value="${item.facilityId}">
+                    ${item.facilityName}
+                `;
+                        servicesContainer.appendChild(label);
+                    });
+                })
+                .catch(err => console.error("服務 API 錯誤：", err))
+                .finally(() => {
+                    checkSelectedItems(contextPath);
+                });
+
+            // 勾選現有設施與服務
+            function checkSelectedItems(contextPath) {
+                const hotelId = "[[${hotelId}]]";
+                fetch(`${contextPath}/api/hotelFacilities/current?hotelId=${hotelId}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error("現有項目資料撈取失敗");
+                        return response.json();
+                    })
+                    .then(currentItems => {
+                        currentItems.forEach(itemId => {
+                            const checkbox = document.querySelector(`input[type="checkbox"][value="${itemId}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    })
+                    .catch(err => console.error("勾選現有項目時出錯：", err));
+            }
+
+            // 表單提交
+            form.addEventListener("submit", function (event) {
+                event.preventDefault(); // 阻止默認提交行為
+
+                const selectedFacilities = Array.from(document.querySelectorAll('input[name="facilities"]:checked')).map(checkbox => checkbox.value);
+                const selectedServices = Array.from(document.querySelectorAll('input[name="services"]:checked')).map(checkbox => checkbox.value);
+
+                const payload = { facilities: selectedFacilities, services: selectedServices };
+
+                fetch(`${contextPath}/api/hotelFacilities/update-facilities`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            // 處理非 200 響應
+                            return response.json().then(data => {
+                                throw new Error(data.error || "更新失敗！");
+                            });
+                        }
+                        return response.json(); // 解析成功的 JSON 響應
+                    })
+                    .then(data => {
+                        alert(data.message || "設施與服務已更新！");
+                        location.reload(); // 更新成功後刷新頁面
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert(err.message || "更新失敗，請稍後再試！");
+                    });
+            });
+        });
+
+
+        let selectedFiles = []; // 全域變數
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const photoUploadInput = document.getElementById("photo-upload");
+            const uploadedPhotosDiv = document.getElementById("uploaded-photos");
+            const uploadButton = document.getElementById("upload-btn");
+            const hotelId = "[[${hotelId}]]"; // 確保 Thymeleaf 渲染正確
+
+            // 確認 hotelId 是否正確
+            console.log("hotelId:", hotelId);
+
+            // 當使用者選擇圖片時
+            photoUploadInput.addEventListener("change", (event) => {
+                const files = Array.from(event.target.files);
+                selectedFiles = [...selectedFiles, ...files];
+
+                renderUploadedPhotos();
+            });
+
+            function renderUploadedPhotos() {
+                uploadedPhotosDiv.innerHTML = ""; // 清空縮略圖
+
+                selectedFiles.forEach((file, index) => {
+                    const fileReader = new FileReader();
+                    fileReader.onload = (e) => {
+                        const wrapper = document.createElement("div");
+                        wrapper.style.position = "relative";
+                        wrapper.style.margin = "10px";
+
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.alt = `圖片${index + 1}`;
+                        img.style.width = "150px";
+                        img.style.borderRadius = "8px";
+                        img.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.1)";
+
+                        const deleteBtn = document.createElement("button");
+                        deleteBtn.textContent = "✖";
+                        deleteBtn.style.position = "absolute";
+                        deleteBtn.style.top = "-10px";
+                        deleteBtn.style.right = "-10px";
+                        deleteBtn.style.width = "20px";
+                        deleteBtn.style.height = "20px";
+                        deleteBtn.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+                        deleteBtn.style.color = "white";
+                        deleteBtn.style.border = "none";
+                        deleteBtn.style.cursor = "pointer";
+
+                        deleteBtn.addEventListener("click", () => {
+                            selectedFiles.splice(index, 1);
+                            renderUploadedPhotos();
+                        });
+
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(deleteBtn);
+                        uploadedPhotosDiv.appendChild(wrapper);
+                    };
+                    fileReader.readAsDataURL(file);
+                });
+            }
+
+            // 上傳按鈕點擊事件
+            uploadButton.addEventListener("click", () => {
+                console.log("上傳按鈕被點擊！");
+
+                if (selectedFiles.length === 0) {
+                    alert("請選擇至少一張圖片上傳！");
+                    return;
+                }
+
+                const formData = new FormData();
+                selectedFiles.forEach((file) => {
+                    formData.append("photos", file);
+                });
+
+                fetch(`${contextPath}/api/hotel-images/hotel/${hotelId}/upload`, {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then((response) => {
+                        if (!response.ok) throw new Error("上傳失敗！");
+                        return response.json();
+                    })
+                    .then((data) => {
+                        alert("圖片上傳成功！");
+                        selectedFiles = [];
+                        renderUploadedPhotos();
+                        location.reload(); // 上傳成功後重新整理頁面
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        alert("圖片上傳失敗！");
+                    });
+            });
+        });
+
+        function deleteImage(imageId) {
+            if (!confirm("確定要刪除這張圖片嗎？")) {
+                return;
+            }
+
+            fetch(`${contextPath}/api/hotel-images/image/${imageId}`, {
+                method: "DELETE",
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        // 如果狀態碼不是 2xx，拋出錯誤
+                        return response.text().then((text) => {
+                            throw new Error(text || "刪除失敗！");
+                        });
+                    }
+                    return response.json(); // 假設後端返回 JSON 格式
+                })
+                .then((data) => {
+                    alert(data.message || "圖片刪除成功！");
+                    location.reload(); // 刷新畫面，更新圖片列表
+                })
+                .catch((err) => {
+                    console.error(err);
+                    alert(err.message || "刪除失敗，請稍後再試！");
+                });
+        }
+    </script>
+</body>
+
+</html>

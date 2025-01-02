@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            position: relative;
+        }
+
+        header .user .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hotel Button */
+        header .user .hotel-button {
+            background-color: #2c3e50;
+            /* 深藍色 */
+            color: #fff;
+            border: 1px solid #34495e;
+            /* 邊框顏色和背景稍微區分 */
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect */
+        header .user .hotel-button:hover {
+            background-color: #34495e;
+            /* 稍微變深的顏色 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            /* 更柔和的陰影 */
+        }
+
+        /* Active state */
+        header .user .hotel-button:active {
+            background-color: #1a252f;
+            /* 點擊時變得更深 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focused state (accessibility improvement) */
+        header .user .hotel-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            /* 聚焦時顯示藍色陰影 */
+        }
+
+
+        /* Dropdown menu */
+        header .user .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            overflow: hidden;
+        }
+
+        header .user .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        header .user .dropdown ul li {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        header .user .dropdown ul li:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user .dropdown ul li:last-child {
+            border-bottom: none;
+        }
+
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        aside {
+            width: 300px;
+            /* aside寬度保持300px */
+            padding: 20px;
+        }
+
+        aside nav {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        aside nav a {
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1rem;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        aside nav a.active,
+        aside nav a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* main主內容 */
+        /* 主體樣式 */
+        /* Main */
+        main {
+            width: 800px;
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        main h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+            outline: none;
+        }
+
+        .form-inline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            /* 與輸入框的間距 */
+        }
+
+        .form-inline label {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .form-inline button {
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .form-inline button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .form-inline button:active {
+            background-color: #003f7f;
+            transform: translateY(0);
+        }
+
+        button[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .links a {
+            margin: 0 10px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        /* 全局錯誤訊息樣式 */
+        .error {
+            color: red;
+            font-size: 14px;
+            text-align: center; /* 左右居中 */
+            margin: 5px auto; /* 與上下元素間隔 */
+        }
+
+        /* 針對欄位錯誤的額外樣式 */
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px; /* 與輸入框的距離 */
+            display: block; /* 讓其占滿一行 */
+            text-align: left; /* 可選：改為左對齊 */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a th:href="@{/login}">
+                <img src="/imgs/CheckInOut_logo.png" alt="Logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+    </header>
+
+
+    <!-- 主體內容 -->
+    <div class="container">
+        <!-- Aside -->
+        <!-- <aside>
+            <nav>
+                <a href="4-1.html">銷售額</a>
+                <a href="4-2.html" class="active">訂單量</a>
+            </nav>
+        </aside> -->
+
+        <!-- Main -->
+        <main>
+            <h1>員工登入</h1>
+
+            <!-- 全局錯誤訊息 -->
+            <p th:if="${generalError != null}" th:text="${generalError}" class="error"></p>
+
+            <form th:action="@{/login/employee}" method="post">
+                <!-- 員工編號欄位 -->
+                <div class="form-group">
+                    <label for="employee-number">員工編號</label>
+                    <input type="text" id="employee-number" name="employeeNumber"
+                           placeholder="請輸入員工編號" th:value="${employeeNumber}">
+                    <p th:if="${employeeNumberError != null}" th:text="${employeeNumberError}" class="field-error"></p>
+                </div>
+
+                <!-- 密碼欄位 -->
+                <div class="form-group">
+                    <label for="password">密碼</label>
+                    <input type="password" id="password" name="password" placeholder="請輸入密碼">
+                    <p th:if="${passwordError != null}" th:text="${passwordError}" class="field-error"></p>
+                </div>
+
+                <button type="submit">登入</button>
+            </form>
+
+            <div class="links">
+                <a href="#">忘記密碼</a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+
+
+    <script>
+
+    </script>
+</body>
+
+</html>

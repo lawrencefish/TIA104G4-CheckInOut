@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            position: relative;
+        }
+
+        header .user .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hotel Button */
+        header .user .hotel-button {
+            background-color: #2c3e50;
+            /* 深藍色 */
+            color: #fff;
+            border: 1px solid #34495e;
+            /* 邊框顏色和背景稍微區分 */
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect */
+        header .user .hotel-button:hover {
+            background-color: #34495e;
+            /* 稍微變深的顏色 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            /* 更柔和的陰影 */
+        }
+
+        /* Active state */
+        header .user .hotel-button:active {
+            background-color: #1a252f;
+            /* 點擊時變得更深 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focused state (accessibility improvement) */
+        header .user .hotel-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            /* 聚焦時顯示藍色陰影 */
+        }
+
+
+        /* Dropdown menu */
+        header .user .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            overflow: hidden;
+        }
+
+        header .user .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        header .user .dropdown ul li {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        header .user .dropdown ul li:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user .dropdown ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* 登出的彈窗樣式 */
+        #logout-modal {
+            display: none;
+            /* 初始為隱藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 半透明背景 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #logout-modal.show {
+            display: flex;
+            /* 顯示彈窗 */
+        }
+
+        #logout-modal .logout-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        #logout-modal .logout-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        #logout-modal .logout-modal-content p {
+            margin: 10px 0;
+        }
+
+        #logout-modal .logout-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #logout-modal .logout-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-logout-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-switch-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+        /* x 按鈕 */
+        #logout-modal .logout-modal-content .logout-modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        #logout-modal .logout-modal-content .logout-modal-close-btn:hover {
+            color: #333;
+        }
+
+
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        aside {
+            width: 300px;
+            /* aside寬度保持300px */
+            padding: 20px;
+        }
+
+        aside nav {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        aside nav a {
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1rem;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        aside nav a.active,
+        aside nav a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* main主內容 */
+        /* 主體樣式 */
+        main {
+            width: 1500px;
+            /* 修改為1500px */
+            background-color: #fff;
+            padding: 30px;
+            margin-left: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        main h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            /* 增加底部間距 */
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            /* 加入底部邊框 */
+            padding-bottom: 10px;
+            /* 調整與底部邊框的間距 */
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        .button-group {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .button-group button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-group button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 員工資料彈窗樣式 */
+        #employee-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #employee-modal.show {
+            display: flex;
+        }
+
+        #employee-modal .employee-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            position: relative;
+        }
+
+        #employee-modal .employee-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        #employee-modal .form-group {
+            margin-bottom: 15px;
+        }
+
+        #employee-modal .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        #employee-modal .form-group input,
+        #employee-modal .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #employee-modal .employee-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #employee-modal .employee-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+
+        #employee-modal .employee-modal-actions button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 重設密碼彈窗樣式 */
+        #reset-password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #reset-password-modal.show {
+            display: flex;
+        }
+
+        .reset-password-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .reset-password-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        .reset-password-modal-content .form-group {
+            margin-bottom: 15px;
+        }
+
+        .reset-password-modal-content .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .reset-password-modal-content .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .reset-password-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .reset-password-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .reset-password-modal-actions #confirm-reset-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .reset-password-modal-actions #cancel-reset-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+        /* 新增員工彈窗樣式 */
+        #add-employee-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #add-employee-modal.show {
+            display: flex;
+        }
+
+        .add-employee-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .add-employee-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        .add-employee-modal-content .form-group {
+            margin-bottom: 15px;
+        }
+
+        .add-employee-modal-content .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .add-employee-modal-content .form-group input,
+        .add-employee-modal-content .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .add-employee-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .add-employee-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-employee-modal-actions #save-employee-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .add-employee-modal-actions #cancel-add-employee-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+        /* 變更公司密碼彈窗樣式 */
+        #update-hotel-password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #update-hotel-password-modal.show {
+            display: flex;
+        }
+
+        .update-hotel-password-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .update-hotel-password-modal-content h2 {
+            margin-bottom: 15px;
+        }
+
+        .update-hotel-password-modal-content .form-group {
+            margin-bottom: 15px;
+        }
+
+        .update-hotel-password-modal-content .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .update-hotel-password-modal-content .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .update-hotel-password-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .update-hotel-password-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .update-hotel-password-modal-actions #save-hotel-password-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .update-hotel-password-modal-actions #cancel-update-hotel-password-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            margin: 5px auto;
+        }
+
+        .alert.alert-success {
+            color: green;
+            font-size: 14px;
+            text-align: center;
+            margin: 5px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a th:href="@{/frontDesk}">
+                <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+        <nav>
+            <a th:href="@{/frontDesk}">櫃台系統</a>
+            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/orders}">訂單管理</a>
+            <a href="#">評論管理</a>
+            <a href="#">客戶管理</a>
+            <a th:href="@{/report}">報表分析</a>
+        </nav>
+        <div class="user">
+            <span class="icon">🔔</span>
+            <span class="icon">💬</span>
+            <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
+            <div class="dropdown">
+                <ul>
+                    <li><a th:href="@{/account}">帳號設定</a></li>
+                    <li id="logout-option">登出</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- 登出彈窗 -->
+    <div id="logout-modal" class="hidden">
+        <div class="logout-modal-content">
+            <span class="logout-modal-close-btn" id="logout-modal-close-btn">×</span>
+            <h2>登出選項</h2>
+            <p>您確定要登出或切換使用者嗎？</p>
+            <div class="logout-modal-actions">
+                <!-- 登出按鈕 -->
+                <form th:action="@{/logout}" method="POST" id="logout-form">
+                    <button type="submit" id="logout-modal-logout-button">登出</button>
+                </form>
+                <!-- 切換使用者按鈕 -->
+                <form th:action="@{/switch-user}" method="POST" id="switch-user-form">
+                    <button type="submit" id="logout-modal-switch-button">切換使用者</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 主體內容 -->
+    <div class="container">
+        <!-- Aside -->
+        <aside>
+            <nav>
+                <a th:href="@{/account}">個人帳號設定</a>
+                <a th:href="@{/account/accountSet}" class="active">管理員專區</a>
+            </nav>
+        </aside>
+
+        <!-- Main -->
+        <main>
+            <h1>管理員專區</h1>
+            <div class="button-group">
+                <button id="update-hotel-password">變更公司密碼</button>
+                <button id="add-employee-button">新增員工</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>員工編號</th>
+                        <th>員工名稱</th>
+                        <th>職稱</th>
+                        <th>電話</th>
+                        <th>信箱</th>
+                        <th>上次登入時間</th>
+                    </tr>
+                    </thead>
+                    <tbody id="employee-table-body">
+                    <!-- 使用 Thymeleaf 動態渲染員工列表 -->
+                    <tr th:each="employee : ${employees}"
+                        th:data-employee-id="${employee.employeeId}"
+                        th:data-employee-number="${employee.employeeNumber}"
+                        th:data-name="${employee.name}"
+                        th:data-title="${employee.title}"
+                        th:data-phone-number="${employee.phoneNumber}"
+                        th:data-email="${employee.email}">
+                        <td th:text="${employee.employeeNumber}">員工編號</td>
+                        <td th:text="${employee.name}">員工名稱</td>
+                        <td th:text="${employee.title}">職稱</td>
+                        <td th:text="${employee.phoneNumber}">電話</td>
+                        <td th:text="${employee.email}">信箱</td>
+                        <td th:text="${#dates.format(employee.lastLoginDate, 'yyyy-MM-dd HH:mm:ss')}">上次登入時間</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        <!-- 員工資料彈窗 -->
+        <!-- 員工資料彈窗 -->
+        <div id="employee-modal" th:classappend="${employeeError != null || employeeSuccess != null ? 'show' : 'hidden'}">
+            <div class="employee-modal-content">
+                <h2>員工資料</h2>
+                
+                <!-- 顯示錯誤或成功訊息 -->
+                <div th:if="${employeeError}" class="error">
+                    <p th:text="${employeeError}"></p>
+                </div>
+                <div th:if="${employeeSuccess}" class="alert alert-success">
+                    <p th:text="${employeeSuccess}"></p>
+                </div>
+                
+                <form th:action="@{/employee/set}" method="post">
+                    <div class="form-group">
+                        <input type="hidden" id="employee-modal-id" name="employeeId" readonly>
+
+                        <label for="employee-modal-number" >員工編號</label>
+                        <input type="text" id="employee-modal-number" name="employeeNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-modal-name">姓名</label>
+                        <input type="text" id="employee-modal-name" name="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-modal-title">職稱</label>
+                        <select id="employee-modal-title" name="title">
+                            <option value="負責人">負責人</option>
+                            <option value="總經理">總經理</option>
+                            <option value="經理">經理</option>
+                            <option value="襄理">襄理</option>
+                            <option value="員工">員工</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-modal-phone">電話</label>
+                        <input type="text" id="employee-modal-phone" name="phoneNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-modal-email">信箱</label>
+                        <input type="text" id="employee-modal-email" name="email">
+                    </div>
+                    <div class="employee-modal-actions">
+                        <button id="reset-password-button" type="button">重設密碼</button>
+                        <button id="suspend-employee-button" type="button">停權</button>
+                        <button id="employee-save-button" type="submit">儲存設定</button>
+                        <button id="employee-close-button" type="button">關閉</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 變更密碼彈窗 -->
+        <div id="reset-password-modal" class="hidden">
+            <div class="reset-password-modal-content">
+                <!-- 在彈窗內顯示錯誤訊息 -->
+                <h2>重設密碼</h2>
+                <form th:action="@{/employee/setPassword}" method="post">
+                    <div class="form-group">
+                        <label for="new-password">新密碼</label>
+                        <input type="password" id="new-password" name="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">再次輸入新密碼</label>
+                        <input type="password" id="confirm-password" name="newPasswordCheck" required>
+                    </div>
+                    <div class="reset-password-modal-actions">
+                        <button id="confirm-reset-button" type="submit">確認</button>
+                        <button id="cancel-reset-button" type="button">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 新增員工彈窗 -->
+        <div id="add-employee-modal" th:classappend="${addError != null || addSuccess != null ? 'show' : 'hidden'}">
+            <div class="add-employee-modal-content">
+                <h2>新增員工</h2>
+
+                <!-- 顯示錯誤或成功訊息 -->
+                <div th:if="${addError}" class="error">
+                    <p th:text="${addError}"></p>
+                </div>
+                <div th:if="${addSuccess}" class="alert alert-success">
+                    <p th:text="${addSuccess}"></p>
+                </div>
+
+                <form th:action="@{/employee/add}" method="post">
+                    <div class="form-group">
+                        <label for="add-employee-id">員工編號</label>
+                        <input type="text" id="add-employee-id" name="employeeNumber" placeholder="請輸入員工編號">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-employee-password">初始密碼</label>
+                        <input type="password" id="add-employee-password" name="password" placeholder="請輸入初始密碼">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-employee-name">員工姓名</label>
+                        <input type="text" id="add-employee-name" name="name" placeholder="請輸入員工姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-employee-role">職稱</label>
+                        <input type="text" id="add-employee-role" name="title" value="員工" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-employee-phone">電話</label>
+                        <input type="text" id="add-employee-phone" name="phoneNumber" placeholder="請輸入電話">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-employee-email">信箱</label>
+                        <input type="email" id="add-employee-email" name="email" placeholder="請輸入信箱">
+                    </div>
+                    <div class="add-employee-modal-actions">
+                        <button id="save-employee-button" type="submit">新增</button>
+                        <button id="cancel-add-employee-button" type="button">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- 變更公司密碼 -->
+        <div id="update-hotel-password-modal" th:classappend="${hotelError != null || hotelSuccess != null ? 'show' : 'hidden'}">
+            <div class="update-hotel-password-modal-content">
+                <h2>變更公司密碼</h2>
+
+                <!-- 顯示錯誤或成功訊息 -->
+                <div th:if="${hotelError}" class="error">
+                    <p th:text="${hotelError}"></p>
+                </div>
+                <div th:if="${hotelSuccess}" class="alert alert-success">
+                    <p th:text="${hotelSuccess}"></p>
+                </div>
+
+                <form th:action="@{/hotel/setPassword}" method="post">
+                    <div class="form-group">
+                        <label for="current-password">舊密碼</label>
+                        <input type="password" id="current-password" name="oldPassword" placeholder="請輸入舊密碼">
+                    </div>
+                    <div class="form-group">
+                        <label for="update-new-password">新密碼</label>
+                        <input type="password" id="update-new-password" name="newPassword" placeholder="請輸入新密碼">
+                    </div>
+                    <div class="form-group">
+                        <label for="update-confirm-new-password">再次輸入新密碼</label>
+                        <input type="password" id="update-confirm-new-password" name="newPasswordCheck" placeholder="請再次輸入新密碼">
+                    </div>
+                    <div class="update-hotel-password-modal-actions">
+                        <button id="save-hotel-password-button" type="submit">確認變更</button>
+                        <button id="cancel-update-hotel-password-button" type="button">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+
+    <script>
+        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
+        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
+        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
+
+        // Header 的 a 標籤點擊事件
+        headerLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                // 移除所有 header a 標籤的 active 樣式
+                headerLinks.forEach(navLink => navLink.classList.remove('active'));
+                // 為當前被點擊的 header a 標籤添加 active 樣式
+                // e.preventDefault(); // 阻止跳轉
+                this.classList.add('active');
+            });
+        });
+
+        // Aside 的 a 標籤點擊事件
+        asideLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                // 移除所有 aside a 標籤的 active 樣式
+                asideLinks.forEach(navLink => navLink.classList.remove('active'));
+                // 為當前被點擊的 aside a 標籤添加 active 樣式
+                // e.preventDefault(); // 阻止跳轉
+                this.classList.add('active');
+            });
+        });
+
+        //飯店彈窗
+        document.querySelector('.hotel-button').addEventListener('click', () => {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // 取得彈窗和按鈕
+        const logoutModal = document.getElementById("logout-modal");
+        const logoutModalCloseBtn = document.getElementById("logout-modal-close-btn");
+        const logoutModalLogoutButton = document.getElementById("logout-modal-logout-button");
+        const logoutModalSwitchButton = document.getElementById("logout-modal-switch-button");
+        const logoutOption = document.getElementById("logout-option"); // 假設觸發按鈕未修改 id
+
+        // 顯示彈窗
+        logoutOption.addEventListener("click", function () {
+            logoutModal.classList.add("show"); // 添加 class 顯示彈窗
+        });
+
+        // 關閉彈窗 (x 按鈕)
+        logoutModalCloseBtn.addEventListener("click", function () {
+            logoutModal.classList.remove("show"); // 移除 class 隱藏彈窗
+        });
+
+        // 登出按鈕功能
+        logoutModalLogoutButton.addEventListener("click", function () {
+            alert("您已登出！");
+            document.location.href = "login-1.html";
+        });
+
+        // 切換使用者按鈕功能
+        logoutModalSwitchButton.addEventListener("click", function () {
+            alert("切換使用者！");
+            document.location.href = "login-2.html";; // 隱藏彈窗
+        });
+
+        // 點擊彈窗外部關閉 (選擇性功能)
+        window.addEventListener("click", function (e) {
+            if (e.target === logoutModal) {
+                logoutModal.classList.remove("show"); // 隱藏彈窗
+            }
+        });
+
+        // 員工資料設定
+        document.querySelectorAll('#employee-table-body tr').forEach(row => {
+            row.addEventListener('click', () => {
+                const id = row.dataset.employeeId;
+                const number = row.dataset.employeeNumber;
+                const name = row.dataset.name;
+                const title = row.dataset.title; // 取得 data-title 的值
+                const phone = row.dataset.phoneNumber;
+                const email = row.dataset.email;
+
+                // 設定彈窗中的欄位值
+                document.getElementById('employee-modal-id').value = id;
+                document.getElementById('employee-modal-number').value = number;
+                document.getElementById('employee-modal-name').value = name;
+                document.getElementById('employee-modal-title').value = title; // 設置職稱
+                document.getElementById('employee-modal-phone').value = phone;
+                document.getElementById('employee-modal-email').value = email;
+
+                // 顯示彈窗
+                document.getElementById('employee-modal').classList.add('show');
+            });
+        });
+
+        // 關閉彈窗按鈕
+        document.getElementById('employee-close-button').addEventListener('click', () => {
+            document.getElementById('employee-modal').classList.remove('show');
+        });
+
+        // 儲存員工資料設定
+        document.getElementById('employee-save-button').addEventListener('click', () => {
+            alert('員工資料已成功更新！');
+            document.getElementById('employee-modal').classList.remove('show');
+        });
+
+        const resetPasswordButton = document.getElementById('reset-password-button');
+        const resetPasswordModal = document.getElementById('reset-password-modal');
+        const confirmResetButton = document.getElementById('confirm-reset-button');
+        const cancelResetButton = document.getElementById('cancel-reset-button');
+        const employeeModal = document.getElementById('employee-modal');
+
+        // 點擊重設密碼按鈕顯示重設密碼彈窗
+        resetPasswordButton.addEventListener('click', () => {
+            employeeModal.classList.remove('show');
+            resetPasswordModal.classList.add('show');
+        });
+
+        // 確認重設密碼
+        confirmResetButton.addEventListener('click', () => {
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword === '' || confirmPassword === '') {
+                alert('密碼不能為空！');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('兩次密碼輸入不一致！');
+                return;
+            }
+
+//             alert('密碼已成功變更！');
+            resetPasswordModal.classList.remove('show');
+            employeeModal.classList.add('show');
+        });
+
+        // 取消重設密碼
+        cancelResetButton.addEventListener('click', () => {
+            resetPasswordModal.classList.remove('show');
+            employeeModal.classList.add('show');
+        });
+
+
+        // 以下為新增員工
+        const addEmployeeButton = document.getElementById('add-employee-button');
+        const addEmployeeModal = document.getElementById('add-employee-modal');
+        const saveEmployeeButton = document.getElementById('save-employee-button');
+        const cancelAddEmployeeButton = document.getElementById('cancel-add-employee-button');
+
+        // 顯示新增員工彈窗
+        addEmployeeButton.addEventListener('click', () => {
+            addEmployeeModal.classList.add('show');
+        });
+
+        // 點擊新增按鈕保存員工資料
+        // saveEmployeeButton.addEventListener('click', () => {
+        //     const id = document.getElementById('add-employee-id').value.trim();
+        //     const password = document.getElementById('add-employee-password').value.trim();
+        //     const name = document.getElementById('add-employee-name').value.trim();
+        //     const role = document.getElementById('add-employee-role').value;
+        //     const phone = document.getElementById('add-employee-phone').value.trim();
+        //     const email = document.getElementById('add-employee-email').value.trim();
+        //
+        //     if (!id || !password || !name || !phone || !email) {
+        //         alert('所有欄位都為必填！');
+        //         return;
+        //     }
+        //
+        //     // // 模擬新增員工成功
+        //     // alert("新增員工成功！");
+        //
+        //     // // 清空輸入欄位並關閉彈窗
+        //     // document.getElementById('add-employee-id').value = '';
+        //     // document.getElementById('add-employee-password').value = '';
+        //     // document.getElementById('add-employee-name').value = '';
+        //     // document.getElementById('add-employee-phone').value = '';
+        //     // document.getElementById('add-employee-email').value = '';
+        //     // addEmployeeModal.classList.remove('show');
+        // });
+
+        // 點擊取消按鈕關閉彈窗
+        cancelAddEmployeeButton.addEventListener('click', () => {
+            addEmployeeModal.classList.remove('show');
+        });
+
+        // 以下是變更公司密碼
+        const updateHotelPasswordButton = document.getElementById('update-hotel-password');
+        const updateHotelPasswordModal = document.getElementById('update-hotel-password-modal');
+        const saveHotelPasswordButton = document.getElementById('save-hotel-password-button');
+        const cancelUpdateHotelPasswordButton = document.getElementById('cancel-update-hotel-password-button');
+
+        // 顯示變更公司密碼彈窗
+        updateHotelPasswordButton.addEventListener('click', () => {
+            updateHotelPasswordModal.classList.add('show');
+        });
+
+        // 確認變更公司密碼
+        saveHotelPasswordButton.addEventListener('click', (e) => {
+            const currentPassword = document.getElementById('current-password').value.trim();
+            const newPassword = document.getElementById('update-new-password').value.trim();
+            const confirmNewPassword = document.getElementById('update-confirm-new-password').value.trim();
+
+            if (!currentPassword || !newPassword || !confirmNewPassword) {
+                alert('所有欄位都為必填！');
+                e.preventDefault(); // 防止表單提交
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                alert('新密碼與再次輸入的新密碼不一致！');
+                e.preventDefault(); // 防止表單提交
+                return;
+            }
+
+            // 清空輸入欄位並關閉彈窗
+            // document.getElementById('current-password').value = '';
+            // document.getElementById('update-new-password').value = '';
+            // document.getElementById('update-confirm-new-password').value = '';
+            // updateHotelPasswordModal.classList.remove('show'); // 正確關閉彈窗
+        });
+
+        // 點擊取消按鈕關閉彈窗
+        cancelUpdateHotelPasswordButton.addEventListener('click', () => {
+            updateHotelPasswordModal.classList.remove('show');
+        });
+
+    </script>
+</body>
+
+</html>
