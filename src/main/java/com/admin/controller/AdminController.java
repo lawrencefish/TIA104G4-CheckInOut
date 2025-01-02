@@ -71,7 +71,26 @@ public class AdminController {
         return "redirect:/admin/list";  // 刪除完成後重導向到列表頁
     }
     
-    //
+    @GetMapping("couponManagement")
+    public String showCouponManagement() {
+    	return "admin/coupon-management";
+    }
+    
+    @GetMapping("appealManagement")
+    public String showAppealManagement() {
+    	return "admin/appeal-management";
+    }
+    
+    @GetMapping("latestNews")
+    public String showLatestNews() {
+    	return "admin/latest-news";
+    }
+    
+    @GetMapping("/reviewBackend")
+    public String showReviewBackend() {
+    	return "admin/review-backend";
+    }
+    
     @GetMapping("/adminBackend")
     public String showAdminBackend() {
     	return "admin/admin-backend";
@@ -102,7 +121,7 @@ public class AdminController {
     		// 登入成功 管理員ID存入session
     		session.setAttribute("adminId", admin.getAdminId());
     		session.setAttribute("adminEmail", admin.getEmail());
-    		return "redirect:/admin/admin-backend"; // 登入成功後轉到管理員頁面
+    		return "redirect:/admin/adminBackend"; // 登入成功後轉到管理員頁面
     	} else {
     		System.out.println("登入失敗:" + email);
     		// 登入失敗 錯誤訊息

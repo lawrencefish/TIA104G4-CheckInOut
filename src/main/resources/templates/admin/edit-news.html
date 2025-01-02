@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>創建/編輯消息</title>
+    <link rel="stylesheet" href="./css/edit-news.css">
+    <link rel="stylesheet" href="./css/headerfooter.css">
+    
+</head>
+<body>
+    <!-- 動態導入header -->
+    <div id="header"></div>
+
+    <main>
+        <section class="admin-banner">
+            <div class="container">
+                <h1>創建/編輯消息</h1>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="news-form-container">
+                <div class="image-section">
+                    <div class="image-preview">
+                        <img id="previewImage" src="./img/sale.jpg" alt="Preview">
+                    </div>
+                    <input type="file" id="photoUpload" accept="image/*" style="display: none">
+                    <button class="btn btn-primary" onclick="document.getElementById('photoUpload').click()">
+                        上傳照片
+                    </button>
+                </div>
+
+                <form id="newsForm" onsubmit="submitNews(event)">
+                    <div class="form-group">
+                        <label for="title">消息標題</label>
+                        <input type="text" id="title" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="publishDate">發布時間</label>
+                        <input type="date" id="publishDate" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="startDate">開始時間</label>
+                        <input type="date" id="startDate" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="content">消息內容</label>
+                        <textarea id="content" class="form-control" rows="6" required></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">發布消息</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- 動態導入footer -->
+    <div id="footer"></div>
+
+    <script src="./js/header.js"></script>
+    <script src="./js/edit-news.js"></script>
+</body>
+</html>

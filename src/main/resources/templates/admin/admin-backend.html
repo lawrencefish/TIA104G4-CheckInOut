@@ -28,16 +28,16 @@
           <label for="filterStatus">篩選狀態：</label>
           <select id="filterStatus">
             <option value="all">全部</option>
-            <option value="正常">正常</option>
-            <option value="停用">停用</option>
+            <option value="1">啟用中</option>
+            <option value="0">停用</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="filterRole">篩選權限：</label>
-          <select id="filterRole">
+          <label for="filterPermissions">篩選權限：</label>
+          <select id="filterPermissions">
             <option value="all">全部</option>
-            <option value="一般管理員">一般管理員</option>
-            <option value="高階管理員">高階管理員</option>
+            <option value="0">一般管理員</option>
+            <option value="1">高階管理員</option>
           </select>
         </div>
         <div class="form-actions">
@@ -62,10 +62,10 @@
               <input type="text" id="name" name="name" required autocomplete="name">
             </div>
             <div>
-              <label for="role">權限</label>
-              <select id="role" name="role" required>
-                <option value="管理員">管理員</option>
-                <option value="資深管理員">資深管理員</option>
+              <label for="permissions">權限</label>
+              <select id="permissions" name="permissions" required>
+                <option value="0">管理員</option>
+                <option value="1">資深管理員</option>
               </select>
             </div>
             <div>

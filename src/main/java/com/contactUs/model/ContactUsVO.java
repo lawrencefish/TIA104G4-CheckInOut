@@ -43,9 +43,6 @@ public class ContactUsVO {
     @Column(name = "review_time")
     private LocalDateTime reviewTime;
     
-    @Column(name = "method")
-    private String method;
-    
     @Column(name = "reply_content")
     private String replyContent;
     

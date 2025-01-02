@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>最新消息列表</title>
+    <link rel="stylesheet" th:href="@{/css/admin/latest-news.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="~{admin/backend-header :: header}"></div>
+
+    <main>
+        <section class="admin-banner">
+            <div class="container">
+                <h1>最新消息列表</h1>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="news-filters">
+                <div class="filter-content">
+                    <div class="filter-item">
+                        <label for="searchTitle">活動標題</label>
+                        <input type="text" id="searchTitle" class="form-control">
+                    </div>
+                    <div class="filter-item">
+                        <label for="startDate">開始時間</label>
+                        <input type="date" id="startDate" class="form-control">
+                    </div>
+                    <div class="filter-item">
+                        <label for="publishDate">發布時間</label>
+                        <input type="date" id="publishDate" class="form-control">
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="searchNews()">查詢</button>
+                    <button class="btn btn-primary" onclick="createNews()">創建消息</button>
+                </div>
+            </div>
+            
+
+            <div class="table-container">
+                <table id="newsTable" class="news-table">
+                    <thead>
+                        <tr>
+                            <th>消息標題</th>
+                            <th>消息內容</th>
+                            <th>開始時間</th>
+                            <th>發布時間</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="newsTableBody">
+                        <!-- 由 JavaScript 動態填充 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{admin/backend-footer :: footer}"></div>
+
+    <script th:src="@{/js/admin/header.js}"></script>
+    <script th:src="@{/js/admin/latest-news.js}"></script>
+</body>
+</html>

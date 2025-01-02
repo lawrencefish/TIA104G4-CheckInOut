@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>創建/編輯優惠券</title>
+    <link rel="stylesheet" href="./css/edit-coupon.css">
+    <link rel="stylesheet" href="./css/headerfooter.css">
+    
+</head>
+<body>
+    <!-- 動態導入header -->
+    <div id="header"></div>
+
+    <main>
+        <section class="admin-banner">
+            <div class="container">
+                <h1>創建/編輯優惠券</h1>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="coupon-form-container">
+                <div class="coupon-preview" id="couponPreview">
+                    <h2>$<span id="previewAmount">200</span></h2>
+                    <hr>
+                    <p id="previewName">優惠券名稱</p>
+                    <p class="small">
+                        使用期限：<br>
+                        <span id="previewStartDate">2024/01/01</span> - <br>
+                        <span id="previewEndDate">2024/12/31</span><br>
+                        滿 $<span id="previewMinSpend">1000</span> 即可使用
+                    </p>
+                </div>
+
+                <form id="couponForm" onsubmit="submitCoupon(event)">
+                    <div class="form-group">
+                        <label for="couponName">優惠券名稱</label>
+                        <input type="text" id="couponName" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">優惠金額</label>
+                        <input type="number" id="amount" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startDate">開始日期</label>
+                        <input type="date" id="startDate" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endDate">結束日期</label>
+                        <input type="date" id="endDate" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="minSpend">最低消費金額</label>
+                        <input type="number" id="minSpend" class="form-control" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">發布優惠券</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+    <!-- 動態導入footer -->
+    <div id="footer"></div>
+
+    <script src="./js/header.js"></script>
+    <script src="./js/edit-coupon.js"></script>
+</html>

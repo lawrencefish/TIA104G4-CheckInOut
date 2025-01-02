@@ -5,21 +5,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 模擬資料（之後可替換為資料庫資料）
     const mockAdmins = [
-        { id: 1, name: '王大明', role: '高階管理員', status: '啟用中', joinDate: '2024-01-15', phone: '0912-345-678', email: 'wang@example.com', lastLogin: '2024-03-20 15:30' },
-        { id: 2, name: '李小華', role: '一般管理員', status: '啟用中', joinDate: '2024-01-20', phone: '0923-456-789', email: 'lee@example.com', lastLogin: '2024-03-19 14:20' },
-        { id: 3, name: '張美玲', role: '高階管理員', status: '停用', joinDate: '2024-02-01', phone: '0934-567-890', email: 'chang@example.com', lastLogin: '2024-03-15 09:45' },
-        { id: 4, name: '陳志明', role: '高階管理員', status: '啟用中', joinDate: '2024-02-05', phone: '0945-678-901', email: 'chen@example.com', lastLogin: '2024-03-20 16:15' },
-        { id: 5, name: '林小琳', role: '一般管理員', status: '啟用中', joinDate: '2024-02-10', phone: '0956-789-012', email: 'lin@example.com', lastLogin: '2024-03-20 11:30' },
-        { id: 6, name: '吳建志', role: '高階管理員', status: '啟用中', joinDate: '2024-02-15', phone: '0967-890-123', email: 'wu@example.com', lastLogin: '2024-03-19 17:40' },
-        { id: 7, name: '黃雅芳', role: '一般管理員', status: '停用', joinDate: '2024-02-20', phone: '0978-901-234', email: 'huang@example.com', lastLogin: '2024-03-18 13:25' },
-        { id: 8, name: '劉俊宏', role: '高階管理員', status: '啟用中', joinDate: '2024-02-25', phone: '0989-012-345', email: 'liu@example.com', lastLogin: '2024-03-20 10:15' },
-        { id: 9, name: '周淑華', role: '一般管理員', status: '啟用中', joinDate: '2024-03-01', phone: '0990-123-456', email: 'chou@example.com', lastLogin: '2024-03-20 14:50' },
-        { id: 10, name: '謝明德', role: '高階管理員', status: '啟用中', joinDate: '2024-03-05', phone: '0901-234-567', email: 'hsieh@example.com', lastLogin: '2024-03-19 16:35' },
-        { id: 11, name: '楊小菁', role: '一般管理員', status: '啟用中', joinDate: '2024-03-10', phone: '0912-345-678', email: 'yang@example.com', lastLogin: '2024-03-20 09:20' },
-        { id: 12, name: '郭志豪', role: '高階管理員', status: '停用', joinDate: '2024-03-15', phone: '0923-456-789', email: 'kuo@example.com', lastLogin: '2024-03-17 11:45' },
-        { id: 13, name: '許雅婷', role: '一般管理員', status: '啟用中', joinDate: '2024-03-16', phone: '0934-567-890', email: 'hsu@example.com', lastLogin: '2024-03-20 15:55' },
-        { id: 14, name: '蔡明翰', role: '高階管理員', status: '啟用中', joinDate: '2024-03-17', phone: '0945-678-901', email: 'tsai@example.com', lastLogin: '2024-03-20 13:40' },
-        { id: 15, name: '鄭佩珊', role: '一般管理員', status: '啟用中', joinDate: '2024-03-18', phone: '0956-789-012', email: 'cheng@example.com', lastLogin: '2024-03-20 16:30' }
+        { id: 1, name: '王大明', permissions: '高階管理員', status: '啟用中', joinDate: '2024-01-15', phone: '0912-345-678', email: 'wang@example.com', lastLogin: '2024-03-20 15:30' },
+        { id: 2, name: '李小華', permissions: '一般管理員', status: '啟用中', joinDate: '2024-01-20', phone: '0923-456-789', email: 'lee@example.com', lastLogin: '2024-03-19 14:20' },
+        { id: 3, name: '張美玲', permissions: '高階管理員', status: '停用', joinDate: '2024-02-01', phone: '0934-567-890', email: 'chang@example.com', lastLogin: '2024-03-15 09:45' },
+        { id: 4, name: '陳志明', permissions: '高階管理員', status: '啟用中', joinDate: '2024-02-05', phone: '0945-678-901', email: 'chen@example.com', lastLogin: '2024-03-20 16:15' },
+        { id: 5, name: '林小琳', permissions: '一般管理員', status: '啟用中', joinDate: '2024-02-10', phone: '0956-789-012', email: 'lin@example.com', lastLogin: '2024-03-20 11:30' },
+        { id: 6, name: '吳建志', permissions: '高階管理員', status: '啟用中', joinDate: '2024-02-15', phone: '0967-890-123', email: 'wu@example.com', lastLogin: '2024-03-19 17:40' },
+        { id: 7, name: '黃雅芳', permissions: '一般管理員', status: '停用', joinDate: '2024-02-20', phone: '0978-901-234', email: 'huang@example.com', lastLogin: '2024-03-18 13:25' },
+        { id: 8, name: '劉俊宏', permissions: '高階管理員', status: '啟用中', joinDate: '2024-02-25', phone: '0989-012-345', email: 'liu@example.com', lastLogin: '2024-03-20 10:15' },
+        { id: 9, name: '周淑華', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-01', phone: '0990-123-456', email: 'chou@example.com', lastLogin: '2024-03-20 14:50' },
+        { id: 10, name: '謝明德', permissions: '高階管理員', status: '啟用中', joinDate: '2024-03-05', phone: '0901-234-567', email: 'hsieh@example.com', lastLogin: '2024-03-19 16:35' },
+        { id: 11, name: '楊小菁', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-10', phone: '0912-345-678', email: 'yang@example.com', lastLogin: '2024-03-20 09:20' },
+        { id: 12, name: '郭志豪', permissions: '高階管理員', status: '停用', joinDate: '2024-03-15', phone: '0923-456-789', email: 'kuo@example.com', lastLogin: '2024-03-17 11:45' },
+        { id: 13, name: '許雅婷', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-16', phone: '0934-567-890', email: 'hsu@example.com', lastLogin: '2024-03-20 15:55' },
+        { id: 14, name: '蔡明翰', permissions: '高階管理員', status: '啟用中', joinDate: '2024-03-17', phone: '0945-678-901', email: 'tsai@example.com', lastLogin: '2024-03-20 13:40' },
+        { id: 15, name: '鄭佩珊', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-18', phone: '0956-789-012', email: 'cheng@example.com', lastLogin: '2024-03-20 16:30' }
     ];
 
     // 模擬操作日誌資料（之後可替換為資料庫資料）
@@ -51,9 +51,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     admin.phone.includes(keyword);
                 
                 const matchStatus = !filters.status || filters.status === 'all' || admin.status === filters.status;
-                const matchRole = !filters.role || filters.role === 'all' || admin.role === filters.role;
+                const matchPermissions = !filters.permissions || filters.permissions === 'all' || admin.permissions === filters.permissions;
 
-                return matchKeyword && matchStatus && matchRole;
+                return matchKeyword && matchStatus && matchPermissions;
             });
 
             // 進行排序
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const $row = $('<tr>').append(
                 $('<td>').text(admin.id),
                 $('<td>').text(admin.name),
-                $('<td>').text(admin.role),
+                $('<td>').text(admin.permissions),
                 $('<td>').append(
                     $('<span>')
                         .addClass(`status-badge ${admin.status === '啟用中' ? 'status-active' : 'status-disabled'}`)
@@ -204,10 +204,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         <input type="text" name="name" value="${admin.name}">
                     </div>
                     <div class="form-group">
-                        <label>角色：</label>
-                        <select name="role">
-                            <option value="資深管理員" ${admin.role === '管理員' ? 'selected' : ''}>管理員</option>
-                            <option value="管理員" ${admin.role === '管理員' ? 'selected' : ''}>管理員</option>
+                        <label>權限：</label>
+                        <select name="permissions">
+                            <option value="1" ${admin.permissions === '管理員' ? 'selected' : ''}>管理員</option>
+                            <option value="0" ${admin.permissions === '管理員' ? 'selected' : ''}>管理員</option>
                             
                         </select>
                     </div>
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const filters = {
             keyword: $('#keyword').val().toLowerCase(),
             status: $('#filterStatus').val(),
-            role: $('#filterRole').val(),
+            permissions: $('#filterPermissions').val(),
         };
         
         currentPage = 1;
@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return {
             keyword: document.getElementById('keyword').value,
             status: document.getElementById('filterStatus').value,
-            role: document.getElementById('filterRole').value
+            permissions: document.getElementById('filterPermissions').value
         };
     }
 
@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const sortableFields = {
             'id': '管理員編號',
             'name': '管理員名稱',
-            'role': '權限',
+            'permissions': '權限',
             'status': '狀態',
             'joinDate': '新增日期',
             'phone': '電話',
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const newAdmin = {
                 id: Math.max(...mockAdmins.map(admin => admin.id)) + 1,
                 name: formData.name,
-                role: formData.role,
+                permissions: formData.permissions,
                 status: '啟用中',
                 joinDate: new Date().toLocaleDateString(),
                 phone: formData.phone,

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>優惠券管理</title>
+    <link rel="stylesheet" th:href="@{/css/admin/coupon-management.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
+    
+</head>
+<body>
+   <!-- Header -->
+    <div th:replace="~{admin/backend-header :: header}"></div>
+
+    <main>
+        <section class="admin-banner">
+            <div class="container">
+                <h1>優惠券管理</h1>
+            </div>
+        </section>
+
+        <section class="container coupon-management">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="搜尋...">
+                <button class="btn btn-primary" onclick="searchCoupons()">搜尋</button>
+                <button class="btn btn-success" onclick="createCoupon()">創建優惠券</button>
+            </div>
+
+            <table class="coupon-table" id="couponTable">
+                <thead>
+                    <tr>
+                        <th>優惠券名稱</th>
+                        <th>描述</th>
+                        <th>兌換數</th>
+                        <th>最低消費金額</th>
+                        <th>可使用時間</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="couponTableBody">
+                    <!-- 由 JavaScript 動態填充 -->
+                </tbody>
+            </table>
+
+            <div class="pagination" id="pagination">
+                <!-- 由 JavaScript 動態填充分頁 -->
+            </div>
+        </section>
+    </main>
+    <!-- Footer -->
+    <div th:replace="~{admin/backend-footer :: footer}"></div>
+	
+    <script th:src="@{/js/admin/header.js}"></script>
+    <script th:src="@{/js/admin/coupon-management.js}"></script>
+</body>
+</html>

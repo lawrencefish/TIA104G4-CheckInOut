@@ -1,0 +1,119 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0 20px;
+    box-sizing: border-box;
+    max-width: auto;
+  }
+
+  
+  
+  /* 主要內容 */
+  .main {
+    padding: 20px;
+  }
+
+  /* h1標籤框 */
+  .admin-banner {
+    background: #2196f3;
+    padding: 1.5rem 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(3, 150, 255, 0.2);
+    text-align: center;
+    margin: 20px 40px;
+    color: white;
+    letter-spacing: 1px;
+    transition: transform 0.3s ease;
+    
+  }
+
+  /* 新增 h1 樣式 */
+  .admin-banner h1 {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+
+.coupon-management {
+    padding: 2rem 0;
+}
+
+.search-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.coupon-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.coupon-table th,
+.coupon-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.coupon-table th {
+    background-color: #f8f9fa;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.page-link {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.page-link.active {
+    background-color: #007bff;
+    color: white;
+}
