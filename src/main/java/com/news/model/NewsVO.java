@@ -8,9 +8,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
+//一個註解
 @Entity
-//@Table(name = "news")
+@Table(name = "news")
 public class NewsVO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

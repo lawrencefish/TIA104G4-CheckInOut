@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import lombok.Builder;
 import lombok.Data;
-
+//一個註解
 @Data
 @Builder
 public class ContactUsVO {

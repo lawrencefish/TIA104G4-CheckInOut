@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
-
+//一個註解
 @Controller
 @RequestMapping("news")
 public class NewsController {
