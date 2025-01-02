@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飯店管理系統</title>
+<style>
+html {
+	overflow-y: overlay;
+}
+
+/* 全局樣式 */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: Arial, sans-serif;
+	color: #333;
+	line-height: 1.5;
+	background-color: #f9f9f9;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+/* Header 樣式 */
+header {
+	background-color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 15px 30px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	font-size: 18px;
+}
+
+/* Logo */
+header .logo a {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	text-decoration: none;
+}
+
+header .logo a img {
+	width: 40px;
+	height: 40px;
+}
+
+header .logo a span {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #007bff;
+}
+
+header nav {
+	display: flex;
+	gap: 25px;
+}
+
+header nav a {
+	font-size: 1rem;
+	color: #333;
+	padding: 5px 10px;
+	border-radius: 4px;
+	transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+header nav a:hover, header nav a.active {
+	background-color: #007bff;
+	color: #fff;
+}
+
+header .user {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	color: #333;
+	position: relative;
+}
+
+header .user .icon {
+	font-size: 1.2rem;
+	cursor: pointer;
+}
+
+/* Hotel Button */
+header .user .hotel-button {
+	background-color: #2c3e50;
+	/* 深藍色 */
+	color: #fff;
+	border: 1px solid #34495e;
+	/* 邊框顏色和背景稍微區分 */
+	padding: 10px 20px;
+	font-size: 1rem;
+	font-weight: 600;
+	border-radius: 25px;
+	cursor: pointer;
+	position: relative;
+	transition: background-color 0.3s ease, box-shadow 0.3s ease;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effect */
+header .user .hotel-button:hover {
+	background-color: #34495e;
+	/* 稍微變深的顏色 */
+	box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+	/* 更柔和的陰影 */
+}
+
+/* Active state */
+header .user .hotel-button:active {
+	background-color: #1a252f;
+	/* 點擊時變得更深 */
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Focused state (accessibility improvement) */
+header .user .hotel-button:focus {
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+	/* 聚焦時顯示藍色陰影 */
+}
+
+/* Dropdown menu */
+header .user .dropdown {
+	display: none;
+	position: absolute;
+	top: 40px;
+	right: 0;
+	background-color: #fff;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	width: 150px;
+	overflow: hidden;
+}
+
+header .user .dropdown ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+header .user .dropdown ul li {
+	padding: 10px 15px;
+	font-size: 0.9rem;
+	cursor: pointer;
+	border-bottom: 1px solid #eee;
+	transition: background-color 0.3s ease;
+}
+
+header .user .dropdown ul li:hover {
+	background-color: #007bff;
+	color: #fff;
+}
+
+header .user .dropdown ul li:last-child {
+	border-bottom: none;
+}
+
+/* 登出的彈窗樣式 */
+#logout-modal {
+	display: none;
+	/* 初始為隱藏 */
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	/* 半透明背景 */
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+#logout-modal.show {
+	display: flex;
+	/* 顯示彈窗 */
+}
+
+#logout-modal .logout-modal-content {
+	background-color: white;
+	padding: 20px;
+	border-radius: 8px;
+	width: 400px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	text-align: center;
+	position: relative;
+}
+
+#logout-modal .logout-modal-content h2 {
+	margin-bottom: 10px;
+}
+
+#logout-modal .logout-modal-content p {
+	margin: 10px 0;
+}
+
+#logout-modal .logout-modal-actions {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 20px;
+}
+
+#logout-modal .logout-modal-actions button {
+	padding: 10px 20px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+#logout-modal .logout-modal-actions #logout-modal-logout-button {
+	background-color: #007bff;
+	color: white;
+}
+
+#logout-modal .logout-modal-actions #logout-modal-switch-button {
+	background-color: #ccc;
+	color: black;
+}
+
+/* x 按鈕 */
+#logout-modal .logout-modal-content .logout-modal-close-btn {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	font-size: 20px;
+	cursor: pointer;
+	color: #aaa;
+	transition: color 0.3s ease;
+}
+
+#logout-modal .logout-modal-content .logout-modal-close-btn:hover {
+	color: #333;
+}
+
+/* Layout */
+.container {
+	display: flex;
+	margin: 20px auto;
+	max-width: 1200px;
+	flex: 1;
+}
+
+aside {
+	width: 300px;
+	/* aside寬度保持300px */
+	padding: 20px;
+}
+
+aside nav {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+aside nav a {
+	padding: 10px;
+	border-radius: 4px;
+	font-size: 1rem;
+	color: #333;
+	transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+aside nav a.active, aside nav a:hover {
+	background-color: #007bff;
+	color: #fff;
+}
+
+main {
+	width: 1500px;
+	/* 修改為1500px */
+	background-color: #fff;
+	padding: 30px;
+	margin-left: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+main h1 {
+	font-size: 1.5rem;
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+#mianform {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	max-width: 800px;
+	margin: 20px auto;
+	padding: 20px;
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#mianform label {
+	font-weight: bold;
+	margin-bottom: 8px;
+	color: #555;
+}
+
+#mianform input, #mianform select {
+	width: 100%;
+	padding: 10px;
+	font-size: 1rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#mianform input:focus, #mianform select:focus {
+	border-color: #007bff;
+	box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+	outline: none;
+}
+
+#mianform button {
+	padding: 12px;
+	background-color: #007bff;
+	color: #fff;
+	font-size: 1rem;
+	font-weight: bold;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#mianform button:hover {
+	background-color: #0056b3;
+	box-shadow: 0 4px 8px rgba(0, 91, 187, 0.3);
+}
+
+#mianform button:active {
+	background-color: #003f88;
+	box-shadow: none;
+}
+
+.form-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 20px;
+}
+
+.form-group {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Footer 樣式 */
+footer {
+	background-color: #333;
+	/* footer 改為深色 */
+	padding: 10px 30px;
+	text-align: center;
+	font-size: 0.9rem;
+	color: #fff;
+	border-top: 1px solid #ddd;
+	margin-top: auto;
+}
+</style>
+</head>
+
+
+
+<body>
+	<!-- Header -->
+	<header>
+		<div class="logo">
+			<a th:href="@{/frontDesk}"> <img
+				th:src="@{/imgs/CheckInOut_logo.png}" alt="logo"> <span>飯店管理系統</span>
+			</a>
+		</div>
+		<nav>
+			<a th:href="@{/frontDesk}">櫃台系統</a> <a th:href="@{/business}"
+				class="active">飯店管理</a> <a th:href="@{/orders}">訂單管理</a> <a href="#">評論管理</a>
+			<a href="#">客戶管理</a> <a th:href="@{/report}">報表分析</a>
+		</nav>
+		<div class="user">
+			<span class="icon">🔔</span> <span class="icon">💬</span>
+			<button class="hotel-button"
+				th:text="${#httpSession.getAttribute('hotel').name}"></button>
+			<div class="dropdown">
+				<ul>
+					<li><a th:href="@{/account}">帳號設定</a></li>
+					<li id="logout-option">登出</li>
+				</ul>
+			</div>
+		</div>
+	</header>
+
+	<!-- 登出彈窗 -->
+	<div id="logout-modal" class="hidden">
+		<div class="logout-modal-content">
+			<span class="logout-modal-close-btn" id="logout-modal-close-btn">×</span>
+			<h2>登出選項</h2>
+			<p>您確定要登出或切換使用者嗎？</p>
+			<div class="logout-modal-actions">
+				<!-- 登出按鈕 -->
+				<form th:action="@{/logout}" method="POST" id="logout-form">
+					<button type="submit" id="logout-modal-logout-button">登出</button>
+				</form>
+				<!-- 切換使用者按鈕 -->
+				<form th:action="@{/switch-user}" method="POST"
+					id="switch-user-form">
+					<button type="submit" id="logout-modal-switch-button">切換使用者</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- 主體內容 -->
+	<div class="container">
+		<!-- Aside -->
+		<aside>
+			<nav>
+				<a th:href="@{/business/hotelInfo}" class="active">基本資料設定</a> <a
+					th:href="@{/business/hotelIntroduce}">飯店介紹</a> <a
+					th:href="@{/business/roomTypeSet}">房型設定</a> <a
+					th:href="@{/business/roomManagement}">房間管理</a> <a
+					th:href="@{/business/priceSet}">價格與促銷</a>
+			</nav>
+		</aside>
+
+		<!-- Main -->
+		<main>
+			<h1>基本資料設定</h1>
+			<form id="mianform" th:action="@{/business/hotelInfo}" method="post">
+				<label for="name">飯店名稱</label> <input type="text" id="name"
+					name="name" th:value="${#httpSession.getAttribute('hotel').name}">
+
+				<label for="tax-id">統一編號</label> <input type="text" id="tax-id"
+					name="taxId" th:value="${#httpSession.getAttribute('hotel').taxId}"
+					readonly>
+				<!-- 統一編號通常不可修改 -->
+
+				<label for="phone">電話</label> <input type="tel" id="phone"
+					name="phone"
+					th:value="${#httpSession.getAttribute('hotel').phoneNumber}">
+
+				<label for="email">信箱</label> <input type="email" id="email"
+					name="email" th:value="${#httpSession.getAttribute('hotel').email}">
+
+				<label for="city">縣市</label> <select id="city" name="city">
+					<option value="">請選擇縣市</option>
+				</select> <label for="district">地區</label> <select id="district"
+					name="district">
+					<option value="">請選擇地區</option>
+				</select> <label for="address-detail">詳細地址</label> <input type="text"
+					id="address-detail" name="address"
+					th:value="${#httpSession.getAttribute('hotel').address}">
+
+				<button class="submit" type="submit">儲存設定</button>
+			</form>
+		</main>
+	</div>
+
+	<!-- Footer -->
+	<footer> &copy; 2024 Check in out. All rights reserved. </footer>
+
+	<script>
+        // // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
+        // const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
+        // const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
+        //
+        // // Header 的 a 標籤點擊事件
+        // headerLinks.forEach(link => {
+        //     link.addEventListener('click', function (e) {
+        //         // 移除所有 header a 標籤的 active 樣式
+        //         headerLinks.forEach(navLink => navLink.classList.remove('active'));
+        //         // 為當前被點擊的 header a 標籤添加 active 樣式
+        //         // e.preventDefault(); // 阻止跳轉
+        //         this.classList.add('active');
+        //     });
+        // });
+        //
+        // // Aside 的 a 標籤點擊事件
+        // asideLinks.forEach(link => {
+        //     link.addEventListener('click', function (e) {
+        //         // 移除所有 aside a 標籤的 active 樣式
+        //         asideLinks.forEach(navLink => navLink.classList.remove('active'));
+        //         // 為當前被點擊的 aside a 標籤添加 active 樣式
+        //         // e.preventDefault(); // 阻止跳轉
+        //         this.classList.add('active');
+        //     });
+        // });
+
+        //飯店彈窗
+        document.querySelector('.hotel-button').addEventListener('click', () => {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.querySelector('.dropdown');
+            if (!e.target.closest('.hotel-button') && !e.target.closest('.dropdown')) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+
+        // 取得彈窗和按鈕
+        const logoutModal = document.getElementById("logout-modal");
+        const logoutModalCloseBtn = document.getElementById("logout-modal-close-btn");
+        const logoutModalLogoutButton = document.getElementById("logout-modal-logout-button");
+        const logoutModalSwitchButton = document.getElementById("logout-modal-switch-button");
+        const logoutOption = document.getElementById("logout-option"); // 假設觸發按鈕未修改 id
+
+        // 顯示彈窗
+        logoutOption.addEventListener("click", function () {
+            logoutModal.classList.add("show"); // 添加 class 顯示彈窗
+        });
+
+        // 關閉彈窗 (x 按鈕)
+        logoutModalCloseBtn.addEventListener("click", function () {
+            logoutModal.classList.remove("show"); // 移除 class 隱藏彈窗
+        });
+
+        // 登出按鈕功能
+        logoutModalLogoutButton.addEventListener("click", function () {
+            alert("您已登出！");
+            document.location.href = "login-1.html";
+        });
+
+        // 切換使用者按鈕功能
+        logoutModalSwitchButton.addEventListener("click", function () {
+            alert("切換使用者！");
+            document.location.href = "login-2.html";; // 隱藏彈窗
+        });
+
+        // 點擊彈窗外部關閉 (選擇性功能)
+        window.addEventListener("click", function (e) {
+            if (e.target === logoutModal) {
+                logoutModal.classList.remove("show"); // 隱藏彈窗
+            }
+        });
+
+        document.querySelector(".submit").addEventListener("click",function(){
+            alert("儲存成功！");
+        })
+
+        // 縣市與地區 API
+document.addEventListener("DOMContentLoaded", function () {
+    const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
+    const citySelect = document.getElementById("city");
+    const districtSelect = document.getElementById("district");
+
+    // 從 Session 中獲取預設值（由後端 Thymeleaf 渲染）
+    const defaultCity = "[[${#httpSession.getAttribute('hotel').city}]]";
+    const defaultDistrict = "[[${#httpSession.getAttribute('hotel').district}]]";
+
+    // 縣市選單初始化
+    fetch(`${contextPath}/api/locations/cities`)
+        .then(response => response.json())
+        .then(cities => {
+            cities.forEach(city => {
+                const option = document.createElement("option");
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+
+            // 設定縣市預設值
+            if (defaultCity) {
+                citySelect.value = defaultCity;
+                loadDistricts(defaultCity, defaultDistrict); // 載入對應地區並設置預設值
+            }
+        })
+        .catch(error => console.error("載入縣市資料失敗：", error));
+
+    // 當縣市選擇改變時，更新地區選項
+    citySelect.addEventListener("change", function () {
+        const selectedCity = this.value;
+
+        // 清空並禁用地區選項
+        districtSelect.innerHTML = '<option value="">請選擇地區</option>';
+        districtSelect.disabled = true;
+
+        if (selectedCity) {
+            loadDistricts(selectedCity);
+        }
+    });
+
+    // 載入地區選單並設置預設值
+    function loadDistricts(city, defaultDistrict = null) {
+        // 使用 contextPath 動態構建 API 路徑
+        fetch(`${contextPath}/api/locations/districts?city=${city}`)
+            .then(response => response.json())
+            .then(districts => {
+                districtSelect.innerHTML = '<option value="">請選擇地區</option>'; // 清空地區選單
+
+                districts.forEach(district => {
+                    const option = document.createElement("option");
+                    option.value = district;
+                    option.textContent = district;
+                    districtSelect.appendChild(option);
+                });
+
+                // 設置地區預設值
+                if (defaultDistrict) {
+                    districtSelect.value = defaultDistrict;
+                }
+
+                districtSelect.disabled = false; // 啟用地區選單
+            })
+            .catch(error => console.error("載入地區資料失敗：", error));
+    }
+});
+
+
+
+
+    </script>
+</body>
+
+</html>

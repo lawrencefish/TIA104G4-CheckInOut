@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            position: relative;
+        }
+
+        header .user .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hotel Button */
+        header .user .hotel-button {
+            background-color: #2c3e50;
+            /* 深藍色 */
+            color: #fff;
+            border: 1px solid #34495e;
+            /* 邊框顏色和背景稍微區分 */
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect */
+        header .user .hotel-button:hover {
+            background-color: #34495e;
+            /* 稍微變深的顏色 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            /* 更柔和的陰影 */
+        }
+
+        /* Active state */
+        header .user .hotel-button:active {
+            background-color: #1a252f;
+            /* 點擊時變得更深 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focused state (accessibility improvement) */
+        header .user .hotel-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            /* 聚焦時顯示藍色陰影 */
+        }
+
+
+        /* Dropdown menu */
+        header .user .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            overflow: hidden;
+        }
+
+        header .user .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        header .user .dropdown ul li {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        header .user .dropdown ul li:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user .dropdown ul li:last-child {
+            border-bottom: none;
+        }
+
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        aside {
+            width: 300px;
+            /* aside寬度保持300px */
+            padding: 20px;
+        }
+
+        aside nav {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        aside nav a {
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1rem;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        aside nav a.active,
+        aside nav a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* main主內容 */
+        /* 主體樣式 */
+        /* Main */
+        main {
+            width: 800px;
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        main h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+            outline: none;
+        }
+
+        .form-inline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            /* 與輸入框的間距 */
+        }
+
+        .form-inline label {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .form-inline button {
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .form-inline button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .form-inline button:active {
+            background-color: #003f7f;
+            transform: translateY(0);
+        }
+
+        button[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #login-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .links a {
+            margin: 0 10px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
+
+        .modal-content .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .modal-content button {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-content .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .modal-content .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-content .btn-secondary {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        .modal-content .btn-secondary:hover {
+            background-color: #aaa;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #forgot-password-btn {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #forgot-password-btn:hover {
+            color: #0056b3;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        /* 全局錯誤訊息樣式 */
+        .error {
+            color: red;
+            font-size: 14px;
+            text-align: center; /* 左右居中 */
+            margin: 5px auto; /* 與上下元素間隔 */
+        }
+
+        /* 針對欄位錯誤的額外樣式 */
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px; /* 與輸入框的距離 */
+            display: block; /* 讓其占滿一行 */
+            text-align: left; /* 可選：改為左對齊 */
+        }
+    </style>
+</head>
+
+<body>
+<!-- Header -->
+<header>
+    <div class="logo">
+        <a th:href="@{/login}">
+            <img src="/imgs/CheckInOut_logo.png" alt="Logo">
+            <span>飯店管理系統</span>
+        </a>
+    </div>
+</header>
+
+
+<!-- 主體內容 -->
+<div class="container">
+    <!-- Aside -->
+    <!-- <aside>
+        <nav>
+            <a href="4-1.html">銷售額</a>
+            <a href="4-2.html" class="active">訂單量</a>
+        </nav>
+    </aside> -->
+
+    <!-- Main -->
+    <main>
+        <h1>業者登入</h1>
+
+        <!-- 全局錯誤提示 -->
+        <p th:if="${generalError != null}" th:text="${generalError}" class="error"></p>
+
+        <form th:action="@{/login/business}" method="post">
+            <!-- 統一編號 -->
+            <div class="form-group">
+                <label for="login-company-id">統一編號</label>
+                <input type="text" id="login-company-id" name="taxId"
+                       placeholder="請輸入統一編號" th:value="${taxId}">
+                <p th:if="${taxIdError != null}" th:text="${taxIdError}" class="error"></p>
+            </div>
+
+            <!-- 密碼 -->
+            <div class="form-group">
+                <label for="login-password">密碼</label>
+                <input type="password" id="login-password" name="password"
+                       placeholder="請輸入密碼">
+                <p th:if="${passwordError != null}" th:text="${passwordError}" class="error"></p>
+            </div>
+
+            <button type="submit" id="login-button">登入</button>
+        </form>
+        <div class="links">
+            <a th:href="@{/signUp}">加入我們</a>
+            <a id="forgot-password-link" href="#">忘記密碼</a>
+        </div>
+    </main>
+    <!-- 忘記密碼彈窗 -->
+    <div id="forgot-password-modal" class="modal">
+        <div class="modal-content">
+            <h2>忘記密碼</h2>
+            <div class="form-group">
+                <label for="forgot-company-id">統一編號</label>
+                <input type="text" id="forgot-company-id" placeholder="請輸入統一編號">
+            </div>
+            <div class="form-group">
+                <label for="forgot-email">電子信箱</label>
+                <input type="email" id="forgot-email" placeholder="請輸入電子信箱">
+            </div>
+            <div class="form-group">
+                <button type="button" id="send-code-button">寄送驗證碼</button>
+            </div>
+            <div class="form-group">
+                <label for="forgot-verification-code">驗證碼</label>
+                <input type="text" id="forgot-verification-code" placeholder="請輸入驗證碼">
+            </div>
+            <div class="button-group">
+                <button class="btn-secondary" id="cancel-forgot-password">取消</button>
+                <button class="btn-primary" id="confirm-code">確認</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重設密碼彈窗 -->
+    <div id="reset-password-modal" class="modal">
+        <div class="modal-content">
+            <h2>重設密碼</h2>
+            <div class="form-group">
+                <label for="new-password">新密碼</label>
+                <input type="password" id="new-password" placeholder="請輸入新密碼">
+            </div>
+            <div class="form-group">
+                <label for="confirm-new-password">再次輸入新密碼</label>
+                <input type="password" id="confirm-new-password" placeholder="請再次輸入新密碼">
+            </div>
+            <div class="button-group">
+                <button class="btn-secondary" id="cancel-reset-password">取消</button>
+                <button class="btn-primary" id="confirm-reset-password">確認</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    &copy; 2024 Check in out. All rights reserved.
+</footer>
+
+<script>
+    document.querySelector(".send_btn").addEventListener("click", function () {
+        const emailInput = document.querySelector("#email");
+        if (emailInput.value.trim() === "") {
+            alert("請輸入信箱");
+        } else {
+            alert("寄送成功");
+        }
+    });
+
+    // document.querySelector("form").addEventListener("submit", function (e) {
+    //     // e.preventDefault(); // 防止表單默認提交行為
+
+    //     // 獲取每個欄位的輸入值
+    //     const companyId = document.querySelector("#company-id").value.trim();
+    //     const password = document.querySelector("#password").value.trim();
+    //     const email = document.querySelector("#email").value.trim();
+    //     const verificationCode = document.querySelector("#verification-code").value.trim();
+
+    //     // 驗證每個欄位是否有輸入內容
+    //     if (!companyId) {
+    //         alert("請輸入統一編號");
+    //         return;
+    //     }
+    //     if (!password) {
+    //         alert("請輸入密碼");
+    //         return;
+    //     }
+    //     if (!email) {
+    //         alert("請輸入電子信箱");
+    //         return;
+    //     }
+    //     if (!verificationCode) {
+    //         alert("請輸入驗證碼");
+    //         return;
+    //     }
+
+    //     // 如果所有欄位都有值，跳轉到 login-2.html
+    //     window.location.href = "login-2.html";
+    // });
+
+    document.querySelector("#login-button").addEventListener("click",function(){
+        window.location.href = "login-2.html";
+    })
+
+
+
+    // 忘記密碼按鈕
+    document.getElementById("forgot-password-link").addEventListener("click", () => {
+        document.getElementById("forgot-password-modal").classList.add("show");
+    });
+
+    // 寄送驗證碼
+    document.getElementById("send-code-button").addEventListener("click", () => {
+        const email = document.getElementById("forgot-email").value.trim();
+        if (!email) {
+            alert("請輸入電子信箱");
+            return;
+        }
+        alert("驗證碼已寄送至您的信箱");
+    });
+
+    // 確認驗證碼並切換到重設密碼表單
+    document.getElementById("confirm-code").addEventListener("click", () => {
+        const verificationCode = document.getElementById("forgot-verification-code").value.trim();
+        if (!verificationCode) {
+            alert("請輸入驗證碼");
+            return;
+        }
+        alert("驗證成功");
+        document.getElementById("forgot-password-modal").classList.remove("show");
+        document.getElementById("reset-password-modal").classList.add("show");
+    });
+
+    // 重設密碼
+    document.getElementById("confirm-reset-password").addEventListener("click", () => {
+        const newPassword = document.getElementById("reset-new-password").value.trim();
+        const confirmNewPassword = document.getElementById("reset-confirm-new-password").value.trim();
+
+        if (!newPassword || !confirmNewPassword) {
+            alert("請輸入新密碼");
+            return;
+        }
+
+        if (newPassword !== confirmNewPassword) {
+            alert("兩次輸入的密碼不一致");
+            return;
+        }
+
+        alert("密碼已成功重設");
+        document.getElementById("reset-password-modal").classList.remove("show");
+    });
+
+    // 關閉彈窗
+    document.getElementById("cancel-forgot-password").addEventListener("click", () => {
+        document.getElementById("forgot-password-modal").classList.remove("show");
+    });
+    document.getElementById("cancel-reset-password").addEventListener("click", () => {
+        document.getElementById("reset-password-modal").classList.remove("show");
+    });
+
+    document.querySelector("#confirm-reset-password").addEventListener("click",function(){
+        alert("變更成功！");
+        document.getElementById("reset-password-modal").classList.remove("show");
+    })
+</script>
+</body>
+
+</html>

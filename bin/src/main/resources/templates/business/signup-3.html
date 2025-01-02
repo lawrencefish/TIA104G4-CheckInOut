@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* 步驟導覽樣式 */
+        .steps {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            background-color: #ddd;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 樣式 - 綠色 */
+        .step.completed .step-number {
+            background-color: #28a745;
+        }
+
+        /* 樣式 - 藍色 */
+        .step.active .step-number {
+            background-color: #007bff;
+        }
+
+        /* 樣式 - 禁用灰色 */
+        .step.disabled .step-number {
+            background-color: #ddd;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .step-title {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .step.completed .step-title {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .step.active .step-title {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .step.disabled .step-title {
+            color: #aaa;
+        }
+
+        /* 箭頭樣式 */
+        .arrow {
+            font-size: 1.5rem;
+            color: #ccc;
+        }
+
+        .steps .step.active+.arrow {
+            color: #007bff;
+        }
+
+        /* 禁用步驟指標 */
+        .disabled {
+            pointer-events: none;
+        }
+
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        /* main主內容 */
+        /* 主體樣式 */
+        /* Main */
+        main {
+            width: 800px;
+            background-color: #fff;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            margin: 30px auto;
+        }
+
+        main h1 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 15px;
+        }
+
+        form {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .submit-btn {
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a th:href="@{/login}">
+                <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+
+        <!-- 步驟導覽 -->
+        <div class="steps">
+            <a th:href="@{/signUp/signUp-1}" class="step completed">
+                <div class="step-number">1</div>
+                <div class="step-title">基本資料</div>
+            </a>
+            <div class="arrow1">→</div>
+            <a th:href="@{/signUp/signUp-2}" class="step completed">
+                <div class="step-number">2</div>
+                <div class="step-title">飯店設定</div>
+            </a>
+            <div class="arrow2">→</div>
+            <div class="step active">
+                <div class="step-number">3</div>
+                <div class="step-title">管理員帳號</div>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- 主體內容 -->
+    <div class="container">
+        <!-- Aside -->
+        <!-- <aside>
+        </aside> -->
+
+        <!-- Main -->
+        <main>
+            <h1>設定管理員帳號</h1>
+            <form id="admin-form" th:action="@{/signUp/signUp-3}" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="employee-id">員工編號</label>
+                        <input type="text" id="employee-id" placeholder="180912" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" id="name" placeholder="請輸入姓名" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">密碼</label>
+                        <input type="password" id="password" placeholder="請輸入密碼" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">再次輸入密碼</label>
+                        <input type="password" id="confirm-password" placeholder="請再次輸入密碼" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">連絡電話</label>
+                        <input type="tel" id="phone" placeholder="0912-345-678" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">電子信箱</label>
+                        <input type="email" id="email" placeholder="abc123456@gmail.com" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit</button>
+            </form>
+        </main>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+
+    <script>
+        document.querySelector(".submit-btn").addEventListener("click", function () {
+            document.location.href = "signup-4.html";
+        })
+    </script>
+</body>
+
+</html>

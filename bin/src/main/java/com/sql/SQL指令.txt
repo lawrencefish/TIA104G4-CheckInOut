@@ -1,0 +1,517 @@
+CREATE DATABASE IF NOT EXISTS checkinout;
+use checkinout;
+
+DROP TABLE IF EXISTS room;
+DROP TABLE IF EXISTS contact_us;
+DROP TABLE IF EXISTS order_detail;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS room_inventory;
+DROP TABLE IF EXISTS price;
+DROP TABLE IF EXISTS room_type_img;
+DROP TABLE IF EXISTS room_type_facility;
+DROP TABLE IF EXISTS favorite;
+DROP TABLE IF EXISTS creditcard;
+DROP TABLE IF EXISTS member_coupon;
+DROP TABLE IF EXISTS room_type;
+DROP TABLE IF EXISTS hotel_facility;
+DROP TABLE IF EXISTS hotel_img;
+DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS facility;
+DROP TABLE IF EXISTS news;
+DROP TABLE IF EXISTS coupon;
+DROP TABLE IF EXISTS faq;
+DROP TABLE IF EXISTS admin;
+DROP TABLE IF EXISTS member;
+DROP TABLE IF EXISTS hotel;
+
+
+CREATE TABLE hotel (
+    hotel_id INT AUTO_INCREMENT PRIMARY KEY,
+    tax_id VARCHAR(8) NOT NULL UNIQUE,
+    password VARCHAR(20) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    city VARCHAR(20) NOT NULL,
+    district VARCHAR(20) NOT NULL,
+    address VARCHAR(255) NOT NULL UNIQUE,
+    phone_number VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    status TINYINT DEFAULT 0 NOT NULL COMMENT '0 = 未審核, 1 = 啟動, 2=審核沒通過',
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    owner VARCHAR(50) NOT NULL,
+    id_front MEDIUMBLOB,
+    id_back MEDIUMBLOB,
+    license MEDIUMBLOB,
+    info_text TEXT NOT NULL,
+    review_time TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    latitude DOUBLE COMMENT '緯度',
+    longitude DOUBLE COMMENT '經度'
+);
+
+INSERT INTO hotel (tax_id, password, name, city, district, address, phone_number, email, status, owner, info_text, latitude, longitude)
+VALUES
+('12345678', 'password123', '市中心大飯店', '台北市', '信義區', '信義路1號', '02-12345678', 'sunrise@example.com', 1, '張三', '位於城市核心的豪華大飯店。', 25.033964, 121.564468),
+('23456789', 'pass456', '海景渡假村', '高雄市', '鼓山區', '海濱路100號', '07-23456789', 'oceanview@example.com', 1, '李四', '面向大海的寧靜渡假村。', 22.626795, 120.26688),
+('34567890', 'welcome789', '山間休閒山莊', '花蓮縣', '吉安鄉', '森林路88號', '03-34567890', 'mountain@example.com', 0, '王五', '隱身於大自然中的療癒山莊。', 23.97695, 121.605245),
+('45678901', 'secure456', '市中心旅店', '台中市', '中區', '民生路50號', '04-45678901', 'citycenter@example.com', 2, '陳六', '商務旅客的便利選擇。', 24.141689, 120.663979),
+('56789012', 'myhotel321', '河畔旅館', '台南市', '安平區', '河邊街33號', '06-56789012', 'riverside@example.com', 1, '林七', '靜享河畔的悠閒時光。', 22.999728, 120.160432),
+('67890123', 'hotel456', '皇家宮殿飯店', '台北市', '大安區', '宮殿路12號', '02-67890123', 'grandpalace@example.com', 0, '劉八', '體驗尊貴的皇家享受。', 25.026546, 121.543789),
+('78901234', 'stay789', '溫馨住宿旅館', '高雄市', '三民區', '公園大道200號', '07-78901234', 'cozystay@example.com', 1, '趙九', '旅行中的溫馨居所。', 22.642511, 120.302992),
+('89012345', 'securepass', '綠山飯店', '南投縣', '埔里鎮', '綠山路88號', '049-8901234', 'greenhills@example.com', 1, '黃十', '最適合愛好自然的旅人。', 23.960998, 120.967022),
+('90123456', 'password987', '天際套房', '台北市', '中山區', '天際路88號', '02-90123456', 'skyline@example.com', 2, '許十一', '現代化套房，享受城市美景。', 25.056593, 121.533581),
+('01234567', 'hotel1234', '晴天旅店', '台南市', '東區', '陽光街77號', '06-01234567', 'sunnydays@example.com', 0, '鄭十二', '平價舒適，人人都能享受。', 22.986503, 120.217618),
+('12348765', 'pass6789', '古蹟大飯店', '台中市', '北區', '古蹟巷5號', '04-12345678', 'heritage@example.com', 1, '何十三', '融合歷史與奢華的飯店。', 24.16451, 120.682856);
+
+CREATE TABLE member (
+    member_id INT AUTO_INCREMENT PRIMARY KEY,
+    account VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(12) NOT NULL,
+    last_name VARCHAR(20) NOT NULL,
+    first_name VARCHAR(20) NOT NULL,
+    avatar MEDIUMBLOB,
+    phone_number VARCHAR(20) NOT NULL,
+    birthday DATE NOT NULL,
+    gender VARCHAR(2) NOT NULL,
+    status TINYINT NOT NULL COMMENT '1 = 啟動, 0 = 停用',
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+INSERT INTO member (
+    account, password, last_name, first_name, phone_number, birthday, gender, status
+) VALUES
+('johndoe@example.com', 'pass1234', 'Doe', 'John', '0912345678', '1990-05-20', 'M', 1),
+('janedoe@example.com', 'securepwd', 'Doe', 'Jane', '0987654321', '1992-07-15', 'F', 1),
+('samlee@example.com', 'mypassword', 'Lee', 'Sam', '0933445566', '1985-03-10', 'M', 0),
+('emilywang@example.com', 'strongpwd', 'Wang', 'Emily', '0922334455', '1995-11-22', 'F', 1),
+('mikechan@example.com', 'qwerty123', 'Chan', 'Mike', '0966112233', '1988-01-05', 'M', 0);
+
+CREATE TABLE admin (
+    admin_id INT AUTO_INCREMENT PRIMARY KEY,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    admin_account VARCHAR(20) NOT NULL UNIQUE,
+    admin_password VARCHAR(12) NOT NULL,
+    phone_number VARCHAR(10) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    status TINYINT NOT NULL COMMENT '1 = 啟用, 0 = 停用',
+    permissions TINYINT NOT NULL COMMENT '1 = 主管, 0 = 員工'
+);
+
+INSERT INTO admin (
+    admin_account, admin_password, phone_number, email, status, permissions
+) VALUES
+('admin01', 'admin123', '0912345678', 'admin01@example.com', 1, 1),
+('admin02', 'password', '0922334455', 'admin02@example.com', 1, 0),
+('superadmin', 'securepwd', '0987654321', 'superadmin@example.com', 1, 1),
+('staff01', 'mypass123', '0933445566', 'staff01@example.com', 0, 0),
+('admin03', 'mypassword', '0966112233', 'admin03@example.com', 1, 0);
+
+CREATE TABLE faq (
+    faq_id INT AUTO_INCREMENT PRIMARY KEY,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL
+);
+
+INSERT INTO faq (question, answer) VALUES
+('如何重設密碼？', '請點擊登入頁面的「忘記密碼」連結，輸入您的帳號或Email，我們將發送重設密碼的連結到您的Email。'),
+('如何聯繫客服？', '您可以透過我們的客服信箱（support@example.com）或撥打客服電話（0800-123-456）與我們聯繫。'),
+('如何取消訂單？', '請登入您的帳戶，進入「我的訂單」頁面，選擇您要取消的訂單，並點擊「取消訂單」按鈕。'),
+('有提供發票嗎？', '是的，我們會在您的訂單完成後提供電子發票，您可以登入後到「我的訂單」下載發票。'),
+('忘記帳號該怎麼辦？', '如果您忘記帳號，請聯繫客服提供您註冊時的電話或Email，我們將協助您找回帳號資訊。');
+
+CREATE TABLE coupon (
+    coupon_id INT AUTO_INCREMENT PRIMARY KEY,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    active_date DATETIME NOT NULL,
+    expiry_date DATETIME NOT NULL,
+    coupon_name VARCHAR(11) NOT NULL,
+    coupon_code VARCHAR(11) NOT NULL UNIQUE,
+    min_spend INT NOT NULL,
+    travel_city_num INT NOT NULL,
+    coupon_detail TEXT NOT NULL,
+    discount_amount INT NOT NULL
+);
+
+INSERT INTO coupon (
+    active_date, expiry_date, coupon_name, coupon_code, min_spend,
+    travel_city_num, coupon_detail, discount_amount
+) VALUES
+('2024-12-10 00:00:00', '2024-12-31 23:59:59', '年終折扣', 'YEAR2024', 1000, 3, '適用於三個城市的旅遊訂單，最低消費1000元可享折扣。', 200),
+('2024-12-01 00:00:00', '2024-12-15 23:59:59', '限時優惠', 'FLASH2024', 500, 1, '單城市旅遊訂單，最低消費500元可享折扣。', 100),
+('2024-12-05 00:00:00', '2025-01-05 23:59:59', '新年特惠', 'NEWYEAR25', 2000, 5, '適用於五個城市的旅遊訂單，最低消費2000元享折扣。', 500),
+('2024-12-20 00:00:00', '2024-12-25 23:59:59', '聖誕驚喜', 'XMAS2024', 1500, 2, '適用於兩個城市的旅遊訂單，最低消費1500元可享折扣。', 300),
+('2024-12-01 00:00:00', '2024-12-31 23:59:59', '月末優惠', 'MONTHEND', 800, 2, '適用於兩個城市的旅遊訂單，最低消費800元享折扣。', 150);
+
+CREATE TABLE news (
+    news_id INT AUTO_INCREMENT PRIMARY KEY,
+    news_title VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL,
+    post_time DATETIME NOT NULL,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+INSERT INTO news (news_title, description, post_time) VALUES
+('新功能上線通知', '我們很高興宣布，新版旅遊平台功能已正式上線！敬請使用，帶給您更便捷的體驗。', '2024-12-01 09:00:00'),
+('年終旅遊促銷活動', '即日起至2024年12月31日，預訂指定旅遊行程享高達50%折扣，數量有限，快來參加！', '2024-12-01 12:00:00'),
+('服務維護通知', '我們將於2024年12月10日凌晨1:00至5:00進行系統維護，屆時可能影響使用，敬請見諒。', '2024-12-05 08:00:00'),
+('新城市旅遊指南發布', '我們新增了巴黎、倫敦及東京的最新旅遊指南，為您規劃理想行程提供更多靈感！', '2024-12-08 10:00:00'),
+('客服時間調整通知', '為提升服務品質，自2024年12月15日起，我們的客服時間將調整為每天9:00至21:00。', '2024-12-10 14:00:00');
+
+CREATE TABLE facility (
+    facility_id INT AUTO_INCREMENT PRIMARY KEY,
+    facility_type TINYINT NOT NULL COMMENT '1=旅館, 2=房型',
+    is_service TINYINT NOT NULL COMMENT '0=設施, 1=服務',
+    facility_name VARCHAR(20) NOT NULL UNIQUE
+);
+
+INSERT INTO facility (facility_type, is_service, facility_name) VALUES
+(1, 0, '游泳池'),
+(1, 0, '健身房'),
+(1, 0, '停車場'),
+(1, 0, '商務中心'),
+(1, 0, 'SPA'),
+(1, 1, '客房清潔'),
+(1, 1, '接駁服務'),
+(1, 1, '洗衣服務'),
+(1, 1, '行李寄存'),
+(1, 1, '24小時櫃檯'),
+(2, 0, '私人浴室'),
+(2, 0, '陽台'),
+(2, 0, '大床'),
+(2, 0, '小廚房'),
+(2, 0, '高樓層景觀'),
+(2, 1, '早餐供應'),
+(2, 1, '叫醒服務'),
+(2, 1, '客房餐點'),
+(2, 1, '嬰兒床提供'),
+(2, 1, '額外毛巾提供');
+
+CREATE TABLE employee (
+    employee_id INT AUTO_INCREMENT PRIMARY KEY,
+    hotel_id INT NOT NULL,
+    employee_number VARCHAR(10) NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    password VARCHAR(20) NOT NULL,
+    phone_number VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    title ENUM('負責人', '總經理', '經理', '襄理', '員工') NOT NULL,
+    create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_login_date TIMESTAMP,
+    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id)
+);
+
+INSERT INTO employee (hotel_id, employee_number, name, password, phone_number, email, title)
+VALUES
+(1, 'E0001', '黃家瑜', 'password01', '0912345678', 'xiao.ming1@example.com', '負責人'),
+(1, 'E0002', '李大華', 'password02', '0923456789', 'da.hua1@example.com', '總經理'),
+(1, 'E0003', '陳小芳', 'password03', '0934567890', 'xiao.fang1@example.com', '員工'),
+(2, 'E0004', '王志明', 'password04', '0945678901', 'zhi.ming2@example.com', '負責人'),
+(2, 'E0005', '林淑芬', 'password05', '0956789012', 'shu.fen2@example.com', '總經理'),
+(2, 'E0006', '周偉成', 'password06', '0967890123', 'wei.cheng2@example.com', '經理'),
+(3, 'E0007', '趙雅婷', 'password07', '0978901234', 'ya.ting3@example.com', '負責人'),
+(3, 'E0008', '何俊傑', 'password08', '0989012345', 'jun.jie3@example.com', '總經理'),
+(3, 'E0009', '鄭美麗', 'password09', '0990123456', 'mei.li3@example.com', '員工'),
+(4, 'E0010', '唐文彬', 'password10', '0911123456', 'wen.bin4@example.com', '負責人'),
+(4, 'E0011', '陸清源', 'password11', '0922123456', 'qing.yuan4@example.com', '總經理'),
+(4, 'E0012', '黃秀慧', 'password12', '0933123456', 'xiu.hui4@example.com', '襄理'),
+(5, 'E0013', '朱志強', 'password13', '0944123456', 'zhi.qiang5@example.com', '負責人'),
+(5, 'E0014', '鄧小芳', 'password14', '0955123456', 'xiao.fang5@example.com', '總經理'),
+(5, 'E0015', '柯俊豪', 'password15', '0966123456', 'jun.hao5@example.com', '經理'),
+(6, 'E0016', '賴素梅', 'password16', '0977123456', 'su.mei6@example.com', '負責人'),
+(6, 'E0017', '盧曉東', 'password17', '0988123456', 'xiao.dong6@example.com', '總經理'),
+(6, 'E0018', '韓欣怡', 'password18', '0999123456', 'xin.yi6@example.com', '員工'),
+(7, 'E0019', '阮光明', 'password19', '0912233445', 'guang.ming7@example.com', '負責人'),
+(7, 'E0020', '錢秀蘭', 'password20', '0922233445', 'xiu.lan7@example.com', '總經理'),
+(7, 'E0021', '宋建中', 'password21', '0933233445', 'jian.zhong7@example.com', '員工'),
+(8, 'E0022', '馮正義', 'password22', '0944233445', 'zheng.yi8@example.com', '負責人'),
+(8, 'E0023', '蔡怡君', 'password23', '0955233445', 'yi.jun8@example.com', '總經理'),
+(8, 'E0024', '潘美珍', 'password24', '0966233445', 'mei.zhen8@example.com', '襄理'),
+(9, 'E0025', '許文哲', 'password25', '0977233445', 'wen.zhe9@example.com', '負責人'),
+(9, 'E0026', '鄭敏華', 'password26', '0988233445', 'min.hua9@example.com', '總經理'),
+(9, 'E0027', '梁愛玲', 'password27', '0999233445', 'ai.ling9@example.com', '經理'),
+(10, 'E0028', '吳小明', 'password28', '0913344556', 'xiao.ming10@example.com', '負責人'),
+(10, 'E0029', '何大華', 'password29', '0923344556', 'da.hua10@example.com', '總經理'),
+(10, 'E0030', '李俊傑', 'password30', '0933344556', 'jun.jie10@example.com', '員工'),
+(11, 'E0031', '方秀華', 'password31', '0914455667', 'xiu.hua11@example.com', '負責人'),
+(11, 'E0032', '程建中', 'password32', '0924455667', 'jian.zhong11@example.com', '總經理'),
+(11, 'E0033', '黃欣怡', 'password33', '0934455667', 'xin.yi11@example.com', '經理');
+
+
+CREATE TABLE hotel_img (
+    hotel_img_id INT AUTO_INCREMENT PRIMARY KEY,
+    hotel_id INT NOT NULL,
+    picture MEDIUMBLOB,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id)
+);
+
+CREATE TABLE hotel_facility (
+    hotel_facility_id INT AUTO_INCREMENT PRIMARY KEY,
+    hotel_id INT NOT NULL,
+    facility_id INT NOT NULL,
+    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id),
+    FOREIGN KEY (facility_id) REFERENCES facility(facility_id)
+);
+
+INSERT INTO hotel_facility (hotel_id, facility_id) VALUES
+(1, 1), -- 旅館 1 有設施 1（如：游泳池）
+(1, 2), -- 旅館 1 有設施 2（如：健身房）
+(2, 3), -- 旅館 2 有設施 3（如：停車場）
+(3, 1), -- 旅館 3 有設施 1（如：游泳池）
+(3, 4); -- 旅館 3 有設施 4（如：高速WiFi）
+
+CREATE TABLE room_type (
+    room_type_id INT AUTO_INCREMENT PRIMARY KEY,
+    hotel_id INT NOT NULL,
+    room_name VARCHAR(50) NOT NULL,
+    max_person INT NOT NULL,
+    room_num INT NOT NULL,
+    breakfast TINYINT NOT NULL COMMENT '0=無, 1=有',
+    status TINYINT DEFAULT 0 NOT NULL COMMENT '0=待審核, 1=審核通過, 2=審核不通過',
+    review_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id)
+);
+
+INSERT INTO room_type (
+    hotel_id, room_name, max_person, room_num, breakfast, status
+) VALUES
+(1, '豪華雙人房', 2, 10, 1, 1),
+(1, '頂級家庭房', 4, 7, 1, 1),
+(2, '商務雙人房', 2, 12, 0, 1),
+(2, '景觀雙人房', 2, 8, 0, 1),
+(3, '海景套房', 2, 6, 1, 1),
+(3, '山景四人房', 4, 5, 1, 1),
+(4, '經濟雙人房', 2, 10, 0, 0),
+(4, '標準四人房', 4, 5, 1, 2),
+(5, '家庭套房', 4, 8, 1, 1),
+(5, '溫泉雙人房', 2, 7, 1, 1),
+(6, '標準雙人房', 2, 15, 0, 1),
+(6, '頂級雙人房', 2, 9, 1, 1),
+(7, '豪華四人房', 4, 6, 1, 1),
+(7, '經濟四人房', 4, 5, 0, 0),
+(8, '商務雙人房', 2, 12, 0, 1),
+(8, '頂級套房', 2, 6, 1, 1),
+(9, '景觀四人房', 4, 10, 1, 1),
+(9, '溫泉四人房', 4, 8, 1, 1),
+(10, '豪華單人房', 2, 9, 0, 1),
+(10, '標準套房', 2, 14, 1, 1);
+
+CREATE TABLE member_coupon (
+    member_coupon_id INT AUTO_INCREMENT PRIMARY KEY,
+    member_id INT NOT NULL,
+    coupon_id INT NOT NULL,
+    coupon_status TINYINT NOT NULL COMMENT '1 = 生效, 0 = 失效',
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (member_id) REFERENCES member(member_id),
+    FOREIGN KEY (coupon_id) REFERENCES coupon(coupon_id)
+);
+
+INSERT INTO member_coupon (member_id, coupon_id, coupon_status) VALUES
+(1, 1, 1), -- 會員 1 擁有 優惠券 1（生效中）
+(1, 2, 0), -- 會員 1 擁有 優惠券 2（已失效）
+(2, 3, 1), -- 會員 2 擁有 優惠券 3（生效中）
+(3, 1, 0), -- 會員 3 擁有 優惠券 1（已失效）
+(3, 4, 1); -- 會員 3 擁有 優惠券 4（生效中）
+
+CREATE TABLE creditcard (
+    creditcard_id INT AUTO_INCREMENT PRIMARY KEY,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    creditcard_name VARCHAR(30) NOT NULL,
+    creditcard_num VARCHAR(16) NOT NULL,
+    creditcard_security VARCHAR(6) NOT NULL,
+    expiry_date VARCHAR(4) NOT NULL,
+    member_id INT NOT NULL,
+    FOREIGN KEY (member_id) REFERENCES member(member_id)
+);
+
+INSERT INTO creditcard (
+    creditcard_name, creditcard_num, creditcard_security, expiry_date, member_id
+) VALUES
+('VISA Platinum', '4111111111111111', '123', '1225', 1),
+('MasterCard Gold', '5555555555554444', '456', '1126', 2),
+('AMEX Black', '378282246310005', '789', '0324', 3),
+('VISA Signature', '4012888888881881', '321', '0925', 1),
+('MasterCard Standard', '5105105105105100', '654', '0726', 2);
+
+CREATE TABLE favorite (
+    favo_id INT AUTO_INCREMENT PRIMARY KEY,
+    hotel_id INT NOT NULL,
+    member_id INT NOT NULL,
+    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id)
+);
+
+INSERT INTO favorite (hotel_id, member_id) VALUES
+(1, 1), -- 會員 1 最愛 旅館 1
+(2, 1), -- 會員 1 最愛 旅館 2
+(3, 2), -- 會員 2 最愛 旅館 3
+(1, 3), -- 會員 3 最愛 旅館 1
+(2, 3); -- 會員 3 最愛 旅館 2
+
+CREATE TABLE room_type_facility (
+    room_type_facility_id INT AUTO_INCREMENT PRIMARY KEY,
+    room_type_id INT NOT NULL,
+    facility_id INT NOT NULL,
+    FOREIGN KEY (room_type_id) REFERENCES room_type(room_type_id),
+    FOREIGN KEY (facility_id) REFERENCES facility(facility_id)
+);
+
+INSERT INTO room_type_facility (room_type_id, facility_id) VALUES
+(1, 1), -- 房型 1 配有設施 1（如：游泳池）
+(1, 4), -- 房型 1 配有設施 4（如：高速WiFi）
+(2, 2), -- 房型 2 配有設施 2（如：健身房）
+(3, 3), -- 房型 3 配有設施 3（如：停車場）
+(3, 4); -- 房型 3 配有設施 4（如：高速WiFi）
+
+CREATE TABLE room_type_img (
+    room_type_img_id INT AUTO_INCREMENT PRIMARY KEY,
+    room_type_id INT NOT NULL,
+    picture MEDIUMBLOB,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (room_type_id) REFERENCES room_type(room_type_id)
+);
+
+CREATE TABLE price (
+    price_id INT AUTO_INCREMENT PRIMARY KEY,
+    room_type_id INT NOT NULL,
+    start_date DATE DEFAULT NULL,
+    end_date DATE DEFAULT NULL,
+    price_type TINYINT NOT NULL COMMENT '1=week, 2=weekend, 3=special',
+    breakfast_price INT DEFAULT NULL,
+    price INT NOT NULL,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (room_type_id) REFERENCES room_type(room_type_id)
+);
+
+INSERT INTO price (
+    room_type_id, start_date, end_date, price_type, breakfast_price, price
+) VALUES
+(1, NULL, NULL, 1, 100, 2000), -- 房型 1 平日價格，含早餐價格
+(1, NULL, NULL, 2, 100, 2500), -- 房型 1 週末價格，含早餐價格
+(1, '2024-12-24', '2024-12-25', 3, 100, 3000), -- 房型 1 特殊日期價格
+(2, NULL, NULL, 1, NULL, 1500), -- 房型 2 平日價格，不含早餐
+(3, '2024-12-31', '2025-01-01', 3, 200, 3500); -- 房型 3 特殊日期價格，含早餐價格
+
+CREATE TABLE room_inventory (
+    inventory_id INT AUTO_INCREMENT PRIMARY KEY,
+    room_type_id INT NOT NULL,
+    date DATE NOT NULL,
+    delete_quantity INT NOT NULL,
+    available_quantity INT NOT NULL,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(room_type_id, date),
+    FOREIGN KEY (room_type_id) REFERENCES room_type(room_type_id)
+);
+
+INSERT INTO room_inventory (room_type_id, date, delete_quantity, available_quantity) VALUES
+(1, '2024-12-24', 0, 10), -- 房型 1 在 2024-12-24 庫存 10 間
+(1, '2024-12-25', 2, 8), -- 房型 1 在 2024-12-25 剩餘 8 間，刪減 2 間
+(2, '2024-12-24', 1, 19), -- 房型 2 在 2024-12-24 剩餘 19 間，刪減 1 間
+(2, '2024-12-25', 0, 20), -- 房型 2 在 2024-12-25 庫存 20 間
+(3, '2024-12-31', 3, 4); -- 房型 3 在 2024-12-31 剩餘 4 間，刪減 3 間
+
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    status TINYINT NOT NULL COMMENT '訂單狀態 (1=完成, 0=未完成)',
+    check_in_date DATE NOT NULL,
+    check_out_date DATE NOT NULL,
+    hotel_id INT NOT NULL,
+    member_id INT NOT NULL,
+    creditcard_id INT NOT NULL,
+    member_coupon_id INT DEFAULT NULL,
+    total_amount INT NOT NULL,
+    guest_last_name VARCHAR(20) NOT NULL,
+    guest_first_name VARCHAR(20) NOT NULL,
+    memo TEXT DEFAULT NULL,
+    rating INT DEFAULT NULL COMMENT '評價星數',
+    comment_content TEXT DEFAULT NULL,
+    comment_reply TEXT DEFAULT NULL,
+    comment_create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id),
+    FOREIGN KEY (creditcard_id) REFERENCES creditcard(creditcard_id),
+    FOREIGN KEY (member_coupon_id) REFERENCES member_coupon(member_coupon_id)
+);
+
+INSERT INTO orders (
+    status, check_in_date, check_out_date, hotel_id, member_id, creditcard_id,
+    member_coupon_id, total_amount, guest_last_name, guest_first_name, memo,
+    rating, comment_content, comment_reply
+) VALUES
+(1, '2024-12-20', '2024-12-22', 1, 1, 1, 1, 5000, '張', '小明', '請安排靠窗房間', 5, '非常滿意！房間乾淨，服務態度很好。', '感謝您的支持，期待您再次入住！'),
+(0, '2024-12-25', '2024-12-27', 2, 2, 2, NULL, 3000, '李', '美麗', '需提供嬰兒床', NULL, NULL, NULL),
+(1, '2025-01-01', '2025-01-05', 3, 3, 3, 2, 12000, '王', '大華', '預計下午晚些時候入住', 4, '整體不錯，但早餐選擇稍少。', '感謝您的反饋，我們將努力改進！'),
+(1, '2024-12-30', '2025-01-02', 1, 1, 1, NULL, 7000, '陳', '志強', NULL, 5, '服務一流，景色超棒！', '謝謝您的好評！希望您下次再來！'),
+(0, '2025-01-10', '2025-01-15', 2, 2, 2, 3, 9000, '林', '佳佳', NULL, NULL, NULL, NULL);
+
+CREATE TABLE order_detail (
+    order_detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    room_type_id INT NOT NULL,
+    order_id INT NOT NULL,
+    guest_num INT NOT NULL,
+    room_num INT NOT NULL,
+    breakfast TINYINT NOT NULL COMMENT '1 = 含早餐, 0 = 不含',
+    FOREIGN KEY (room_type_id) REFERENCES room_type(room_type_id),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+);
+
+INSERT INTO order_detail (
+    room_type_id, order_id, guest_num, room_num, breakfast
+) VALUES
+(1, 1, 2, 1, 1), -- 訂單 1，房型 1，2 人入住，1 間房，含早餐
+(2, 2, 3, 2, 0), -- 訂單 2，房型 2，3 人入住，2 間房，不含早餐
+(3, 3, 4, 1, 1), -- 訂單 3，房型 3，4 人入住，1 間房，含早餐
+(1, 4, 2, 1, 1), -- 訂單 4，房型 1，2 人入住，1 間房，含早餐
+(2, 5, 1, 1, 0); -- 訂單 5，房型 2，1 人入住，1 間房，不含早餐
+
+CREATE TABLE contact_us (
+    contact_us_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT DEFAULT NULL,
+    hotel_id INT DEFAULT NULL,
+    member_id INT DEFAULT NULL,
+    contact_us_text TEXT NOT NULL,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    complaint_pic MEDIUMBLOB DEFAULT NULL,
+    email VARCHAR(100) NOT NULL,
+    review_status TINYINT NOT NULL COMMENT '0=未審核, 1=已處理, 2=不處理',
+    review_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+    method VARCHAR(10) NOT NULL COMMENT '如: 電話, Email',
+    reply_content TEXT DEFAULT NULL,
+    admin_id INT NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id),
+    FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
+);
+
+INSERT INTO contact_us (
+    order_id, hotel_id, member_id, contact_us_text, email, review_status,
+    method, reply_content, admin_id
+) VALUES
+(1, 1, 1, '房間內空調不冷，請協助處理。', 'xiao.ming@example.com', 1, '電話', '已派遣技術人員檢查。', 1),
+(2, 2, 2, '預訂時使用的優惠券未正確折抵金額。', 'mei.li@example.com', 0, 'Email', NULL, 2),
+(3, 3, 3, '入住後發現廁所內有清潔問題。', 'da.hua@example.com', 2, '電話', '我們會改進清潔標準，感謝您的反饋。', 3),
+(NULL, 1, 1, '想了解房型相關優惠，請提供詳細資訊。', 'xiao.ming@example.com', 1, 'Email', '優惠詳情已通過Email發送。', 1),
+(NULL, NULL, 3, '對於上次的旅館服務有些意見，想直接聯繫管理員。', 'da.hua@example.com', 1, '電話', '已將您的意見轉達給相關人員。', 2);
+
+CREATE TABLE room (
+    room_id INT AUTO_INCREMENT PRIMARY KEY,
+    room_type_id INT NOT NULL,
+    number INT NOT NULL,
+    order_detail_id INT DEFAULT NULL,
+    customer_name VARCHAR(50) DEFAULT NULL,
+    customer_phone_number VARCHAR(15) DEFAULT NULL,
+    status TINYINT NOT NULL COMMENT '0=可用, 1=已預訂, 2=維修中',
+    FOREIGN KEY (room_type_id) REFERENCES room_type(room_type_id),
+    FOREIGN KEY (order_detail_id) REFERENCES order_detail(order_detail_id)
+);
+
+INSERT INTO room (
+    room_type_id, number, order_detail_id, customer_name, customer_phone_number, status
+) VALUES
+(1, 101, 1, '張小明', '0912345678', 1), -- 房型 1，房號 101，已預訂
+(1, 102, NULL, NULL, NULL, 0), -- 房型 1，房號 102，可用
+(2, 201, 2, '李美麗', '0922334455', 1), -- 房型 2，房號 201，已預訂
+(3, 301, NULL, NULL, NULL, 2), -- 房型 3，房號 301，維修中
+(2, 202, NULL, NULL, NULL, 0); -- 房型 2，房號 202，可用
