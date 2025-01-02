@@ -1,4 +1,4 @@
-package com.contactUs.model;
+package com.contactus.model;
 
 public class ContactUsService {
 

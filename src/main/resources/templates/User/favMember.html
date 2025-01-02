@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的最愛(會員)</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .big-title {
+            height: 100px;
+            background-color: #eeeae7;
+        }
+        
+        .hotel-card {
+            position: relative;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+            height: 100%;
+            background: white;
+        }
+
+        .hotel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .hotel-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #ff4b4b;
+            stroke: #ff4b4b;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .favorite-btn:hover svg {
+            fill: #ff3333;
+            stroke: #ff3333;
+        }
+
+        .hotel-info {
+            padding: 1rem;
+        }
+
+        .hotel-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .hotel-location {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .hotel-price {
+            color: #2196F3;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating {
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+
+        .amenities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .amenity-tag {
+            background: #f0f0f0;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .view-details-btn, .book-now-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            background: #2196F3;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .view-details-btn:hover, .book-now-btn:hover {
+            background: #1976D2;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        /* 城市分頁樣式 */
+        .city-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .city-tab {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #666;
+            position: relative;
+        }
+
+        .city-tab:hover {
+            color: #2196F3;
+        }
+
+        .city-tab.active {
+            color: #2196F3;
+            font-weight: bold;
+        }
+
+        .city-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1rem;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #2196F3;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- 標題列 -->
+    <header class="p-3 mb-0 border-bottom shadow-sm">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center">
+                <a href="#" class="d-block">
+                    <img src="/img/logo.png" alt="logo" width="32" height="32" class="rounded-circle">
+                </a>
+                <ul class="nav col justify-content-end login">
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis">訂單</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis">購物車</a></li>
+                    <li>
+                        <div class="dropdown text-end px-2 py-1">
+                            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="https://github.com/mdo.png" alt="profile" width="32" height="32"
+                                    class="rounded-circle">
+                            </a>
+                            <ul class="dropdown-menu text-center mt-3 border-0 shadow-sm">
+                                <li><a class="dropdown-item" href="#">會員中心</a></li>
+                                <li><a class="dropdown-item" href="#">訂單管理</a></li>
+                                <li><a class="dropdown-item" href="#">我的最愛</a></li>
+                                <li><a class="dropdown-item" href="#">優惠券</a></li>
+                                <li><a class="dropdown-item" href="#">我的評論</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">聯繫我們</a></li>
+                                <li><a class="dropdown-item" href="#">登出</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 標題區 -->
+        <div class="row big-title mb-3">
+            <h1 class="text-center fw-bold display-5 col align-self-center">我的最愛</h1>
+        </div>
+
+        <!-- 城市分頁 -->
+        <div class="city-tabs" id="cityTabs">
+            <!-- <button class="city-tab active" onclick="showCity('all')" data-city="all">全部</button> -->
+            <button class="city-tab active" onclick="showCity('taipei')" data-city="taipei">台北</button>
+            <button class="city-tab" onclick="showCity('taichung')" data-city="taichung">台中</button>
+            <button class="city-tab" onclick="showCity('kaohsiung')" data-city="kaohsiung">高雄</button>
+        </div>
+
+        <!-- 飯店列表容器 -->
+        <div id="hotelContainer">
+            <!-- <div id="all" class="tab-content active">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="allHotels"></div>
+            </div> -->
+            <div id="taipei" class="tab-content active">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="taipeiHotels"></div>
+            </div>
+            <div id="taichung" class="tab-content">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="taichungHotels"></div>
+            </div>
+            <div id="kaohsiung" class="tab-content">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="kaohsiungHotels"></div>
+            </div>
+        </div>
+
+        <!-- 詳情彈窗
+        <div id="hotelModal" class="modal">
+            <div class="modal-content">
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+                <img id="modalImage" src="" alt="" class="modal-image">
+                <h2 id="modalHotelName" class="hotel-name mb-4"></h2>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p class="fw-bold">位置</p>
+                        <p id="modalLocation" class="text-muted"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="fw-bold">價格</p>
+                        <p id="modalPrice" class="text-primary fw-bold"></p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <p class="fw-bold">設施服務</p>
+                    <div id="modalAmenities" class="amenities"></div>
+                </div>
+                <button class="book-now-btn">立即預訂</button>
+            </div>
+        </div>
+    </div> -->
+
+    <footer class="py-3 my-4">
+        <div class="container">
+            <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">首頁</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">找房</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">常見問題</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+            </ul>
+            <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 示例飯店數據
+        const hotels = [
+            {
+                id: 'H001',
+                name: '台中金典酒店',
+                location: '台中市西區健行路1049號',
+                price: 'NT$ 3,500起',
+                rating: 4.5,
+                amenities: ['免費WiFi', '停車場', '游泳池', '健身房'],
+                image: '/api/placeholder/400/300',
+                city: 'taichung'
+            },
+            {
+                id: 'H002',
+                name: '高雄麗尊酒店',
+                location: '高雄市苓雅區五福一路105號',
+                price: 'NT$ 2,800起',
+                rating: 4.8,
+                amenities: ['免費早餐', '會議室', 'SPA', '餐廳'],
+                image: '/api/placeholder/400/300',
+                city: 'kaohsiung'
+            },
+            {
+                id: 'H003',
+                name: '台北文華東方酒店',
+                location: '台北市松山區敦化北路158號',
+                price: 'NT$ 8,500起',
+                rating: 4.9,
+                amenities: ['豪華SPA', '米其林餐廳', '空中泳池', '管家服務'],
+                image: '/api/placeholder/400/300',
+                city: 'taipei'
+            },
+            {
+                id: 'H004',
+                name: '台北寒舍艾美酒店',
+                location: '台北市信義區松仁路38號',
+                price: 'NT$ 6,800起',
+                rating: 4.7,
+                amenities: ['免費早餐', '健身中心', '商務中心', '會議室'],
+                image: '/api/placeholder/400/300',
+                city: 'taipei'
+            },
+            {
+                id: 'H005',
+                name: '台中林酒店',
+                location: '台中市西屯區朝富路99號',
+                price: 'NT$ 4,200起',
+                rating: 4.6,
+                amenities: ['免費停車', '游泳池', '健身房', '餐廳'],
+                image: '/api/placeholder/400/300',
+                city: 'taichung'
+            }
+        ];
+
+        // 渲染指定城市的飯店列表
+        function renderHotelsByCity(city) {
+            // 根據城市篩選飯店
+            const filteredHotels = city === 'all' ? 
+                hotels : 
+                hotels.filter(hotel => hotel.city === city);
+
+            // 生成 HTML
+            const hotelHTML = filteredHotels.length ? filteredHotels.map(hotel => `
+                <div class="col" id="hotel-${hotel.id}">
+                    <div class="hotel-card">
+                        <img src="${hotel.image}" alt="${hotel.name}" class="hotel-image">
+                        <button class="favorite-btn" onclick="toggleFavorite('${hotel.id}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                        </button>
+                        <div class="hotel-info">
+                            <h3 class="hotel-name">${hotel.name}</h3>
+                            <p class="hotel-location">${hotel.location}</p>
+                            <p class="hotel-price">${hotel.price}</p>
+                            <div class="rating">
+                                ${'★'.repeat(Math.floor(hotel.rating))}
+                                <span class="text-muted ms-2">${hotel.rating}</span>
+                            </div>
+                            <div class="amenities">
+                                ${hotel.amenities.map(amenity => `
+                                    <span class="amenity-tag">${amenity}</span>
+                                `).join('')}
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            `).join('') : `
+                <div class="col-12">
+                    <div class="empty-state">
+                        <h3>暫無收藏的飯店</h3>
+                        <p>去探索更多優質住宿選擇吧！</p>
+                    </div>
+                </div>
+            `;
+
+            // 更新對應城市的容器內容
+            document.getElementById(`${city}Hotels`).innerHTML = hotelHTML;
+        }
+
+        // 切換城市分頁
+        function showCity(city) {
+            // 更新標籤狀態
+            document.querySelectorAll('.city-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-city="${city}"]`).classList.add('active');
+
+            // 更新內容顯示
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(city).classList.add('active');
+
+            // 渲染該城市的飯店列表
+            renderHotelsByCity(city);
+        }
+
+        // 移除飯店
+        function toggleFavorite(hotelId) {
+            const hotelCard = document.getElementById(`hotel-${hotelId}`);
+            if (hotelCard) {
+                // 添加移除動畫
+                hotelCard.style.transition = 'all 0.3s ease';
+                hotelCard.style.transform = 'scale(0.95)';
+                hotelCard.style.opacity = '0';
+                
+                setTimeout(() => {
+                    // 移除飯店並重新渲染
+                    const index = hotels.findIndex(hotel => hotel.id === hotelId);
+                    if (index > -1) {
+                        hotels.splice(index, 1);
+                        // 重新渲染所有城市的列表
+                        renderHotelsByCity('all');
+                        renderHotelsByCity('taipei');
+                        renderHotelsByCity('taichung');
+                        renderHotelsByCity('kaohsiung');
+                    }
+                }, 300);
+            }
+        }
+
+        // 顯示詳情
+        function showDetails(hotelId) {
+            const hotel = hotels.find(h => h.id === hotelId);
+            if (hotel) {
+                document.getElementById('modalImage').src = hotel.image;
+                document.getElementById('modalHotelName').textContent = hotel.name;
+                document.getElementById('modalLocation').textContent = hotel.location;
+                document.getElementById('modalPrice').textContent = hotel.price;
+                document.getElementById('modalAmenities').innerHTML = hotel.amenities
+                    .map(amenity => `<span class="amenity-tag">${amenity}</span>`)
+                    .join('');
+                document.getElementById('hotelModal').style.display = 'flex';
+            }
+        }
+
+        // 關閉彈窗
+        function closeModal() {
+            document.getElementById('hotelModal').style.display = 'none';
+        }
+
+        // 點擊彈窗外部關閉
+        window.onclick = function(event) {
+            const modal = document.getElementById('hotelModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // 初始化：渲染所有城市的飯店列表
+        // renderHotelsByCity('all');
+        renderHotelsByCity('taipei');
+        renderHotelsByCity('taichung');
+        renderHotelsByCity('kaohsiung');
+    </script>
+</body>
+</html>
