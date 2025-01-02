@@ -31,4 +31,18 @@ public class FacilityController {
         List<FacilityVO> services = facilityService.getHotelFacilities((Integer) 1, (Integer) 1);
         return ResponseEntity.ok(services);
     }
+
+    // 回傳 facilityType = 2 的設施
+    @GetMapping("/roomType/facilities")
+    public ResponseEntity<List<FacilityVO>> getRoomTypeFacilities() {
+        List<FacilityVO> facilities = facilityService.getHotelFacilities((Integer) 2, (Integer) 0);
+        return ResponseEntity.ok(facilities);
+    }
+
+    // 回傳 facilityType = 2 的服務
+    @GetMapping("/roomType/services")
+    public ResponseEntity<List<FacilityVO>> getRoomTypeServices() {
+        List<FacilityVO> services = facilityService.getHotelFacilities((Integer) 2, (Integer) 1);
+        return ResponseEntity.ok(services);
+    }
 }

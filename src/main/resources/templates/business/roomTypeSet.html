@@ -307,6 +307,35 @@
             /* 調整與底部邊框的間距 */
         }
 
+        /* 增強 section 標題 h2 樣式 */
+        section h2 {
+            font-size: 1.4rem;
+            /* 增大標題字體 */
+            margin-bottom: 15px;
+            /* 增加底部間距 */
+            color: #007bff;
+            /* 改為藍色，讓標題更突出 */
+            font-weight: bold;
+            border-bottom: 1px solid #ccc;
+            /* 增加底部邊框，分隔不同區塊 */
+            padding-bottom: 5px;
+        }
+
+        /* 增加 section 的間距與框線 */
+        section {
+            margin-bottom: 30px;
+            /* 增加區塊之間的間距 */
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            /* 增加邊框 */
+            border-radius: 8px;
+            /* 圓角邊框 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            /* 微弱的陰影效果 */
+            background-color: #fafafa;
+            /* 背景顏色調整 */
+        }
+
         /* 新增房型按鈕樣式 */
         .add-room-btn {
             display: block;
@@ -426,149 +455,126 @@
             width: 100%;
         }
 
-        /* 圖片上傳區 */
+        /* 照片上傳區塊 */
         .photo-upload {
-            background-color: #f9f9f9;
-            border: 2px dashed #bbb;
-            /* 加粗的虛線邊框 */
-            padding: 20px;
-            /* 增加內間距 */
             margin-bottom: 20px;
-            text-align: center;
-            border-radius: 8px;
+            display: block;
+            /* 改為block，方便控制位置 */
+            /* text-align: center; */
+            /* 置中對齊 */
         }
 
-        .uploaded-photos {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            /* 自適應列數 */
-            gap: 15px;
-            /* 增加圖片間距 */
-            margin-top: 20px;
-        }
-
-        .uploaded-photos img {
-            width: 120px;
-            height: 120px;
-            object-fit: cover;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .uploaded-photos img:hover {
-            border-color: #007bff;
-        }
-
-        /* 設施與服務區域 */
-        /* 設施與服務區域 */
-        .facility-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            /* 自動適應列寬 */
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .facility-options label {
-            display: flex;
-            align-items: center;
-            font-size: 0.9rem;
-            /* 字體稍微縮小 */
-            color: #333;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .facility-options input[type="checkbox"] {
-            margin-right: 8px;
-            /* 選框與文字之間的間距 */
-            width: 16px;
-            height: 16px;
-            /* 調整選框大小 */
-        }
-
-        .facility-options label:hover {
-            color: #007bff;
-            /* 滑鼠懸停時變藍 */
-        }
-
-        /* 新增設施表單 */
-        .add-facility-form {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .add-facility-form input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .add-facility-form button {
-            background-color: #007bff;
-            color: white;
-            border: none;
+        /* 上傳按鈕 */
+        .upload-btn {
             padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
             border-radius: 4px;
-            font-size: 1rem;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            display: inline-block;
+            /* 保持按鈕的行內顯示 */
         }
 
-        .add-facility-form button:hover {
+        .upload-btn-div {
+            text-align: center;
+        }
+
+        .upload-btn:hover {
             background-color: #0056b3;
         }
 
-        /* 已新增設施清單 */
-        .added-items {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            background-color: #fafafa;
-            border-radius: 8px;
+        /* 照片上傳區塊 */
+        .photo-upload {
+            margin-bottom: 20px;
+            display: block;
+            /* 改為block，方便控制位置 */
+            /* text-align: center; */
+            /* 置中對齊 */
         }
 
-        .added-items h4 {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: #007bff;
-        }
-
-        .added-items ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .added-items ul li {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-        }
-
-        .added-items ul li button {
-            background-color: #ff4d4d;
-            color: white;
+        /* 上傳按鈕 */
+        .upload-btn {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
             border: none;
             border-radius: 4px;
-            padding: 5px 10px;
-            font-size: 0.9rem;
             cursor: pointer;
+            display: inline-block;
+            /* 保持按鈕的行內顯示 */
         }
 
-        .added-items ul li button:hover {
-            background-color: #e04e4e;
+        .upload-btn-div {
+            text-align: center;
+        }
+
+        .upload-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* 已上傳圖片顯示 */
+        .uploaded-photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px; /* 圖片間距 */
+            justify-items: center; /* 水平居中對齊 */
+        }
+
+        .uploaded-photos img {
+            width: 150px; /* 固定寬度 */
+            height: 150px; /* 固定高度 */
+            object-fit: cover; /* 確保圖片保持比例，不變形 */
+            border-radius: 8px; /* 圓角 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加陰影 */
+        }
+
+        .uploaded-photos button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .uploaded-photos::-webkit-scrollbar {
+            height: 8px; /* 滾動條高度 */
+        }
+
+        .uploaded-photos::-webkit-scrollbar-thumb {
+            background-color: #007bff; /* 滾動條顏色 */
+            border-radius: 4px;
+        }
+
+        .uploaded-photos::-webkit-scrollbar-track {
+            background-color: #e0e0e0; /* 滾動條背景 */
+        }
+
+        /* 設施與服務 */
+        .facility-service {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        .facilities,
+        .services {
+            flex: 1;
+        }
+
+        .facilities label,
+        .services label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 10px;
         }
 
         /* 按鈕組 */
@@ -619,52 +625,6 @@
         }
 
         /*12/31以後新增內容*/
-        /* 已上傳圖片顯示 */
-        .uploaded-photos {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px; /* 圖片間距 */
-            justify-items: center; /* 水平居中對齊 */
-        }
-
-        .uploaded-photos img {
-            width: 150px; /* 固定寬度 */
-            height: 150px; /* 固定高度 */
-            object-fit: cover; /* 確保圖片保持比例，不變形 */
-            border-radius: 8px; /* 圓角 */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加陰影 */
-        }
-
-        .uploaded-photos button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .uploaded-photos::-webkit-scrollbar {
-            height: 8px; /* 滾動條高度 */
-        }
-
-        .uploaded-photos::-webkit-scrollbar-thumb {
-            background-color: #007bff; /* 滾動條顏色 */
-            border-radius: 4px;
-        }
-
-        .uploaded-photos::-webkit-scrollbar-track {
-            background-color: #e0e0e0; /* 滾動條背景 */
-        }
-
-
         .breakfast-options {
             display: flex; /* 使用彈性佈局 */
             align-items: center; /* 垂直居中 */
@@ -699,6 +659,34 @@
 
         .delete-btn:hover {
             background-color: #e04e4e;
+        }
+
+        .facilities label, .services label {
+            display: flex; /* 使用 Flexbox 對齊 */
+            align-items: center; /* 垂直居中 */
+            gap: 8px; /* 調整 Checkbox 和文字的間距 */
+            font-size: 1rem; /* 確保字體大小一致 */
+        }
+
+        .facilities input[type="checkbox"], .services input[type="checkbox"] {
+            width: 20px; /* 統一 Checkbox 的寬度 */
+            height: 20px; /* 統一 Checkbox 的高度 */
+            vertical-align: middle; /* 確保和文字基線對齊 */
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* 增加 Checkbox 和文字的間距 */
+            font-size: 16px; /* 確保文字大小一致 */
+            line-height: 1.5; /* 調整行高 */
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            accent-color: #007bff; /* 統一 Checkbox 顏色（可選） */
         }
     </style>
 </head>
@@ -802,10 +790,9 @@
             <!-- 彈窗 -->
             <div class="modal-overlay" id="modalOverlay">
                 <div class="modal">
-                    <h2>房型詳細設定</h2>
-                    <form>
-                        <!-- 基本資訊 -->
-<!--                        <label for="room-id">房型ID</label>-->
+                        <section>
+                        <form>
+                        <h2>房型詳細設定</h2>
                         <input type="hidden" id="room-id">
 
                         <label for="room-name">房型名稱</label>
@@ -828,34 +815,60 @@
                                 <input type="radio" id="breakfast-yes" name="room-breakfast" value="1" />
                             </label>
                         </div>
-
-<!--                        <label for="room-status">狀態</label>-->
+                        <!--<label for="room-status">狀態</label>-->
                         <input type="hidden" id="room-status" value="0" readonly>
+                        </form>
+                        </section>
 
-                        <h3>圖片上傳區</h3>
-                        <div th:each="image : ${images}" style="position: relative; display: inline-block; margin: 10px;">
-                            <!-- 圖片 -->
-                            <img th:src="@{'/api/roomImages/' + ${image.roomTypeImgId}}" width="150px"
-                                 style="border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-
-                            <!-- 刪除按鈕 -->
-                            <button class="delete-btn"
-                                    style="position: absolute; top: -10px; right: -10px; background-color: rgba(0, 0, 0, 0.7); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
-                                    th:attr="data-id=${image.roomTypeImgId}">
-                                ✖
-                            </button>
+                    <section>
+                        <h2>房型照片</h2>
+                        <h3 class="uploaded-photos-title">照片上傳區</h3>
+                        <div class="photo-upload">
+                            <input type="file" id="photo-upload" multiple accept="image/*">
+                        </div>
+                        <!-- 即時預覽區 -->
+                        <div>
+                            <div class="uploaded-photos" id="preview-photos">
+                                <!-- 動態顯示即時預覽圖片 -->
+                            </div>
                         </div>
 
-                        <!-- 設施選項 -->
-                        <h3>設施與服務</h3>
-                        <div class="facility-options">
+                        <!-- 已上傳圖片展示區 -->
+                        <div>
+                            <h3 class="uploaded-photos-title">已上傳圖片</h3>
+                            <div class="uploaded-photos" id="uploaded-photos">
+                                <div th:each="imageId : ${images}">
+                                    <img th:src="@{/api/room-images/image/{imageId}(imageId=${imageId})}"
+                                         alt="房型圖片"
+                                         style="width: 150px; margin: 5px; border-radius: 8px;">
+                                    <!-- 刪除按鈕 -->
+                                    <button class="delete-btn" th:attr="onclick=|deleteImage(${imageId})|">✖</button>
+                                </div>
+                            </div>
                         </div>
+                    </section>
 
-                        <div class="btn-group">
-                            <button type="button" class="save-btn">儲存設定</button>
-                            <button type="button" class="close-btn" id="closeModalBtn">關閉</button>
-                        </div>
-                    </form>
+                        <!-- 設施與服務 -->
+                    <section>
+                        <h2>設施與服務</h2>
+                        <form id="facility-service-form">
+                            <div class="facility-service">
+                                <div class="facilities">
+                                    <h3>設施</h3>
+                                    <!-- 動態生成設施 -->
+                                </div>
+                                <div class="services">
+                                    <h3>服務</h3>
+                                    <!-- 動態生成服務 -->
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+
+                    <div class="btn-group">
+                        <button type="button" class="save-btn">儲存設定</button>
+                        <button type="button" class="close-btn" id="closeModalBtn">關閉</button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -867,6 +880,8 @@
     </footer>
 
     <script>
+        const hotelId = "[[${hotelId}]]";
+        const contextPath = "[[${#httpServletRequest.contextPath}]]";
         //談窗部分
         // 取得需要的元素
         const roomSections = document.querySelectorAll('.room-section'); // 所有房型區塊
@@ -883,7 +898,7 @@
         const roomBreakfastYes = document.getElementById('breakfast-yes');
 
         // 打開彈窗並填入資料
-        function openModal(roomData) {
+        async function openModal(roomData) {
             modalOverlay.style.display = 'block'; // 顯示彈窗
 
             // 填入房型資料
@@ -899,6 +914,118 @@
             } else {
                 roomBreakfastNo.checked = true;
             }
+
+            // 獲取並顯示圖片
+            const imageIds = await fetchRoomImages(roomData.id);
+            const uploadedPhotoContainer = document.querySelector('#uploaded-photos'); // 已上傳圖片區域
+            uploadedPhotoContainer.innerHTML = ''; // 清空已上傳圖片區域
+
+
+            imageIds.forEach(id => {
+                const imgElement = document.createElement('img');
+                imgElement.src = `/api/room-images/image/${id}`;
+                imgElement.alt = `Room Image ${id}`;
+                imgElement.style.width = '150px';
+                imgElement.style.margin = '5px';
+                imgElement.style.borderRadius = '8px';
+
+                // 添加刪除按鈕
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = '✖';
+                deleteBtn.onclick = () => deleteImage(id);
+
+                const imgWrapper = document.createElement('div');
+                imgWrapper.style.position = 'relative';
+                imgWrapper.style.display = 'inline-block';
+                imgWrapper.appendChild(imgElement);
+                imgWrapper.appendChild(deleteBtn);
+
+                uploadedPhotoContainer.appendChild(imgWrapper);
+            });
+
+            // 清空即時預覽區域
+            const previewContainer = document.querySelector('#preview-photos');
+            previewContainer.innerHTML = '';
+
+            // 獲取該房型的已選設施
+            const selectedFacilities = await fetchSelectedFacilities(roomData.id);
+            const facilityCheckboxes = document.querySelectorAll('.facilities input[type="checkbox"]');
+            facilityCheckboxes.forEach((checkbox) => {
+                const isSelected = selectedFacilities.some(facility => facility.facilityId === parseInt(checkbox.value));
+                checkbox.checked = isSelected;
+            });
+
+            // 獲取該房型的已選服務
+            const selectedServices = await fetchSelectedServices(roomData.id);
+            const serviceCheckboxes = document.querySelectorAll('.services input[type="checkbox"]');
+            serviceCheckboxes.forEach((checkbox) => {
+                const isSelected = selectedServices.some(service => service.facilityId === parseInt(checkbox.value));
+                checkbox.checked = isSelected;
+            });
+        }
+
+        async function fetchRoomImages(roomTypeId) {
+            try {
+                const response = await fetch(`/api/room-images/room/${roomTypeId}/images`);
+                if (response.ok) {
+                    return await response.json(); // 返回圖片 ID 列表
+                } else {
+                    console.error("無法獲取圖片列表");
+                    return [];
+                }
+            } catch (error) {
+                console.error("獲取圖片時出錯:", error);
+                return [];
+            }
+        }
+
+        async function deleteImage(imageId) {
+            try {
+                const response = await fetch(`${contextPath}/api/room-images/image/${imageId}`, { method: 'DELETE' });
+                if (response.ok) {
+                    alert("圖片已刪除");
+
+                    // 重新獲取圖片並更新表單
+                    const roomTypeId = roomIdInput.value; // 從表單中獲取當前房型 ID
+                    updateUploadedPhotos(roomTypeId);
+                } else {
+                    const error = await response.json();
+                    alert("刪除失敗：" + error.error);
+                }
+            } catch (error) {
+                console.error("刪除圖片時出錯:", error);
+            }
+        }
+
+        // 更新已上傳圖片區域
+        async function updateUploadedPhotos(roomTypeId) {
+            const imageIds = await fetchRoomImages(roomTypeId); // 獲取圖片列表
+            const uploadedPhotoContainer = document.querySelector('#uploaded-photos'); // 已上傳圖片容器
+            uploadedPhotoContainer.innerHTML = ''; // 清空圖片容器
+
+            imageIds.forEach(id => {
+                const imgElement = document.createElement('img');
+                imgElement.src = `${contextPath}/api/room-images/image/${id}`;
+                imgElement.alt = `Room Image ${id}`;
+                imgElement.style.width = '150px';
+                imgElement.style.margin = '5px';
+                imgElement.style.borderRadius = '8px';
+
+                // 添加刪除按鈕
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = '✖';
+                deleteBtn.onclick = () => deleteImage(id);
+
+                const imgWrapper = document.createElement('div');
+                imgWrapper.style.position = 'relative';
+                imgWrapper.style.display = 'inline-block';
+                imgWrapper.appendChild(imgElement);
+                imgWrapper.appendChild(deleteBtn);
+
+                uploadedPhotoContainer.appendChild(imgWrapper);
+            });
         }
 
         // 關閉彈窗的函數
@@ -982,6 +1109,259 @@
             }
         });
 
+        document.getElementById('photo-upload').addEventListener('change', function (event) {
+            const files = event.target.files; // 獲取選擇的文件
+            const previewContainer = document.getElementById('preview-photos'); // 即時預覽區域
+
+            // 使用 Array.from 將 FileList 轉換為數組，並對每個文件進行處理
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader(); // 使用 FileReader 讀取文件
+                    reader.onload = function (e) {
+                        // 創建圖片元素
+                        const imgElement = document.createElement('img');
+                        imgElement.src = e.target.result; // 設置圖片源
+                        imgElement.alt = '圖片預覽';
+                        imgElement.style.width = '150px';
+                        imgElement.style.margin = '5px';
+                        imgElement.style.borderRadius = '8px';
+
+                        // 添加刪除按鈕
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.textContent = '✖';
+                        deleteBtn.onclick = () => {
+                            previewContainer.removeChild(imgWrapper); // 刪除圖片和按鈕
+                        };
+
+                        const imgWrapper = document.createElement('div');
+                        imgWrapper.style.position = 'relative';
+                        imgWrapper.style.display = 'inline-block';
+                        imgWrapper.appendChild(imgElement);
+                        imgWrapper.appendChild(deleteBtn);
+
+                        // 添加到預覽區域
+                        previewContainer.appendChild(imgWrapper);
+                    };
+                    reader.readAsDataURL(file); // 將文件轉為 Data URL
+                } else {
+                    console.error('選擇的文件不是圖片格式:', file.name);
+                }
+            });
+        });
+
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            // 獲取並顯示設施
+            const facilities = await fetchRoomFacilities();
+            const facilitiesContainer = document.querySelector('.facilities');
+            clearContainerExceptHeader(facilitiesContainer); // 清空動態生成的設施，但保留 h3
+            facilities.forEach(facility => {
+                const label = document.createElement('label');
+                label.style.display = 'block'; // 讓每個設施在新行顯示
+
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.value = facility.facilityId;
+                input.name = 'facilities';
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(facility.facilityName));
+                facilitiesContainer.appendChild(label);
+            });
+
+            // 獲取並顯示服務
+            const services = await fetchRoomServices();
+            const servicesContainer = document.querySelector('.services');
+            clearContainerExceptHeader(servicesContainer); // 清空動態生成的服務，但保留 h3
+            services.forEach(service => {
+                const label = document.createElement('label');
+                label.style.display = 'block'; // 讓每個服務在新行顯示
+
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.value = service.facilityId;
+                input.name = 'services';
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(service.facilityName));
+                servicesContainer.appendChild(label);
+            });
+        });
+
+        // 清空容器中的所有內容，但保留 h3 標籤
+        function clearContainerExceptHeader(container) {
+            Array.from(container.children).forEach(child => {
+                if (child.tagName !== 'H3') {
+                    container.removeChild(child);
+                }
+            });
+        }
+
+        // 更新 API 路徑添加 contextPath
+        async function fetchRoomFacilities() {
+            try {
+                const response = await fetch(`${contextPath}/api/facilities/roomType/facilities`);
+                if (response.ok) {
+                    return await response.json();
+                } else {
+                    console.error("無法獲取設施列表");
+                    return [];
+                }
+            } catch (error) {
+                console.error("獲取設施時出錯:", error);
+                return [];
+            }
+        }
+
+        async function fetchRoomServices() {
+            try {
+                const response = await fetch(`${contextPath}/api/facilities/roomType/services`);
+                if (response.ok) {
+                    return await response.json();
+                } else {
+                    console.error("無法獲取服務列表");
+                    return [];
+                }
+            } catch (error) {
+                console.error("獲取服務時出錯:", error);
+                return [];
+            }
+        }
+
+        async function fetchSelectedFacilities(roomTypeId) {
+            try {
+                const response = await fetch(`${contextPath}/api/roomTypeFacilities/${roomTypeId}/facilities`);
+                if (response.ok) {
+                    return await response.json(); // 返回該房型的已選設施和服務列表
+                } else {
+                    console.error("無法獲取選定設施列表");
+                    return [];
+                }
+            } catch (error) {
+                console.error("獲取選定設施時出錯:", error);
+                return [];
+            }
+        }
+
+        async function fetchSelectedServices(roomTypeId) {
+            try {
+                const response = await fetch(`${contextPath}/api/roomTypeFacilities/${roomTypeId}/services`);
+                if (response.ok) {
+                    return await response.json(); // 返回該房型的已選服務列表
+                } else {
+                    console.error("無法獲取選定服務列表");
+                    return [];
+                }
+            } catch (error) {
+                console.error("獲取選定服務時出錯:", error);
+                return [];
+            }
+        }
+
+        document.querySelector(".save-btn").addEventListener("click", async () => {
+            await saveRoomTypeSettings();
+        });
+
+        async function saveRoomTypeSettings() {
+            const roomTypeId = roomIdInput.value; // 確保從 roomIdInput 中獲取房型 ID
+            try {
+                const roomName = roomNameInput.value; // 房型名稱
+                const maxPerson = parseInt(roomGuestInput.value, 10); // 最多可入住人數
+                const roomNum = parseInt(roomNumberInput.value, 10); // 房間數量
+                const breakfast = roomBreakfastNo.checked ? 0 : 1; // 早餐選擇
+
+                // 1. 更新房型資料
+                if (!roomTypeId) {
+                    alert('無法取得房型 ID，請重試！');
+                    return;
+                }
+
+                try {
+                    // 呼叫房型更新 API
+                    const roomUpdateResponse = await fetch(`${contextPath}/api/roomType/update/${roomTypeId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            roomTypeId,
+                            roomName,
+                            maxPerson,
+                            roomNum,
+                            breakfast,
+                        }),
+                    });
+
+                    // 確保回應為 JSON
+                    const result = await roomUpdateResponse.json();
+                    if (!roomUpdateResponse.ok) {
+                        throw new Error(result.error || '未知錯誤');
+                    }
+
+                    // 提示成功訊息
+                    // alert(result.message || '房型資料更新成功！');
+                } catch (error) {
+                    console.error(error);
+                    // alert(`儲存失敗: ${error.message}`);
+                }
+
+                // 2. 上傳圖片
+                // 上傳圖片部分
+                const photoUploadInput = document.getElementById("photo-upload");
+                const photos = Array.from(photoUploadInput.files); // 確保正確獲取檔案
+
+                if (photos.length > 0) {
+                    const formData = new FormData();
+                    photos.forEach((file) => formData.append("photos", file)); // 使用 photos 變數
+                    const photoResponse = await fetch(`${contextPath}/api/room-images/room/${roomTypeId}/upload`, {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (!photoResponse.ok) {
+                        const error = await photoResponse.json();
+                        throw new Error(`圖片上傳失敗: ${error.message}`);
+                    }
+
+                    console.log("圖片上傳成功");
+                } else {
+                    console.log("沒有需要上傳的圖片");
+                }
+
+                // 3. 更新設施與服務
+                const selectedFacilities = Array.from(
+                    document.querySelectorAll('.facilities input[type="checkbox"]:checked')
+                ).map((checkbox) => parseInt(checkbox.value));
+
+                const selectedServices = Array.from(
+                    document.querySelectorAll('.services input[type="checkbox"]:checked')
+                ).map((checkbox) => parseInt(checkbox.value));
+
+                const facilityResponse = await fetch(`${contextPath}/api/roomTypeFacilities/update`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        roomTypeId: parseInt(roomTypeId),
+                        facilities: selectedFacilities,
+                        services: selectedServices,
+                    }),
+                });
+
+                if (!facilityResponse.ok) {
+                    const error = await facilityResponse.json();
+                    throw new Error(`設施與服務更新失敗: ${error.message}`);
+                }
+
+                console.log("設施與服務更新成功");
+
+                // 如果所有步驟成功，提示用戶
+                alert("房型設定儲存成功！");
+                // closeModal(); // 關閉彈窗
+                location.reload(); // 重整頁面
+            } catch (error) {
+                console.error(error.message);
+                alert(`儲存失敗: ${error.message}`);
+            }
+        }
     </script>
 </body>
 
