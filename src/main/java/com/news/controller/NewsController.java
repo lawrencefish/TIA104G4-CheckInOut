@@ -28,7 +28,7 @@ public class NewsController {
 		model.addAttribute("newsVO", newsVO);
 		return "business/addNews";
 	}
-    
+
     @GetMapping("listAllNews")
     public List<NewsVO> getAllNews() {
         return newsSvc.getAllNews();
@@ -62,7 +62,7 @@ public class NewsController {
 		model.addAttribute("success", "- (修改成功)");
 		newsVO = newsSvc. getNewsById(Integer.valueOf(newsVO.getNewsId()));
 		model.addAttribute("newsVO", newsVO);
-		return "business/listOneNews"; 
+		return "business/listOneNews";
 	}
 
     @PostMapping("delete")
@@ -76,5 +76,5 @@ public class NewsController {
 		model.addAttribute("success", "- (刪除成功)");
 		return "business/listAllNews";
 	}
-    
+
 }

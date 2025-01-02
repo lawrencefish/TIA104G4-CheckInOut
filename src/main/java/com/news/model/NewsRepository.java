@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NewsRepository extends JpaRepository<NewsVO, Integer> {
-    
+
 	Optional<NewsVO> findById(Integer newsId);
-	
-	Optional<NewsVO> findByTitle(String newsTitle);
-	
+
+	Optional<NewsVO> findByNewsTitle(String newsTitle);
+
 }
