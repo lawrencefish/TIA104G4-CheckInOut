@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>優惠券</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .big-title {
+            height: 100px;
+            background-color: #eeeae7;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #666;
+            position: relative;
+        }
+
+        .tab.active {
+            color: #2196F3;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #2196F3;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .coupon-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .coupon-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .coupon-info {
+            flex-grow: 1;
+        }
+
+        .coupon-title {
+            color: #2196F3;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .coupon-description {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .use-btn {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 100px;
+        }
+
+        .use-btn:hover {
+            background-color: #1976D2;
+        }
+
+        .expired-label {
+            padding: 8px 16px;
+            background-color: #666;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .used-label {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .success-alert {
+            display: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<body>
+    <!-- 標題列 -->
+    <header class="p-3 mb-0 border-bottom shadow-sm">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center">
+                <a href="#" class="d-block">
+                    <img src="/img/logo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                </a>
+                <ul class="nav col justify-content-end login">
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis">訂單</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis">購物車</a></li>
+                    <li>
+                        <div class="dropdown text-end px-2 py-1">
+                            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32"
+                                    class="rounded-circle">
+                            </a>
+                            <ul class="dropdown-menu text-center mt-3 border-0 shadow-sm">
+                                <li><a class="dropdown-item" href="#">會員中心</a></li>
+                                <li><a class="dropdown-item" href="#">訂單管理</a></li>
+                                <li><a class="dropdown-item" href="#">我的最愛</a></li>
+                                <li><a class="dropdown-item" href="#">優惠券</a></li>
+                                <li><a class="dropdown-item" href="#">我的評論</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">聯繫我們</a></li>
+                                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="container shadow-sm">
+        <div class="row big-title mb-3">
+            <h1 class="text-center fw-bold display-5 col align-self-center">優惠券</h1>
+        </div>
+        
+        <div id="successAlert" class="success-alert">
+            優惠券已套用
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('available')">可使用</button>
+            <!-- <button class="tab" onclick="showTab('used')">已使用</button> -->
+            <button class="tab" onclick="showTab('expired')">已失效</button>
+        </div>
+
+        <!-- 可使用優惠券 -->
+        <div id="available" class="tab-content active">
+            <div class="coupon-card">
+                <div class="coupon-info">
+                    <div class="coupon-title">Check in out三個城市</div>
+                    <div class="coupon-description">訂房滿 NT$ 2000 折抵 NT$ 150</div>
+                    <div class="coupon-description">有效期限: 2024-12-31</div>
+                </div>
+                <!-- <button class="use-btn" onclick="showUseConfirm('summer-discount')">使用優惠券</button> -->
+            </div>
+            <div class="coupon-card">
+                <div class="coupon-info">
+                    <div class="coupon-title">新會員優惠</div>
+                    <div class="coupon-description">新會員首次訂房折抵 NT$ 100</div>
+                    <div class="coupon-description">有效期限: 2024-12-31</div>
+                </div>
+                <!-- <button class="use-btn" onclick="showUseConfirm('new-member')">使用優惠券</button> -->
+            </div>
+        </div>
+
+        <!-- 已使用優惠券
+        <div id="used" class="tab-content">
+            <div class="coupon-card">
+                <div class="coupon-info">
+                    <div class="coupon-title">春季優惠</div>
+                    <div class="coupon-description">訂房滿 NT$ 5,000 折抵 NT$ 500</div>
+                    <div class="coupon-description">使用日期: 2024-03-15</div>
+                </div>
+                <span class="used-label">已使用</span>
+            </div>
+        </div> -->
+
+        <!-- 已過期優惠券 -->
+        <div id="expired" class="tab-content">
+            <div class="coupon-card">
+                <div class="coupon-info">
+                    <div class="coupon-title">冬季優惠</div>
+                    <div class="coupon-description">訂房滿 NT$ 2,000 折抵 NT$ 200</div>
+                    <div class="coupon-description">過期日期: 2023-12-31</div>
+                </div>
+                <span class="expired-label">已失效</span>
+            </div>
+        </div>
+
+        <!-- 使用確認彈窗 -->
+        <!-- <div id="useConfirmModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('useConfirmModal')">&times;</span>
+                <h2>確認使用優惠券</h2>
+                <p style="margin: 20px 0;">確定要使用此優惠券嗎？</p>
+                <div class="modal-buttons">
+                    <button class="use-btn" onclick="confirmUse()">確認使用</button>
+                    <button onclick="closeModal('useConfirmModal')" style="padding: 8px 16px;">返回</button>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <footer>
+        <div class="container">
+            <footer class="py-3 my-4">
+                <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">首頁</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">找房</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">常見問題</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+                </ul>
+                <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p>
+            </footer>
+        </div>
+    </footer>
+
+    <script>
+        let currentCouponId = '';
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showUseConfirm(couponId) {
+            currentCouponId = couponId;
+            document.getElementById('useConfirmModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function confirmUse() {
+            closeModal('useConfirmModal');
+            
+            const successAlert = document.getElementById('successAlert');
+            successAlert.style.display = 'block';
+            
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+            }, 3000);
+        }
+
+        // 點擊彈窗外部時關閉彈窗
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

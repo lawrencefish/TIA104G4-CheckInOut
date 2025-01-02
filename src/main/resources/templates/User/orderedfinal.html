@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單</title>
+    <link rel="stylesheet" th:href="/vendors/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" th:href="/vendors/bootstrap/css/headers.css">
+    <link rel="stylesheet" th:href="/css/template.css">
+    <link th:href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .big-title {
+            height: 100px;
+            background-color: #eeeae7;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        } */
+
+        /* .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        } */
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #666;
+            position: relative;
+        }
+
+        .tab.active {
+            color: #2196F3;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #2196F3;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .booking-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .booking-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-info {
+            flex-grow: 1;
+        }
+
+        .booking-id {
+            color: #2196F3;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .booking-date {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .cancel-btn {
+            padding: 8px 16px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background-color: #cc0000;
+        }
+
+        /* 彈窗樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .booking-details {
+            margin-top: 15px;
+        }
+
+        .booking-details p {
+            margin: 10px 0;
+            color: #333;
+        }
+
+        /* 成功提示 */
+        .success-alert {
+            display: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 評論按鈕樣式 */
+        .review-btn {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .review-btn:hover {
+            background-color: #1976D2;
+        }
+
+        .reviewed-btn {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* 星級評分樣式 */
+        .rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            margin: 20px 0;
+        }
+
+        .rating input {
+            display: none;
+        }
+
+        .rating label {
+            cursor: pointer;
+            font-size: 30px;
+            color: #ddd;
+            padding: 0 5px;
+        }
+
+        .rating input:checked ~ label,
+        .rating label:hover,
+        .rating label:hover ~ label {
+            color: #ffd700;
+        }
+
+        .rating-display {
+            color: #ffd700;
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        /* 評論文本區域樣式 */
+        .review-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+            resize: vertical;
+        }
+    </style>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+ <!-- 標題列 -->
+ <header class="p-3 mb-0 border-bottom shadow-sm">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center">
+            <!-- 首頁logo -->
+            <a href="#" class="d-block">
+                <img src="/img/logo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+            </a>
+            <ul class="nav col justify-content-end login">
+                <li><a href="#" class="nav-link px-2 link-body-emphasis">訂單</a></li>
+                <li><a href="#" class="nav-link px-2 link-body-emphasis">購物車</a></li>
+                <li>
+                    <div class="dropdown text-end px-2 py-1">
+                        <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32"
+                                class="rounded-circle">
+                        </a>
+                        <ul class="dropdown-menu text-center mt-3 border-0 shadow-sm" data-bs-display="static">
+                            <li><a class="dropdown-item" href="#">會員中心</a></li>
+                            <li><a class="dropdown-item" href="#">訂單管理</a></li>
+                            <li><a class="dropdown-item" href="#">我的最愛</a></li>
+                            <li><a class="dropdown-item" href="#">優惠券</a></li>
+                            <li><a class="dropdown-item" href="#">我的評論</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">聯繫我們</a></li>
+                            <li><a class="dropdown-item" href="#">Sign out</a></li>
+                                </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+    </header>
+<body>
+    <div class="container shadow-sm">
+        <div class="row big-title mb-3">
+            <h1 class="text-center fw-bold display-5 col align-self-center">訂單</h1>
+        </div>
+        
+        <!-- 成功提示 -->
+        <div id="successAlert" class="success-alert">
+            訂單已成功取消
+        </div>
+
+        <!-- 分頁按鈕 -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('future')">未來訂單</button>
+            <button class="tab" onclick="showTab('ongoing')">進行中</button>
+            <button class="tab" onclick="showTab('cancelled')">已取消</button>
+        </div>
+
+        <!-- 未來訂單 -->
+        <div id="future" class="tab-content active">
+            <div class="booking-card">
+                <div class="booking-info">
+                    <a href="#" class="booking-id" onclick="showDetails('F001')">訂單編號: F001</a>
+                    <div class="booking-date">飯店: 台中金典酒店</div>
+                    <div class="booking-date">入住日期: 2024-12-31</div>
+                </div>
+                <button class="cancel-btn" onclick="showCancelConfirm('F001')">取消訂單</button>
+            </div>
+            <div class="booking-card">
+                <div class="booking-info">
+                    <a href="#" class="booking-id" onclick="showDetails('F002')">訂單編號: F002</a>
+                    <div class="booking-date">預訂日期: 2024-12-25</div>
+                </div>
+                <button class="cancel-btn" onclick="showCancelConfirm('F002')">取消訂單</button>
+            </div>
+        </div>
+
+        <!-- 進行中訂單 -->
+        <div id="ongoing" class="tab-content">
+            <div class="booking-card">
+                <div class="booking-info">
+                    <a href="#" class="booking-id" onclick="showDetails('O001')">訂單編號: O001</a>
+                    <div class="booking-date">入住日期: 2024-12-20</div>
+                </div>
+                <button class="review-btn" onclick="showReviewForm('O001')">評論</button>
+            </div>
+            <div class="booking-card">
+                <div class="booking-info">
+                    <a href="#" class="booking-id" onclick="showDetails('O002')">訂單編號: O002</a>
+                    <div class="booking-date">預訂日期: 2024-12-18</div>
+                </div>
+                <button class="reviewed-btn" onclick="showReviewDetails('O002')">已評論</button>
+            </div>
+        </div>
+
+        <!-- 已取消訂單 -->
+        <div id="cancelled" class="tab-content">
+            <div class="booking-card">
+                <div class="booking-info">
+                    <a href="#" class="booking-id" onclick="showDetails('C001')">訂單編號: C001</a>
+                    <div class="booking-date">預訂日期: 2024-12-15</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 訂單詳情彈窗 -->
+        <div id="detailsModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('detailsModal')">&times;</span>
+                <h2>訂單詳情</h2>
+                <div class="booking-details">
+                    <p><strong>訂單編號:</strong> <span id="modalOrderId"></span></p>
+                    <p><strong>房型:</strong> <span id="modalRoom"></span></p>
+                    <p><strong>入住日期:</strong> <span id="modalDate"></span></p>
+                    <p><strong>價格:</strong> <span id="modalPrice"></span></p>
+                    <p><strong>客戶姓名:</strong> <span id="modalCustomer"></span></p>
+                    <p><strong>聯絡電話:</strong> <span id="modalPhone"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 取消確認彈窗 -->
+        <div id="cancelModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('cancelModal')">&times;</span>
+                <h2>確認取消訂單</h2>
+                <p style="margin: 20px 0;">您確定要取消此訂單嗎？此操作無法撤銷。</p>
+                <div style="text-align: right;">
+                    <button class="cancel-btn" onclick="confirmCancel()" style="margin-right: 10px;">確認取消</button>
+                    <button onclick="closeModal('cancelModal')" style="padding: 8px 16px;">返回</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 評論表單彈窗 -->
+        <div id="reviewModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('reviewModal')">&times;</span>
+                <h2>評價訂單</h2>
+                <form id="reviewForm" onsubmit="submitReview(event)">
+                    <div class="rating">
+                        <input type="radio" id="star5" name="rating" value="5">
+                        <label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1">★</label>
+                    </div>
+                    <textarea class="review-textarea" placeholder="請分享您的住宿體驗..." required></textarea>
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button type="submit" class="review-btn">提交評論</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 評論詳情彈窗 -->
+        <div id="reviewDetailsModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('reviewDetailsModal')">&times;</span>
+                <h2>評論詳情</h2>
+                <div class="rating-display">
+                    <span id="ratingDisplay"></span>
+                </div>
+                <p id="reviewComment" style="margin-top: 20px; line-height: 1.6;"></p>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+            <footer class="py-3 my-4">
+                <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">首頁</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">找房</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">常見問題</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+                </ul>
+                <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p>
+            </footer>
+        </div>
+    
+    </footer>
+
+    <script>
+        // 訂單數據
+        const bookingData = {
+            'F001': {
+                room: '豪華雙人房',
+                date: '2024-12-31',
+                price: 'NT$ 3,500',
+                customer: '王小明',
+                phone: '0912345678'
+            },
+            'F002': {
+                room: '海景套房',
+                date: '2024-12-25',
+                price: 'NT$ 5,000',
+                customer: '李小華',
+                phone: '0923456789'
+            },
+            'O001': {
+                room: '標準單人房',
+                date: '2024-12-20',
+                price: 'NT$ 2,000',
+                customer: '張大維',
+                phone: '0934567890'
+            },
+            'C001': {
+                room: '豪華單人房',
+                date: '2024-12-15',
+                price: 'NT$ 2,800',
+                customer: '陳小芳',
+                phone: '0945678901'
+            },
+            'O002': {
+                room: '豪華雙人房',
+                date: '2024-12-18',
+                price: 'NT$ 3,800',
+                customer: '林小美',
+                phone: '0956789012',
+                review: {
+                    rating: 5,
+                    comment: '房間非常乾淨舒適，服務人員態度很好，整體體驗非常滿意！'
+                }
+            }
+        };
+
+        let currentBookingId = '';
+
+        function showTab(tabId) {
+            // 隱藏所有分頁內容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 移除所有分頁按鈕的active狀態
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 顯示選中的分頁內容
+            document.getElementById(tabId).classList.add('active');
+            
+            // 設置選中分頁按鈕的active狀態
+            event.target.classList.add('active');
+        }
+
+        function showDetails(bookingId) {
+            const booking = bookingData[bookingId];
+            document.getElementById('modalOrderId').textContent = bookingId;
+            document.getElementById('modalRoom').textContent = booking.room;
+            document.getElementById('modalDate').textContent = booking.date;
+            document.getElementById('modalPrice').textContent = booking.price;
+            document.getElementById('modalCustomer').textContent = booking.customer;
+            document.getElementById('modalPhone').textContent = booking.phone;
+            
+            document.getElementById('detailsModal').style.display = 'block';
+        }
+
+        function showCancelConfirm(bookingId) {
+            currentBookingId = bookingId;
+            document.getElementById('cancelModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        let currentReviewId = '';
+
+        function showReviewForm(bookingId) {
+            currentReviewId = bookingId;
+            document.getElementById('reviewModal').style.display = 'block';
+            // 重置表單
+            document.getElementById('reviewForm').reset();
+        }
+
+        function showReviewDetails(bookingId) {
+            const booking = bookingData[bookingId];
+            if (booking.review) {
+                // 顯示星級
+                document.getElementById('ratingDisplay').innerHTML = '★'.repeat(booking.review.rating) + 
+                    '☆'.repeat(5 - booking.review.rating);
+                // 顯示評論內容
+                document.getElementById('reviewComment').textContent = booking.review.comment;
+                document.getElementById('reviewDetailsModal').style.display = 'block';
+            }
+        }
+
+        function submitReview(event) {
+            event.preventDefault();
+            const form = event.target;
+            const rating = form.rating.value;
+            const comment = form.querySelector('textarea').value;
+
+            // 保存評論數據
+            bookingData[currentReviewId].review = {
+                rating: parseInt(rating),
+                comment: comment
+            };
+
+            // 更新按鈕狀態
+            const reviewBtn = document.querySelector(`[onclick="showReviewForm('${currentReviewId}')"]`);
+            reviewBtn.className = 'reviewed-btn';
+            reviewBtn.textContent = '已評論';
+            reviewBtn.onclick = () => showReviewDetails(currentReviewId);
+
+            // 關閉彈窗並顯示成功提示
+            closeModal('reviewModal');
+            const successAlert = document.getElementById('successAlert');
+            successAlert.textContent = '評論提交成功';
+            successAlert.style.display = 'block';
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+            }, 3000);
+        }
+
+        function confirmCancel() {
+            // 關閉取消確認彈窗
+            closeModal('cancelModal');
+            
+            // 顯示取消成功提示
+            const successAlert = document.getElementById('successAlert');
+            successAlert.style.display = 'block';
+            
+            // 3秒後隱藏成功提示
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+            }, 3000);
+
+            // 從未來訂單中移除該訂單
+            const bookingCard = document.querySelector(`[onclick="showDetails('${currentBookingId}')"]`).closest('.booking-card');
+            if (bookingCard) {
+                bookingCard.remove();
+            }
+        }
+
+        // 點擊彈窗外部時關閉彈窗
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
