@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>申訴管理</title>
-    <link rel="stylesheet" href="./css/appeal-management.css">
-    <link rel="stylesheet" href="./css/headerfooter.css">
+    <link rel="stylesheet" th:href="@{/css/admin/appeal-management.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
 </head>
 <body>
-    <!-- 動態導入header -->
-    <div id="header"></div>
+    <!-- Header -->
+    <div th:replace="~{admin/backend-header :: header}"></div>
 
     <section class="admin-banner">
         <div class="container">
@@ -158,10 +158,10 @@
         </div>
     </div>
 
-    <!-- 動態導入footer -->
-    <div id="footer"></div>
+    <!-- Footer -->
+    <div th:replace="~{admin/backend-footer :: footer}"></div>
 
-    <script src="./js/header.js"></script>
-    <script src="./js/appeal-management.js"></script>
+    <script th:src="@{/js/admin/header.js}"></script>
+    <script th:src="@{/js/admin/appeal-management.js}"></script>
 </body>
 </html>

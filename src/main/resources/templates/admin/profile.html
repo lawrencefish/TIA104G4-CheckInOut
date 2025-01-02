@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理員個人資料</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="./css/profile.css">
+    <link rel="stylesheet" href="./css/headerfooter.css">
+</head>
+<body>
+    <!-- 動態導入header -->
+    <div id="header"></div>
+
+    <section class="admin-banner">
+        <div>
+            <h1>個人資料</h1>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- 頂部資訊卡片 -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <h1>系統管理員</h1>
+                    <p>最後登入時間: <span id="lastLoginTime">2024-12-27 14:30</span></p>
+                    <div class="profile-actions">
+                        <button class="btn btn-primary">更新資料</button>
+                        <button class="btn btn-outline">變更密碼</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分頁標籤 -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="profile">
+                <i class="fas fa-user"></i>基本資料
+            </button>
+            <button class="tab-btn" data-tab="security">
+                <i class="fas fa-shield-alt"></i>安全設定
+            </button>
+            <button class="tab-btn" data-tab="logs">
+                <i class="fas fa-history"></i>操作記錄
+            </button>
+            <button class="tab-btn" data-tab="notifications">
+                <i class="fas fa-bell"></i>通知中心
+            </button>
+        </div>
+
+        <!-- 分頁內容 -->
+        <div class="tab-content">
+            <!-- 基本資料 -->
+            <div class="tab-pane active" id="profile">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>姓名</label>
+                        <input type="text" value="王小明" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>職稱</label>
+                        <input type="text" value="系統管理員" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>電子郵件</label>
+                        <input type="email" value="admin@example.com" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>聯絡電話</label>
+                        <input type="tel" value="0912-345-678" class="form-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 安全設定 -->
+            <div class="tab-pane" id="security">
+                <div class="security-items">
+                    <div class="security-item">
+                        <div class="security-info">
+                            <h3>雙重認證</h3>
+                            <p>增加帳號安全性</p>
+                        </div>
+                        <button class="btn btn-outline">設定</button>
+                    </div>
+                    <div class="security-item">
+                        <div class="security-info">
+                            <h3>登入記錄</h3>
+                            <p>檢視最近的登入活動</p>
+                        </div>
+                        <button class="btn btn-outline">查看</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作記錄 -->
+            <div class="tab-pane" id="logs">
+                <div class="log-items">
+                    <div class="log-item">
+                        <div class="log-info">
+                            <h3>更新了系統設定</h3>
+                            <p>2024-12-27 12:30:00</p>
+                        </div>
+                        <button class="btn btn-text">詳情</button>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-info">
+                            <h3>修改了用戶權限</h3>
+                            <p>2024-12-27 11:15:00</p>
+                        </div>
+                        <button class="btn btn-text">詳情</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 通知中心 -->
+            <div class="tab-pane" id="notifications">
+                <div class="notification-items">
+                    <div class="notification-item">
+                        <i class="fas fa-bell"></i>
+                        <div class="notification-info">
+                            <h3>系統更新通知</h3>
+                            <p>有新的系統更新需要審核</p>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <i class="fas fa-bell"></i>
+                        <div class="notification-info">
+                            <h3>安全警告</h3>
+                            <p>檢測到異常登入活動</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 動態導入footer -->
+    <div id="footer"></div>
+
+    <script src="./js/header.js"></script>
+    <script src="./js/profile.js"></script>
+</body>
+</html>

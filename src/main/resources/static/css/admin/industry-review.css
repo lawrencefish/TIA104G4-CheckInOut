@@ -1,0 +1,439 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0 20px;
+  box-sizing: border-box;
+  max-width: auto;
+}
+  
+  /* 主要內容 */
+  .main {
+    padding: 20px;
+  }
+
+  
+  /* h1標籤框 */
+  .admin-banner {
+    background: #2196f3;
+    padding: 1.5rem 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(3, 150, 255, 0.2);
+    text-align: center;
+    margin: 20px 40px;
+    color: white;
+    letter-spacing: 1px;
+    transition: transform 0.3s ease;
+    
+  }
+
+  /* 新增 h1 樣式 */
+  .admin-banner h1 {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .pass {
+    background-color: #00ac6a;
+    font-size: 20px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .reject {
+    background-color: #D71103;
+    font-size: 20px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .pass:hover, .reject:hover {
+    box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.4); /* 陰影變大 */
+    transform: translateY(-2px); /* 按鈕上移一點點 */
+  }
+
+  .pass:active, .reject:active {
+    box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3); /* 陰影變小 */
+    transform: translateY(2px); /* 按鈕下壓 */
+  }
+
+  /* Google Map區塊 */
+  .container {
+    display: flex; /* 使用 Flexbox 排列 */
+    gap: 20px; /* 左右區塊之間的間距 */
+    align-items: stretch; /* 左右區塊高度一致 */
+    margin: 20px;
+  }
+  
+  .map-container {
+    flex: 1; /* 左側區塊占 2 份空間 */
+    height: 400px; /* 固定地圖高度 */
+    border: 1px solid #ccc; /* 添加邊框方便查看 */
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  /*公司資料內容*/
+  .info-grid {  
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-width: 600px;
+    /* margin: 0px auto; */
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+    line-height: 1.8;
+    flex: 2; /* 右側區塊占 1 份空間 */
+    background-color: #f9f9f9; /* 背景色 */
+    padding: 20px;
+    border: 1px solid #ccc; /* 添加邊框方便查看 */
+    border-radius: 5px;
+  }
+
+  /* 讓地址那列獨佔一行 */
+  .info-item[data-label="地址"] {
+    grid-column: 1 / -1; /* 從第一列跨到最後一列 */
+  }
+
+  .info-item {
+    margin-bottom: 20px;
+  }
+
+  .info-item::before {
+    content: attr(data-label) ": ";
+    font-weight: bold;
+    display: block; /* 確保標籤會在一行上 */
+    margin-bottom: 5px; /* 文字和框框之間的間距 */
+  }
+  
+  .info-item {
+    display: block; /* 讓文字和框框各自顯示在新的一行 */
+  }
+
+  .info-item .content {
+    content: attr(data-value); /* 使用屬性值作為框框內容 */
+    display: block; /* 框框獨占一行 */
+    margin-top: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+
+  
+  
+  /* 證明文件 */
+  .document-field {
+    height: 400px;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    background-color: #f4f4f4;
+}
+
+  .boss-id {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .text-section {
+      flex: 1;
+      padding: 30px;
+      background-color: #f9f9f9;
+  }
+
+  .image-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+  }
+
+  .image-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+  }
+
+  .image-box {
+      width: 48%;
+      height: 200px;
+      background-color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.3s;
+      overflow: hidden;
+  }
+
+  .image-box:hover {
+      transform: scale(1.05);
+  }
+
+  .image-box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+  }
+
+  .large-image-box {
+      width: 100%;
+      height: 300px;
+  }
+
+
+  /* 按鈕樣式 */
+.action-buttons {
+  text-align: center;
+  margin: 20px 0;
+  padding: 10px;
+}
+
+.pass, .reject {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  margin: 0 10px;
+  transition: all 0.3s ease;
+}
+
+.pass {
+  background-color: #00ac6a;
+  box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.reject {
+  background-color: #D71103;
+  box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.pass:hover, .reject:hover {
+  box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.pass:active, .reject:active {
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3);
+  transform: translateY(2px);
+}
+
+/* 自定義彈窗樣式 */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  position: relative;
+}
+
+.modal-header {
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.close-button {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-button:hover {
+  color: #000;
+}
+
+.modal-body {
+  margin-bottom: 20px;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-height: 100px;
+  font-size: 16px;
+  resize: vertical;
+}
+
+.modal-footer {
+  text-align: right;
+}
+
+.modal-footer button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.cancel-button {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.submit-button {
+  background-color: #D71103;
+  color: white;
+}
+
+/* 通知樣式 */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 4px;
+  color: white;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification.success {
+  background-color: #00ac6a;
+}
+
+.notification.error {
+  background-color: #D71103;
+}
+
+.notification-close {
+  margin-left: 15px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* 圖片預覽模態框 */
+#imageModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: none;
+}
+
+#imageModal.show {
+  display: flex !important; /* 顯示時使用 flex */
+  justify-content: center;
+  align-items: center;
+}
+
+#imageModal .modal-content {
+  background: none;
+    position: relative;
+    max-width: 90%;
+    max-height: 90vh;
+    margin: auto;
+}
+
+#imageModal img {
+  max-width: 100%;
+  max-height: 85vh;
+  display: block;
+  margin: auto;
+  object-fit: contain;
+}
+
+#modalImage {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+}
+ 
+/* 駁回模態框樣式 */
+#rejectModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#rejectModal.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#rejectModal .modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  position: relative;
+}
+
+#rejectModal textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-footer button {
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+.modal-footer .cancel-button {
+  background-color: #f1f1f1;
+}
+
+.modal-footer .submit-button {
+  background-color: #D71103;
+  color: white;
+}

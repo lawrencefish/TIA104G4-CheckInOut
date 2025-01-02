@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>審核管理</title>
+  <link rel="stylesheet" th:href="@{/css/admin/review-backend.css}">
+  <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
+
+</head>
+<body>
+  <!-- Header -->
+    <div th:replace="~{admin/backend-header :: header}"></div>
+
+  <section class="admin-banner">
+    <div>
+        <h1>審核</h1>
+    </div>
+</section>
+
+  <section class="tabs-container">
+    <div class="tab-buttons">
+        <button id="hotelsTab" class="tab-button active-tab">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21h18M5 21V7l8-4v18M13 7l6 3v11M9 9h1M9 13h1M9 17h1"/>
+            </svg>
+            業者審核
+        </button>
+        <button id="roomsTab" class="tab-button inactive-tab">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21h18M3 18h18M3 11h18M3 3h18"/>
+            </svg>
+            房型審核
+        </button>
+    </div>
+
+    <div class="filter-bar">
+      <span>狀態：</span>
+      <div class="status-filter">
+          <button class="filter-chip" data-status="all">全部 <span class="count-badge">0</span></button>
+          <button class="filter-chip" data-status="pending">待審核 <span class="count-badge pending-count">0</span></button>
+          <button class="filter-chip" data-status="approved">已通過 <span class="count-badge approved-count">0</span></button>
+          <button class="filter-chip" data-status="rejected">已拒絕 <span class="count-badge rejected-count">0</span></button>
+      </div>
+    </div>
+
+    <div id="hotelsList" class="cards-grid">
+        <!-- 業者卡片由 JS 動態生成 -->
+    </div>
+
+    <div id="roomsList" class="cards-grid" style="display:none;">
+        <!-- 房型卡片由 JS 動態生成 -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+    <div th:replace="~{admin/backend-footer :: footer}"></div>
+
+  <script th:src="@{/js/admin/header.js}"></script>
+  <script th:src="@{/js/admin/review-backend.js}"></script>
+</body>
+</html>

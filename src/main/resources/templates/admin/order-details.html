@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>會員資料</title>
+  <link rel="stylesheet" href="./css/order-details.css">
+  <link rel="stylesheet" href="./css/headerfooter.css">
+  
+ 
+</head>
+<body>
+  <!-- 動態導入header -->
+  <div id="header"></div>
+
+  <main>
+    <section class="company-info">
+      <div class="admin-banner">
+        <h1>訂單資訊</h1>
+      </div>
+      
+      <!-- 會員資料區塊 -->
+      <div class="member-container">
+        <div class="member-profile">
+          <img src="" alt="會員頭像" class="avatar">
+          <div class="info-grid">
+            <div class="info-item" data-label="帳號" id="account"><span class="content"></span></div>
+            <div class="info-item" data-label="性別" id="gender"><span class="content"></span></div>
+            <div class="info-item" data-label="姓" id="first-name"><span class="content"></span></div>
+            <div class="info-item" data-label="名" id="last-name"><span class="content"></span></div>
+            <div class="info-item" data-label="生日" id="birthday"><span class="content"></span></div>
+            <div class="info-item" data-label="連絡電話" id="phone"><span class="content"></span></div>
+            <div class="info-item" data-label="電子郵件" id="email"><span class="content"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <!-- 訂單詳細資訊區塊 -->
+      <div class="orders">
+        <h3>訂單資訊</h3>
+        
+        <div class="order-container">
+          <div class="order-header">
+            <span class="order-number"></span>
+            <span class="order-status"></span>
+          </div>
+          
+          <div class="order-content">
+            <img src="" alt="飯店照片" class="order-image">
+            <div class="order-details">
+              <div class="hotel-info">
+                <h4 class="hotel-name"></h4>
+                <h5 class="room-type"></h5>
+              </div>
+
+              <!-- 房型資訊 -->
+              <div class="room-summary">
+                <h5>房型資訊</h5>
+                <div class="order-info-grid">
+                  <div class="order-info-item">
+                    <span class="order-info-label">房型摘要</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                  <div class="order-info-item">
+                    <span class="order-info-label">房間數量</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                  <div class="order-info-item">
+                    <span class="order-info-label">主要設施</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 住宿資訊 -->
+              <div class="stay-info">
+                <h5>住宿資訊</h5>
+                <div class="order-info-grid">
+                  <div class="order-info-item">
+                    <span class="order-info-label">入住日期</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                  <div class="order-info-item">
+                    <span class="order-info-label">退房日期</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                  <div class="order-info-item">
+                    <span class="order-info-label">入住人數</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 住客資料 -->
+              <div class="guest-info">
+                <h5>住客資料</h5>
+                <div class="order-info-grid">
+                  <div class="order-info-item">
+                    <span class="order-info-label">住客姓名</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                  <div class="order-info-item">
+                    <span class="order-info-label">連絡電話</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                  <div class="order-info-item">
+                    <span class="order-info-label">電子信箱</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 付款資訊 -->
+              <div class="payment-info">
+                <h5>付款資訊</h5>
+                <div class="order-info-grid">
+                  <div class="order-info-item">
+                    <span class="order-info-label">付款方式</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                  <div class="order-info-item">
+                    <span class="order-info-label">優惠券</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                  <div class="order-info-item">
+                    <span class="order-info-label">總金額</span>
+                    <span class="order-info-value"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 評論區塊 -->
+              <div class="review-section">
+                <h5>住客評價</h5>
+                <div class="review-content">
+                  <div class="review-header">
+                    <div class="stars"></div>
+                    <span class="review-date"></span>
+                  </div>
+                  <div class="review-text"></div>
+                  <div class="hotel-response">
+                    <h6>飯店回覆</h6>
+                    <div class="response-content"></div>
+                    <span class="response-date"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 返回按鈕 -->
+    <div class="back-button-container">
+      <button id="backButton" class="back-button">
+        <i class="fas fa-arrow-left"></i> 回上一頁
+      </button>
+    </div>
+  </main>
+
+  <!-- 動態導入footer -->
+  <div id="footer"></div>
+  <script src="./js/order-details.js"></script>
+</body>
+</html>

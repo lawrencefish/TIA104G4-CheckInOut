@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>業者後台管理</title>
+  <link rel="stylesheet" href="./css/industry-backend.css">
+  <link rel="stylesheet" href="./css/headerfooter.css">
+</head>
+<body>
+  <!-- 動態導入header -->
+  <div id="header"></div>
+
+  <main>
+    <!-- 公司資訊區塊 -->
+    <section class="company-info">
+      <div class="admin-banner">
+        <h1>公司資料</h1>
+      </div>
+      <div class="container">
+        <!-- Google 地圖 -->
+        <div class="map-container">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8354345093747!2d144.9537353153156!3d-37.81627977975148!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f11fd81%3A0xf57760d0f09d06d0!2z5p2x5ZC05Lit5q2j5LqM5bel5aSn5aSn!5e0!3m2!1szh-TW!2stw!4v1613541200714!5m2!1szh-TW!2stw"
+            allowfullscreen=""
+            loading="lazy">
+          </iframe>
+        </div>
+        <!-- 公司資料內容 -->
+        <div class="info-grid">
+          <div class="info-item" data-label="公司名稱" id="company-name">
+            <span class="content"></span>
+          </div>
+          <div class="info-item" data-label="統一編號" id="company-id">
+            <span class="content"></span>
+          </div>
+          <div class="info-item" data-label="縣市" id="company-city">
+            <span class="content"></span>
+          </div>
+          <div class="info-item" data-label="地區" id="company-area">
+            <span class="content"></span>
+          </div>
+          <div class="info-item" data-label="地址" id="company-address">
+            <span class="content"></span>
+          </div>
+          <div class="info-item" data-label="連絡電話" id="company-phone">
+            <span class="content"></span>
+          </div>
+          <div class="info-item" data-label="電子郵件" id="company-email">
+            <span class="content"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 證明文件區塊 -->
+    <section class="document-field">
+      <div class="admin-banner">
+        <h1>證明文件</h1>
+      </div>
+      <div class="document-container">
+        <!-- 身分證明文件 -->
+        <div>
+          <h3>負責人身分證明文件</h3>
+          <div class="image-box" onclick="openModal(this.querySelector('img'))">
+            <img id="image1" src="" alt="身分證正面">
+          </div>
+          <div class="image-box" onclick="openModal(this.querySelector('img'))">
+            <img id="image2" src="" alt="身分證背面">
+          </div>
+        </div>
+        <!-- 營業登記證 -->
+        <div>
+          <h3>旅館業登記證/民宿登記證</h3>
+          <div class="image-box" onclick="openModal(this.querySelector('img'))">
+            <img id="image3" src="" alt="營業登記證">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 環境照片區塊 -->
+    <section class="environment-section">
+      <div class="admin-banner">
+        <h1>環境照片</h1>
+      </div>
+      <div class="carousel">
+        <div class="carousel-container">
+          <div class="carousel-arrow carousel-arrow-left" onclick="changeSlide(-1)">&#10094;</div>
+          <div class="carousel-content"></div>
+          <div class="carousel-arrow carousel-arrow-right" onclick="changeSlide(1)">&#10095;</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 評論區塊 -->
+    <section class="reviews">
+      <div class="admin-banner">
+        <h1>用戶評論</h1>
+      </div>
+      <div class="review-tabs">
+        <button class="reviewBtn" data-review-type="member">給予會員的評論</button>
+        <button class="reviewBtn" data-review-type="user">來自會員的評論</button>
+      </div>
+      <div class="review-list"></div>
+      <div class="pagination-buttons">
+        <button id="backBtn" onclick="goBack()">回到上一頁</button>
+        <button id="loadMoreBtn" onclick="loadMoreReviews()">載入更多</button>
+      </div>
+    </section>
+
+    <!-- 圖片放大模態框 -->
+    <div id="imageModal" class="modal">
+      <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <img id="modalImage">
+      </div>
+    </div>
+
+    <!-- 錯誤提示 -->
+    <div id="errorMessage" class="error-message" style="display: none;"></div>
+  </main>
+
+  <!-- 動態導入footer -->
+  <div id="footer"></div>
+
+  <script src="./js/header.js"></script>
+  <script src="./js/industry-backend.js"></script>
+</body>
+</html>

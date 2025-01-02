@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>業者管理</title>
+  <link rel="stylesheet" href="./css/industry-review.css">
+  <link rel="stylesheet" href="./css/headerfooter.css">
+</head>
+<body>
+  <!-- 動態導入header -->
+  <div id="header"></div>
+
+  <main>
+    <section class="company-info">
+    <div class="admin-banner">
+      <h1>業者審核</h1>
+    </div>
+
+    <div class="container">
+        <!-- Google Map -->
+        <div class="map-container">
+          <!-- 嵌入 Google 地圖 -->
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8354345093747!2d144.9537353153156!3d-37.81627977975148!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f11fd81%3A0xf57760d0f09d06d0!2z5p2x5ZC05Lit5q2j5LqM5bel5aSn5aSn!5e0!3m2!1szh-TW!2stw!4v1613541200714!5m2!1szh-TW!2stw" 
+            width="100%" 
+            height="100%" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy">
+          </iframe>
+        </div>
+        <!-- 公司資料內容 -->
+        <div class="info-grid">
+          <div class="info-item" data-label="公司名稱" id="company-name"><span class="content">好吃好睡飯店</span></div>
+          <div class="info-item" data-label="統一編號" id="company-id"><span class="content">12345678</span></div>
+          <div class="info-item" data-label="縣市" id="city"><span class="content">台北市</span></div>
+          <div class="info-item" data-label="地區" id="area"><span class="content">大安區</span></div>
+          <div class="info-item" data-label="地址" id="address"><span class="content">台北市大安區光復南路123號</span></div>
+          <div class="info-item" data-label="連絡電話" id="phone"><span class="content">1234-5678</span></div>
+          <div class="info-item" data-label="電子郵件" id="email"><span class="content">example@example.com</span></div>
+        </div>
+    </section>
+
+    <section class="document-field">
+      <div class="boss-id">
+        <div class="text-section">
+            <h4 style="margin-top: 0; font-size: 24px; font-weight: bold;">公司負責人身分證明文件</h4>
+            <h4 style="margin-top: 150px; font-size: 24px; font-weight: bold;">旅館業登記證/民宿登記證</h4>
+          </div>
+        <div class="image-section">
+            <div class="image-row">
+                <div class="image-box">
+                    <img id="image1" src="./img/假身分證正面.png" alt="身分證正面">
+                </div>
+                <div class="image-box">
+                    <img id="image2" src="./img/假身分證正面.png" alt="身分證背面">
+                </div>
+            </div>
+            <div class="image-box large-image-box">
+                <img id="image3" src="./img/營業證樣本.png" alt="營業證">
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- 審核按鈕區域 -->
+    <div class="action-buttons">
+      <button class="pass">通過</button>
+      <button class="reject">駁回</button>
+    </div>
+
+    <!-- 放大圖片模態框 -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <img id="modalImage" style="width: 100%; height: auto;">
+        </div>
+    </div>
+
+    <!-- 駁回原因模態框 -->
+<div id="rejectModal" class="modal">
+  <div class="modal-content">
+      <div class="modal-header">
+          <h3>請輸入駁回原因</h3>
+          <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+          <textarea id="rejectReason" placeholder="請輸入駁回原因..."></textarea>
+      </div>
+      <div class="modal-footer">
+          <button class="cancel-button">取消</button>
+          <button class="submit-button">確認駁回</button>
+      </div>
+  </div>
+</div>
+
+  
+  
+
+  <!-- 動態導入footer -->
+  <div id="footer"></div>
+
+  <script src="./js/header.js"></script>
+  <script src="./js/industry-review.js"></script>
+</body>
+</html>

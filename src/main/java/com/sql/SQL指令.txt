@@ -543,7 +543,6 @@ CREATE TABLE contact_us (
     email VARCHAR(100) NOT NULL,
     review_status TINYINT NOT NULL COMMENT '0=未審核, 1=已處理, 2=不處理',
     review_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
-    method VARCHAR(10) NOT NULL COMMENT '如: 電話, Email',
     reply_content TEXT DEFAULT NULL,
     admin_id INT NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
@@ -553,14 +552,13 @@ CREATE TABLE contact_us (
 );
 
 INSERT INTO contact_us (
-    order_id, hotel_id, member_id, contact_us_text, email, review_status,
-    method, reply_content, admin_id
+    order_id, hotel_id, member_id, contact_us_text, email, review_status, reply_content, admin_id
 ) VALUES
-(1, 1, 1, '房間內空調不冷，請協助處理。', 'xiao.ming@example.com', 1, '電話', '已派遣技術人員檢查。', 1),
-(2, 2, 2, '預訂時使用的優惠券未正確折抵金額。', 'mei.li@example.com', 0, 'Email', NULL, 2),
-(3, 3, 3, '入住後發現廁所內有清潔問題。', 'da.hua@example.com', 2, '電話', '我們會改進清潔標準，感謝您的反饋。', 3),
-(NULL, 1, 1, '想了解房型相關優惠，請提供詳細資訊。', 'xiao.ming@example.com', 1, 'Email', '優惠詳情已通過Email發送。', 1),
-(NULL, NULL, 3, '對於上次的旅館服務有些意見，想直接聯繫管理員。', 'da.hua@example.com', 1, '電話', '已將您的意見轉達給相關人員。', 2);
+(1, 1, 1, '房間內空調不冷，請協助處理。', 'xiao.ming@example.com', 1, '已派遣技術人員檢查。', 1),
+(2, 2, 2, '預訂時使用的優惠券未正確折抵金額。', 'mei.li@example.com', 0, NULL, 2),
+(3, 3, 3, '入住後發現廁所內有清潔問題。', 'da.hua@example.com', 2, '我們會改進清潔標準，感謝您的反饋。', 3),
+(NULL, 1, 1, '想了解房型相關優惠，請提供詳細資訊。', 'xiao.ming@example.com', 1, '優惠詳情已通過Email發送。', 1),
+(NULL, NULL, 3, '對於上次的旅館服務有些意見，想直接聯繫管理員。', 'da.hua@example.com', 1, '已將您的意見轉達給相關人員。', 2);
 
 CREATE TABLE room (
     room_id INT AUTO_INCREMENT PRIMARY KEY,
