@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
+//一個註解
 @Entity
 @Table(name = "news")
 public class NewsVO {
@@ -16,16 +16,16 @@ public class NewsVO {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "news_id", updatable = false)
 	private Integer newsId;
-	
+
 	@Column(name = "news_title")
 	private String newsTitle;
-	
+
 	@Column(name = "description", columnDefinition = "TEXT")
 	private String description;
-	
+
 	@Column(name = "post_time")
 	private Timestamp postTime;
-	
+
 	@Column(name = "create_time")
 	private Timestamp createTime;
 
@@ -94,6 +94,6 @@ public class NewsVO {
 				+ "description=" + description + ", post_time=" + postTime + ", create_time=" + createTime
 				;
 	}
-	
-	
+
+
 }
