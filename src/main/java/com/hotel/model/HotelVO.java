@@ -151,6 +151,11 @@ public class HotelVO {
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RoomTypeVO> roomTypes;
 
+//    //Order (多） -> Hotel （一）
+//    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<OrderVO> order;
+    
+    
     // (其他表格 like Orders, Favorite, 也可能參考 hotel_id ，可同樣使用一對多)
 
     // ----------------------------------

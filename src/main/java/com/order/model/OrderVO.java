@@ -11,14 +11,20 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Range;
 
+import com.creditcard.model.CreditcardVO;
+import com.member.model.MemberVO;
 import com.orderDetail.model.OrderDetailVO;
 
 @Entity
@@ -41,16 +47,29 @@ public class OrderVO implements java.io.Serializable {
 	@Future
 	@NotBlank(message = "退房日期不可為空")
 	private Date checkOutDate;
-	@Column(name = "hotel_id", nullable = false)
-	@NotBlank(message = "飯店不可為空")
-	private Integer hotelId;
-	@Column(name = "member_id", nullable = false)
+	
+	// 連接到飯店，多對一
+//	@NotBlank(message = "旅館不可為空")
+//  @ManyToOne
+//  @JoinColumn(name = "hotel_id", nullable = false)
+//	private HotelVO hotel;
+	
+	// 連接到會員，多對一
 	@NotBlank(message = "會員不可為空")
-	private Integer memberId;
-	@Column(name = "creditcard_id")
-	private Integer creditcardId;
-	@Column(name = "member_coupon_id")
-	private Integer memberCouponId;
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+	private MemberVO member;
+	
+	// 連接到creditcard，多對一
+    @NotNull(message ="必須配對一張信用卡")
+    @ManyToOne
+    @JoinColumn(name = "creditcard_id", nullable = false)
+	private CreditcardVO creditcard;
+	
+    //連接到會員優惠券，ㄧ對一
+//  @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+//	private MemberCouponVO MemberCoupon;
+	
 	@Column(name = "total_amount", nullable = false)
 	@NotBlank(message = "價格不得為空")
 	private Integer totalAmount;
@@ -74,9 +93,13 @@ public class OrderVO implements java.io.Serializable {
 	private String commentReply;
 	@Column(name = "comment_create_time")
 	private String commentCreateTime;
+	
 	// 連接到orderDetail
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<OrderDetailVO> orderDetail;
+     
+	public OrderVO() {
+	}
 
 	public Integer getOrderId() {
 		return orderId;
@@ -118,36 +141,20 @@ public class OrderVO implements java.io.Serializable {
 		this.checkOutDate = checkOutDate;
 	}
 
-	public Integer getHotelId() {
-		return hotelId;
+	public MemberVO getMember() {
+		return member;
 	}
 
-	public void setHotelId(Integer hotelId) {
-		this.hotelId = hotelId;
+	public void setMember(MemberVO member) {
+		this.member = member;
 	}
 
-	public Integer getMemberId() {
-		return memberId;
+	public CreditcardVO getCreditcard() {
+		return creditcard;
 	}
 
-	public void setMemberId(Integer memberId) {
-		this.memberId = memberId;
-	}
-
-	public Integer getCreditcardId() {
-		return creditcardId;
-	}
-
-	public void setCreditcardId(Integer creditcardId) {
-		this.creditcardId = creditcardId;
-	}
-
-	public Integer getMemberCouponId() {
-		return memberCouponId;
-	}
-
-	public void setMemberCouponId(Integer memberCouponId) {
-		this.memberCouponId = memberCouponId;
+	public void setCreditcard(CreditcardVO creditcard) {
+		this.creditcard = creditcard;
 	}
 
 	public Integer getTotalAmount() {
@@ -225,11 +232,10 @@ public class OrderVO implements java.io.Serializable {
 	@Override
 	public String toString() {
 		return "OrderVO [orderId=" + orderId + ", createTime=" + createTime + ", status=" + status + ", checkInDate="
-				+ checkInDate + ", checkOutDate=" + checkOutDate + ", hotelId=" + hotelId + ", memberId=" + memberId
-				+ ", creditcardId=" + creditcardId + ", memberCouponId=" + memberCouponId + ", totalAmount="
-				+ totalAmount + ", guestLastName=" + guestLastName + ", guestFirstName=" + guestFirstName + ", memo="
-				+ memo + ", rating=" + rating + ", commentContent=" + commentContent + ", commentReply=" + commentReply
-				+ ", commentCreateTime=" + commentCreateTime + ", orderDetailID="
-				+ orderDetail+ "]";
+				+ checkInDate + ", checkOutDate=" + checkOutDate + ", member=" + member + ", creditcard=" + creditcard
+				+ ", totalAmount=" + totalAmount + ", guestLastName=" + guestLastName + ", guestFirstName="
+				+ guestFirstName + ", memo=" + memo + ", rating=" + rating + ", commentContent=" + commentContent
+				+ ", commentReply=" + commentReply + ", commentCreateTime=" + commentCreateTime + ", orderDetail="
+				+ orderDetail + "]";
 	}
 }
