@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>業者後台管理</title>
-  <link rel="stylesheet" href="./css/industry-backend.css">
-  <link rel="stylesheet" href="./css/headerfooter.css">
+  <link rel="stylesheet" th:href="@{/css/admin/industry-backend.css}">
+  <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
 </head>
 <body>
-  <!-- 動態導入header -->
-  <div id="header"></div>
+  <!-- Header -->
+  <div th:replace="~{admin/backend-header :: header}"></div>
 
   <main>
     <!-- 公司資訊區塊 -->
@@ -21,7 +21,7 @@
         <!-- Google 地圖 -->
         <div class="map-container">
           <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8354345093747!2d144.9537353153156!3d-37.81627977975148!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f11fd81%3A0xf57760d0f09d06d0!2z5p2x5ZC05Lit5q2j5LqM5bel5aSn5aSn!5e0!3m2!1szh-TW!2stw!4v1613541200714!5m2!1szh-TW!2stw"
+            th:src="'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8354345093747!2d144.9537353153156!3d-37.81627977975148!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f11fd81%3A0xf57760d0f09d06d0!2z5p2x5ZC05Lit5q2j5LqM5bel5aSn5aSn!5e0!3m2!1szh-TW!2stw!4v1613541200714!5m2!1szh-TW!2stw'"
             allowfullscreen=""
             loading="lazy">
           </iframe>
@@ -29,7 +29,7 @@
         <!-- 公司資料內容 -->
         <div class="info-grid">
           <div class="info-item" data-label="公司名稱" id="company-name">
-            <span class="content"></span>
+            <span class="content" th:text="${bussinessName}"></span>
           </div>
           <div class="info-item" data-label="統一編號" id="company-id">
             <span class="content"></span>
@@ -44,10 +44,10 @@
             <span class="content"></span>
           </div>
           <div class="info-item" data-label="連絡電話" id="company-phone">
-            <span class="content"></span>
+            <span class="content" th:text="${businessPhone}"></span>
           </div>
           <div class="info-item" data-label="電子郵件" id="company-email">
-            <span class="content"></span>
+            <span class="content" th:text="${businessEmail}"></span>
           </div>
         </div>
       </div>
@@ -121,10 +121,10 @@
     <div id="errorMessage" class="error-message" style="display: none;"></div>
   </main>
 
-  <!-- 動態導入footer -->
-  <div id="footer"></div>
+  <!-- Footer -->
+  <div th:replace="~{admin/backend-footer :: footer}"></div>
 
-  <script src="./js/header.js"></script>
-  <script src="./js/industry-backend.js"></script>
+  <script th:src="@{/js/admin/header.js}"></script>
+  <script th:src="@{/js/admin/industry-backend.js}"></script>
 </body>
 </html>

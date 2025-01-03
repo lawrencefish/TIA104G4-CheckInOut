@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.admin.model.Admin;
+import com.hotel.model.HotelService;
+import com.hotel.model.HotelVO;
 import com.mysql.cj.protocol.x.Ok;
 import com.admin.model.*;
 
@@ -22,6 +24,8 @@ public class AdminController {
     @Autowired
     private AdminService adminService; // 注入Service層
     
+    @Autowired
+    private HotelService hotelService;
     
     // 列出所有管理員
     @GetMapping("/list")  // 處理GET /admin/list 請求
@@ -104,7 +108,19 @@ public class AdminController {
     }
     
     @GetMapping("/userBackend")
-    public String showUserBackend() {
+    public String showUserBackend(Model model) {
+    	// 獲取所有飯店資料
+        List<HotelVO> hotels = hotelService.findAll();
+        
+     // 添加到 model
+        model.addAttribute("hotels", hotels);
+        model.addAttribute("activeTab", "business");  // 預設顯示業者頁籤
+        
+        // 添加統計資料
+//        model.addAttribute("totalCount", hotelService.getTotalCount());
+//        model.addAttribute("businessCount", hotelService.getBusinessCount());
+//        model.addAttribute("memberCount", memberService.getMemberCount());
+        
     	return "admin/user-backend";
     }
     
@@ -137,10 +153,15 @@ public class AdminController {
     	}
     }
     
-//    @GetMapping("/test")
-//    public String test(Model model) {
-//        List<Admin> admins = adminService.getAll(1);
-//        model.addAttribute("admins", admins);
-//        return "admin/test";
-//    }
+    @GetMapping("/industryBackend")
+    public String showIndustryBackend(@RequestParam(required = false) String name,
+    								@RequestParam(required = false) String email,
+    								@RequestParam(required = false) String phone,
+    								Model model) {
+    	// 將參數添加到model中
+        model.addAttribute("businessName", name);
+        model.addAttribute("businessEmail", email);
+        model.addAttribute("businessPhone", phone);
+        return "admin/industry-backend";  // 對應到templates/admin/industry-backend.html
+    }
 }

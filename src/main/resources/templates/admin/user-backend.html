@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
   <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
   
   <!-- DataTables CSS -->
-  <link th:href="'https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css'" rel="stylesheet">
+  <link th:href="@{https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css}" rel="stylesheet">
 
 </head>
 <body>
@@ -26,8 +26,8 @@
 <div class="control-panel">
     <!-- 左側按鈕組 -->
     <div class="button-group">
-        <button id="businessNameBtn">業者名稱</button>
-        <button id="memberNameBtn">會員名稱</button>
+        <button id="businessNameBtn" th:class="@{activeTab == 'business'} ? 'active' : ''">業者名稱</button>
+        <button id="memberNameBtn" th:class="${activeTab == 'member'} ? 'active' : ''">會員名稱</button>
     </div>
     
     <!-- 右側搜尋區域 -->
@@ -48,23 +48,35 @@
 <!-- 表格區域 -->
 <div class="table-wrapper">
     <!-- 業者表格 -->
-    <table id="businessTable" class="display">
+    <table id="businessTable" class="display" th:style="${activeTab == 'business'} ? 'display: table;' : 'display: none;'">
         <thead>
             <tr>
                 <th>業者名稱</th>
                 <th>狀態</th>
-                <th>待審核</th>
+                <th>待審核房型數量</th>               
                 <th>電話</th>
                 <th>Email</th>
                 <th>最後登入時間</th>
                 <th>操作</th>
             </tr>
         </thead>
-        <tbody id="userTableBody"></tbody>
+        <tbody>
+        	<tr th:each="hotel : ${hotels}">
+        		<td th:text="${hotel.name}"></td>
+      		  	<td th:text="${hotel.status == 0} ? '待審核' : '無'"></td>
+				<td>房型數量</td>        		
+                <td th:text="${hotel.phoneNumber}"></td>
+                <td th:text="${hotel.email}"></td>
+                <td th:text="${#dates.format(hotel.updateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td>
+                    <a th:href="@{/admin/industryBackend(id=${hotel.hotelId})}" class="btn btn-info">詳細資料</a>
+                </td>
+        	</tr>
+        </tbody>
     </table>
 
     <!-- 會員表格 -->
-    <table id="memberTable" class="display">
+    <table id="memberTable" class="display" th:style="${activeTab == 'member'} ? 'display: table;' : 'display: none;'">
         <thead>
             <tr>
                 <th>會員姓名</th>
@@ -76,7 +88,23 @@
                 <th>操作</th>
             </tr>
         </thead>
-        <tbody id="userTableBodyMember"></tbody>
+        <tbody>
+<!--         	<tr th:each="member : ${members}"> -->
+<!-- 	            <td th:text="${member.last_name + member.first_name}"></td> -->
+<!-- 	            <td th:text="${'M' + #numbers.formatInteger(member.member_id, 3)}"></td> -->
+<!-- 	            <td> -->
+<!-- 	                <span th:class="'status-badge ' + ${T(com.yourpackage.util.StatusUtil).getStatusClass(member.status)}"  -->
+<!-- 	                      th:text="${member.status == 1 ? '啟用中' : '停權'}"> -->
+<!-- 	                </span> -->
+<!-- 	            </td> -->
+<!-- 	            <td th:text="${member.phone_number}"></td> -->
+<!-- 	            <td th:text="${#temporals.format(member.create_time, 'yyyy-MM-dd')}"></td> -->
+<!-- 	            <td th:text="${member.account}"></td> -->
+<!-- 	            <td> -->
+<!-- 	                <a th:href="@{/admin/member-backend(id=${member.member_id})}" class="btn btn-info">詳細資料</a> -->
+<!-- 	            </td> -->
+<!-- 	        </tr> -->
+        </tbody>
     </table>
 </div>
 
@@ -89,15 +117,15 @@
       <div class="stats-container">
         <div class="stat-box" id="totalStats">
             <h3>總人數</h3>
-            <p id="totalCount">--</p>
+            <p id="totalCount" th:text="${totalCount}">--</p>
         </div>
         <div class="stat-box" id="memberStats">
             <h3>會員人數</h3>
-            <p id="memberCount">--</p>
+            <p id="memberCount" th:text="${memberCount}">--</p>
         </div>
         <div class="stat-box" id="businessStats">
             <h3>業者人數</h3>
-            <p id="businessCount">--</p>
+            <p id="businessCount" th:text="${businessCount}">--</p>
         </div>
     </div>
     <div class="chart-container">
@@ -108,15 +136,32 @@
 <!-- Footer -->
     <div th:replace="~{admin/backend-footer :: footer}"></div>
     
-<script th:src="'https://cdn.jsdelivr.net/npm/chart.js'"></script>
+<script th:src="@{https://cdn.jsdelivr.net/npm/chart.js}"></script>
   
   <!-- jQuery (required for DataTables) -->
-<script th:src="'https://code.jquery.com/jquery-3.7.1.min.js'"></script>
+<script th:src="@{https://code.jquery.com/jquery-3.7.1.min.js}"></script>
 
 <!-- DataTables JS -->
-<script th:src="'https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js'"></script>
+<script th:src="@{https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js}"></script>
 
 <script th:src="@{/js/admin/header.js}"></script>
+
+<!-- 將資料傳遞給JavaScript -->
+    <script th:inline="javascript">
+         //從Thymeleaf獲取統計數據 
+          const statisticsData = { 
+//             totalCount: [[${totalCount}]], 
+//             memberCount: [[${memberCount}]], 
+//             businessCount: [[${businessCount}]] 
+         }; 
+        
+         // 從Thymeleaf獲取圖表數據 
+         const chartData = { 
+//              months: [[${months}]], 
+//              newMembers: [[${newMembers}]], 
+//              totalMembers: [[${totalMembers}]] 
+         }; 
+    </script>
 <script th:src="@{/js/admin/user-backend.js}"></script>
 </body>
 </html>
