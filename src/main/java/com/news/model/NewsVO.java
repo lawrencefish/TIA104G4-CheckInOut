@@ -7,7 +7,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "news")
@@ -17,24 +19,29 @@ public class NewsVO {
 	@Column(name = "news_id", updatable = false)
 	private Integer newsId;
 	
-	@Column(name = "news_title")
+	@NotBlank(message = "標題不可為空")    
+	@Column(name = "news_title", length = 50, nullable = false, unique = true)
 	private String newsTitle;
 	
-	@Column(name = "description", columnDefinition = "TEXT")
+	@NotBlank(message = "內容不可為空")    
+	@Column(name = "description", nullable = false, columnDefinition = "TEXT")
 	private String description;
 	
 	@Column(name = "post_time")
 	private Timestamp postTime;
 	
-	@Column(name = "create_time")
+	@Column(name = "create_time", nullable = false, insertable = false, updatable = false)
 	private Timestamp createTime;
+	
+	@Lob
+    @Column(name = "news_pic")
+    private byte[] newsPic;
 
 	public Integer getNewsId() {
 		return newsId;
 	}
 
-
-
+	
 	public void setNewsId(Integer newsId) {
 		this.newsId = newsId;
 	}
@@ -86,14 +93,76 @@ public class NewsVO {
 	public void setCreateTime(Timestamp createTime) {
 		this.createTime = createTime;
 	}
+	
+	
+	public byte[] getNewsPic() {
+        return newsPic;
+    }
 
-
-	@Override
-	public String toString() {
-		return "News [news_id=" + newsId + ", news_title=" + newsTitle + ", "
-				+ "description=" + description + ", post_time=" + postTime + ", create_time=" + createTime
-				;
-	}
+    public void setNewsPic(byte[] idFront) {
+        this.newsPic = idFront;
+    }
 	
 	
 }
+
+
+
+//@Id
+//@GeneratedValue(strategy = GenerationType.IDENTITY)
+//@Column(name = "news_id")
+//private Integer newsId;
+//
+//@Column(name = "news_title", nullable = false, length = 200)
+//private String newsTitle;
+//
+//@Column(name = "description", nullable = false, columnDefinition = "TEXT")
+//private String description;
+//
+//@Column(name = "post_time", nullable = false)
+//private LocalDateTime postTime;
+//
+//@Column(name = "create_time", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+//private LocalDateTime createTime;
+//
+//// Getters and Setters
+//public Integer getNewsId() {
+//    return newsId;
+//}
+//
+//public void setNewsId(Integer newsId) {
+//    this.newsId = newsId;
+//}
+//
+//public String getNewsTitle() {
+//    return newsTitle;
+//}
+//
+//public void setNewsTitle(String newsTitle) {
+//    this.newsTitle = newsTitle;
+//}
+//
+//public String getDescription() {
+//    return description;
+//}
+//
+//public void setDescription(String description) {
+//    this.description = description;
+//}
+//
+//public LocalDateTime getPostTime() {
+//    return postTime;
+//}
+//
+//public void setPostTime(LocalDateTime postTime) {
+//    this.postTime = postTime;
+//}
+//
+//public LocalDateTime getCreateTime() {
+//    return createTime;
+//}
+//
+//public void setCreateTime(LocalDateTime createTime) {
+//    this.createTime = createTime;
+//}
+//}
