@@ -54,4 +54,15 @@ public class RoomTypeImgService {
     public void deleteImage(Integer imageId) {
         roomTypeImgRepository.deleteById(imageId);
     }
+
+    // 批量刪除圖片
+    public void deleteImages(List<Integer> imageIds) {
+        for (Integer imageId : imageIds) {
+            if (!roomTypeImgRepository.existsById(imageId)) {
+                System.out.println("圖片 ID 不存在，跳過: " + imageId);
+                continue; // 如果圖片不存在，跳過這個 ID
+            }
+            roomTypeImgRepository.deleteById(imageId); // 刪除圖片
+        }
+    }
 }

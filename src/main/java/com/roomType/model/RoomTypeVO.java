@@ -1,5 +1,6 @@
 package com.roomType.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hotel.model.HotelVO;
 import com.roomTypeImg.model.RoomTypeImgVO;
 import com.price.model.PriceVO;
@@ -75,18 +76,21 @@ public class RoomTypeVO {
      * room 資料表 (room_type_id 外鍵)
      * 如果在 room 裏的屬性命名為 "roomType"，則此處 mappedBy="roomType"。
      */
-    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<RoomVO> rooms;
 
     /**
      * price 資料表 (room_type_id 外鍵)
      */
-    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PriceVO> prices;
 
     /**
      * room_inventory 資料表 (room_type_id 外鍵)
      */
+    @JsonIgnore
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RoomInventoryVO> roomInventories;
 
@@ -94,12 +98,14 @@ public class RoomTypeVO {
      * room_type_facility (中繼表, room_type_id 外鍵)
      * 若你有對應的實體叫 RoomTypeFacilityVO，則可在這裡做一對多
      */
+    @JsonIgnore
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RoomTypeFacilityVO> roomTypeFacilities;
 
     /**
      * room_type_img (room_type_id 外鍵)
      */
+    @JsonIgnore
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RoomTypeImgVO> roomTypeImgs;
 

@@ -64,4 +64,16 @@ public class RoomTypeImgController {
                     .body(Map.of("error", "刪除失敗：" + e.getMessage()));
         }
     }
+
+    // 批量刪除圖片
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteImages(@RequestBody List<Integer> imageIds) {
+        try {
+            roomTypeImgService.deleteImages(imageIds);
+            return ResponseEntity.ok(Map.of("message", "圖片已刪除"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "刪除失敗：" + e.getMessage()));
+        }
+    }
 }
