@@ -144,6 +144,7 @@ CREATE TABLE news (
     news_id INT AUTO_INCREMENT PRIMARY KEY,
     news_title VARCHAR(200) NOT NULL,
     description TEXT NOT NULL,
+    news_img MEDIUMBLOB,
     post_time DATETIME NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
