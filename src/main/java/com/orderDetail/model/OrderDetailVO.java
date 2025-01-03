@@ -36,6 +36,9 @@ public class OrderDetailVO implements java.io.Serializable {
 	@Column(name = "breakfast")
 	private Byte breakfast;
 
+	public OrderDetailVO(){
+	}
+	
 	public Integer getOrderDetailId() {
 		return orderDetailId;
 	}

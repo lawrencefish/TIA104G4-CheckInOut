@@ -3,12 +3,16 @@ package com.member.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Table;
 
@@ -22,6 +26,10 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.creditcard.model.CreditcardVO;
+import com.order.model.OrderVO;
+import com.orderDetail.model.OrderDetailVO;
 
 @Entity
 @Table(name = "member")
@@ -65,7 +73,14 @@ public class MemberVO implements java.io.Serializable {
 	private Byte status;
 	@Column(name = "create_time")
 	private Timestamp createTime;
-
+	
+	// 連接到信用卡，一對多
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<CreditcardVO> creditcard;
+    //連接到訂單，一對多
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<OrderVO> order;
+    
 	public MemberVO() {
 
 	}
