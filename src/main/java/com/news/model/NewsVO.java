@@ -9,8 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+
 import javax.validation.constraints.NotBlank;
 
+//一個註解
 @Entity
 @Table(name = "news")
 public class NewsVO {
@@ -18,6 +20,7 @@ public class NewsVO {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "news_id", updatable = false)
 	private Integer newsId;
+
 	
 	@NotBlank(message = "標題不可為空")    
 	@Column(name = "news_title", length = 50, nullable = false, unique = true)
@@ -25,16 +28,23 @@ public class NewsVO {
 	
 	@NotBlank(message = "內容不可為空")    
 	@Column(name = "description", nullable = false, columnDefinition = "TEXT")
+
+	@Column(name = "news_title")
+	private String newsTitle;
+
+	@Column(name = "description", columnDefinition = "TEXT")
 	private String description;
-	
+
 	@Column(name = "post_time")
 	private Timestamp postTime;
 	
 	@Column(name = "create_time", nullable = false, insertable = false, updatable = false)
+
+	@Column(name = "create_time")
 	private Timestamp createTime;
 	
 	@Lob
-    @Column(name = "news_pic")
+  @Column(name = "news_pic")
     private byte[] newsPic;
 
 	public Integer getNewsId() {
@@ -166,3 +176,15 @@ public class NewsVO {
 //    this.createTime = createTime;
 //}
 //}
+
+
+	@Override
+	public String toString() {
+		return "News [news_id=" + newsId + ", news_title=" + newsTitle + ", "
+				+ "description=" + description + ", post_time=" + postTime + ", create_time=" + createTime
+				;
+	}
+
+
+}
+
