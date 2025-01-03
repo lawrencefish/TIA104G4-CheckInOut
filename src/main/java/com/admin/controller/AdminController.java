@@ -1,12 +1,14 @@
 package com.admin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.admin.model.Admin;
+import com.mysql.cj.protocol.x.Ok;
 import com.admin.model.*;
 
 import java.util.List;
@@ -39,12 +41,13 @@ public class AdminController {
     }
 
     // 處理新增請求
-    @PostMapping("/add")  // 處理POST /admin/add 請求
-    public String add(@ModelAttribute Admin admin) {
+    @PostMapping("/add")
+    @ResponseBody// 處理POST /admin/add 請求
+    public ResponseEntity<?> add(@RequestBody Admin admin) {
     	// @ModelAttribute 會自動把表單資料綁定到Admin物件
-    	
+    	admin.setStatus((byte)1);
         adminService.insert(admin);
-        return "redirect:/admin/list"; // 新增完成後重導向到列表頁
+        return ResponseEntity.ok().build(); // 新增完成後重導向到列表頁
     }
 
     // 顯示編輯表單
@@ -92,7 +95,11 @@ public class AdminController {
     }
     
     @GetMapping("/adminBackend")
-    public String showAdminBackend() {
+    public String showAdminBackend(
+    		@RequestParam(defaultValue = "0") int page,
+    		Model model) {
+    	List<Admin> admins = adminService.getAll(page);
+    	model.addAttribute("admins", admins);
     	return "admin/admin-backend";
     }
     

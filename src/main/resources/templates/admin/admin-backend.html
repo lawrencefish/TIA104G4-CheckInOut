@@ -109,7 +109,22 @@
               <th>操作</th>
             </tr>
           </thead>
-          <tbody id="userTableBody"></tbody>
+          <tbody id="userTableBody">
+          	<tr th:each="admin : ${admins}">
+          		<td th:text="${admin.adminId}"></td>	
+          		<td th:text="${admin.adminAccount}"></td>	
+          		<td th:text="${admin.permissions == 1 ? '高階管理員' : '一般管理員'}"></td>	
+          		<td th:text="${admin.status == 1 ? '啟用中' : '停用'}"></td>	
+          		<td th:text="${#dates.format(admin.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>	
+          		<td th:text="${admin.phoneNumber}"></td>	
+          		<td th:text="${admin.email}"></td>
+          		<td>尚未實作</td>
+          		<td>
+          			<button th:attr="data-id=${admin.adminId}" class="edit-btn">編輯</button>
+          			<button th:attr="data-id=${admin.adminId}" class="delete-btn">刪除</button>
+          		</td>	
+          	</tr>
+          </tbody>
         </table>
         <div class="pagination" id="pagination"></div>
       </div>      
