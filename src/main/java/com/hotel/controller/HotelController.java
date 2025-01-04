@@ -11,8 +11,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -99,5 +102,36 @@ public class HotelController {
         }
 
         return "redirect:/business/hotelIntroduce";
+    }
+
+    @GetMapping("/image")
+    public void getHotelImage(
+            @RequestParam("type") String type,
+            HttpSession session,
+            HttpServletResponse response
+    ) throws IOException {
+        // 設置回應類型
+        response.setContentType("image/jpeg");
+        ServletOutputStream outputStream = response.getOutputStream();
+
+        // 從 session 獲取 HotelVO
+        HotelVO hotel = (HotelVO) session.getAttribute("hotel");
+        if (hotel == null) {
+            System.out.println("失敗1");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        // 使用 service 獲取圖片
+        byte[] imageData = hotelService.getImageByType(hotel, type);
+        if (imageData == null) {
+            System.out.println("失敗2");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        // 輸出圖片資料
+        outputStream.write(imageData);
+        outputStream.flush();
     }
 }

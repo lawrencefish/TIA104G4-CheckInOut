@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +49,10 @@ public class BusinessController {
             @RequestParam("city") String city,
             @RequestParam("district") String district,
             @RequestParam("address") String address,
+            @RequestParam("owner") String owner, // 新增負責人欄位
+            @RequestParam(value = "idFront", required = false) MultipartFile idFront,
+            @RequestParam(value = "idBack", required = false) MultipartFile idBack,
+            @RequestParam(value = "license", required = false) MultipartFile license,
             HttpServletRequest request,
             Model model
     ) {
@@ -57,13 +63,30 @@ public class BusinessController {
             return "redirect:/login";
         }
 
-        // 更新 hotel 資料
+        // 更新文字資料
         hotel.setName(name);
         hotel.setPhoneNumber(phone);
         hotel.setEmail(email);
         hotel.setCity(city);
         hotel.setDistrict(district);
         hotel.setAddress(address);
+        hotel.setOwner(owner); // 更新負責人欄位
+
+        try {
+            // 更新圖片資料
+            if (idFront != null && !idFront.isEmpty()) {
+                hotel.setIdFront(idFront.getBytes());
+            }
+            if (idBack != null && !idBack.isEmpty()) {
+                hotel.setIdBack(idBack.getBytes());
+            }
+            if (license != null && !license.isEmpty()) {
+                hotel.setLicense(license.getBytes());
+            }
+        } catch (IOException e) {
+            model.addAttribute("errorMessage", "圖片上傳失敗，請重新嘗試！");
+            e.printStackTrace();
+        }
 
         // 更新至資料庫（假設有 service 方法）
         hotelService.updateHotel(hotel);

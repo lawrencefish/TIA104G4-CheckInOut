@@ -756,7 +756,7 @@
         <!-- Main -->
         <main>
             <h1>房型設定</h1>
-            <button class="add-room-btn" id="addRoomBtn">新增房型</button>
+            <button class="add-room-btn" id="addRoomTypeBtn">新增房型</button>
 
             <!-- 房型列表 -->
             <div th:if="${message != null}">
@@ -816,7 +816,7 @@
                             </label>
                         </div>
                         <!--<label for="room-status">狀態</label>-->
-                        <input type="hidden" id="room-status" value="0" readonly>
+                        <input type="hidden" id="room-status" readonly>
                         </form>
                         </section>
 
@@ -867,8 +867,31 @@
 
                     <div class="btn-group">
                         <button type="button" class="save-btn">儲存設定</button>
-                        <button type="button" class="close-btn" id="closeModalBtn">關閉</button>
+                        <button type="button" class="close-btn" id="deleteRoomType">刪除房型</button>
+                        <button type="button" id="closeModalBtn">關閉</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- 價格設定彈窗 -->
+            <div class="modal-overlay" id="priceModalOverlay">
+                <div class="modal">
+                    <h2>設定房型價格</h2>
+                    <form id="priceForm">
+                        <label for="weekday-price">平日價格</label>
+                        <input type="number" id="weekday-price" placeholder="輸入平日價格" required>
+                        <label for="weekday-price">早餐價格</label>
+                        <input type="number" id="weekday-breakfast-price" placeholder="輸入平日早餐價格" required>
+
+                        <label for="weekend-price">假日價格</label>
+                        <input type="number" id="weekend-price" placeholder="輸入假日價格" required>
+                        <label for="weekday-price">早餐價格</label>
+                        <input type="number" id="weekend-breakfast-price" placeholder="輸入假日早餐價格" required>
+
+                        <div class="btn-group">
+                            <button type="button" class="save-btn" id="savePriceBtn">儲存價格</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </main>
@@ -896,10 +919,19 @@
         const roomStatusInput = document.getElementById('room-status');
         const roomBreakfastNo = document.getElementById('breakfast-no');
         const roomBreakfastYes = document.getElementById('breakfast-yes');
+        // 定義全局變量保存初始狀態
+        let initialRoomData = {};
 
         // 打開彈窗並填入資料
         async function openModal(roomData) {
             modalOverlay.style.display = 'block'; // 顯示彈窗
+
+            // 清空待刪除的圖片列表
+            deletedPhotos = [];
+            selectedPhotos = []; // 清空即時上傳的圖片
+
+            // 保存初始狀態
+            initialRoomData = { ...roomData };
 
             // 填入房型資料
             roomIdInput.value = roomData.id;
@@ -915,11 +947,10 @@
                 roomBreakfastNo.checked = true;
             }
 
-            // 獲取並顯示圖片
+            // 獲取並顯示已上傳圖片
             const imageIds = await fetchRoomImages(roomData.id);
-            const uploadedPhotoContainer = document.querySelector('#uploaded-photos'); // 已上傳圖片區域
-            uploadedPhotoContainer.innerHTML = ''; // 清空已上傳圖片區域
-
+            const uploadedPhotoContainer = document.querySelector('#uploaded-photos');
+            uploadedPhotoContainer.innerHTML = ''; // 清空圖片區域
 
             imageIds.forEach(id => {
                 const imgElement = document.createElement('img');
@@ -929,17 +960,19 @@
                 imgElement.style.margin = '5px';
                 imgElement.style.borderRadius = '8px';
 
-                // 添加刪除按鈕
+                // 創建刪除按鈕
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'delete-btn';
                 deleteBtn.textContent = '✖';
-                deleteBtn.onclick = () => deleteImage(id);
 
                 const imgWrapper = document.createElement('div');
                 imgWrapper.style.position = 'relative';
                 imgWrapper.style.display = 'inline-block';
                 imgWrapper.appendChild(imgElement);
                 imgWrapper.appendChild(deleteBtn);
+
+                // 綁定刪除邏輯
+                deleteBtn.onclick = () => deleteImagePreview(id, imgWrapper);
 
                 uploadedPhotoContainer.appendChild(imgWrapper);
             });
@@ -965,6 +998,8 @@
             });
         }
 
+
+
         async function fetchRoomImages(roomTypeId) {
             try {
                 const response = await fetch(`/api/room-images/room/${roomTypeId}/images`);
@@ -980,43 +1015,39 @@
             }
         }
 
-        async function deleteImage(imageId) {
-            try {
-                const response = await fetch(`${contextPath}/api/room-images/image/${imageId}`, { method: 'DELETE' });
-                if (response.ok) {
-                    alert("圖片已刪除");
+        let deletedPhotos = []; // 用於保存待刪除的圖片 ID
 
-                    // 重新獲取圖片並更新表單
-                    const roomTypeId = roomIdInput.value; // 從表單中獲取當前房型 ID
-                    updateUploadedPhotos(roomTypeId);
-                } else {
-                    const error = await response.json();
-                    alert("刪除失敗：" + error.error);
-                }
-            } catch (error) {
-                console.error("刪除圖片時出錯:", error);
+        async function deleteImagePreview(imageId, imgWrapper) {
+            // 將圖片 ID 加入待刪除列表
+            if (!deletedPhotos.includes(imageId)) {
+                deletedPhotos.push(imageId); // 避免重複添加
             }
+
+            // 從預覽中隱藏圖片
+            imgWrapper.style.display = 'none'; // 僅隱藏該圖片，而非清空整個容器
         }
+
 
         // 更新已上傳圖片區域
         async function updateUploadedPhotos(roomTypeId) {
-            const imageIds = await fetchRoomImages(roomTypeId); // 獲取圖片列表
-            const uploadedPhotoContainer = document.querySelector('#uploaded-photos'); // 已上傳圖片容器
-            uploadedPhotoContainer.innerHTML = ''; // 清空圖片容器
+            const imageIds = await fetchRoomImages(roomTypeId); // 從伺服器獲取圖片列表
+            const uploadedPhotoContainer = document.querySelector('#uploaded-photos');
+            uploadedPhotoContainer.innerHTML = ''; // 清空圖片顯示區域
 
             imageIds.forEach(id => {
+                // 創建圖片元素
                 const imgElement = document.createElement('img');
-                imgElement.src = `${contextPath}/api/room-images/image/${id}`;
+                imgElement.src = `/api/room-images/image/${id}`;
                 imgElement.alt = `Room Image ${id}`;
                 imgElement.style.width = '150px';
                 imgElement.style.margin = '5px';
                 imgElement.style.borderRadius = '8px';
 
-                // 添加刪除按鈕
+                // 創建刪除按鈕
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'delete-btn';
                 deleteBtn.textContent = '✖';
-                deleteBtn.onclick = () => deleteImage(id);
+                deleteBtn.onclick = () => deleteImagePreview(id, imgWrapper);
 
                 const imgWrapper = document.createElement('div');
                 imgWrapper.style.position = 'relative';
@@ -1029,9 +1060,49 @@
         }
 
         // 關閉彈窗的函數
+        // 關閉彈窗的函數
         function closeModal() {
             modalOverlay.style.display = 'none'; // 隱藏彈窗
+
+            // 清空即時預覽區域
+            const previewContainer = document.querySelector('#preview-photos');
+            previewContainer.innerHTML = '';
+            selectedPhotos = []; // 清空已選擇但未儲存的圖片
+
+            // 恢復已上傳圖片區域
+            const uploadedPhotoContainer = document.querySelector('#uploaded-photos');
+            uploadedPhotoContainer.innerHTML = ''; // 清空當前顯示的圖片區域
+
+            // 復原被標記刪除的圖片
+            originalImageIds.forEach(id => {
+                const imgElement = document.createElement('img');
+                imgElement.src = `/api/room-images/image/${id}`;
+                imgElement.alt = `Room Image ${id}`;
+                imgElement.style.width = '150px';
+                imgElement.style.margin = '5px';
+                imgElement.style.borderRadius = '8px';
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = '✖';
+
+                const imgWrapper = document.createElement('div');
+                imgWrapper.style.position = 'relative';
+                imgWrapper.style.display = 'inline-block';
+                imgWrapper.appendChild(imgElement);
+                imgWrapper.appendChild(deleteBtn);
+
+                // 綁定刪除按鈕的邏輯
+                deleteBtn.onclick = () => deleteImagePreview(id, imgWrapper);
+
+                uploadedPhotoContainer.appendChild(imgWrapper);
+            });
+
+            // 清空刪除標記
+            deletedPhotos = [];
         }
+
+
 
         // 綁定每個房型區塊的點擊事件
         roomSections.forEach(section => {
@@ -1109,29 +1180,37 @@
             }
         });
 
+        let selectedPhotos = []; // 用於保存選擇的圖片
+
         document.getElementById('photo-upload').addEventListener('change', function (event) {
-            const files = event.target.files; // 獲取選擇的文件
+            const files = Array.from(event.target.files); // 將 FileList 轉為陣列
             const previewContainer = document.getElementById('preview-photos'); // 即時預覽區域
 
-            // 使用 Array.from 將 FileList 轉換為數組，並對每個文件進行處理
-            Array.from(files).forEach(file => {
+            files.forEach(file => {
                 if (file.type.startsWith('image/')) {
-                    const reader = new FileReader(); // 使用 FileReader 讀取文件
+                    selectedPhotos.push(file); // 新增到緩存列表
+
+                    const reader = new FileReader();
                     reader.onload = function (e) {
-                        // 創建圖片元素
+                        // 創建圖片預覽
                         const imgElement = document.createElement('img');
-                        imgElement.src = e.target.result; // 設置圖片源
+                        imgElement.src = e.target.result;
                         imgElement.alt = '圖片預覽';
                         imgElement.style.width = '150px';
                         imgElement.style.margin = '5px';
                         imgElement.style.borderRadius = '8px';
 
-                        // 添加刪除按鈕
+                        // 創建刪除按鈕
                         const deleteBtn = document.createElement('button');
                         deleteBtn.className = 'delete-btn';
                         deleteBtn.textContent = '✖';
                         deleteBtn.onclick = () => {
-                            previewContainer.removeChild(imgWrapper); // 刪除圖片和按鈕
+                            // 刪除圖片預覽與緩存中的對應文件
+                            const index = selectedPhotos.indexOf(file);
+                            if (index > -1) {
+                                selectedPhotos.splice(index, 1); // 從緩存列表移除
+                            }
+                            previewContainer.removeChild(imgWrapper); // 從預覽移除
                         };
 
                         const imgWrapper = document.createElement('div');
@@ -1140,10 +1219,9 @@
                         imgWrapper.appendChild(imgElement);
                         imgWrapper.appendChild(deleteBtn);
 
-                        // 添加到預覽區域
                         previewContainer.appendChild(imgWrapper);
                     };
-                    reader.readAsDataURL(file); // 將文件轉為 Data URL
+                    reader.readAsDataURL(file);
                 } else {
                     console.error('選擇的文件不是圖片格式:', file.name);
                 }
@@ -1262,55 +1340,73 @@
         });
 
         async function saveRoomTypeSettings() {
-            const roomTypeId = roomIdInput.value; // 確保從 roomIdInput 中獲取房型 ID
+            if (!validateRoomTypeForm()) {
+                return; // 如果驗證失敗，停止保存操作
+            }
+            const roomTypeId = roomIdInput.value.trim(); // 確保從 roomIdInput 中獲取房型 ID
+            const isNewRoomType = !roomTypeId; // 判斷是否是新增
+
             try {
-                const roomName = roomNameInput.value; // 房型名稱
+                // 房型資料
+                const roomName = roomNameInput.value.trim(); // 房型名稱
                 const maxPerson = parseInt(roomGuestInput.value, 10); // 最多可入住人數
                 const roomNum = parseInt(roomNumberInput.value, 10); // 房間數量
-                const breakfast = roomBreakfastNo.checked ? 0 : 1; // 早餐選擇
+                const breakfast = roomBreakfastYes.checked ? 1 : 0; // 早餐選擇
+                let status = parseInt(roomStatusInput.value, 10) || 0; // 預設狀態為 0 (審核不通過)
 
-                // 1. 更新房型資料
-                if (!roomTypeId) {
-                    alert('無法取得房型 ID，請重試！');
-                    return;
-                }
-
-                try {
-                    // 呼叫房型更新 API
-                    const roomUpdateResponse = await fetch(`${contextPath}/api/roomType/update/${roomTypeId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            roomTypeId,
-                            roomName,
-                            maxPerson,
-                            roomNum,
-                            breakfast,
-                        }),
-                    });
-
-                    // 確保回應為 JSON
-                    const result = await roomUpdateResponse.json();
-                    if (!roomUpdateResponse.ok) {
-                        throw new Error(result.error || '未知錯誤');
+                // 檢查是否有變更 (僅適用於編輯模式)
+                if (!isNewRoomType) {
+                    if (
+                        roomName !== initialRoomData.name ||
+                        maxPerson !== parseInt(initialRoomData.maxPerson, 10) ||
+                        roomNum !== parseInt(initialRoomData.roomNum, 10) ||
+                        breakfast !== (initialRoomData.breakfast ? 1 : 0)
+                    ) {
+                        status = 0; // 若有變更，將狀態設為 0 (待審核)
                     }
-
-                    // 提示成功訊息
-                    // alert(result.message || '房型資料更新成功！');
-                } catch (error) {
-                    console.error(error);
-                    // alert(`儲存失敗: ${error.message}`);
                 }
+
+                // 構造房型資料
+                const roomData = {
+                    roomName,
+                    maxPerson,
+                    roomNum,
+                    breakfast,
+                    status, // 更新狀態
+                };
+
+                // 1. 新增或更新房型
+                let apiUrl, httpMethod;
+                if (isNewRoomType) {
+                    apiUrl = `${contextPath}/api/roomType/create`;
+                    httpMethod = "POST";
+                } else {
+                    apiUrl = `${contextPath}/api/roomType/update/${roomTypeId}`;
+                    httpMethod = "PUT";
+                }
+
+                const roomResponse = await fetch(apiUrl, {
+                    method: httpMethod,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(roomData),
+                });
+
+                if (!roomResponse.ok) {
+                    const error = await roomResponse.json();
+                    throw new Error(`房型保存失敗: ${error.message}`);
+                }
+
+                const savedRoomType = await roomResponse.json(); // 獲取保存後的房型數據
+                const savedRoomTypeId = isNewRoomType ? savedRoomType.roomTypeId : roomTypeId;
+
+                console.log("房型保存成功", savedRoomType);
 
                 // 2. 上傳圖片
-                // 上傳圖片部分
-                const photoUploadInput = document.getElementById("photo-upload");
-                const photos = Array.from(photoUploadInput.files); // 確保正確獲取檔案
-
-                if (photos.length > 0) {
+                if (selectedPhotos.length > 0) {
                     const formData = new FormData();
-                    photos.forEach((file) => formData.append("photos", file)); // 使用 photos 變數
-                    const photoResponse = await fetch(`${contextPath}/api/room-images/room/${roomTypeId}/upload`, {
+                    selectedPhotos.forEach(file => formData.append("photos", file));
+
+                    const photoResponse = await fetch(`${contextPath}/api/room-images/room/${savedRoomTypeId}/upload`, {
                         method: "POST",
                         body: formData,
                     });
@@ -1321,26 +1417,39 @@
                     }
 
                     console.log("圖片上傳成功");
-                } else {
-                    console.log("沒有需要上傳的圖片");
                 }
 
-                // 3. 更新設施與服務
+                // 3. 刪除圖片
+                if (deletedPhotos.length > 0) {
+                    const deleteResponse = await fetch(`${contextPath}/api/room-images/delete`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(deletedPhotos),
+                    });
+
+                    if (!deleteResponse.ok) {
+                        const error = await deleteResponse.json();
+                        throw new Error(`刪除圖片失敗: ${error.error}`);
+                    }
+
+                    console.log("圖片刪除成功");
+                    deletedPhotos = []; // 清空刪除列表
+                }
+
+                // 4. 更新設施與服務
                 const selectedFacilities = Array.from(
-                    document.querySelectorAll('.facilities input[type="checkbox"]:checked')
+                    document.querySelectorAll(".facilities input[type='checkbox']:checked")
                 ).map((checkbox) => parseInt(checkbox.value));
 
                 const selectedServices = Array.from(
-                    document.querySelectorAll('.services input[type="checkbox"]:checked')
+                    document.querySelectorAll(".services input[type='checkbox']:checked")
                 ).map((checkbox) => parseInt(checkbox.value));
 
                 const facilityResponse = await fetch(`${contextPath}/api/roomTypeFacilities/update`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        roomTypeId: parseInt(roomTypeId),
+                        roomTypeId: parseInt(savedRoomTypeId),
                         facilities: selectedFacilities,
                         services: selectedServices,
                     }),
@@ -1353,15 +1462,193 @@
 
                 console.log("設施與服務更新成功");
 
-                // 如果所有步驟成功，提示用戶
+                // 保存成功提示並刷新頁面
                 alert("房型設定儲存成功！");
-                // closeModal(); // 關閉彈窗
-                location.reload(); // 重整頁面
+                if (isNewRoomType) {
+                    // 呼叫價格設定彈窗
+                    openPriceModal(savedRoomTypeId);
+                }
+                // location.reload();
             } catch (error) {
-                console.error(error.message);
+                console.error("儲存失敗:", error.message);
                 alert(`儲存失敗: ${error.message}`);
             }
         }
+
+
+
+        // 新增
+        document.getElementById('addRoomTypeBtn').addEventListener('click', () => {
+            openNewRoomModal(); // 調用新增房型彈窗的邏輯
+        });
+        async function openNewRoomModal() {
+            modalOverlay.style.display = 'block'; // 顯示彈窗
+
+            // 清空待刪除的圖片列表和即時預覽
+            deletedPhotos = [];
+            selectedPhotos = [];
+
+            // 初始化空白表單
+            roomIdInput.value = ''; // 新增房型無需設定 ID
+            roomNameInput.value = '';
+            roomGuestInput.value = '';
+            roomNumberInput.value = '';
+            roomStatusInput.value = '0'; // 可設為默認狀態，例如 "1"（啟用）
+
+            // 設置默認早餐選項
+            roomBreakfastNo.checked = true;; // 默認勾選沒有早餐
+
+            // 清空已上傳圖片區域
+            const uploadedPhotoContainer = document.querySelector('#uploaded-photos');
+            uploadedPhotoContainer.innerHTML = '';
+
+            // 清空即時預覽區域
+            const previewContainer = document.querySelector('#preview-photos');
+            previewContainer.innerHTML = '';
+
+            // 清空設施與服務的選擇
+            const facilityCheckboxes = document.querySelectorAll('.facilities input[type="checkbox"]');
+            facilityCheckboxes.forEach((checkbox) => {
+                checkbox.checked = false; // 清空設施選中狀態
+            });
+
+            const serviceCheckboxes = document.querySelectorAll('.services input[type="checkbox"]');
+            serviceCheckboxes.forEach((checkbox) => {
+                checkbox.checked = false; // 清空服務選中狀態
+            });
+        }
+
+        function validateRoomTypeForm() {
+            const roomName = roomNameInput.value.trim();
+            const maxPerson = roomGuestInput.value.trim();
+            const roomNum = roomNumberInput.value.trim();
+
+            let errors = [];
+
+            if (!roomName) {
+                errors.push("房型名稱不可為空");
+            }
+            if (!maxPerson || isNaN(maxPerson) || parseInt(maxPerson, 10) <= 0) {
+                errors.push("最多可入住人數必須為正整數");
+            }
+            if (!roomNum || isNaN(roomNum) || parseInt(roomNum, 10) <= 0) {
+                errors.push("房型總數量必須為正整數");
+            }
+
+            if (errors.length > 0) {
+                alert("表單驗證失敗：\n" + errors.join("\n"));
+                return false;
+            }
+
+            return true;
+        }
+
+        document.getElementById("deleteRoomType").addEventListener("click", function () {
+            const roomTypeId = document.getElementById("room-id").value;
+
+            if (confirm("確定要刪除此房型嗎？")) {
+                fetch(`/api/roomType/${roomTypeId}`, {
+                    method: "DELETE",
+                })
+                    .then((response) => {
+                        if (response.ok) {
+                            alert("刪除成功！");
+                            // 可選：刷新頁面或重定向
+                            window.location.reload();
+                        } else {
+                            alert("刪除失敗，請重試。");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("刪除過程中發生錯誤：", error);
+                        alert("刪除過程中發生錯誤！");
+                    });
+            }
+        });
+
+
+
+
+
+        // 價格部分
+        // 價格彈窗元素
+        const priceModalOverlay = document.getElementById('priceModalOverlay');
+        const savePriceBtn = document.getElementById('savePriceBtn');
+        const weekdayPriceInput = document.getElementById('weekday-price');
+        const weekendPriceInput = document.getElementById('weekend-price');
+
+        let currentRoomTypeId = null; // 保存當前房型ID
+
+        // 打開價格設定彈窗
+        function openPriceModal(roomTypeId) {
+            currentRoomTypeId = roomTypeId;
+            priceModalOverlay.style.display = 'block';
+        }
+
+        // 關閉價格設定彈窗
+        function closePriceModal() {
+            priceModalOverlay.style.display = 'none';
+            weekdayPriceInput.value = '';
+            weekendPriceInput.value = '';
+        }
+
+        // 儲存價格邏輯
+        // 儲存價格按鈕
+        savePriceBtn.addEventListener('click', async () => {
+            const weekdayPrice = parseFloat(document.getElementById('weekday-price').value);
+            const weekdayBreakfastPrice = parseFloat(document.getElementById('weekday-breakfast-price').value);
+            const weekendPrice = parseFloat(document.getElementById('weekend-price').value);
+            const weekendBreakfastPrice = parseFloat(document.getElementById('weekend-breakfast-price').value);
+
+            // 驗證輸入數據
+            if (
+                isNaN(weekdayPrice) || weekdayPrice <= 0 ||
+                isNaN(weekdayBreakfastPrice) || weekdayBreakfastPrice < 0 ||
+                isNaN(weekendPrice) || weekendPrice <= 0 ||
+                isNaN(weekendBreakfastPrice) || weekendBreakfastPrice < 0
+            ) {
+                alert("請輸入有效的價格！");
+                return;
+            }
+
+            // 構造價格數據
+            const priceData = [
+                {
+                    priceType: 1, // 平日
+                    price: weekdayPrice,
+                    breakfastPrice: weekdayBreakfastPrice,
+                    startDate: null, // 可選，根據需求設定開始時間
+                    endDate: null    // 可選，根據需求設定結束時間
+                },
+                {
+                    priceType: 2, // 假日
+                    price: weekendPrice,
+                    breakfastPrice: weekendBreakfastPrice,
+                    startDate: null, // 可選
+                    endDate: null    // 可選
+                }
+            ];
+
+            try {
+                // 發送價格數據到後端
+                const response = await fetch(`/api/price/${currentRoomTypeId}/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(priceData) // 傳送數組
+                });
+
+                if (!response.ok) {
+                    throw new Error('儲存價格失敗');
+                }
+
+                alert('價格儲存成功！');
+                closePriceModal(); // 關閉彈窗
+                location.reload();
+            } catch (error) {
+                console.error('儲存價格時發生錯誤:', error.message);
+                alert('儲存價格時發生錯誤，請重試');
+            }
+        });
     </script>
 </body>
 

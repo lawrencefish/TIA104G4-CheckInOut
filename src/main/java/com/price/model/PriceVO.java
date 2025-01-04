@@ -45,6 +45,18 @@ public class PriceVO {
     @Column(name = "update_time", nullable = false, insertable = false, updatable = false)
     private java.time.LocalDateTime updateTime;
 
+    @Column(name = "remarks")
+    private String remarks;
+
+    // Getters and Setters
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
     // -------------------------------------------
     // Constructors, Getter, Setter
     // -------------------------------------------
