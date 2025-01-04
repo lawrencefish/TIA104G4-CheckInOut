@@ -100,4 +100,13 @@ public class RoomTypeController {
         roomTypeService.deleteRoomType(roomTypeId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{roomTypeId}")
+    public ResponseEntity<RoomTypeVO> getRoomTypeById(@PathVariable Integer roomTypeId) {
+        RoomTypeVO roomType = roomTypeService.getRoomTypeById(roomTypeId);
+        if (roomType == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(roomType);
+    }
 }

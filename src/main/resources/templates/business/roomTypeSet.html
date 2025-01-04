@@ -872,6 +872,28 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 價格設定彈窗 -->
+            <div class="modal-overlay" id="priceModalOverlay">
+                <div class="modal">
+                    <h2>設定房型價格</h2>
+                    <form id="priceForm">
+                        <label for="weekday-price">平日價格</label>
+                        <input type="number" id="weekday-price" placeholder="輸入平日價格" required>
+                        <label for="weekday-price">早餐價格</label>
+                        <input type="number" id="weekday-breakfast-price" placeholder="輸入平日早餐價格" required>
+
+                        <label for="weekend-price">假日價格</label>
+                        <input type="number" id="weekend-price" placeholder="輸入假日價格" required>
+                        <label for="weekday-price">早餐價格</label>
+                        <input type="number" id="weekend-breakfast-price" placeholder="輸入假日早餐價格" required>
+
+                        <div class="btn-group">
+                            <button type="button" class="save-btn" id="savePriceBtn">儲存價格</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -1442,7 +1464,11 @@
 
                 // 保存成功提示並刷新頁面
                 alert("房型設定儲存成功！");
-                location.reload();
+                if (isNewRoomType) {
+                    // 呼叫價格設定彈窗
+                    openPriceModal(savedRoomTypeId);
+                }
+                // location.reload();
             } catch (error) {
                 console.error("儲存失敗:", error.message);
                 alert(`儲存失敗: ${error.message}`);
@@ -1537,6 +1563,90 @@
                         console.error("刪除過程中發生錯誤：", error);
                         alert("刪除過程中發生錯誤！");
                     });
+            }
+        });
+
+
+
+
+
+        // 價格部分
+        // 價格彈窗元素
+        const priceModalOverlay = document.getElementById('priceModalOverlay');
+        const savePriceBtn = document.getElementById('savePriceBtn');
+        const weekdayPriceInput = document.getElementById('weekday-price');
+        const weekendPriceInput = document.getElementById('weekend-price');
+
+        let currentRoomTypeId = null; // 保存當前房型ID
+
+        // 打開價格設定彈窗
+        function openPriceModal(roomTypeId) {
+            currentRoomTypeId = roomTypeId;
+            priceModalOverlay.style.display = 'block';
+        }
+
+        // 關閉價格設定彈窗
+        function closePriceModal() {
+            priceModalOverlay.style.display = 'none';
+            weekdayPriceInput.value = '';
+            weekendPriceInput.value = '';
+        }
+
+        // 儲存價格邏輯
+        // 儲存價格按鈕
+        savePriceBtn.addEventListener('click', async () => {
+            const weekdayPrice = parseFloat(document.getElementById('weekday-price').value);
+            const weekdayBreakfastPrice = parseFloat(document.getElementById('weekday-breakfast-price').value);
+            const weekendPrice = parseFloat(document.getElementById('weekend-price').value);
+            const weekendBreakfastPrice = parseFloat(document.getElementById('weekend-breakfast-price').value);
+
+            // 驗證輸入數據
+            if (
+                isNaN(weekdayPrice) || weekdayPrice <= 0 ||
+                isNaN(weekdayBreakfastPrice) || weekdayBreakfastPrice < 0 ||
+                isNaN(weekendPrice) || weekendPrice <= 0 ||
+                isNaN(weekendBreakfastPrice) || weekendBreakfastPrice < 0
+            ) {
+                alert("請輸入有效的價格！");
+                return;
+            }
+
+            // 構造價格數據
+            const priceData = [
+                {
+                    priceType: 1, // 平日
+                    price: weekdayPrice,
+                    breakfastPrice: weekdayBreakfastPrice,
+                    startDate: null, // 可選，根據需求設定開始時間
+                    endDate: null    // 可選，根據需求設定結束時間
+                },
+                {
+                    priceType: 2, // 假日
+                    price: weekendPrice,
+                    breakfastPrice: weekendBreakfastPrice,
+                    startDate: null, // 可選
+                    endDate: null    // 可選
+                }
+            ];
+
+            try {
+                // 發送價格數據到後端
+                const response = await fetch(`/api/price/${currentRoomTypeId}/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(priceData) // 傳送數組
+                });
+
+                if (!response.ok) {
+                    throw new Error('儲存價格失敗');
+                }
+
+                alert('價格儲存成功！');
+                closePriceModal(); // 關閉彈窗
+                location.reload();
+            } catch (error) {
+                console.error('儲存價格時發生錯誤:', error.message);
+                alert('儲存價格時發生錯誤，請重試');
             }
         });
     </script>

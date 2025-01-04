@@ -96,4 +96,8 @@ public class RoomTypeService {
     public void deleteRoomType(Integer roomTypeId) {
         roomTypeRepository.deleteById(roomTypeId);
     }
+
+    public RoomTypeVO getRoomTypeById(Integer roomTypeId) {
+        return roomTypeRepository.findById(roomTypeId).orElse(null);
+    }
 }
