@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.admin.model.Admin;
+import com.hotel.model.HotelRepository;
 import com.hotel.model.HotelService;
 import com.hotel.model.HotelVO;
 import com.mysql.cj.protocol.x.Ok;
 import com.admin.model.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -35,6 +37,26 @@ public class AdminController {
     	List<Admin> admins = adminService.getAll(page);
         model.addAttribute("admins", admins);  // 把資料放入Model
         return "admin/list";  
+    }
+    
+    // 管理員狀態切換
+    @PostMapping("/updateStatus")
+    @ResponseBody
+    public ResponseEntity<?> updateStatus(@RequestBody Admin admin) {
+        adminService.update(admin);
+        return ResponseEntity.ok().build();
+    }
+    
+ // 獲取管理員列表的 API 端點
+    @GetMapping("/list/api")
+    @ResponseBody
+    public List<Admin> listApi(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(required = false) String keyword,
+        @RequestParam(required = false) String status,
+        @RequestParam(required = false) String permissions) {
+        return adminService.getAll(page);
     }
 
     // 顯示新增表單
@@ -154,14 +176,21 @@ public class AdminController {
     }
     
     @GetMapping("/industryBackend")
-    public String showIndustryBackend(@RequestParam(required = false) String name,
-    								@RequestParam(required = false) String email,
-    								@RequestParam(required = false) String phone,
-    								Model model) {
-    	// 將參數添加到model中
-        model.addAttribute("businessName", name);
-        model.addAttribute("businessEmail", email);
-        model.addAttribute("businessPhone", phone);
-        return "admin/industry-backend";  // 對應到templates/admin/industry-backend.html
+    public String showIndustryBackend(@RequestParam(required = false) Integer id,
+    	    Model model) {
+        if (id != null) {
+            Optional<HotelVO> hotelVO = hotelService.findById(id);
+            if (hotelVO.isPresent()) {
+            	HotelVO hotel = hotelVO.get();
+                model.addAttribute("name", hotel.getName());
+                model.addAttribute("taxId", hotel.getTaxId());
+                model.addAttribute("district", hotel.getDistrict());
+                model.addAttribute("city", hotel.getCity());
+                model.addAttribute("address", hotel.getAddress());
+                model.addAttribute("phoneNumber", hotel.getPhoneNumber());
+                model.addAttribute("email", hotel.getEmail());
+            }
+        }
+        return "admin/industry-backend";
     }
 }

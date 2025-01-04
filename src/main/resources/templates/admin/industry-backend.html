@@ -29,25 +29,25 @@
         <!-- 公司資料內容 -->
         <div class="info-grid">
           <div class="info-item" data-label="公司名稱" id="company-name">
-            <span class="content" th:text="${bussinessName}"></span>
+            <span class="content" th:text="${name}"></span>
           </div>
           <div class="info-item" data-label="統一編號" id="company-id">
-            <span class="content"></span>
+            <span class="content" th:text="${taxId}"></span>
           </div>
           <div class="info-item" data-label="縣市" id="company-city">
-            <span class="content"></span>
+            <span class="content" th:text="${district}"></span>
           </div>
           <div class="info-item" data-label="地區" id="company-area">
-            <span class="content"></span>
+            <span class="content" th:text="${city}"></span>
           </div>
           <div class="info-item" data-label="地址" id="company-address">
-            <span class="content"></span>
+            <span class="content" th:text="${address}"></span>
           </div>
           <div class="info-item" data-label="連絡電話" id="company-phone">
-            <span class="content" th:text="${businessPhone}"></span>
+            <span class="content" th:text="${phoneNumber}"></span>
           </div>
           <div class="info-item" data-label="電子郵件" id="company-email">
-            <span class="content" th:text="${businessEmail}"></span>
+            <span class="content" th:text="${email}"></span>
           </div>
         </div>
       </div>

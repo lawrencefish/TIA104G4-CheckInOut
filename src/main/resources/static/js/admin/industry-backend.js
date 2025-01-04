@@ -10,7 +10,7 @@ const state = {
 
 // API 端點配置（暫時註解）
 const API_ENDPOINTS = {
-  HOTEL_INFO: '/business/hotelInfo'
+  HOTEL_INFO: '/hotel/getHotelData'
 //  REVIEWS: '/api/reviews',
 //  IMAGES: '/api/images'
 };
@@ -56,7 +56,7 @@ async function loadBusinessData(hotelId) {
     
     // API 調用（暫時註解）
     
-    const response = await fetch(`${/business/hotelInfo}/${hotelId}`);
+    const response = await fetch(`${/hotel/getHotelData}/${hotelId}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

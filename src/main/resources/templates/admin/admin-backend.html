@@ -36,8 +36,8 @@
           <label for="filterPermissions">篩選權限：</label>
           <select id="filterPermissions">
             <option value="all">全部</option>
-            <option value="0">一般管理員</option>
             <option value="1">高階管理員</option>
+            <option value="0">一般管理員</option>
           </select>
         </div>
         <div class="form-actions">
@@ -130,17 +130,17 @@
       </div>      
     </section>
 
-    <section class="log-section">
-      <h2>操作日誌</h2>
-      <div id="logContainer"></div>
-    </section>
+<!--     <section class="log-section"> -->
+<!--       <h2>操作日誌</h2> -->
+<!--       <div id="logContainer"></div> -->
+<!--     </section> -->
   </main>
 
   <!-- Footer -->
     <div th:replace="~{admin/backend-footer :: footer}"></div>
 	
+	<script th:src="'https://code.jquery.com/jquery-3.7.1.min.js'"></script>
 	<script th:src="@{/js/admin/header.js}"></script>
 	<script th:src="@{/js/admin/admin-backend.js}"></script>
-	<script th:src="'https://code.jquery.com/jquery-3.7.1.min.js'"></script>
 </body>
 </html>

@@ -62,17 +62,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
 
         // 加載業者資料
-        loadBusinessData() {
-            // 發送 AJAX 請求獲取業者資料
-            fetch('/hotel/getHotelsData')  // API是 /hotel/getHotelsData
-                .then(data => {
-                	console.log(data);
-                })
-                .catch(error => {
-                    console.error('載入業者資料時發生錯誤:', error);
-                });
-        },
-
+		loadBusinessData() {
+		    fetch('/hotel/getHotelsData')
+		        .then(response => {
+		            if (!response.ok) {
+		                throw new Error(`HTTP error! status: ${response.status}`);
+		            }
+		            return response.json();
+		        })
+		        .then(data => {
+		            if (!Array.isArray(data)) {
+		                console.error('後端返回數據格式不正確', data);
+		                return;
+		            }
+		            this.renderBusinessTable(data);
+		        })
+		        .catch(error => {
+		            console.error('加載業者資料時出錯：', error);
+		        });
+		},
         // 渲染業者資料到表格
         renderBusinessTable(data) {
             // 如果 DataTable 已經初始化，先銷毀它

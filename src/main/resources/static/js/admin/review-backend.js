@@ -1,73 +1,34 @@
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // 載入 Header 和 Footer
-        const headerResponse = await fetch('backend-header.html');
-        const headerHtml = await headerResponse.text();
-        document.getElementById('header').innerHTML = headerHtml;
-        initializeHeader();
-
-        const footerResponse = await fetch('backend-footer.html');
-        const footerHtml = await footerResponse.text();
-        document.getElementById('footer').innerHTML = footerHtml;
-
-        // Mock 資料 - 添加狀態資訊
-        const mockHotels = [
-            {
-                id: 1,
-                name: '五星大飯店',
-                address: '台北市信義區市府路45號',
-                taxId: '12345678',
-                image: '/img/環境照片.webp',
-                status: 'pending',
-                submitDate: '2024-03-15'
-            },
-            {
-                id: 2,
-                name: '豪華商旅',
-                address: '台北市大安區敦化南路100號',
-                taxId: '87654321',
-                image: '/img/環境照片2.jpg',
-                status: 'approved',
-                submitDate: '2024-03-14'
-            }
-        ];
-
-        const mockRoomTypes = [
-            {
-                id: 1,
-                hotelId: 1,
-                hotelName: '五星大飯店',
-                image: '/img/雙人房.webp',
-                roomTypeName: '豪華雙人房',
-                roomCount: 20,
-                status: 'pending',
-                submitDate: '2024-03-15'
-            },
-            {
-                id: 2,
-                hotelId: 2,
-                hotelName: '豪華商旅',
-                image: '/img/單人房.webp',
-                roomTypeName: '標準單人房',
-                roomCount: 15,
-                status: 'rejected',
-                submitDate: '2024-03-13'
-            }
-        ];
-
         // 狀態轉換為中文
         const statusText = {
-            pending: '待審核',
-            approved: '已通過',
-            rejected: '已拒絕'
+            0: '待審核',
+            1: '已通過',
+            2: '已拒絕'
         };
+		
+		let hotels = []; // 存儲實際的飯店數據
+		
+		// 獲取飯店列表
+		async function fetchHotels() {
+		    try {
+		        const response = await fetch('/hotel/getHotelsData');
+		        if (!response.ok) {
+		            throw new Error('Failed to fetch hotels');
+		        }
+		        return await response.json();
+		    } catch (error) {
+		        console.error('Error fetching hotels:', error);
+		        return [];
+		    }
+		}
 
         // 渲染業者列表
         function renderHotelsList(status = 'all') {
             const filteredHotels = status === 'all' 
-                ? mockHotels 
-                : mockHotels.filter(hotel => hotel.status === status);
-
+                ? hotels 
+                : hotels.filter(hotel => hotel.status === parseInt(status));
+				
             const hotelsList = document.getElementById('hotelsList');
             hotelsList.innerHTML = filteredHotels.map(hotel => `
                 <div class="review-card" data-hotel-id="${hotel.id}">
@@ -174,16 +135,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         function updateStatusCounts(items) {
             const counts = {
                 all: items.length,
-                pending: items.filter(item => item.status === 'pending').length,
-                approved: items.filter(item => item.status === 'approved').length,
-                rejected: items.filter(item => item.status === 'rejected').length
+                0: items.filter(item => item.status === 0).length, // 待審核
+                1: items.filter(item => item.status === 1).length, // 已通過
+                2: items.filter(item => item.status === 2).length  // 已拒絕
             };
 
             // 更新數量顯示
             document.querySelector('[data-status="all"] .count-badge').textContent = counts.all;
-            document.querySelector('[data-status="pending"] .count-badge').textContent = counts.pending;
-            document.querySelector('[data-status="approved"] .count-badge').textContent = counts.approved;
-            document.querySelector('[data-status="rejected"] .count-badge').textContent = counts.rejected;
+            document.querySelector('[data-status="0"] .count-badge').textContent = counts[0];
+            document.querySelector('[data-status="1"] .count-badge').textContent = counts[1];
+            document.querySelector('[data-status="2"] .count-badge').textContent = counts[2];
         }
 
         // 初始化狀態篩選功能
@@ -193,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             let currentStatus = 'all';
 
             // 初始化狀態數量
-            updateStatusCounts(mockHotels);
+            updateStatusCounts(Hotels);
 
             // 更新篩選按鈕狀態
             function updateFilterButtons(selectedStatus) {
@@ -225,26 +186,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             // 更新頁籤切換邏輯
-            document.getElementById('hotelsTab').addEventListener('click', () => {
+			document.getElementById('hotelsTab').addEventListener('click', () => {
                 currentTab = 'hotels';
                 switchTab('hotels');
                 renderHotelsList(currentStatus);
-                updateStatusCounts(mockHotels);
+                updateStatusCounts(hotels);
             });
 
-            document.getElementById('roomsTab').addEventListener('click', () => {
-                currentTab = 'rooms';
-                switchTab('rooms');
-                renderRoomsList(currentStatus);
-                updateStatusCounts(mockRoomTypes);
-            });
+//            document.getElementById('roomsTab').addEventListener('click', () => {
+//                currentTab = 'rooms';
+//                switchTab('rooms');
+//                renderRoomsList(currentStatus);
+//                updateStatusCounts(RoomTypes);
+//            });
 
-            // 初始化顯示
-            updateFilterButtons('all');
-            renderHotelsList('all');
         }
-
-        // 初始化所有功能
+		// 初始化數據和功能
+        hotels = await fetchHotels();
+        renderHotelsList('all');
+        updateStatusCounts(hotels);
         initializeFilters();
 
     } catch (error) {
