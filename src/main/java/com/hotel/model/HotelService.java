@@ -29,7 +29,7 @@ public class HotelService {
     @Transactional
     public void updateHotel(HotelVO hotel) {
         // 確保不為空的欄位被正確更新
-        if (hotel != null && hotel.getHotelId() != null) { // 假設主鍵為 id
+        if (hotel != null && hotel.getHotelId() != null) {
             HotelVO existingHotel = hotelRepository.findById(hotel.getHotelId())
                     .orElseThrow(() -> new IllegalArgumentException("Hotel not found with ID: " + hotel.getHotelId()));
 
@@ -40,6 +40,18 @@ public class HotelService {
             existingHotel.setCity(hotel.getCity());
             existingHotel.setDistrict(hotel.getDistrict());
             existingHotel.setAddress(hotel.getAddress());
+            existingHotel.setOwner(hotel.getOwner());
+
+            // 更新圖片欄位（如果有提供新的圖片）
+            if (hotel.getIdFront() != null) {
+                existingHotel.setIdFront(hotel.getIdFront());
+            }
+            if (hotel.getIdBack() != null) {
+                existingHotel.setIdBack(hotel.getIdBack());
+            }
+            if (hotel.getLicense() != null) {
+                existingHotel.setLicense(hotel.getLicense());
+            }
 
             // 保存更新
             hotelRepository.save(existingHotel);
@@ -180,5 +192,18 @@ public class HotelService {
 
     public List<HotelVO> findAll() {
         return hotelRepository.findAll();
+    }
+
+    public byte[] getImageByType(HotelVO hotel, String type) {
+        switch (type) {
+            case "idFront":
+                return hotel.getIdFront();
+            case "idBack":
+                return hotel.getIdBack();
+            case "license":
+                return hotel.getLicense();
+            default:
+                return null; // 返回空值，供控制器進一步處理
+        }
     }
 }
