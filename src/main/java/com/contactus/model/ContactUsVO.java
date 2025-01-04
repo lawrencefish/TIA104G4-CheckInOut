@@ -13,16 +13,6 @@ public class ContactUsVO {
     private String name;        // 姓名
     private String email;       // 信箱  
     private String message;     // 請輸入內容
-  
-//一個註解
-@Data
-@Builder
-public class ContactUsVO {
-
-    // Required fields
-    private String name;        // 姓名
-    private String email;       // 信箱
-    private String message;     // 請輸入內容
 
     // Optional fields
     private String orderNumber; // 訂單編號
@@ -30,18 +20,6 @@ public class ContactUsVO {
     private LocalDate checkInDate; // 入住日期
     private byte[] photo;       // 上傳照片
 
-    
-    // Validation methods
-    public boolean isValid() {
-        return isNameValid() && 
-               isEmailValid() && 
-               isMessageValid();
-    }
-    
-    private boolean isNameValid() {
-        return name != null && !name.trim().isEmpty();
-    }
-    
 
     // Validation methods
     public boolean isValid() {
@@ -68,10 +46,6 @@ public class ContactUsVO {
     }
     
 
-    private boolean isMessageValid() {
-        return message != null && !message.trim().isEmpty();
-    }
-
     // Custom toString to avoid printing large photo data
     @Override
     public String toString() {
@@ -88,13 +62,4 @@ public class ContactUsVO {
 }
 
 
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", orderNumber='" + orderNumber + '\'' +
-                ", hotelName='" + hotelName + '\'' +
-                ", checkInDate=" + checkInDate +
-                ", message='" + message + '\'' +
-                ", hasPhoto=" + (photo != null) +
-                '}';
-    }
-}
+    
