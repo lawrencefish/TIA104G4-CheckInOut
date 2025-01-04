@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("memberService")
 public class MemberService {
@@ -20,10 +21,12 @@ public class MemberService {
 		repository.save(memberVO);
 	}
 
+	@Transactional
 	public void updateMember(MemberVO memberVO) {
 		repository.save(memberVO);
 	}
 
+	@Transactional
 	public void deleteMember(Integer memberId) {
 		if (repository.existsById(memberId)) {
 			repository.deleteByMemberID(memberId);
