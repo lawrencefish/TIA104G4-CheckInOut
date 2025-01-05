@@ -500,6 +500,7 @@
     </footer>
 
     <script>
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
@@ -644,7 +645,7 @@
             const endDate = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}-01`;
 
 
-            fetch(`/api/roomInventory/full?startDate=${startDate}&endDate=${endDate}`, { method: 'GET', credentials: 'include' })
+            fetch(`${contextPath}/api/roomInventory/full?startDate=${startDate}&endDate=${endDate}`, { method: 'GET', credentials: 'include' })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('獲取庫存數據失敗');
