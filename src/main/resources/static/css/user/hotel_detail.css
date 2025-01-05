@@ -1,0 +1,158 @@
+/* 通用CSS For header */
+body {
+    width: 100vw;
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    min-height: 7vh;
+    z-index: 3;
+}
+
+footer {
+    height: 7vh;
+}
+
+ul .dropdown-menu {
+    width: 15vw;
+}
+
+ul .dropdown-menu.login {
+    width: 20vw;
+}
+
+ul .dropdown-menu .dropdown-item {
+    padding: 0.5em 0.3em;
+}
+
+.row-cols-1::-webkit-scrollbar {
+    display: none;
+}
+
+.big-title {
+    height: 100px;
+    background-color: #eeeae7;
+}
+
+.hotel-main {
+    min-height: 79vh;
+}
+
+.carousel-item {
+    height: 50vh;
+}
+
+.carousel-item img {
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.search-bar {
+    padding: 15px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-wrapper {
+    position: static;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1050;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.calendar-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar-wrapper th,
+.calendar-wrapper td {
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.calendar-wrapper th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.calendar-wrapper td:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+}
+
+.card {
+    margin-bottom: 1.5rem;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.card img {
+    border-radius: 8px 0 0 8px;
+}
+
+.hotel_title {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.review-container {
+    display: flex;
+    overflow-x: auto;
+}
+
+.review-container::-webkit-scrollbar {
+    display: none;
+}
+
+.review-card {
+    flex: 0 0 auto;
+    width: 300px;
+    margin-right: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.review-card .card-title {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.map-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #e9ecef;
+}

@@ -17,6 +17,7 @@ public class MemberService {
 	@Autowired
 	private SessionFactory sessionFactory;
 
+	@Transactional
 	public void addMember(MemberVO memberVO) {
 		repository.save(memberVO);
 	}
