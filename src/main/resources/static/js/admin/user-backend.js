@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 加載業者資料
 		loadBusinessData() {
-		    fetch('/hotel/getHotelsData')
+		    fetch('/adminHotel/findAllHotels')
 		        .then(response => {
 		            if (!response.ok) {
 		                throw new Error(`HTTP error! status: ${response.status}`);

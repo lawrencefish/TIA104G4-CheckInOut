@@ -8,17 +8,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 		
 		let hotels = []; // 存儲實際的飯店數據
+		let rooms = [];  // 存儲實際的房型數據
 		
 		// 獲取飯店列表
 		async function fetchHotels() {
 		    try {
-		        const response = await fetch('/hotel/getHotelsData');
+		        const response = await fetch('/adminHotel/findAllHotels');
 		        if (!response.ok) {
-		            throw new Error('Failed to fetch hotels');
+		            throw new Error(`HTTP錯誤 ! 狀態碼: ${response.status}`);
 		        }
-		        return await response.json();
+				const data = await response.json();
+				console.log('已取得飯店資料:', data); // 添加日誌
+		        return data;
 		    } catch (error) {
-		        console.error('Error fetching hotels:', error);
+		        console.error('取得飯店資料時發生錯誤:', error);
 		        return [];
 		    }
 		}
@@ -40,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="card-content">
                         <div class="card-header">
                             <h3 class="card-title">${hotel.name}</h3>
-                            <span class="status-badge ${hotel.status}">${statusText[hotel.status]}</span>
+                            <span class="status-badge status-${hotel.status}">${statusText[hotel.status]}</span>
                         </div>
                         <p class="card-info">地址：${hotel.address}</p>
                         <p class="card-info">統一編號：${hotel.taxId}</p>
@@ -54,37 +57,58 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 添加點擊事件
             document.querySelectorAll('.review-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('action-button')) {
-                        const hotelId = card.getAttribute('data-hotel-id');
-                        window.location.href = `/industry-review.html?id=${hotelId}`;
-                    }
+                card.querySelector('.action-button').addEventListener('click', (e) => {
+					e.preventDefault();
+                        const hotelId = card.dataset.hotelId;
+                    if (hotelId) {
+                        window.location.href = `/admin/industryReview?/${hotelId}`;
+                    } else {
+						console.error('查無飯店ID');
+					}
                 });
             });
         }
 
+		
+		// 獲取房型列表
+   		async function fetchRooms() {
+   			try {
+           		const response = await fetch('/api/roomType/findAllRooms');
+           		if (!response.ok) {
+               		throw new Error(`HTTP錯誤 ! 狀態碼: ${response.status}`);
+           		}
+       			const data = await response.json();
+           		console.log('已取得房型資料:', data);
+           		return data;
+       		} catch (error) {
+           		console.error('取得房型資料時發生錯誤:', error);
+           		return [];
+			}
+		}
         // 渲染房型列表
         function renderRoomsList(status = 'all') {
             const filteredRooms = status === 'all'
-                ? mockRoomTypes
-                : mockRoomTypes.filter(room => room.status === status);
+                ? rooms
+                : rooms.filter(room => room.status === parseInt(status));
 
             const roomsList = document.getElementById('roomsList');
             roomsList.innerHTML = filteredRooms.map(room => `
-                <div class="review-card" data-room-id="${room.id}">
+                <div class="review-card" data-room-id="${room.roomTypeId}">
                     <img 
                         src="${room.image}" 
-                        alt="${room.roomTypeName}" 
+                        alt="${room.roomName}" 
                         class="card-image"
                     />
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">${room.roomTypeName}</h3>
-                            <span class="status-badge ${room.status}">${statusText[room.status]}</span>
+                            <h3 class="card-title">${room.roomName}</h3>
+                            <span class="status-badge status-${room.status}">${statusText[room.status]}</span>
                         </div>
-                        <p class="card-info">飯店：${room.hotelName}</p>
-                        <p class="card-info">房間數量：${room.roomCount}</p>
-                        <p class="card-info">提交日期：${room.submitDate}</p>
+                        <p class="card-info">飯店名稱：${room.hotel.name}</p>
+						<p class="card-info">最大入住人數：${room.maxPerson}人</p>
+						<p class="card-info">房間數量：${room.roomNum}</p>
+						<p class="card-info">早餐：${room.breakfast === 1 ? '含早餐' : '不含早餐'}</p>
+                        <p class="card-info">提交日期：${new Date(room.reviewTime).toLocaleDateString()}</p>
                         <div class="card-actions">
                             <button class="action-button primary-button">審核詳情</button>
                         </div>
@@ -94,11 +118,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 添加點擊事件
             document.querySelectorAll('.review-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('action-button')) {
-                        const roomId = card.getAttribute('data-room-id');
-                        window.location.href = `/roomtype-review.html?id=${roomId}`;
-                    }
+				const actionButton = card.querySelector('.action-button');
+                actionButton.addEventListener('click', (e) => {
+					e.preventDefault();
+					console.log('按鈕點擊');
+                    const roomId = card.dataset.roomId;
+					console.log('房型ID', roomId);
+					if (roomId){
+                        window.location.href = `/admin/roomtype-review?id=${roomId}`;
+						console.log('準備跳轉到:', url);
+                    } else {
+						console.error('查無房型ID')
+					}
                 });
             });
         }
@@ -154,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             let currentStatus = 'all';
 
             // 初始化狀態數量
-            updateStatusCounts(Hotels);
+//            updateStatusCounts(hotels);
 
             // 更新篩選按鈕狀態
             function updateFilterButtons(selectedStatus) {
@@ -193,16 +224,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 updateStatusCounts(hotels);
             });
 
-//            document.getElementById('roomsTab').addEventListener('click', () => {
-//                currentTab = 'rooms';
-//                switchTab('rooms');
-//                renderRoomsList(currentStatus);
-//                updateStatusCounts(RoomTypes);
-//            });
+            document.getElementById('roomsTab').addEventListener('click', () => {
+                currentTab = 'rooms';
+                switchTab('rooms');
+                renderRoomsList(currentStatus);
+                updateStatusCounts(rooms);
+            });
 
         }
 		// 初始化數據和功能
         hotels = await fetchHotels();
+		rooms = await fetchRooms();
         renderHotelsList('all');
         updateStatusCounts(hotels);
         initializeFilters();

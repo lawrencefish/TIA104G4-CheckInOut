@@ -1,5 +1,5 @@
-// === 修改：移除模擬資料，改用資料庫資料 ===
 $(document).ready(function () {
+    // === 配置常數 ===
     const CONFIG = {
         itemsPerPage: 10,
         defaultSortField: 'adminId',
@@ -7,13 +7,67 @@ $(document).ready(function () {
         passwordMinLength: 8
     };
 
+    // === 全局變數 ===
     let currentPage = 1;
     let currentSort = {
         field: CONFIG.defaultSortField,
         direction: CONFIG.defaultSortDirection
     };
 
-    // === 新增：統一的API請求處理函數 ===
+    // === 輔助函數 ===
+    function handleError(error, message = '操作失敗') {
+        console.error(error);
+        alert(message);
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            ? unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;")
+            : '';
+    }
+
+    const validateData = {
+        phone: (phone) => {
+            const isValid = /^[0-9]{10}$/.test(phone);
+            return {
+                isValid,
+                errors: isValid ? [] : ['請輸入10位數字的電話號碼']
+            };
+        },
+        email: (email) => {
+            const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            return {
+                isValid,
+                errors: isValid ? [] : ['請輸入有效的電子郵件地址']
+            };
+        },
+        password: (password) => {
+            const errors = [];
+            if (password.length < CONFIG.passwordMinLength) {
+                errors.push(`密碼長度至少需要${CONFIG.passwordMinLength}個字符`);
+            }
+            if (!/[A-Z]/.test(password)) {
+                errors.push('密碼必須包含至少一個大寫字母');
+            }
+            if (!/[a-z]/.test(password)) {
+                errors.push('密碼必須包含至少一個小寫字母');
+            }
+            if (!/[0-9]/.test(password)) {
+                errors.push('密碼必須包含至少一個數字');
+            }
+            return {
+                isValid: errors.length === 0,
+                errors
+            };
+        }
+    };
+
+    // === API 請求處理函數 ===
     const api = {
         get: async (url, params = {}) => {
             try {
@@ -24,7 +78,7 @@ $(document).ready(function () {
                 });
                 return response;
             } catch (error) {
-                handleError(error);
+                handleError(error, 'API請求失敗');
                 throw error;
             }
         },
@@ -34,10 +88,7 @@ $(document).ready(function () {
                     url: url,
                     method: 'POST',
                     data: JSON.stringify(data),
-                    contentType: 'application/json',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    contentType: 'application/json'
                 });
                 return response;
             } catch (error) {
@@ -51,10 +102,7 @@ $(document).ready(function () {
                     url: url,
                     method: 'PUT',
                     data: JSON.stringify(data),
-                    contentType: 'application/json',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    contentType: 'application/json'
                 });
                 return response;
             } catch (error) {
@@ -64,32 +112,42 @@ $(document).ready(function () {
         }
     };
 
+
     // === 修改：使用資料庫資料的管理員列表獲取 ===
     async function fetchAdminList(page, filters = {}) {
         const $loadingSpinner = $('#loadingSpinner');
         $loadingSpinner.show();
 
         try {
-            // 構建API請求參數
-            const params = {
-                page: page,
-                size: CONFIG.itemsPerPage,
-                sortField: currentSort.field,
-                sortDirection: currentSort.direction,
-                ...filters
-            };
-
             // 發送API請求獲取管理員列表
-            const response = await api.get('/admin/adminBackend', params);
+            const response = await api.get('/admin/list/api', {  // 使用新增的 list/api 端點
+			    page: page,
+			    size: CONFIG.itemsPerPage,
+			    ...filters
+			});
 			
-            const admins = await response.json(); // 因為後端直接返回 List<Admin>
+			// 修改資料處理邏輯，添加錯誤檢查
+	        if (!response) {
+	            throw new Error('No data received');
+	        }
+			
+ 			// 確保回應數據是陣列格式
+	        const admins = Array.isArray(response) ? response : 
+      			(response.content || response.data || []);
+				
+			console.log('Fetched admins:', admins); // 添加 debug 日誌
+			
+			if (admins.length === 0) {
+	            console.log('No admins found'); // 添加 debug 日誌
+	        }
+				
 			const totalPages = Math.ceil(admins.length / CONFIG.itemsPerPage); // 在前端計算總頁數
             
 			// 更新UI
             renderAdminTable(admins);
             renderPagination(totalPages);
         } catch (error) {
-            console.error(error, '獲取管理員列表失敗');
+            console.error('獲取管理員列表失敗:', error);
 			alert('獲取資料失敗，請稍後再試');
 	    } finally {
             $loadingSpinner.hide();
@@ -246,7 +304,7 @@ $(document).ready(function () {
 				    email: formData.email
 					});
                 
-                 重新獲取列表
+                 // 重新獲取列表
                 await fetchAdminList(currentPage, getSearchFilters());
                 $modal.fadeOut(() => $modal.remove());
                 

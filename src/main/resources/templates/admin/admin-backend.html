@@ -118,7 +118,7 @@
           		<td th:text="${#dates.format(admin.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>	
           		<td th:text="${admin.phoneNumber}"></td>	
           		<td th:text="${admin.email}"></td>
-          		<td>尚未實作</td>
+          		<td >尚未實作</td>
           		<td>
           			<button th:attr="data-id=${admin.adminId}" class="edit-btn">編輯</button>
           			<button th:attr="data-id=${admin.adminId}" class="delete-btn">刪除</button>
@@ -140,7 +140,7 @@
     <div th:replace="~{admin/backend-footer :: footer}"></div>
 	
 	<script th:src="'https://code.jquery.com/jquery-3.7.1.min.js'"></script>
-	<script th:src="@{/js/admin/header.js}"></script>
 	<script th:src="@{/js/admin/admin-backend.js}"></script>
+	<script th:src="@{/js/admin/header.js}"></script>
 </body>
 </html>

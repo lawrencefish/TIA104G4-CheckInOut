@@ -12,6 +12,8 @@ import com.hotel.model.HotelRepository;
 import com.hotel.model.HotelService;
 import com.hotel.model.HotelVO;
 import com.mysql.cj.protocol.x.Ok;
+import com.roomType.model.RoomTypeService;
+import com.roomType.model.RoomTypeVO;
 import com.admin.model.*;
 
 import java.util.List;
@@ -56,7 +58,13 @@ public class AdminController {
         @RequestParam(required = false) String keyword,
         @RequestParam(required = false) String status,
         @RequestParam(required = false) String permissions) {
-        return adminService.getAll(page);
+    	
+    	List<Admin> admins = adminService.getAll(page);
+        if (admins == null || admins.isEmpty()) {
+            // 記錄日誌
+            System.out.println("No admins found for page: " + page);
+        }
+        return admins;
     }
 
     // 顯示新增表單
@@ -192,5 +200,24 @@ public class AdminController {
             }
         }
         return "admin/industry-backend";
+    }
+    
+    @GetMapping("/industryReview")
+    public String showIndustryReview(@RequestParam(required = false) Integer id,
+    	    Model model) {
+        if (id != null) {
+            Optional<HotelVO> hotelVO = hotelService.findById(id);
+            if (hotelVO.isPresent()) {
+            	HotelVO hotel = hotelVO.get();
+                model.addAttribute("name", hotel.getName());
+                model.addAttribute("taxId", hotel.getTaxId());
+                model.addAttribute("district", hotel.getDistrict());
+                model.addAttribute("city", hotel.getCity());
+                model.addAttribute("address", hotel.getAddress());
+                model.addAttribute("phoneNumber", hotel.getPhoneNumber());
+                model.addAttribute("email", hotel.getEmail());
+            }
+        }
+        return "admin/industry-review";
     }
 }

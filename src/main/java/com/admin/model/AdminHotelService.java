@@ -11,7 +11,7 @@ import com.hotel.model.HotelRepository;
 import com.hotel.model.HotelService;
 import com.hotel.model.HotelVO;
 
-@Service
+@Service("AdminHotelService")
 public class AdminHotelService {
 	
 	private final HotelRepository hotelRepository; 
@@ -20,7 +20,7 @@ public class AdminHotelService {
 	        this.hotelRepository = hotelRepository;
 	    }
 	 
-	public List<HotelVO> getAllHotels(){
+	public List<HotelVO> findAllHotels(){
 		return hotelRepository.findAll();
 	}
 	
@@ -42,7 +42,8 @@ public class AdminHotelService {
 
 	public List<HotelVO> findAll() {
 		// TODO Auto-generated method stub
-		return null;
+//		return null;
+		return hotelRepository.findAll();
 	}
 
 	public Optional<HotelVO> findById(Integer id) {
