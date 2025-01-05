@@ -35,7 +35,7 @@ public class RoomInventoryVO {
     // delete_quantity INT NOT NULL
     @NotNull(message = "刪減數量不可為空")
     @Column(name = "delete_quantity", nullable = false)
-    private Integer deleteQuantity;
+    private Integer deleteQuantity = 0; // 設置默認值為 0
 
     // available_quantity INT NOT NULL
     @NotNull(message = "可訂數量不可為空")

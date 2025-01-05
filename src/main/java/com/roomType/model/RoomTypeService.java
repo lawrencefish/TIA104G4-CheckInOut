@@ -100,4 +100,8 @@ public class RoomTypeService {
     public RoomTypeVO getRoomTypeById(Integer roomTypeId) {
         return roomTypeRepository.findById(roomTypeId).orElse(null);
     }
+
+    public List<RoomTypeVO> findAll() {
+        return roomTypeRepository.findAll(); // 調用 JPA 提供的 findAll() 方法
+    }
 }
