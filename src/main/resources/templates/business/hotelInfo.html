@@ -373,6 +373,22 @@ footer {
 	border-top: 1px solid #ddd;
 	margin-top: auto;
 }
+
+.image-container {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	margin-top: 20px;
+}
+
+.hotel-image {
+	width: 200px;
+	height: auto;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	object-fit: cover;
+	margin-top: 5px;
+}
 </style>
 </head>
 
@@ -440,7 +456,7 @@ footer {
 		<!-- Main -->
 		<main>
 			<h1>基本資料設定</h1>
-			<form id="mianform" th:action="@{/business/hotelInfo}" method="post">
+			<form id="mianform" th:action="@{/business/hotelInfo}" method="post" enctype="multipart/form-data">
 				<label for="name">飯店名稱</label> <input type="text" id="name"
 					name="name" th:value="${#httpSession.getAttribute('hotel').name}">
 
@@ -461,9 +477,29 @@ footer {
 				</select> <label for="district">地區</label> <select id="district"
 					name="district">
 					<option value="">請選擇地區</option>
-				</select> <label for="address-detail">詳細地址</label> <input type="text"
+				</select>
+
+				<label for="address-detail">詳細地址</label> <input type="text"
 					id="address-detail" name="address"
 					th:value="${#httpSession.getAttribute('hotel').address}">
+
+				<label for="owner">負責人</label>
+				<input type="text" id="owner" name="owner" th:value="${#httpSession.getAttribute('hotel').owner}">
+
+				<!-- 修改圖片顯示區域為可上傳 -->
+				<div class="image-container">
+					<label for="id-front">身份證正面</label>
+					<img th:src="@{'/hotel/image?type=idFront'}" alt="身份證正面" class="hotel-image" id="id-front-preview">
+					<input type="file" id="id-front" name="idFront" accept="image/*" onchange="previewImage(this, 'id-front-preview')">
+
+					<label for="id-back">身份證反面</label>
+					<img th:src="@{'/hotel/image?type=idBack'}" alt="身份證反面" class="hotel-image" id="id-back-preview">
+					<input type="file" id="id-back" name="idBack" accept="image/*" onchange="previewImage(this, 'id-back-preview')">
+
+					<label for="license">營業執照</label>
+					<img th:src="@{'/hotel/image?type=license'}" alt="營業執照" class="hotel-image" id="license-preview">
+					<input type="file" id="license" name="license" accept="image/*" onchange="previewImage(this, 'license-preview')">
+				</div>
 
 				<button class="submit" type="submit">儲存設定</button>
 			</form>
@@ -474,32 +510,6 @@ footer {
 	<footer> &copy; 2024 Check in out. All rights reserved. </footer>
 
 	<script>
-        // // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        // const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        // const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-        //
-        // // Header 的 a 標籤點擊事件
-        // headerLinks.forEach(link => {
-        //     link.addEventListener('click', function (e) {
-        //         // 移除所有 header a 標籤的 active 樣式
-        //         headerLinks.forEach(navLink => navLink.classList.remove('active'));
-        //         // 為當前被點擊的 header a 標籤添加 active 樣式
-        //         // e.preventDefault(); // 阻止跳轉
-        //         this.classList.add('active');
-        //     });
-        // });
-        //
-        // // Aside 的 a 標籤點擊事件
-        // asideLinks.forEach(link => {
-        //     link.addEventListener('click', function (e) {
-        //         // 移除所有 aside a 標籤的 active 樣式
-        //         asideLinks.forEach(navLink => navLink.classList.remove('active'));
-        //         // 為當前被點擊的 aside a 標籤添加 active 樣式
-        //         // e.preventDefault(); // 阻止跳轉
-        //         this.classList.add('active');
-        //     });
-        // });
-
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
@@ -624,6 +634,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+		function previewImage(input, previewId) {
+			const file = input.files[0];
+			if (file) {
+				const reader = new FileReader();
+				reader.onload = function (e) {
+					document.getElementById(previewId).src = e.target.result;
+				};
+				reader.readAsDataURL(file);
+			}
+		}
 
     </script>
 </body>

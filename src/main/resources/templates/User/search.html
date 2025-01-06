@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check in Out</title>
+<link rel="stylesheet"
+	th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
+<link rel="stylesheet" th:href="@{/css/user/search.css}">
+<link rel="stylesheet" href="/vendors/bootstrap/css/dropdowns.css">
+
+</head>
+
+<body>
+
+	<!-- 標題列 -->
+	<header class="p-1 border-bottom shadow-sm">
+		<div class="container">
+			<div
+				class="d-flex flex-wrap align-items-center justify-content-center">
+				<!-- 首頁logo -->
+				<a th:href="@{/user/}" class="d-block"> <img
+					th:src="@{/imgs/user/checKInOut_logo.png}" alt="checkinout"
+					width="72" height="72">
+				</a>
+				<!-- <ul class="nav col justify-content-end login">
+                    <li><a th:href="@{/user/orderedfinal}" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis">購物車</a></li>
+                    <li>
+                        <div class="dropdown">
+                            <a href="#" class="d-block link-body-emphasis text-decoration-none px-2 py-2"
+                                data-bs-toggle="dropdown" aria-expanded="false">登入 / 註冊
+                            </a>
+                            <div class="dropdown-menu login dropdown-menu-end mt-3 px-3 border-0 shadow-sm">
+                                <form class="px-4 py-3">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email/帳號</label>
+                                        <input type="email" class="form-control" id="email" placeholder="請輸入帳號">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">密碼</label>
+                                        <input type="password" class="form-control" id="password" placeholder="請輸入密碼">
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" type="button">Sign in</button>
+                                        <button class="btn btn-primary" type="button">Sign in with Google</button>
+                                        <button class="btn btn-primary" type="button">Sign in</button>
+
+                                    </div>
+                                      
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                </ul> -->
+
+				<!-- 登入後 -->
+				<ul class="nav col justify-content-end login">
+					<li><a th:href="@{/user/orderedfinal}"
+						class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
+					<li><a href="#" class="nav-link px-10 link-body-emphasis">購物車</a></li>
+					<li>
+						<div class="dropdown text-end px-2 py-20">
+							<a href="#"
+								class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+								data-bs-toggle="dropdown" aria-expanded="false"> <img
+								src="https://github.com/mdo.png" alt="mdo" width="32"
+								height="32" class="rounded-circle">
+							</a>
+							<ul
+								class="dropdown-menu dropdown-menu-end text-center mt-3 border-0 shadow-sm"
+								data-bs-display="static">
+								<li><a class="dropdown-item" th:href="@{/user/profile}">會員中心</a></li>
+								<li><a class="dropdown-item" th:href="@{/user/orderedfinal}">訂單管理</a></li>
+								<li><a class="dropdown-item" th:href="@{/user/favMember}">我的最愛</a></li>
+								<li><a class="dropdown-item" th:href="@{/user/coupon}">優惠券</a></li>
+								<li>
+									<hr class="dropdown-divider">
+								</li>
+								<li><a class="dropdown-item" th:href="@{/user/contactUs}">客服中心</a></li>
+								<li><a class="dropdown-item" href="#">Sign out</a></li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</header>
+
+	<main>
+		<div class="container">
+			<div class="row justify-content-center mb-3">
+				<div class="col-6 d-flex flex-column shadow-sm main-content">
+					<div class="row d-inline-flex my-2">
+						<div class="col-2 text-start">
+							<a href="index.html" class="btn btn-light">返回</a>
+						</div>
+						<div class="col-10 text-end">
+							<div class="dropdown">
+								<button class="btn btn-light dropdown-toggle" id="hotel-filter"
+									data-bs-toggle="dropdown" aria-expanded="false">篩選</button>
+								<ul class="dropdown-menu dropdown-menu-end" style="width: 20vw">
+									<li class="my-2"><a class="dropdown-item" href="#">最優評價</a></li>
+									<li class="my-2"><a class="dropdown-item" href="#">最低價優先</a></li>
+									<li class="my-2 px-3"><label for="price-range"
+										class="form-label">房價區間</label> <input type="range"
+										class="form-range" min="0" max="30000" step="1000"
+										id="price-range"></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="card-scroll row-cols-1"></div>
+				</div>
+				<div class="map_canva col-6">
+					<div id="map"></div>
+				</div>
+			</div>
+		</div>
+
+	</main>
+	<!-- 底欄 -->
+	<footer>
+		<div class="row border-top">
+			<div class="container">
+				<ul class="nav justify-content-center">
+					<li class="nav-item"><a th:href="@{/user/}"
+						class="nav-link px-2 text-body-secondary">首頁</a></li>
+					<li class="nav-item"><a th:href="@{/user/search}"
+						class="nav-link px-2 text-body-secondary">找房</a></li>
+					<li class="nav-item"><a href="#"
+						class="nav-link px-2 text-body-secondary">購物車</a></li>
+					<li class="nav-item"><a th:href="@{/user/orderedfinal}"
+						class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+					<li class="nav-item"><a th:href="@{/user/faq}"
+						class="nav-link px-2 text-body-secondary">常見問題</a></li>
+					<li class="nav-item"><a th:href="@{/user/contactUs}"
+						class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+					<li class="nav-item"><a th:href="@{/login/}"
+						class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+				</ul>
+				<div class="d-flex justify-content-center align-items-start mb-0">
+					<img th:src="@{/imgs/user/checKInOut_logo_light.png}" alt="checkinout"
+						width="128">
+				</div>
+				<!-- <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p> -->
+			</div>
+		</div>
+	</footer>
+	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
+	<script th:src="@{/js/user/search.js}"></script>
+</body>
+
+</html>

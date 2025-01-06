@@ -8,6 +8,7 @@ import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 import java.util.List;
 import com.employee.model.EmployeeVO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hotelFacility.model.HotelFacilityVO;
 import com.hotelImg.model.HotelImgVO;
 import com.roomType.model.RoomTypeVO;
@@ -129,23 +130,32 @@ public class HotelVO {
     //   在 employee 資料表中有 hotel_id 做為外鍵
     //   -> 這裡可用 mappedBy="hotel" (對應 EmployeeVO 的 "hotel")
     //   -> fetch 與 cascade 可依需求自行調整
+    @JsonIgnore
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<EmployeeVO> employees;
 
     // Hotel_img (多) -> Hotel (一)
+    @JsonIgnore
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HotelImgVO> hotelImgs;
 
     // Hotel_facility (多) -> Hotel (一)
     //   多對多關係其實是 Hotel 透過中間表 hotel_facility 與 facility 關聯
     //   但若你有中繼表 HotelFacilityVO，這裡就是一對多
+    @JsonIgnore
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HotelFacilityVO> hotelFacilities;
 
     // Room_type (多) -> Hotel (一)
+    @JsonIgnore
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RoomTypeVO> roomTypes;
 
+//    //Order (多） -> Hotel （一）
+//    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<OrderVO> order;
+    
+    
     // (其他表格 like Orders, Favorite, 也可能參考 hotel_id ，可同樣使用一對多)
 
     // ----------------------------------

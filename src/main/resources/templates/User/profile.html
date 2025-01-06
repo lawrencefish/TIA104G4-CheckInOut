@@ -1,67 +1,77 @@
 <!DOCTYPE html>
-<html lang="zh-tw">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check in Out</title>
-    <link rel="stylesheet" href="/vendors/bootstrap/css/bootstrap.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check in Out</title>
+<link rel="stylesheet"
+	th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
+
+<!--     <link rel="stylesheet" href="/vendors/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <link rel="stylesheet" href="/vendors/bootstrap/css/headers.css">
     <link rel="stylesheet" href="/css/template.css">
     <link rel="stylesheet" href="/vendors/bootstrap/css/dropdowns.css">
-    <style>
-        .profile-upload {
-            max-width: 600px;
-            margin: 2rem auto;
-        }
-        .avatar-placeholder {
-            width: 120px;
-            height: 120px;
-            background-color: #f0f0f0;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            overflow: hidden;
-        }
-        .avatar-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .avatar-icon {
-            width: 60px;
-            height: 60px;
-            fill: #666;
-        }
-        #imagePreview {
-            display: none;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+ -->
+<style>
+.profile-upload {
+	max-width: 600px;
+	margin: 2rem auto;
+}
 
-        .big-title {
-            height: 100px;
-            background-color: #eeeae7;
-        }
-    </style>
+.avatar-placeholder {
+	width: 120px;
+	height: 120px;
+	background-color: #f0f0f0;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto 1rem;
+	overflow: hidden;
+}
+
+.avatar-placeholder img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.avatar-icon {
+	width: 60px;
+	height: 60px;
+	fill: #666;
+}
+
+#imagePreview {
+	display: none;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.big-title {
+	height: 100px;
+	background-color: #eeeae7;
+}
+</style>
 
 </head>
 
 <body>
-    <!-- 標題列 -->
-    <header class="p-3 mb-0 border-bottom shadow-sm">
-        <div class="container">
-            <div class="d-flex flex-wrap align-items-center justify-content-center">
-                <!-- 首頁logo -->
-                <a href="#" class="d-block">
-                    <img src="/img/logo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-                </a>
-                <ul class="nav col justify-content-end login">
-                    <li><a href="#" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
+	<!-- 標題列 -->
+	<header class="p-1 border-bottom shadow-sm">
+		<div class="container">
+			<div
+				class="d-flex flex-wrap align-items-center justify-content-center">
+				<!-- 首頁logo -->
+				<a th:href="@{/user/}" class="d-block"> <img
+					th:src="@{/imgs/user/checKInOut_logo.png}" alt="checkinout"
+					width="72" height="72">
+				</a>
+				<!-- <ul class="nav col justify-content-end login">
+                    <li><a th:href="@{/user/orderedfinal}" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
                     <li><a href="#" class="nav-link px-2 link-body-emphasis">購物車</a></li>
                     <li>
                         <div class="dropdown">
@@ -84,16 +94,49 @@
                                         <button class="btn btn-primary" type="button">Sign in</button>
 
                                     </div>
-
+                                      
                                 </form>
                             </div>
                         </div>
                     </li>
-                </ul>
-    </header>
+                </ul> -->
 
-    <!-- 登入後 -->
-    <!-- <ul class="nav col justify-content-end login">
+				<!-- 登入後 -->
+				<ul class="nav col justify-content-end login">
+					<li><a th:href="@{/user/orderedfinal}"
+						class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
+					<li><a href="#" class="nav-link px-10 link-body-emphasis">購物車</a></li>
+					<li>
+						<div class="dropdown text-end px-2 py-20">
+							<a href="#"
+								class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+								data-bs-toggle="dropdown" aria-expanded="false"> <img
+								src="https://github.com/mdo.png" alt="mdo" width="32"
+								height="32" class="rounded-circle">
+							</a>
+							<ul
+								class="dropdown-menu dropdown-menu-end text-center mt-3 border-0 shadow-sm"
+								data-bs-display="static">
+								<li><a class="dropdown-item" th:href="@{/user/profile}">會員中心</a></li>
+								<li><a class="dropdown-item"
+									th:href="@{/user/orderedfinal}">訂單管理</a></li>
+								<li><a class="dropdown-item" th:href="@{/user/favMember}">我的最愛</a></li>
+								<li><a class="dropdown-item" th:href="@{/user/coupon}">優惠券</a></li>
+								<li>
+									<hr class="dropdown-divider">
+								</li>
+								<li><a class="dropdown-item" th:href="@{/user/contactUs}">客服中心</a></li>
+								<li><a class="dropdown-item" href="#">Sign out</a></li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</header>
+
+	<!-- 登入後 -->
+	<!-- <ul class="nav col justify-content-end login">
                     <li><a href="#" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
                     <li><a href="#" class="nav-link px-2 link-body-emphasis">購物車</a></li>
                     <li>
@@ -118,133 +161,135 @@
                         </div>
                     </li>
                 </ul> -->
-    <main>
-        <div class="container shadow-sm">
-            <div class="row big-title mb-3">
-                <h1 class="text-center fw-bold display-5 col align-self-center">個人資料</h1>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-6">
-                    <div class="text-center mb-4">
-                        <div class="row align-items-end justify-content-around">
-                            <div class="profile-upload">
-                                <div class="avatar-placeholder">
-                                    <svg class="avatar-icon" viewBox="0 0 24 24">
-                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+	<main>
+		<div class="container shadow-sm">
+			<div class="row big-title mb-3">
+				<h1 class="text-center fw-bold display-5 col align-self-center">個人資料</h1>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-6">
+					<div class="text-center mb-4">
+						<div class="row align-items-end justify-content-around">
+							<div class="profile-upload">
+								<div class="avatar-placeholder">
+									<svg class="avatar-icon" viewBox="0 0 24 24">
+                                        <path
+											d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                                     </svg>
-                                    <img id="imagePreview" src="#" alt="預覽圖片">
-                                </div>
-                    
-                                <div class="mb-3 text-center">
-                                    <label for="imageUpload" class="btn btn-dark">
-                                        更新相片
-                                    </label>
-                                    <input type="file" id="imageUpload" class="d-none" accept="image/*">
-                                </div>
-                           
-                    </div>
-                    <form>
-                        <div class="mb-3">
-                            <label class="form-label">帳號(電子信箱)</label>
-                            <input type="email" class="form-control" placeholder="xxxx@gmail.com">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">變更密碼</label>
-                            <input type="password" class="form-control" placeholder="xxxxxx">
-                        </div>
+									<img id="imagePreview" src="#" alt="預覽圖片">
+								</div>
 
-                        <div class="mb-3">
-                            <label class="form-label">再次確認密碼</label>
-                            <input type="password" class="form-control" placeholder="xxxxxx">
-                        </div>
+								<div class="mb-3 text-center">
+									<label for="imageUpload" class="btn btn-dark"> 更新相片 </label> <input
+										type="file" id="imageUpload" class="d-none" accept="image/*">
+								</div>
 
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label class="form-label">中文姓</label>
-                                <input type="text" class="form-control" placeholder="OOO">
-                            </div>
-                            <div class="col">
-                                <label class="form-label">中文名</label>
-                                <input type="text" class="form-control" placeholder="OOO">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label class="form-label">性別</label>
-                                <select class="form-select" required>
-                                    <option value="">請選擇</option>
-                                    <option value="M">男</option>
-                                    <option value="F">女</option>
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label class="form-label">生日</label>
-                                <input type="date" class="form-control" required>
-                            </div>
-                        </div>
+							</div>
+							<form>
+								<div class="mb-3">
+									<label class="form-label">帳號(電子信箱)</label> <input type="email"
+										class="form-control" placeholder="xxxx@gmail.com">
+								</div>
+								<div class="mb-3">
+									<label class="form-label">變更密碼</label> <input type="password"
+										class="form-control" placeholder="xxxxxx">
+								</div>
 
-                        <div class="mb-3">
-                            <label class="form-label">連絡電話</label>
-                            <input type="tel" class="form-control" placeholder="0000-000-000">
-                        </div>
-                            <div class="text-center mt-4">
-                                <button type="submit" class="btn btn-dark me-2">儲存</button>
-                                <button type="button" class="btn btn-dark">取消</button>
-                            </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </main>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-</div>
-</div>
-</div>
-</header>
+								<div class="mb-3">
+									<label class="form-label">再次確認密碼</label> <input type="password"
+										class="form-control" placeholder="xxxxxx">
+								</div>
 
-<main>
-    <div class="col-6 justify-content-center">
+								<div class="row mb-3">
+									<div class="col">
+										<label class="form-label">中文姓</label> <input type="text"
+											class="form-control" placeholder="OOO">
+									</div>
+									<div class="col">
+										<label class="form-label">中文名</label> <input type="text"
+											class="form-control" placeholder="OOO">
+									</div>
+								</div>
+								<div class="row mb-3">
+									<div class="col">
+										<label class="form-label">性別</label> <select
+											class="form-select" required>
+											<option value="">請選擇</option>
+											<option value="M">男</option>
+											<option value="F">女</option>
+										</select>
+									</div>
+									<div class="col">
+										<label class="form-label">生日</label> <input type="date"
+											class="form-control" required>
+									</div>
+								</div>
 
-    </div>
-</main>
-<footer>
-    <div class="container">
-        <footer class="py-3 my-4">
-            <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">首頁</a></li>
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">找房</a></li>
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">訂單管理</a></li>
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">常見問題</a></li>
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">客服中心</a></li>
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
-            </ul>
-            <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p>
-        </footer>
-    </div>
+								<div class="mb-3">
+									<label class="form-label">連絡電話</label> <input type="tel"
+										class="form-control" placeholder="0000-000-000">
+								</div>
+								<div class="text-center mt-4">
+									<button type="submit" class="btn btn-dark me-2">儲存</button>
+									<button type="button" class="btn btn-dark">取消</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
 
-</footer>
-<script src="/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/vendors/jQuery/jquery-3.7.1.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<script src="/js/template.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.getElementById('imageUpload').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.getElementById('imagePreview');
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                document.querySelector('.avatar-icon').style.display = 'none';
-            }
-            reader.readAsDataURL(file);
-        }
-    });
-</script>
+	<footer>
+		<div class="row border-top">
+			<div class="container">
+				<ul class="nav justify-content-center">
+					<li class="nav-item"><a th:href="@{/user/}"
+						class="nav-link px-2 text-body-secondary">首頁</a></li>
+					<li class="nav-item"><a th:href="@{/user/search}"
+						class="nav-link px-2 text-body-secondary">找房</a></li>
+					<li class="nav-item"><a href="#"
+						class="nav-link px-2 text-body-secondary">購物車</a></li>
+					<li class="nav-item"><a th:href="@{/user/orderedfinal}"
+						class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+					<li class="nav-item"><a th:href="@{/user/faq}"
+						class="nav-link px-2 text-body-secondary">常見問題</a></li>
+					<li class="nav-item"><a th:href="@{/user/contactUs}"
+						class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+					<li class="nav-item"><a th:href="@{/login/}"
+						class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+				</ul>
+				<div class="d-flex justify-content-center align-items-start mb-0">
+					<img th:src="@{/imgs/user/checKInOut_logo_light.png}"
+						alt="checkinout" width="128">
+				</div>
+				<!-- <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p> -->
+			</div>
+		</div>
+	</footer>
+	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
+	<script>
+		document
+				.getElementById('imageUpload')
+				.addEventListener(
+						'change',
+						function(e) {
+							const file = e.target.files[0];
+							if (file) {
+								const reader = new FileReader();
+								reader.onload = function(e) {
+									const preview = document
+											.getElementById('imagePreview');
+									preview.src = e.target.result;
+									preview.style.display = 'block';
+									document.querySelector('.avatar-icon').style.display = 'none';
+								}
+								reader.readAsDataURL(file);
+							}
+						});
+	</script>
 </body>
 
 </html>

@@ -9,10 +9,8 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,4 +28,29 @@ public class FaqVO {
     
     @Column(name = "answer", nullable = false)
     private String answer;
+
+	public Integer getFaqId() {
+		return faqId;
+	}
+
+	public void setFaqId(Integer faqId) {
+		this.faqId = faqId;
+	}
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+
+	public String getAnswer() {
+		return answer;
+	}
+
+	public void setAnswer(String answer) {
+		this.answer = answer;
+	}
+
 }
