@@ -1,6 +1,9 @@
 package com.admin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +19,7 @@ import com.roomType.model.RoomTypeService;
 import com.roomType.model.RoomTypeVO;
 import com.admin.model.*;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,15 +60,14 @@ public class AdminController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
         @RequestParam(required = false) String keyword,
-        @RequestParam(required = false) String status,
-        @RequestParam(required = false) String permissions) {
+        @RequestParam(required = false) Byte status,
+        @RequestParam(required = false) Byte permissions){
     	
-    	List<Admin> admins = adminService.getAll(page);
-        if (admins == null || admins.isEmpty()) {
-            // 記錄日誌
-            System.out.println("No admins found for page: " + page);
-        }
-        return admins;
+    	// 搜尋功能
+    	if (keyword != null || status != null || permissions != null) {
+    		return adminService.searchAdmins(keyword, status, permissions);
+    	}
+    	return adminService.getAll(page);
     }
 
     // 顯示新增表單
@@ -97,6 +100,11 @@ public class AdminController {
     // 處理編輯請求 
     @PostMapping("/edit")  // 處理POST /admin/edit 請求
     public String edit(@ModelAttribute Admin admin) {
+    	// 從資料庫取得原本的管理員資料
+        Admin originalAdmin = adminService.getById(admin.getAdminId());
+        
+        // 確保使用原本的帳號
+        admin.setAdminAccount(originalAdmin.getAdminAccount());
         adminService.update(admin);
         return "redirect:/admin/list";  // 編輯完成後重導向到列表頁
     }

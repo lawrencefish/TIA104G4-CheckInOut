@@ -4,7 +4,13 @@ $(document).ready(function () {
         itemsPerPage: 10,
         defaultSortField: 'adminId',
         defaultSortDirection: 'desc',
-        passwordMinLength: 8
+        passwordMinLength: 8,
+		apiEndpoints: {
+		            list: '/admin/list/api',
+		            edit: '/admin/edit',
+		            add: '/admin/add',
+		            updateStatus: '/admin/updateStatus'
+		        }
     };
 
     // === 全局變數 ===
@@ -15,21 +21,39 @@ $(document).ready(function () {
     };
 
     // === 輔助函數 ===
-    function handleError(error, message = '操作失敗') {
-        console.error(error);
-        alert(message);
-    }
+	function escapeHtml(unsafe) {
+	    if (!unsafe) return '';
+	    return unsafe
+	        .toString()
+	        .replace(/&/g, "&amp;")
+	        .replace(/</g, "&lt;")
+	        .replace(/>/g, "&gt;")
+	        .replace(/"/g, "&quot;")
+	        .replace(/'/g, "&#039;");
+	}
+	
+	function handleError(error, defaultMessage = '操作失敗') {
+	        console.error('Error details:', error);
+	        let errorMessage = defaultMessage;
+	        
+	        if (error.responseJSON && error.responseJSON.message) {
+	            errorMessage = error.responseJSON.message;
+	        } else if (error.status === 403) {
+	            errorMessage = '您沒有權限執行此操作';
+	        } else if (error.status === 401) {
+	            errorMessage = '您的登入已過期，請重新登入';
+	            window.location.href = '/admin/login';
+	            return;
+	        }
 
-    function escapeHtml(unsafe) {
-        return unsafe
-            ? unsafe
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;")
-            : '';
-    }
+			// Show error in UI
+		       const $errorAlert = $('<div>')
+		           .addClass('error-alert')
+		           .text(errorMessage)
+		           .appendTo('body');
+		           
+		       setTimeout(() => $errorAlert.fadeOut(() => $errorAlert.remove()), 3000);
+		   }
 
     const validateData = {
         phone: (phone) => {
@@ -66,6 +90,14 @@ $(document).ready(function () {
             };
         }
     };
+	
+	adminAccount: (account) => {
+//            const isValid = /^[a-zA-Z0-9_]{4,20}$/.test(account);
+            return {
+                isValid: true,
+                errors: []
+            };
+        }
 
     // === API 請求處理函數 ===
     const api = {
@@ -75,6 +107,9 @@ $(document).ready(function () {
                     url: url,
                     method: 'GET',
                     data: params,
+					headers: {
+                        'Accept': 'application/json'
+                    }
                 });
                 return response;
             } catch (error) {
@@ -88,7 +123,10 @@ $(document).ready(function () {
                     url: url,
                     method: 'POST',
                     data: JSON.stringify(data),
-                    contentType: 'application/json'
+                    contentType: 'application/json',
+					headers: {
+                        'Accept': 'application/json'
+                    }
                 });
                 return response;
             } catch (error) {
@@ -102,7 +140,10 @@ $(document).ready(function () {
                     url: url,
                     method: 'PUT',
                     data: JSON.stringify(data),
-                    contentType: 'application/json'
+                    contentType: 'application/json',
+					headers: {
+                        'Accept': 'application/json'
+                    }
                 });
                 return response;
             } catch (error) {
@@ -116,40 +157,49 @@ $(document).ready(function () {
     // === 修改：使用資料庫資料的管理員列表獲取 ===
     async function fetchAdminList(page, filters = {}) {
         const $loadingSpinner = $('#loadingSpinner');
-        $loadingSpinner.show();
+        const $tableBody = $('#userTableBody');
 
         try {
-            // 發送API請求獲取管理員列表
-            const response = await api.get('/admin/list/api', {  // 使用新增的 list/api 端點
+			$loadingSpinner.show();
+            $tableBody.empty().append('<tr><td colspan="9" class="text-center">載入中...</td></tr>');
+            // 構建查詢參數
+            const params = {
 			    page: page,
 			    size: CONFIG.itemsPerPage,
+				sort: `${currentSort.field},${currentSort.direction}`,
 			    ...filters
-			});
+			};
 			
-			// 修改資料處理邏輯，添加錯誤檢查
-	        if (!response) {
-	            throw new Error('No data received');
-	        }
+			Object.keys(params).forEach(key => {
+			           if (params[key] == null) {
+			               delete params[key];
+			           }
+			       });
+
+	       const response = await api.get(CONFIG.apiEndpoints.list, params);
 			
- 			// 確保回應數據是陣列格式
-	        const admins = Array.isArray(response) ? response : 
-      			(response.content || response.data || []);
-				
-			console.log('Fetched admins:', admins); // 添加 debug 日誌
-			
-			if (admins.length === 0) {
-	            console.log('No admins found'); // 添加 debug 日誌
-	        }
-				
-			const totalPages = Math.ceil(admins.length / CONFIG.itemsPerPage); // 在前端計算總頁數
+		// 修改資料處理邏輯，添加錯誤檢查
+		if (!response || (!Array.isArray(response) && !response.content)) {
+                throw new Error('Invalid response format from server');
+            }
+
+            const admins = Array.isArray(response) ? response : 
+                (response.content || response.data || []);
             
-			// 更新UI
+            if (admins.length === 0) {
+                $tableBody.html('<tr><td colspan="9" class="text-center">無資料</td></tr>');
+                return;
+            }
+
+            const totalPages = Math.ceil(admins.length / CONFIG.itemsPerPage);
             renderAdminTable(admins);
             renderPagination(totalPages);
+            
         } catch (error) {
-            console.error('獲取管理員列表失敗:', error);
-			alert('獲取資料失敗，請稍後再試');
-	    } finally {
+            console.error('Error fetching admin list:', error);
+            $tableBody.html('<tr><td colspan="9" class="text-center text-red-600">載入失敗，請稍後再試</td></tr>');
+            handleError(error, '獲取管理員列表失敗');
+        } finally {
             $loadingSpinner.hide();
         }
     }
@@ -160,15 +210,18 @@ $(document).ready(function () {
         $tableBody.empty();
 
         admins.forEach(admin => {
-            const $row = $(`
-                <tr data-admin-id="${admin.adminId}">
-                    <td>${admin.adminId}</td>
+            const statusClass = admin.status === 1 ? 'status-active' : 'status-disabled';
+            const statusText = admin.status === 1 ? '啟用中' : '停用';
+            const actionButtonClass = admin.status === 1 ? 'disable-btn' : 'enable-btn';
+            const actionButtonText = admin.status === 1 ? '停用' : '啟用';
+            
+			const $row = $(`
+				<tr data-admin-id="${escapeHtml(admin.adminId)}">
+                    <td>${escapeHtml(admin.adminId)}</td>
                     <td>${escapeHtml(admin.adminAccount)}</td>
                     <td>${admin.permissions === 1 ? '資深管理員' : '管理員'}</td>
                     <td>
-                        <span class="status-badge ${admin.status === 1 ? 'status-active' : 'status-disabled'}">
-                            ${admin.status === 1 ? '啟用中' : '停用'}
-                        </span>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
                     </td>
                     <td>${formatDate(admin.createTime)}</td>
                     <td>${escapeHtml(admin.phoneNumber)}</td>
@@ -176,16 +229,21 @@ $(document).ready(function () {
                     <td>${admin.lastLoginTime ? formatDate(admin.lastLoginTime) : '-'}</td>
                     <td class="action-buttons">
                         <button class="button detail-btn">詳細資訊</button>
-                        <button class="button status-btn ${admin.status === 1 ? 'disable-btn' : 'enable-btn'}">
-                            ${admin.status === 1 ? '停用' : '啟用'}
+                        <button class="button status-btn ${actionButtonClass}" 
+                                ${admin.permissions === 1 ? 'disabled' : ''}>
+                            ${actionButtonText}
                         </button>
                     </td>
                 </tr>
             `);
 
             $row.find('.detail-btn').on('click', () => showAdminDetails(admin));
-            $row.find('.status-btn').on('click', () => toggleAdminStatus(admin));
-
+            $row.find('.status-btn').on('click', function() {
+               if (!$(this).prop('disabled')) {
+                   toggleAdminStatus(admin);
+               }
+           });
+		   
             $tableBody.append($row);
         });
     }
@@ -204,60 +262,67 @@ $(document).ready(function () {
 
     // === 修改：更新管理員詳細資訊視窗 ===
     function showAdminDetails(admin) {
+		if (!admin) {
+            handleError(new Error('無效的管理員資料'));
+            return;
+        }
+		
         const modalHtml = `
-            <div class="modal-content admin-details">
-                <span class="close-btn">&times;</span>
-                <h2>管理員詳細資訊</h2>
-                <form id="adminDetailsForm" class="detail-form">
-                    <input type="hidden" name="adminId" value="${admin.adminId}">
-                    
-                    <div class="form-group">
-                        <label>管理員ID：</label>
-                        <input type="text" value="${admin.adminId}" disabled>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>帳號：</label>
-                        <input type="text" value="${escapeHtml(admin.adminAccount)}" disabled>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>權限：</label>
-                        <select name="permissions">
-                            <option value="0" ${admin.permissions === 0 ? 'selected' : ''}>管理員</option>
-                            <option value="1" ${admin.permissions === 1 ? 'selected' : ''}>資深管理員</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>電話：</label>
-                        <input type="tel" name="phoneNumber" value="${escapeHtml(admin.phoneNumber)}" required
-                               pattern="[0-9]{10}" title="請輸入10位數字的電話號碼">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>電子信箱：</label>
-                        <input type="email" name="email" value="${escapeHtml(admin.email)}" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>狀態：</label>
-                        <input type="text" value="${admin.status === 1 ? '啟用中' : '停用'}" disabled>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>建立時間：</label>
-                        <input type="text" value="${formatDate(admin.createTime)}" disabled>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>最後登入：</label>
-                        <input type="text" value="${admin.lastLoginTime ? formatDate(admin.lastLoginTime) : '-'}" disabled>
-                    </div>
-                    
-                    <button type="submit" class="button save-btn">儲存修改</button>
-                </form>
-            </div>
+		<div class="modal-content admin-details">
+            <span class="close-btn">&times;</span>
+            <h2>管理員詳細資訊</h2>
+            <form id="adminDetailsForm" class="detail-form">
+                <input type="hidden" name="adminId" value="${(admin.adminId)}">
+                
+                <div class="form-group">
+                    <label>管理員ID：</label>
+                    <input type="text" value="${(admin.adminId)}" name="adminId" disabled>
+                </div>
+                
+                <div class="form-group">
+                    <label>帳號：</label>
+                    <input type="text" value="${(admin.adminAccount)}" name="adminAccount" disabled>
+                </div>
+                
+                <div class="form-group">
+                    <label>權限：</label>
+                    <select name="permissions" ${admin.permissions === 1 ? 'disabled' : ''}>
+                        <option value="0" ${admin.permissions === 0 ? 'selected' : ''}>管理員</option>
+                        <option value="1" ${admin.permissions === 1 ? 'selected' : ''}>資深管理員</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>電話：</label>
+                    <input type="tel" name="phoneNumber" value="${escapeHtml(admin.phoneNumber)}" 
+                           pattern="[0-9]{10}" title="請輸入10位數字的電話號碼">
+                    <span class="error-message" id="phoneError"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label>電子信箱：</label>
+                    <input type="email" name="email" value="${escapeHtml(admin.email)}">
+                    <span class="error-message" id="emailError"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label>狀態：</label>
+                    <input type="text" value="${admin.status === 1 ? '啟用中' : '停用'}" disabled>
+                </div>
+                
+                <div class="form-group">
+                    <label>建立時間：</label>
+                    <input type="text" value="${formatDate(admin.createTime)}" disabled>
+                </div>
+                
+                <div class="form-group">
+                    <label>最後登入：</label>
+                    <input type="text" value="${admin.lastLoginTime ? formatDate(admin.lastLoginTime) : '-'}" disabled>
+                </div>
+                
+                <button type="submit" class="button save-btn">儲存修改</button>
+            </form>
+        </div>
         `;
 
         const $modal = $('<div>').addClass('modal').html(modalHtml);
@@ -277,6 +342,9 @@ $(document).ready(function () {
             $(this).serializeArray().forEach(item => {
                 formData[item.name] = item.value;
             });
+			
+			// 清除先前的錯誤訊息
+			$('.error-message').text('');
 
             // 驗證表單數據
             const validations = {
@@ -286,29 +354,36 @@ $(document).ready(function () {
 
             const errors = Object.entries(validations)
                 .filter(([_, validation]) => !validation.isValid)
-                .map(([field, validation]) => validation.errors)
-                .flat();
+				.map(([field, validation]) => {
+                    $(`#${field}Error`).text(validation.errors[0]);
+                    return validation.errors;
+                })
+				.flat();
 
             if (errors.length > 0) {
-                alert(errors.join('\n'));
                 return;
             }
 
             try {
                 // 發送API請求更新管理員資料
-                await api.post('/admin/edit', {
-					adminId: formData.adminId,
-				    adminAccount: formData.adminAccount,
-				    permissions: parseInt(formData.permissions),
-				    phoneNumber: formData.phoneNumber,
-				    email: formData.email
-					});
+				const response = await api.post(CONFIG.apiEndpoints.edit, {
+                    adminId: parseInt(formData.adminId),
+                    permissions: parseInt(formData.permissions),
+                    phoneNumber: formData.phoneNumber,
+                    email: formData.email
+                });
                 
                  // 重新獲取列表
                 await fetchAdminList(currentPage, getSearchFilters());
                 $modal.fadeOut(() => $modal.remove());
                 
-                alert('更新成功');
+				const $successAlert = $('<div>')
+                   .addClass('success-alert')
+                   .text('更新成功')
+                   .appendTo('body');
+                   
+                setTimeout(() => $successAlert.fadeOut(() => $successAlert.remove()), 3000);
+				        
             } catch (error) {
                 handleError(error, '更新管理員資料失敗');
             }
@@ -317,18 +392,27 @@ $(document).ready(function () {
 
     // === 修改：管理員狀態切換，使用API ===
     async function toggleAdminStatus(admin) {
+		if (!admin || admin.permissions === 1) {
+            handleError(new Error('無法更改資深管理員狀態'));
+            return;
+        }
+		
         const newStatus = admin.status === 1 ? 0 : 1;
         const actionText = admin.status === 1 ? '停用' : '啟用';
         
         if (confirm(`確定要${actionText}管理員 ${escapeHtml(admin.adminAccount)} 的帳號嗎？`)) {
             try {
-                await api.post('/admin/updateStatus', {
+                await api.post(CONFIG.apiEndpoints.updateStatus, {
 				    adminId: admin.adminId,
 				    status: newStatus
 				});
                 
                 await fetchAdminList(currentPage, getSearchFilters());
-                alert(`${actionText}成功`);
+				
+				const $successAlert = $('<div>')
+                    .addClass('success-alert')
+                    .text(`${actionText}成功`)
+                    .appendTo('body');
             } catch (error) {
                 handleError(error, `${actionText}管理員帳號失敗`);
             }
@@ -343,11 +427,23 @@ $(document).ready(function () {
     });
 
     function getSearchFilters() {
-        return {
-            keyword: $('#keyword').val(),
-            status: $('#filterStatus').val(),
-            permissions: $('#filterPermissions').val()
-        };
+		const filters = {
+		        keyword: $('#keyword').val() || '',
+		    };
+		    
+		    // 修改狀態篩選的處理方式
+		    const status = $('#filterStatus').val();
+		    if (status && status !== 'all') {
+		        filters.status = parseInt(status); // 轉換為數字
+		    }
+		    
+		    // 修改權限篩選的處理方式
+		    const permissions = $('#filterPermissions').val();
+		    if (permissions && permissions !== 'all') {
+		        filters.permissions = parseInt(permissions); // 轉換為數字
+		    }
+		    
+		    return filters;
     }
 
     // === 修改：分頁控制更新 ===

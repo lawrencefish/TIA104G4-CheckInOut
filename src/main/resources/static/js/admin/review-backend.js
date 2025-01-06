@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		// 獲取房型列表
    		async function fetchRooms() {
    			try {
-           		const response = await fetch('/api/roomType/findAllRooms');
+           		const response = await fetch('/adminRoomType/findAllRooms');
            		if (!response.ok) {
                		throw new Error(`HTTP錯誤 ! 狀態碼: ${response.status}`);
            		}
@@ -125,8 +125,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const roomId = card.dataset.roomId;
 					console.log('房型ID', roomId);
 					if (roomId){
-                        window.location.href = `/admin/roomtype-review?id=${roomId}`;
-						console.log('準備跳轉到:', url);
+                        const redirectUrl = `/adminRoomType/roomtypeReview/${roomId}`;
+						console.log('準備跳轉到:', redirectUrl);
+						window.location.href = redirectUrl;
                     } else {
 						console.error('查無房型ID')
 					}
@@ -236,6 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         hotels = await fetchHotels();
 		rooms = await fetchRooms();
         renderHotelsList('all');
+        renderRoomsList('all');
         updateStatusCounts(hotels);
         initializeFilters();
 

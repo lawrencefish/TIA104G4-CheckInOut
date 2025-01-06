@@ -1,10 +1,12 @@
 package com.admin.model;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,42 @@ public class AdminService {
 	@Autowired
 	private AdminRepository repository;
 	
+//	@Autowired
+//	private AdminLogRepository logRepository;
 	
 //	@Autowired
 //	private SessionFactory sessionFactory;
+	
+	// 搜尋方法
+    public List<Admin> searchAdmins(String keyword, Byte status, Byte permissions){
+        
+    	if (keyword.trim().isEmpty()) {
+    		return repository.findAll();
+    	}
+    	
+    	if (status != null && permissions == null) {
+            // 如果僅指定了狀態
+            return repository.findByStatusAndKeyword(status, keyword);
+        } else if (permissions != null && status == null) {
+            // 如果僅指定了權限
+            return repository.findByPermissionsAndKeyword(permissions, keyword);
+        } else if (status != null && permissions != null) {
+            // 如果狀態和權限都指定，使用更通用的查詢
+            return repository.searchAdmins(keyword, status, permissions);
+        } else {
+            // 如果都未指定，僅依關鍵字查詢
+            return repository.findByKeyword(keyword);
+        }
+    }
+	
+	// 日誌紀錄
+//	public void logAction(AdminLogDTO logDTO) {
+//		AdminLog log = new AdminLog();
+//		log.setAdminId(logDTO.getAdmin());
+//		log.setAction(logDTO.getAction());
+//		log.setActionTime(new Date());
+//		logRepository.save(log);
+//	}
 	
 	public Admin adminLogin(String email, String password) {
 		System.out.println("嘗試使用信箱登入:" + email);

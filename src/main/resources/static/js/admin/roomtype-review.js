@@ -1,24 +1,27 @@
-// 模擬房型資料
-const roomData = {
-    id: 1,
-    hotelName: "日月行館",
-    roomType: "豪華雙人房",
-    capacity: "2-4人",
-    bedType: "1張大床",
-    area: "35平方公尺",
-    facilities: ["空調", "衛浴", "冰箱", "電視", "Wi-Fi", "吹風機"],
-    description: "舒適寬敞的空間，配備高級家具及設施，提供賓客極致的住宿體驗。每間房都有獨立陽台，可以欣賞美麗的城市景觀。",
-    images: [
-        "/api/placeholder/800/500",
-        "/api/placeholder/800/500",
-        "/api/placeholder/800/500",
-        "/api/placeholder/800/500"
-    ],
-    status: "pending"
-};
+document.addEventListener('DOMContentLoaded', async () => {
+    // 獲取 URL 中的 roomTypeId
+    const pathSegments = window.location.pathname.split('/');
+    const roomTypeId = pathSegments[pathSegments.length - 1]; // 從路徑中取得ID
+
+    if (roomTypeId) {
+        try {
+            const response = await fetch(`/adminRoomType/detail/${roomTypeId}`);
+            if (!response.ok) {
+                throw new Error(`HTTP錯誤 ! 狀態碼: ${response.status}`);
+            }
+            const roomData = await response.json();
+            loadRoomData(roomData);
+        } catch (error) {
+            console.error('取得房型資料時發生錯誤:', error);
+        }
+    }
+
+    // 初始化顯示評論
+    displayReviews();
+});
 
 // 載入房型資料
-function loadRoomData() {
+function loadRoomData(roomData) {
     // 設定飯店名稱
     document.querySelector('.hotel-name').textContent = roomData.hotelName;
     
@@ -50,16 +53,16 @@ function loadRoomData() {
 }
 
 // 模擬評論資料
-const reviews = [
-    { name: "王小明", rating: 5, content: "房間非常乾淨舒適，服務人員態度很好，值得推薦！" },
-    { name: "李小華", rating: 4, content: "整體不錯，但浴室的水壓可以再改善。" },
-    { name: "張大方", rating: 5, content: "景觀很棒，房間設施齊全，非常推薦！" },
-    { name: "陳小美", rating: 4, content: "床很舒服，但冷氣聲音有點大。" },
-    { name: "林大雄", rating: 3, content: "位置方便，但隔音效果需要改善。" },
-    { name: "黃小琳", rating: 5, content: "服務很周到，環境維護得很好！" },
-    { name: "吳小菁", rating: 4, content: "整體cp值很高，下次會再來！" },
-    { name: "趙大明", rating: 5, content: "交通便利，房間乾淨，服務好！" }
-];
+//const reviews = [
+//    { name: "王小明", rating: 5, content: "房間非常乾淨舒適，服務人員態度很好，值得推薦！" },
+//    { name: "李小華", rating: 4, content: "整體不錯，但浴室的水壓可以再改善。" },
+//    { name: "張大方", rating: 5, content: "景觀很棒，房間設施齊全，非常推薦！" },
+//    { name: "陳小美", rating: 4, content: "床很舒服，但冷氣聲音有點大。" },
+//    { name: "林大雄", rating: 3, content: "位置方便，但隔音效果需要改善。" },
+//    { name: "黃小琳", rating: 5, content: "服務很周到，環境維護得很好！" },
+//    { name: "吳小菁", rating: 4, content: "整體cp值很高，下次會再來！" },
+//    { name: "趙大明", rating: 5, content: "交通便利，房間乾淨，服務好！" }
+//];
 
 // 分頁設定
 let currentPage = 1;
