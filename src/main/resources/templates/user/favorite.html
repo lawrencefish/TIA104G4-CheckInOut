@@ -223,38 +223,6 @@
 <body>
 	<!-- 標題列 -->
 	<header class="p-3 mb-0 border-bottom shadow-sm">
-		<div class="container">
-			<div
-				class="d-flex flex-wrap align-items-center justify-content-center">
-				<a href="#" class="d-block"> <img src="/img/logo.png" alt="logo"
-					width="32" height="32" class="rounded-circle">
-				</a>
-				<ul class="nav col justify-content-end login">
-					<li><a href="#" class="nav-link px-2 link-body-emphasis">訂單</a></li>
-					<li><a href="#" class="nav-link px-2 link-body-emphasis">購物車</a></li>
-					<li>
-						<div class="dropdown text-end px-2 py-1">
-							<a href="#"
-								class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
-								data-bs-toggle="dropdown" aria-expanded="false"> <img
-								src="https://github.com/mdo.png" alt="profile" width="32"
-								height="32" class="rounded-circle">
-							</a>
-							<ul class="dropdown-menu text-center mt-3 border-0 shadow-sm">
-								<li><a class="dropdown-item" href="#">會員中心</a></li>
-								<li><a class="dropdown-item" href="#">訂單管理</a></li>
-								<li><a class="dropdown-item" href="#">我的最愛</a></li>
-								<li><a class="dropdown-item" href="#">優惠券</a></li>
-								<li><a class="dropdown-item" href="#">我的評論</a></li>
-								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item" href="#">聯繫我們</a></li>
-								<li><a class="dropdown-item" href="#">登出</a></li>
-							</ul>
-						</div>
-					</li>
-				</ul>
-			</div>
-		</div>
 	</header>
 
 	<div class="container">
@@ -318,31 +286,32 @@
         </div>
     </div> -->
 
-		<footer class="py-3 my-4">
+	<footer>
+		<div class="row border-top">
 			<div class="container">
-				<ul class="nav justify-content-center border-bottom pb-3 mb-3">
-					<li class="nav-item"><a href="#"
-						class="nav-link px-2 text-body-secondary">首頁</a></li>
-					<li class="nav-item"><a href="#"
-						class="nav-link px-2 text-body-secondary">找房</a></li>
-					<li class="nav-item"><a href="#"
-						class="nav-link px-2 text-body-secondary">購物車</a></li>
-					<li class="nav-item"><a href="#"
-						class="nav-link px-2 text-body-secondary">訂單管理</a></li>
-					<li class="nav-item"><a href="#"
-						class="nav-link px-2 text-body-secondary">常見問題</a></li>
-					<li class="nav-item"><a href="#"
-						class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
-					<li class="nav-item"><a href="#"
-						class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+				<ul class="nav justify-content-center">
+					<li class="nav-item"><a th:href="@{/user/}" class="nav-link px-2 text-body-secondary">首頁</a></li>
+					<li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
+					<li class="nav-item"><a th:href="@{/user/order}"
+							class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+					<li class="nav-item"><a th:href="@{/user/faq}" class="nav-link px-2 text-body-secondary">常見問題</a>
+					</li>
+					<li class="nav-item"><a th:href="@{/user/contactUs}"
+							class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+					<li class="nav-item"><a th:href="@{/login/}" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
 				</ul>
-				<p class="text-center text-body-secondary">&copy; 2024 Check IN
-					OUT</p>
+				<div class="d-flex justify-content-center align-items-start mb-0">
+					<img th:src="@{/imgs/user/checKInOut_logo_light.png}" alt="checkinout" width="128">
+				</div>
+				<!-- <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p> -->
 			</div>
-		</footer>
+		</div>
+	</footer>
 
 		<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
 		<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
+		<script src="/js/user/loginCheck.js" defer></script>
+
 		<script>
         // 示例飯店數據
         const hotels = [
