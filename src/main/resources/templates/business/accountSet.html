@@ -929,32 +929,7 @@
     </footer>
 
     <script>
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
@@ -1080,32 +1055,6 @@
             addEmployeeModal.classList.add('show');
         });
 
-        // 點擊新增按鈕保存員工資料
-        // saveEmployeeButton.addEventListener('click', () => {
-        //     const id = document.getElementById('add-employee-id').value.trim();
-        //     const password = document.getElementById('add-employee-password').value.trim();
-        //     const name = document.getElementById('add-employee-name').value.trim();
-        //     const role = document.getElementById('add-employee-role').value;
-        //     const phone = document.getElementById('add-employee-phone').value.trim();
-        //     const email = document.getElementById('add-employee-email').value.trim();
-        //
-        //     if (!id || !password || !name || !phone || !email) {
-        //         alert('所有欄位都為必填！');
-        //         return;
-        //     }
-        //
-        //     // // 模擬新增員工成功
-        //     // alert("新增員工成功！");
-        //
-        //     // // 清空輸入欄位並關閉彈窗
-        //     // document.getElementById('add-employee-id').value = '';
-        //     // document.getElementById('add-employee-password').value = '';
-        //     // document.getElementById('add-employee-name').value = '';
-        //     // document.getElementById('add-employee-phone').value = '';
-        //     // document.getElementById('add-employee-email').value = '';
-        //     // addEmployeeModal.classList.remove('show');
-        // });
-
         // 點擊取消按鈕關閉彈窗
         cancelAddEmployeeButton.addEventListener('click', () => {
             addEmployeeModal.classList.remove('show');
@@ -1140,11 +1089,6 @@
                 return;
             }
 
-            // 清空輸入欄位並關閉彈窗
-            // document.getElementById('current-password').value = '';
-            // document.getElementById('update-new-password').value = '';
-            // document.getElementById('update-confirm-new-password').value = '';
-            // updateHotelPasswordModal.classList.remove('show'); // 正確關閉彈窗
         });
 
         // 點擊取消按鈕關閉彈窗

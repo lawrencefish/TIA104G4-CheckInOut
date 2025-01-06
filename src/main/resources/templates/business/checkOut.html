@@ -633,6 +633,7 @@
     </footer>
 
     <script>
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         //假資料
         const orders = [
             { id: "00048763", customerId: "00001", name: "Zeus", roomType: "豪華雙人房", room: null, people: 2, status: "尚未報到" },

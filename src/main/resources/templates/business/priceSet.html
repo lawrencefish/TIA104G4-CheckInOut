@@ -633,6 +633,7 @@
         © 2024 Check in out. All rights reserved.
     </footer>
     <script>
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
@@ -701,7 +702,7 @@
                 return;
             }
 
-            fetch('/api/roomType/roomTypes', { method: 'GET', credentials: 'include' }) // 確保攜帶 Session 資訊
+            fetch(`${contextPath}/api/roomType/roomTypes`, { method: 'GET', credentials: 'include' }) // 確保攜帶 Session 資訊
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('未授權或查詢失敗');
@@ -753,7 +754,7 @@
                 return;
             }
 
-            fetch(`/api/roomType/${roomTypeId}`, { method: 'GET', credentials: 'include' })
+            fetch(`${contextPath}/api/roomType/${roomTypeId}`, { method: 'GET', credentials: 'include' })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('未找到該房型資訊');
@@ -777,7 +778,7 @@
                     }
 
                     // 獲取房型價格
-                    return fetch(`/api/price/prices/${roomTypeId}`, { method: 'GET', credentials: 'include' });
+                    return fetch(`${contextPath}/api/price/prices/${roomTypeId}`, { method: 'GET', credentials: 'include' });
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -823,7 +824,7 @@
                 }
             ];
 
-            fetch(`/api/price/prices/${roomTypeId}`, {
+            fetch(`${contextPath}/api/price/prices/${roomTypeId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -864,7 +865,7 @@
                 remarks // 新增的备注字段
             };
 
-            fetch(`/api/price/special/${roomTypeId}`, {
+            fetch(`${contextPath}/api/price/special/${roomTypeId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -883,7 +884,7 @@
         // SESSION3部分
         // 加载特殊价格记录
         function loadSpecialPrices() {
-            fetch('/api/price/specials', { method: 'GET', credentials: 'include' })
+            fetch(`${contextPath}/api/price/specials`, { method: 'GET', credentials: 'include' })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('加载特殊价格失败');
@@ -931,7 +932,7 @@
 
         // 删除特殊价格记录
         function deleteSpecialPrice(priceId) {
-            fetch(`/api/price/special/${priceId}`, { method: 'DELETE', credentials: 'include' })
+            fetch(`${contextPath}/api/price/special/${priceId}`, { method: 'DELETE', credentials: 'include' })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('删除失败');
@@ -946,7 +947,7 @@
         let sortOrder = {}; // 保存每列的排序状态
 
         function loadSpecialPrices() {
-            fetch('/api/price/specials', { method: 'GET', credentials: 'include' })
+            fetch(`${contextPath}/api/price/specials`, { method: 'GET', credentials: 'include' })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('加载特殊价格失败');
