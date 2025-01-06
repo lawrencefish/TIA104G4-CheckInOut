@@ -412,6 +412,91 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        /* 彈窗樣式 */
+        #date-modal {
+            display: none; /* 初始隱藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 背景半透明 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 關閉按鈕 */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #e74c3c; /* 鼠標懸停變成紅色 */
+        }
+
+        /* 表格樣式 */
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .modal-th, .modal-td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .modal-th {
+            background-color: #f8f9fa; /* 表頭背景色 */
+            font-weight: bold;
+            color: #333;
+        }
+
+        .modal-td input {
+            width: 60px;
+            padding: 5px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* 儲存按鈕 */
+        .modal-btn {
+            background-color: #28a745; /* 綠色背景 */
+            color: #fff;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-btn:hover {
+            background-color: #218838; /* 懸停時更深的綠色 */
+        }
     </style>
 </head>
 
@@ -492,6 +577,31 @@
                 </div>
             </div>
         </main>
+
+        <!--彈窗-->
+        <div id="date-modal" class="modal-hidden">
+            <div class="modal-content">
+                <span class="close-btn" id="date-modal-close-btn">&times;</span>
+                <h2 id="modal-date-title"></h2>
+                <div id="modal-content">
+                    <table id="room-table" class="modal-table">
+                        <thead>
+                        <tr>
+                            <th class="modal-th">房型</th>
+                            <th class="modal-th">房間數量</th>
+<!--                            <th class="modal-th">已預定</th>-->
+                            <th class="modal-th">刪減數量</th>
+                            <th class="modal-th">剩餘房間數</th>
+                        </tr>
+                        </thead>
+                        <tbody id="room-table-body">
+                        <!-- 動態生成的房型內容 -->
+                        </tbody>
+                    </table>
+                </div>
+                <button id="modal-save-button" class="modal-btn">儲存</button>
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -615,8 +725,12 @@
                 }
 
 
+                // dateCell.appendChild(dateText);
+                // dateCell.appendChild(inventoryText);
                 dateCell.appendChild(dateText);
                 dateCell.appendChild(inventoryText);
+                dateCell.addEventListener('click', () => showModal(dateString));
+                calendarBody.appendChild(dateCell);
 
                 // 如果是今天，标记特殊样式
                 const today = new Date();
@@ -628,6 +742,81 @@
             }
         }
 
+        function showModal(date) {
+            const modal = document.getElementById('date-modal');
+            const modalTitle = document.getElementById('modal-date-title');
+            const modalTableBody = document.querySelector('#room-table-body'); // tbody 的 ID
+
+            modalTitle.textContent = `日期: ${date}`;
+            modalTableBody.innerHTML = '';
+
+            const inventoryForDate = cachedInventoryData.filter(item => item.date === date);
+
+            if (inventoryForDate.length > 0) {
+                inventoryForDate.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.setAttribute('data-inventory-id', item.inventoryId);
+                    row.classList.add('room-inventory-row');
+
+                    const roomTypeCell = document.createElement('td');
+                    roomTypeCell.textContent = item.roomName;
+                    row.appendChild(roomTypeCell);
+
+                    // 固定房間數量
+                    const roomNumCell = document.createElement('td');
+                    roomNumCell.textContent = item.roomNum; // 使用固定值
+                    row.appendChild(roomNumCell);
+
+                    const deleteQuantityCell = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.value = item.deleteQuantity || 0; // 顯示後端返回的刪減數量
+                    input.min = 0;
+                    input.max = item.availableQuantity + item.deleteQuantity; // 最大值允許恢復刪減的數量
+                    input.classList.add('delete-quantity-input');
+                    deleteQuantityCell.appendChild(input);
+                    row.appendChild(deleteQuantityCell);
+
+                    const remainingCell = document.createElement('td');
+                    remainingCell.textContent = item.availableQuantity; // 顯示最新的可用數量
+                    row.appendChild(remainingCell);
+
+                    // 動態更新剩餘房間數
+                    input.addEventListener('input', () => {
+                        const newDeleteQuantity = parseInt(input.value, 10) || 0;
+                        remainingCell.textContent = item.availableQuantity + item.deleteQuantity - newDeleteQuantity;
+                    });
+
+                    modalTableBody.appendChild(row);
+                });
+            } else {
+                const noDataRow = document.createElement('tr');
+                const noDataCell = document.createElement('td');
+                noDataCell.textContent = '無資料';
+                noDataCell.colSpan = 4;
+                noDataRow.appendChild(noDataCell);
+                modalTableBody.appendChild(noDataRow);
+            }
+
+            modal.style.display = 'flex';
+        }
+
+
+
+        function closeModal() {
+            const modal = document.getElementById('date-modal');
+            modal.style.display = 'none'; // 隱藏彈窗
+        }
+
+        document.getElementById('date-modal-close-btn').addEventListener('click', closeModal);
+
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('date-modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
         function changeMonth(offset) {
             // 更新当前日期
             currentDate.setMonth(currentDate.getMonth() + offset);
@@ -635,6 +824,8 @@
             // 获取新日期范围的库存数据
             fetchRoomInventory(currentDate);
         }
+
+        let cachedInventoryData = []; // 全局變數，用於緩存庫存數據
 
         // 获取库存数据
         function fetchRoomInventory(date) {
@@ -653,6 +844,7 @@
                     return response.json();
                 })
                 .then(data => {
+                    cachedInventoryData = data; // 緩存數據
                     renderCalendar(currentDate, data);
                 })
                 .catch(error => console.error('Error fetching inventory:', error));
@@ -660,6 +852,50 @@
 
         // 初始渲染
         fetchRoomInventory(currentDate);
+
+        // 更新資料
+        document.getElementById('modal-save-button').addEventListener('click', () => {
+            const date = document.getElementById('modal-date-title').textContent.split(": ")[1];
+            const rows = document.querySelectorAll('.room-inventory-row');
+            const updatedData = Array.from(rows).map(row => {
+                const inventoryId = row.getAttribute('data-inventory-id');
+                const deleteQuantityInput = row.querySelector('.delete-quantity-input').value;
+                return {
+                    inventoryId: parseInt(inventoryId, 10),
+                    deleteQuantity: parseInt(deleteQuantityInput, 10) || 0
+                };
+            });
+
+            fetch(`${contextPath}/api/roomInventory/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData),
+                credentials: 'include'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('更新失敗');
+                    }
+                    return response.json(); // 接收後端返回的更新數據
+                })
+                .then(updatedInventories => {
+                    // 更新緩存中的數據
+                    updatedInventories.forEach(updated => {
+                        const index = cachedInventoryData.findIndex(item => item.inventoryId === updated.inventoryId);
+                        if (index !== -1) {
+                            cachedInventoryData[index].deleteQuantity = updated.deleteQuantity;
+                            cachedInventoryData[index].availableQuantity = updated.availableQuantity;
+                        }
+                    });
+                    alert('更新成功');
+                    location.reload(); // 重新整理整個頁面
+                    closeModal();
+                })
+                .catch(error => console.error('Error updating inventory:', error));
+        });
+
     </script>
 </body>
 

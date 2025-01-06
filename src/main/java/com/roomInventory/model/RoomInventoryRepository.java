@@ -23,4 +23,8 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventoryVO, 
     @Query("SELECT r FROM RoomInventoryVO r WHERE r.date BETWEEN :startDate AND :endDate")
     List<RoomInventoryVO> findByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
+
+    @Query("SELECT r FROM RoomInventoryVO r WHERE r.date = :date")
+    List<RoomInventoryVO> findByDate(@Param("date") LocalDate date);
+
 }
