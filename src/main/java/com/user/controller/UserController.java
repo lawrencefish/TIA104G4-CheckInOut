@@ -86,6 +86,11 @@ public class UserController {
 		return "/user/profile";
 	}
 
+	@GetMapping("/register")
+	public String register() {
+		return "/user/register";
+	}
+
 	@GetMapping("/search")
 	public String search() {
 		return "/user/search";

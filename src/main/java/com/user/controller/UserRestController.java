@@ -6,12 +6,19 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hotelImg.model.HotelImgVO;
 import com.member.model.MemberService;
 import com.member.model.MemberVO;
 
@@ -26,13 +33,13 @@ public class UserRestController {
 	public Map<String, String> memberLogin(@RequestBody Map<String, String> loginRequest, HttpSession session) {
 		String account = loginRequest.get("account");
 		String password = loginRequest.get("password");
+		String url =  loginRequest.get("url");
 
 		Map<String, String> response = new HashMap<>();
 		if (memServ.existsByAccount(account)) {
 			MemberVO member = memServ.login(account, password);
 			if (member != null) {
 				System.out.println("登入成功" + member.getAccount());
-				// 登入成功 管理員ID存入session
 				session.setAttribute("memberId", member.getMemberId());
 				session.setAttribute("account", member.getAccount());
 				response.put("status", "success");
@@ -61,27 +68,14 @@ public class UserRestController {
 		} else {
 			if (url != null) {
 				response.put("message", "redirect");
+				response.put("url", url);
+				session.setAttribute("url",null);
 			}else {
 			response.put("message", "not login");
 			}
 		}
 		return response;
 	}
-	
-	//重導處理
-	@PostMapping("/redirect")
-	public Map<String, String> redirectHandle(HttpSession session) {
-		String memberId = String.valueOf(session.getAttribute("memberId"));
-		String account =  (String) session.getAttribute("account");
-		String url =  (String) session.getAttribute("url");
-		Map<String, String> response = new HashMap<>();
-		if (memberId != null && account != null) {
-			response.put("message", url);
-		} 
-		session.setAttribute("url",null);
-		return response;
-	}
-
 	
 	//登出
 	@PostMapping("/logout")
@@ -90,12 +84,34 @@ public class UserRestController {
 		String account = (String) session.getAttribute("account");
 		Map<String, String> response = new HashMap<>();
 		if (memberId != null && account != null) {
-			session.setAttribute("memberId", null);
-			session.setAttribute("account", null);
+			session.invalidate();			
 			response.put("status", "success");
 			response.put("message", "登出成功");
 		} else {
 			response.put("message", "登出失敗");
+		}
+		return response;
+	}
+
+    @GetMapping("/avatar")
+    public ResponseEntity<byte[]> getAvatar(HttpSession session) {
+		String account = (String) session.getAttribute("account");
+        byte[] avatar = memServ.findAvatarByAccount(account);
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(avatar);
+    }
+
+	//取得會員資訊
+	@PostMapping("/memberInfo")
+	public Map<String, String> getMemberInfo(HttpSession session) {
+		Integer memberId = (Integer) session.getAttribute("memberId");
+		String account = (String) session.getAttribute("account");
+		Map<String, String> response = new HashMap<>();
+		if (memberId != null && account != null) {
+			return memServ.findInfoByIdWithMap(memberId);
+		} else {
+			response.put("message", "沒有登入");
 		}
 		return response;
 	}
