@@ -47,21 +47,43 @@ public class UserRestController {
 		}
 		return response;
 	}
-
+	
+	//檢查登入狀態
 	@PostMapping("/loginCheck")
 	public Map<String, String> loginCheck(HttpSession session) {
 		String memberId = String.valueOf(session.getAttribute("memberId"));
-		String account = (String) session.getAttribute("account");
+		String account =  (String) session.getAttribute("account");
+		String url =  (String) session.getAttribute("url");
 		Map<String, String> response = new HashMap<>();
 		if (memberId != null && account != null) {
 			response.put("memberId", memberId != null ? memberId : null);
 			response.put("account", account != null ? account : null);
 		} else {
+			if (url != null) {
+				response.put("message", "redirect");
+			}else {
 			response.put("message", "not login");
+			}
 		}
 		return response;
 	}
+	
+	//重導處理
+	@PostMapping("/redirect")
+	public Map<String, String> redirectHandle(HttpSession session) {
+		String memberId = String.valueOf(session.getAttribute("memberId"));
+		String account =  (String) session.getAttribute("account");
+		String url =  (String) session.getAttribute("url");
+		Map<String, String> response = new HashMap<>();
+		if (memberId != null && account != null) {
+			response.put("message", url);
+		} 
+		session.setAttribute("url",null);
+		return response;
+	}
 
+	
+	//登出
 	@PostMapping("/logout")
 	public Map<String, String> logout(HttpSession session) {
 		String memberId = String.valueOf(session.getAttribute("memberId"));

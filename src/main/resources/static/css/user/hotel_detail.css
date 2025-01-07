@@ -58,44 +58,6 @@ ul .dropdown-menu .dropdown-item {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.calendar-wrapper {
-    position: static;
-    background: white;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    z-index: 1050;
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.calendar-wrapper table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.calendar-wrapper th,
-.calendar-wrapper td {
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-}
-
-.calendar-wrapper th {
-    background-color: #f0f0f0;
-    font-weight: bold;
-}
-
-.calendar-wrapper td:hover {
-    background-color: #007bff;
-    color: white;
-}
-
 .btn-primary {
     background-color: #007bff;
     border-color: #007bff;
@@ -156,3 +118,83 @@ ul .dropdown-menu .dropdown-item {
     border-radius: 8px;
     background-color: #e9ecef;
 }
+
+/* calendar */
+
+/* 設置日曆的樣式 */
+.calendar-wrapper {
+    position: absolute; /* 讓日曆可以脫離正常的文檔流 */
+    top: 100%; /* 放在按鈕下方 */
+    left: 0; /* 與父元素左側對齊 */
+    z-index: 1050; /* 保證日曆位於其他元素之上 */
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    width: auto;
+    min-width: 320px;
+}
+
+/* 確保父元素不限制日曆顯示 */
+.search-bar {
+    position: relative; /* 確保日曆的定位基於此父容器 */
+}
+
+/* 隱藏狀態 */
+.calendar-wrapper.d-none {
+    display: none;
+}
+
+/* 日曆表格樣式 */
+.calendar-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.calendar-wrapper th,
+.calendar-wrapper td {
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.calendar-wrapper th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.calendar-cell {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.calendar-cell:hover {
+    background-color: #e9ecef;
+}
+
+/* 禁用日期樣式 */
+.calendar-cell.disabled {
+    background-color: #f1f1f1;
+    color: #b5b5b5;
+    cursor: not-allowed;
+}
+
+/* 日期號碼和價格樣式 */
+.date-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 14px;
+}
+
+.date-number {
+    font-weight: bold;
+}
+
+.price-display {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+
