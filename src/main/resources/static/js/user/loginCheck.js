@@ -29,8 +29,8 @@ const loginNav = `
                 <li>
                     <div class="dropdown text-end px-2 py-20">
                         <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
-                            data-bs-toggle="dropdown" aria-expanded="false"> <img src=""
-                                alt="mdo" width="32" height="32" class="rounded-circle">
+                            data-bs-toggle="dropdown" aria-expanded="false"> <img id="avatarImg" src=""
+                                alt="mdo" width="45" height="45" class="rounded-circle">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end text-center mt-3 border-0 shadow-sm"
                             data-bs-display="static">
@@ -80,12 +80,12 @@ const loginFormView =`
         </div>
         <div class="d-grid gap-2">
             <button class="btn btn-primary login" type="submit">登入</button>
-            <button class="btn btn-primary" type="button">Sign in with Google</button>
-            <button class="btn btn-primary" id="register" type="button">註冊</button>
+            <button class="btn btn-primary" type="button" data-bs-dismiss="modal">Sign in with Google</button>
+            <a class="btn btn-primary" id="register" type="button" href="/user/register">註冊</a>
         </div>
     </form>
 `;
-
+let redirectUrl ="";
 
 document.addEventListener('DOMContentLoaded', function () {
     showLoginView();
@@ -126,8 +126,11 @@ function login(e) {
         .then(data => {
             console.log(data.message);
             if (data.status === 'success') {
-                showLoginModal(data.message + `\n${account}`);
                 showLoginView();
+                if (redirectUrl){
+                    window.location.href = redirectUrl;
+                    redirectUrl = "";
+                }
             } else {
                 showLoginModal(data.message);
             }
@@ -144,9 +147,9 @@ function loginCheck() {
             if (data.memberId != null && data.account != null) {
                 return data.account;
             } else {
-                if (data.message === 'redirect') {
+                if (data.url) {
+                    redirectUrl = data.url;
                     showLoginModal();
-                    redirect();
                 }
                 return null;
             }
@@ -157,78 +160,110 @@ function loginCheck() {
         });
 }
 
+
 // 登出功能
 function logout(e) {
     e.preventDefault();
     apiRequest('/user/api/logout', 'POST')
         .then(data => {
             if (data.status === 'success') {
-                console.log(data.status);
-                showLoginModal(data.message);
-                showLoginView();
-                window.location.href = "/user";
+                showLoginModal("登出成功，三秒後跳轉到首頁");
+                showLoginView();    
+                setTimeout(function() {
+                    window.location.href = "/user/";
+                }, 3000); 
             }
-            console.log(data.message);
         })
         .catch(error => {
             console.error('Logout Error:', error);
         });
 }
 
-// 處理重導
-function redirect() {
-    apiRequest('/user/api/redirect', 'POST')
-        .then(data => {
-            if (data.message) {
-                console.log(data.message);
-                window.location.href = data.message;
+function getAvatar(){
+    fetch('/user/api/avatar', {
+        method: 'GET',
+        credentials: 'include' 
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch avatar');
             }
+            return response.blob();
+        })
+        .then(blob => {
+            const imageUrl = URL.createObjectURL(blob); 
+            console.log(imageUrl);
+            document.getElementById('avatarImg').src = imageUrl; 
         })
         .catch(error => {
-            console.error('Logout Error:', error);
+            console.error('Error fetching avatar:', error);
         });
+    
 }
 
 function showLoginModal(Message) {
     let loginModal = document.querySelector('#loginModal');
-    if (loginModal) {
-        loginModal.remove();
+
+    if (!loginModal) {
+        // 如果模態視窗不存在，才動態插入
+        let newDiv = document.createElement('div');
+        newDiv.innerHTML = loginModalDiv;
+        document.querySelector('main').appendChild(newDiv);
     }
 
-    let newDiv = document.createElement('div');
-    newDiv.innerHTML = loginModalDiv;
-    document.querySelector('main').appendChild(newDiv);
+    // 更新模態視窗內容
     loginMessage = Message;
-    document.querySelector('#login-modal-body').innerHTML = (loginMessage) ? loginMessageDiv : loginFormView ; 
-    if (loginMessage){
-        document.querySelector('#loginMessage').textContent = loginMessage;
+    const modalBody = document.querySelector('#login-modal-body');
+    if (modalBody) {
+        modalBody.innerHTML = (loginMessage) ? loginMessageDiv : loginFormView;
+        if (loginMessage) {
+            document.querySelector('#loginMessage').textContent = loginMessage;
+        }
     }
 
-    const modal = new bootstrap.Modal(document.querySelector('#loginModal'));
-    modal.show();
+    // 檢查是否已有實例存在
+    const existingModalInstance = bootstrap.Modal.getInstance(document.querySelector('#loginModal'));
+    if (existingModalInstance) {
+        existingModalInstance.dispose(); // 銷毀舊的實例
+    }
 
+    // 初始化並顯示新的模態視窗
+    const showloginModal = new bootstrap.Modal(document.querySelector('#loginModal'), {
+        keyboard: true      // 允許按 ESC 鍵關閉
+    });
+    showloginModal.show();
+
+    // 綁定登入表單事件
     let loginForm = document.querySelector('#login_list');
     if (loginForm) {
-        loginForm.removeEventListener('submit', login); // 先移除舊的事件
+        loginForm.removeEventListener('submit', login); // 避免重複綁定
         loginForm.addEventListener('submit', login);
     }
 
-    modal.hide();
+    document.querySelector('#loginModal').addEventListener('hidden.bs.modal', function () {
+        redirectUrl ="";
+    });
+
 }
 
 function showLoginView() {
     loginCheck().then(account => {
         if (!account) {
             document.querySelector('header').innerHTML = notLoginNav;
-            document.querySelector('#navLoginBtn').addEventListener('click',function(e){
-                e.preventDefault();
-                showLoginModal();
-            })
+
+            let loginBtn = document.querySelector('#navLoginBtn');
+            if (loginBtn) {
+                loginBtn.removeEventListener('click', showLoginModal); // 移除舊的事件
+                loginBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    showLoginModal();
+                });
+            }
 
         } else {
             document.querySelector('header').innerHTML = loginNav;
             console.log(account);
-
+            getAvatar();
             let logoutButton = document.querySelector('#logout');
             if (logoutButton) {
                 logoutButton.removeEventListener('click', logout);
