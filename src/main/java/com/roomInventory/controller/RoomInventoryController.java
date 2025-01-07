@@ -64,9 +64,19 @@ public class RoomInventoryController {
                 record.put("roomName", roomType.getRoomName());
                 record.put("roomNum", roomType.getRoomNum()); // 添加固定房間數量
                 RoomInventoryVO inventory = inventoryMap.getOrDefault(date, new HashMap<>()).get(roomType.getRoomTypeId());
-                record.put("inventoryId", inventory.getInventoryId()); // 添加 inventoryId
-                record.put("deleteQuantity", inventory.getDeleteQuantity());
-                record.put("availableQuantity", inventory != null ? inventory.getAvailableQuantity() : null); // 如果沒有數據，返回 null
+//                record.put("inventoryId", inventory.getInventoryId()); // 添加 inventoryId
+//                record.put("deleteQuantity", inventory.getDeleteQuantity());
+//                record.put("availableQuantity", inventory != null ? inventory.getAvailableQuantity() : null); // 如果沒有數據，返回 null
+                if (inventory != null) {
+                    record.put("inventoryId", inventory.getInventoryId());
+                    record.put("deleteQuantity", inventory.getDeleteQuantity());
+                    record.put("availableQuantity", inventory.getAvailableQuantity());
+                } else {
+                    // 如果 inventory 為 null，設置默認值
+                    record.put("inventoryId", null);
+                    record.put("deleteQuantity", 0);
+                    record.put("availableQuantity", null);
+                }
                 result.add(record);
             }
         }
