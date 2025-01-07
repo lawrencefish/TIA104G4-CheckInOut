@@ -1,40 +1,40 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const API_BASE_URL = 'your-api-base-url';
+    const API_BASE_URL = 'admin';
     let currentPage = 1;
     const itemsPerPage = 10;
 
     // 模擬資料（之後可替換為資料庫資料）
-    const mockAdmins = [
-        { id: 1, name: '王大明', permissions: '高階管理員', status: '啟用中', joinDate: '2024-01-15', phone: '0912-345-678', email: 'wang@example.com', lastLogin: '2024-03-20 15:30' },
-        { id: 2, name: '李小華', permissions: '一般管理員', status: '啟用中', joinDate: '2024-01-20', phone: '0923-456-789', email: 'lee@example.com', lastLogin: '2024-03-19 14:20' },
-        { id: 3, name: '張美玲', permissions: '高階管理員', status: '停用', joinDate: '2024-02-01', phone: '0934-567-890', email: 'chang@example.com', lastLogin: '2024-03-15 09:45' },
-        { id: 4, name: '陳志明', permissions: '高階管理員', status: '啟用中', joinDate: '2024-02-05', phone: '0945-678-901', email: 'chen@example.com', lastLogin: '2024-03-20 16:15' },
-        { id: 5, name: '林小琳', permissions: '一般管理員', status: '啟用中', joinDate: '2024-02-10', phone: '0956-789-012', email: 'lin@example.com', lastLogin: '2024-03-20 11:30' },
-        { id: 6, name: '吳建志', permissions: '高階管理員', status: '啟用中', joinDate: '2024-02-15', phone: '0967-890-123', email: 'wu@example.com', lastLogin: '2024-03-19 17:40' },
-        { id: 7, name: '黃雅芳', permissions: '一般管理員', status: '停用', joinDate: '2024-02-20', phone: '0978-901-234', email: 'huang@example.com', lastLogin: '2024-03-18 13:25' },
-        { id: 8, name: '劉俊宏', permissions: '高階管理員', status: '啟用中', joinDate: '2024-02-25', phone: '0989-012-345', email: 'liu@example.com', lastLogin: '2024-03-20 10:15' },
-        { id: 9, name: '周淑華', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-01', phone: '0990-123-456', email: 'chou@example.com', lastLogin: '2024-03-20 14:50' },
-        { id: 10, name: '謝明德', permissions: '高階管理員', status: '啟用中', joinDate: '2024-03-05', phone: '0901-234-567', email: 'hsieh@example.com', lastLogin: '2024-03-19 16:35' },
-        { id: 11, name: '楊小菁', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-10', phone: '0912-345-678', email: 'yang@example.com', lastLogin: '2024-03-20 09:20' },
-        { id: 12, name: '郭志豪', permissions: '高階管理員', status: '停用', joinDate: '2024-03-15', phone: '0923-456-789', email: 'kuo@example.com', lastLogin: '2024-03-17 11:45' },
-        { id: 13, name: '許雅婷', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-16', phone: '0934-567-890', email: 'hsu@example.com', lastLogin: '2024-03-20 15:55' },
-        { id: 14, name: '蔡明翰', permissions: '高階管理員', status: '啟用中', joinDate: '2024-03-17', phone: '0945-678-901', email: 'tsai@example.com', lastLogin: '2024-03-20 13:40' },
-        { id: 15, name: '鄭佩珊', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-18', phone: '0956-789-012', email: 'cheng@example.com', lastLogin: '2024-03-20 16:30' }
-    ];
+//    const mockAdmins = [
+//        { id: 1, name: '王大明', permissions: '高階管理員', status: '啟用中', joinDate: '2024-01-15', phone: '0912-345-678', email: 'wang@example.com', lastLogin: '2024-03-20 15:30' },
+//        { id: 2, name: '李小華', permissions: '一般管理員', status: '啟用中', joinDate: '2024-01-20', phone: '0923-456-789', email: 'lee@example.com', lastLogin: '2024-03-19 14:20' },
+//        { id: 3, name: '張美玲', permissions: '高階管理員', status: '停用', joinDate: '2024-02-01', phone: '0934-567-890', email: 'chang@example.com', lastLogin: '2024-03-15 09:45' },
+//        { id: 4, name: '陳志明', permissions: '高階管理員', status: '啟用中', joinDate: '2024-02-05', phone: '0945-678-901', email: 'chen@example.com', lastLogin: '2024-03-20 16:15' },
+//        { id: 5, name: '林小琳', permissions: '一般管理員', status: '啟用中', joinDate: '2024-02-10', phone: '0956-789-012', email: 'lin@example.com', lastLogin: '2024-03-20 11:30' },
+//        { id: 6, name: '吳建志', permissions: '高階管理員', status: '啟用中', joinDate: '2024-02-15', phone: '0967-890-123', email: 'wu@example.com', lastLogin: '2024-03-19 17:40' },
+//        { id: 7, name: '黃雅芳', permissions: '一般管理員', status: '停用', joinDate: '2024-02-20', phone: '0978-901-234', email: 'huang@example.com', lastLogin: '2024-03-18 13:25' },
+//        { id: 8, name: '劉俊宏', permissions: '高階管理員', status: '啟用中', joinDate: '2024-02-25', phone: '0989-012-345', email: 'liu@example.com', lastLogin: '2024-03-20 10:15' },
+//        { id: 9, name: '周淑華', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-01', phone: '0990-123-456', email: 'chou@example.com', lastLogin: '2024-03-20 14:50' },
+//        { id: 10, name: '謝明德', permissions: '高階管理員', status: '啟用中', joinDate: '2024-03-05', phone: '0901-234-567', email: 'hsieh@example.com', lastLogin: '2024-03-19 16:35' },
+//        { id: 11, name: '楊小菁', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-10', phone: '0912-345-678', email: 'yang@example.com', lastLogin: '2024-03-20 09:20' },
+//        { id: 12, name: '郭志豪', permissions: '高階管理員', status: '停用', joinDate: '2024-03-15', phone: '0923-456-789', email: 'kuo@example.com', lastLogin: '2024-03-17 11:45' },
+//        { id: 13, name: '許雅婷', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-16', phone: '0934-567-890', email: 'hsu@example.com', lastLogin: '2024-03-20 15:55' },
+//        { id: 14, name: '蔡明翰', permissions: '高階管理員', status: '啟用中', joinDate: '2024-03-17', phone: '0945-678-901', email: 'tsai@example.com', lastLogin: '2024-03-20 13:40' },
+//        { id: 15, name: '鄭佩珊', permissions: '一般管理員', status: '啟用中', joinDate: '2024-03-18', phone: '0956-789-012', email: 'cheng@example.com', lastLogin: '2024-03-20 16:30' }
+//    ];
 
     // 模擬操作日誌資料（之後可替換為資料庫資料）
-    const mockLogs = [
-        { id: 1, adminName: '王大明', action: '新增管理員', target: '許雅婷', details: '新增一般管理員帳號', timestamp: '2024-03-20 15:30:22', ip: '192.168.1.101' },
-        { id: 2, adminName: '陳志明', action: '停用帳號', target: '張美玲', details: '停用客服主管帳號', timestamp: '2024-03-20 14:25:15', ip: '192.168.1.102' },
-        { id: 3, adminName: '李小華', action: '修改權限', target: '吳建志', details: '變更為系統管理員', timestamp: '2024-03-20 13:15:45', ip: '192.168.1.103' },
-        { id: 4, adminName: '劉俊宏', action: '重設密碼', target: '林小琳', details: '應用戶要求重設密碼', timestamp: '2024-03-19 17:40:33', ip: '192.168.1.104' },
-        { id: 5, adminName: '王大明', action: '編輯資料', target: '周淑華', details: '更新聯絡電話', timestamp: '2024-03-19 16:20:18', ip: '192.168.1.105' },
-        { id: 6, adminName: '謝明德', action: '啟用帳號', target: '黃雅芳', details: '重新啟用管理員帳號', timestamp: '2024-03-19 15:10:55', ip: '192.168.1.106' },
-        { id: 7, adminName: '陳志明', action: '刪除帳號', target: '測試帳號', details: '刪除測試用帳號', timestamp: '2024-03-19 14:05:42', ip: '192.168.1.107' },
-        { id: 8, adminName: '李小華', action: '修改權限', target: '蔡明翰', details: '變更為客服主管', timestamp: '2024-03-19 11:30:28', ip: '192.168.1.108' },
-        { id: 9, adminName: '王大明', action: '系統設定', target: '系統', details: '更新系統安全設定', timestamp: '2024-03-19 10:15:39', ip: '192.168.1.109' },
-        { id: 10, adminName: '劉俊宏', action: '備份資料', target: '系統', details: '執行系統資料備份', timestamp: '2024-03-19 09:20:51', ip: '192.168.1.110' }
-    ];
+//    const mockLogs = [
+//        { id: 1, adminName: '王大明', action: '新增管理員', target: '許雅婷', details: '新增一般管理員帳號', timestamp: '2024-03-20 15:30:22', ip: '192.168.1.101' },
+//        { id: 2, adminName: '陳志明', action: '停用帳號', target: '張美玲', details: '停用客服主管帳號', timestamp: '2024-03-20 14:25:15', ip: '192.168.1.102' },
+//        { id: 3, adminName: '李小華', action: '修改權限', target: '吳建志', details: '變更為系統管理員', timestamp: '2024-03-20 13:15:45', ip: '192.168.1.103' },
+//        { id: 4, adminName: '劉俊宏', action: '重設密碼', target: '林小琳', details: '應用戶要求重設密碼', timestamp: '2024-03-19 17:40:33', ip: '192.168.1.104' },
+//        { id: 5, adminName: '王大明', action: '編輯資料', target: '周淑華', details: '更新聯絡電話', timestamp: '2024-03-19 16:20:18', ip: '192.168.1.105' },
+//        { id: 6, adminName: '謝明德', action: '啟用帳號', target: '黃雅芳', details: '重新啟用管理員帳號', timestamp: '2024-03-19 15:10:55', ip: '192.168.1.106' },
+//        { id: 7, adminName: '陳志明', action: '刪除帳號', target: '測試帳號', details: '刪除測試用帳號', timestamp: '2024-03-19 14:05:42', ip: '192.168.1.107' },
+//        { id: 8, adminName: '李小華', action: '修改權限', target: '蔡明翰', details: '變更為客服主管', timestamp: '2024-03-19 11:30:28', ip: '192.168.1.108' },
+//        { id: 9, adminName: '王大明', action: '系統設定', target: '系統', details: '更新系統安全設定', timestamp: '2024-03-19 10:15:39', ip: '192.168.1.109' },
+//        { id: 10, adminName: '劉俊宏', action: '備份資料', target: '系統', details: '執行系統資料備份', timestamp: '2024-03-19 09:20:51', ip: '192.168.1.110' }
+//    ];
 
     // 修改資料獲取和排序邏輯
     function fetchAdminList(page, filters = {}) {
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function addNewLog(action, target, details) {
         const newLog = {
             id: mockLogs.length + 1,
-            adminName: '目前登入者', // 這裡應該使用實際登入的管理員名稱
+            adminName: 'adminId + 管理員', // 這裡應該使用實際登入的管理員名稱
             action: action,
             target: target,
             details: details,
