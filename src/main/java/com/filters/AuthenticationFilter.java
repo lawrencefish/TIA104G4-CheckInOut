@@ -18,6 +18,10 @@ public class AuthenticationFilter implements Filter {
     private static final List<String> ADMIN_PROTECTED_PATHS = Arrays.asList(
     		"/admin/adminBackend", "/admin/list", "/admin/edit"
     		); 
+    // 前台需要登入的頁面 By YuCheng
+    private static final List<String> USER_PROTECTED_PATHS = Arrays.asList(
+    		"/user/checkout","/user/coupon","/user/favorite","/user/order","/user/profile"
+    ); 
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -55,6 +59,17 @@ public class AuthenticationFilter implements Filter {
         	Object admin = httpRequest.getSession().getAttribute("adminId");
         	if(admin == null ) {
         		httpResponse.sendRedirect(contextPath + "/admin/login");
+        		return;
+        	}
+        }
+
+        // 前台會員路徑驗證 -byYuCheng
+        if (USER_PROTECTED_PATHS.stream().anyMatch(path::startsWith)) {
+        	Object member = httpRequest.getSession().getAttribute("memberId");
+        	if(member == null) {
+        		String url = httpRequest.getRequestURL().toString();
+        		httpRequest.getSession().setAttribute("url", url);
+        		httpResponse.sendRedirect(contextPath + "/user/");
         		return;
         	}
         }

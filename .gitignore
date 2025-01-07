@@ -32,4 +32,8 @@ build/
 
 ### VS Code ###
 .vscode/
+<<<<<<< HEAD
 /bin/
+=======
+/.DS_Store
+>>>>>>> branch 'master' of https://github.com/lawrencefish/TIA104G4-CheckInOut.git

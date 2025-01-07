@@ -45,6 +45,11 @@ public class UserController {
 	public String coupon() {
 		return "/user/coupon";
 	}
+	
+	@GetMapping("/cart")
+	public String cart() {
+		return "/user/cart";
+	}
 
 	@GetMapping("/faq")
 	public String faq() {

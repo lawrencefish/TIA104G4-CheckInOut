@@ -1144,6 +1144,20 @@
 
 
 
+        //飯店彈窗
+        document.querySelector('.hotel-button').addEventListener('click', () => {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.querySelector('.dropdown');
+            if (!e.target.closest('.hotel-button') && !e.target.closest('.dropdown')) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+
         // 取得彈窗和按鈕
         const logoutModal = document.getElementById("logout-modal");
         const logoutModalCloseBtn = document.getElementById("logout-modal-close-btn");
@@ -1467,8 +1481,9 @@
                 if (isNewRoomType) {
                     // 呼叫價格設定彈窗
                     openPriceModal(savedRoomTypeId);
+                }else{
+                    location.reload();
                 }
-                // location.reload();
             } catch (error) {
                 console.error("儲存失敗:", error.message);
                 alert(`儲存失敗: ${error.message}`);
