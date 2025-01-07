@@ -1,14 +1,14 @@
 // 定義新聞數據陣列（實際應用中可能來自API）
-let newsData = [
-    {
-        id: 1,
-        title: "新年活動公告",
-        content: "新年期間將舉辦特別活動...",
-        startDate: "2024-01-01",
-        publishDate: "2023-12-25"
-    },
-    // 可以添加更多測試數據
-];
+//let newsData = [
+//    {
+//        id: 1,
+//        title: "新年活動公告",
+//        content: "新年期間將舉辦特別活動...",
+//        startDate: "2024-01-01",
+//        publishDate: "2023-12-25"
+//    },
+//    // 可以添加更多測試數據
+//];
 
 // 頁面加載完成後執行
 document.addEventListener('DOMContentLoaded', function() {
@@ -19,32 +19,32 @@ document.addEventListener('DOMContentLoaded', function() {
 // 初始化頁面
 function initializePage() {
     // 載入頁面組件
-    loadComponents();
+//    loadComponents();
     // 顯示新聞列表
-    displayNews(newsData);
+//    displayNews(newsData);
     // 設置日期輸入框的最大值為今天
     setMaxDates();
 }
 
 // 載入頁面組件（header和footer）
-async function loadComponents() {
-    try {
-        // 載入header
-        const headerResponse = await fetch('./backend-header.html');
-        const headerHtml = await headerResponse.text();
-        document.getElementById('header').innerHTML = headerHtml;
-
-        // 初始化 header 功能
-        initializeHeader();
-
-        // 載入footer
-        const footerResponse = await fetch('./backend-footer.html');
-        const footerHtml = await footerResponse.text();
-        document.getElementById('footer').innerHTML = footerHtml;
-    } catch (error) {
-        console.error('載入組件失敗:', error);
-    }
-}
+//async function loadComponents() {
+//    try {
+//        // 載入header
+//        const headerResponse = await fetch('./backend-header.html');
+//        const headerHtml = await headerResponse.text();
+//        document.getElementById('header').innerHTML = headerHtml;
+//
+//        // 初始化 header 功能
+//        initializeHeader();
+//
+//        // 載入footer
+//        const footerResponse = await fetch('./backend-footer.html');
+//        const footerHtml = await footerResponse.text();
+//        document.getElementById('footer').innerHTML = footerHtml;
+//    } catch (error) {
+//        console.error('載入組件失敗:', error);
+//    }
+//}
 
 // 設置日期輸入框的最大值
 function setMaxDates() {
@@ -54,25 +54,25 @@ function setMaxDates() {
 }
 
 // 顯示消息列表
-function displayNews(news) {
-    const tableBody = document.getElementById('newsTableBody');
-    tableBody.innerHTML = '';
-
-    news.forEach(item => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${escapeHtml(item.title)}</td>
-            <td>${escapeHtml(item.content)}</td>
-            <td>${formatDate(item.startDate)}</td>
-            <td>${formatDate(item.publishDate)}</td>
-            <td>
-                <button class="btn btn-edit" onclick="editNews(${item.id})">編輯</button>
-                <button class="btn btn-delete" onclick="deleteNews(${item.id})">刪除</button>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
-}
+//function displayNews(news) {
+//    const tableBody = document.getElementById('newsTableBody');
+//    tableBody.innerHTML = '';
+//
+//    news.forEach(item => {
+//        const row = document.createElement('tr');
+//        row.innerHTML = `
+//            <td>${escapeHtml(item.title)}</td>
+//            <td>${escapeHtml(item.content)}</td>
+//            <td>${formatDate(item.startDate)}</td>
+//            <td>${formatDate(item.publishDate)}</td>
+//            <td>
+//                <button class="btn btn-edit" onclick="editNews(${item.id})">編輯</button>
+//                <button class="btn btn-delete" onclick="deleteNews(${item.id})">刪除</button>
+//            </td>
+//        `;
+//        tableBody.appendChild(row);
+//    });
+//}
 
 // 搜尋消息
 function searchNews() {

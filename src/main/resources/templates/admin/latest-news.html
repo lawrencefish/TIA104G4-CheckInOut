@@ -52,7 +52,16 @@
                         </tr>
                     </thead>
                     <tbody id="newsTableBody">
-                        <!-- 由 JavaScript 動態填充 -->
+                        <tr th:each="news : ${news}">
+	                        <td th:text="${news.newsTitle}"></td>
+				            <td th:text="${news.description}"></td>
+				            <td th:text="${news.postTime}"></td>
+				            <td th:text="${news.createTime}"></td>
+				            <td>
+<!-- 				                <button class="btn btn-edit" onclick="editNews(${item.id})">編輯</button> -->
+<!-- 				                <button class="btn btn-delete" onclick="deleteNews(${item.id})">刪除</button> -->
+				            </td>
+			            </tr>
                     </tbody>
                 </table>
             </div>

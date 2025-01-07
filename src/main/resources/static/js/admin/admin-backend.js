@@ -1,4 +1,7 @@
 $(document).ready(function () {
+	// 獲取應用程式的 context path
+	    const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
+	    
     // === 配置常數 ===
     const CONFIG = {
         itemsPerPage: 10,
@@ -6,10 +9,10 @@ $(document).ready(function () {
         defaultSortDirection: 'desc',
         passwordMinLength: 8,
 		apiEndpoints: {
-		            list: '/admin/list/api',
-		            edit: '/admin/edit',
-		            add: '/admin/add',
-		            updateStatus: '/admin/updateStatus'
+		            list: `${contextPath}/admin/list/api`,
+		            edit: `${contextPath}/admin/edit`,
+		            add: `${contextPath}/admin/add`,
+		            updateStatus: `${contextPath}/admin/updateStatus`
 		        }
     };
 
@@ -103,14 +106,33 @@ $(document).ready(function () {
     const api = {
         get: async (url, params = {}) => {
             try {
-                const response = await $.ajax({
+				// 添加時間戳防止快取
+                params._t = new Date().getTime();
+                
+				const response = await $.ajax({
                     url: url,
                     method: 'GET',
                     data: params,
 					headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+						'Cache-Control': 'no-cache'
+                    },
+					// 添加錯誤處理選項
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                        console.log('Response Text:', xhr.responseText);
                     }
                 });
+				
+				// 檢查回應格式
+                if (typeof response === 'string') {
+                    try {
+                        return JSON.parse(response);
+                    } catch (e) {
+                        console.error('Error parsing JSON response:', e);
+                        throw new Error('Invalid JSON response from server');
+                    }
+                }
                 return response;
             } catch (error) {
                 handleError(error, 'API請求失敗');
@@ -119,17 +141,64 @@ $(document).ready(function () {
         },
         post: async (url, data = {}) => {
             try {
+				// 添加 contextPath
+                const fullUrl = url.startsWith('/') ? `${contextPath}${url}` : url;
+                
+                console.log('Sending POST request to:', fullUrl);
+                console.log('Request data:', data);
+				
                 const response = await $.ajax({
-                    url: url,
+                    url: fullUrl,
                     method: 'POST',
                     data: JSON.stringify(data),
                     contentType: 'application/json',
 					headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+						'Cache-Control': 'no-cache'
+                    },
+					// 添加完整的錯誤處理
+                    error: function(xhr, status, error) {
+                        console.error('POST Request Failed:', {
+                            status: xhr.status,
+                            statusText: xhr.statusText,
+                            responseText: xhr.responseText
+                        });
+                        
+                        // 嘗試解析錯誤回應
+                        try {
+                            const errorResponse = JSON.parse(xhr.responseText);
+                            console.log('Parsed error response:', errorResponse);
+                        } catch (e) {
+                            console.log('Raw error response:', xhr.responseText);
+                        }
                     }
                 });
+				// 檢查回應格式
+               if (typeof response === 'string') {
+                   try {
+                       return JSON.parse(response);
+                   } catch (e) {
+                       console.error('Error parsing JSON response:', e);
+                       throw new Error('Invalid JSON response from server');
+                   }
+               }
                 return response;
             } catch (error) {
+				// 增強錯誤處理
+                let errorMessage = '操作失敗';
+                if (error.responseJSON) {
+                    errorMessage = error.responseJSON.message || error.responseJSON.error || errorMessage;
+                } else if (error.status === 500) {
+                    errorMessage = '伺服器內部錯誤，請稍後再試';
+                } else if (error.status === 400) {
+                    errorMessage = '請求資料格式錯誤';
+                } else if (error.status === 403) {
+                    errorMessage = '您沒有權限執行此操作';
+                } else if (error.status === 401) {
+                    errorMessage = '您的登入已過期，請重新登入';
+                    window.location.href = '/admin/login';
+                    return;
+                }
                 handleError(error);
                 throw error;
             }
@@ -153,7 +222,6 @@ $(document).ready(function () {
         }
     };
 
-
     // === 修改：使用資料庫資料的管理員列表獲取 ===
     async function fetchAdminList(page, filters = {}) {
         const $loadingSpinner = $('#loadingSpinner');
@@ -164,36 +232,39 @@ $(document).ready(function () {
             $tableBody.empty().append('<tr><td colspan="9" class="text-center">載入中...</td></tr>');
             // 構建查詢參數
             const params = {
-			    page: page,
+			    page: page - 1,
 			    size: CONFIG.itemsPerPage,
 				sort: `${currentSort.field},${currentSort.direction}`,
 			    ...filters
 			};
 			
-			Object.keys(params).forEach(key => {
-			           if (params[key] == null) {
-			               delete params[key];
-			           }
-			       });
+			console.log('Fetching admin list with params:', params);
 
-	       const response = await api.get(CONFIG.apiEndpoints.list, params);
-			
+	        const response = await api.get(CONFIG.apiEndpoints.list, params);
+			console.log('Server response:', response);
 		// 修改資料處理邏輯，添加錯誤檢查
-		if (!response || (!Array.isArray(response) && !response.content)) {
-                throw new Error('Invalid response format from server');
-            }
+		if (!response || typeof response !== 'object') {
+			throw new Error('Invalid response format from server');
+		}
 
-            const admins = Array.isArray(response) ? response : 
-                (response.content || response.data || []);
+		// 處理分頁資料
+        const pageData = {
+            content: Array.isArray(response.content) ? response.content : 
+			(Array.isArray(response) ? response : []),
+            totalElements: response.totalElements || 0,
+            totalPages: response.totalPages || 1,
+            size: response.size || CONFIG.itemsPerPage,
+            number: response.number || 0
+        };
             
-            if (admins.length === 0) {
-                $tableBody.html('<tr><td colspan="9" class="text-center">無資料</td></tr>');
-                return;
-            }
+		if (pageData.content.length === 0) {
+			$tableBody.html('<tr><td colspan="9" class="text-center">無資料</td></tr>');
+			renderPagination(pageData.totalPages, pageData.number + 1);
+			return;
+       	}
 
-            const totalPages = Math.ceil(admins.length / CONFIG.itemsPerPage);
-            renderAdminTable(admins);
-            renderPagination(totalPages);
+            renderAdminTable(pageData.content);
+            renderPagination(pageData.totalPages, pageData.number + 1);
             
         } catch (error) {
             console.error('Error fetching admin list:', error);
@@ -402,12 +473,20 @@ $(document).ready(function () {
         
         if (confirm(`確定要${actionText}管理員 ${escapeHtml(admin.adminAccount)} 的帳號嗎？`)) {
             try {
-                await api.post(CONFIG.apiEndpoints.updateStatus, {
+                console.log('Toggling admin status:', {
 				    adminId: admin.adminId,
 				    status: newStatus
 				});
                 
-                await fetchAdminList(currentPage, getSearchFilters());
+				
+				const response = await api.post(CONFIG.apiEndpoints.updateStatus, {
+                    adminId: admin.adminId,
+                    status: newStatus
+                });
+
+                console.log('Toggle status response:', response);
+  
+	            await fetchAdminList(currentPage, getSearchFilters());
 				
 				const $successAlert = $('<div>')
                     .addClass('success-alert')
@@ -447,19 +526,21 @@ $(document).ready(function () {
     }
 
     // === 修改：分頁控制更新 ===
-    function renderPagination(totalPages) {
+    function renderPagination(totalPages, currentPageNum) {
         const $pagination = $('#pagination');
         $pagination.empty();
-
+		
+		// 如果只有一頁，不顯示分頁
+	    if (totalPages <= 1) {
+	        return;
+	    }
+		
         if (currentPage > 1) {
             $pagination.append(
                 $('<button>')
                     .addClass('pagination-button')
                     .text('上一頁')
-                    .on('click', async () => {
-                        currentPage--;
-                        await fetchAdminList(currentPage, getSearchFilters());
-                    })
+                    .on('click', () => fetchAdminList(currentPageNum - 1, getSearchFilters()))
             );
         }
 
@@ -469,11 +550,8 @@ $(document).ready(function () {
                     .addClass('pagination-button')
                     .toggleClass('active', i === currentPage)
                     .text(i)
-                    .on('click', async () => {
-                        currentPage = i;
-                        await fetchAdminList(currentPage, getSearchFilters());
-                    })
-            );
+                    .on('click', () => fetchAdminList(i, getSearchFilters()))
+			);
         }
 
         if (currentPage < totalPages) {
@@ -481,11 +559,8 @@ $(document).ready(function () {
                 $('<button>')
                     .addClass('pagination-button')
                     .text('下一頁')
-                    .on('click', async () => {
-                        currentPage++;
-                        await fetchAdminList(currentPage, getSearchFilters());
-                    })
-            );
+                    .on('click', () => fetchAdminList(currentPageNum + 1, getSearchFilters()))
+			);
         }
     }
 

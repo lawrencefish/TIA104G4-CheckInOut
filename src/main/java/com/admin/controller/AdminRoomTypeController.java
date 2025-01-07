@@ -89,7 +89,8 @@ public class AdminRoomTypeController {
     public String showRoomTypeReviewPage(@PathVariable Integer roomTypeId, Model model) {
         RoomTypeVO roomType = roomTypeService.getRoomTypeById(roomTypeId);
         if (roomType == null) {
-            return "error/404";
+        	System.out.println("空");
+//            return "error/404";
         }
         model.addAttribute("roomType", roomType);
         return "admin/roomtype-review";  // 返回 HTML 頁面
