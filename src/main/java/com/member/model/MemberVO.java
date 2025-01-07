@@ -38,14 +38,14 @@ public class MemberVO implements java.io.Serializable {
 	@Id
 	@Column(name = "member_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer memberID;
+	private Integer memberId;
 
 	@Column(name = "account")
 	@NotBlank(message = "Email 不可為空")
 	@Email(message = "Email 格式不正確")
 	private String account;
 	@Column(name = "password")
-	@NotEmpty(message = "請輸入密碼")
+	@NotEmpty(message = "請輸入密碼!")
 	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d!@#$%^&*+\\-=\\*]{6,12}$")
 	private String password;
 	@Column(name = "last_name")
@@ -85,12 +85,12 @@ public class MemberVO implements java.io.Serializable {
 
 	}
 
-	public Integer getMemberID() {
-		return memberID;
+	public Integer getMemberId() {
+		return memberId;
 	}
 
-	public void setMemberID(Integer memberID) {
-		this.memberID = memberID;
+	public void setMemberId(Integer memberId) {
+		this.memberId = memberId;
 	}
 
 	public String getAccount() {
@@ -175,7 +175,7 @@ public class MemberVO implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "MemberVO [memberID=" + memberID + ", account=" + account + ", password=" + password + ", lastName="
+		return "MemberVO [memberID=" + memberId + ", account=" + account + ", password=" + password + ", lastName="
 				+ lastName + ", firstName=" + firstName + ", avatar=" + Arrays.toString(avatar) + ", birthday="
 				+ birthday + ", phoneNumber=" + phoneNumber + ", gender=" + gender + ", status=" + status
 				+ ", createTime=" + createTime + "]";
