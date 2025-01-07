@@ -15,6 +15,8 @@ public interface EmployeeRepository extends JpaRepository<EmployeeVO, Integer> {
 
     // 假設 employee_number 是唯一
     Optional<EmployeeVO> findByEmployeeNumber(String employeeNumber);
+    
+    Optional<EmployeeVO> findByEmployeeName(String employeeName);
 
     Optional<EmployeeVO> findByEmployeeNumberAndHotel_HotelId(String employeeNumber, Integer hotelId);
 
