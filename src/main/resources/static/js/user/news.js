@@ -2,7 +2,7 @@ function newslLoading() {
     let times = 0;
     let newsTitle = 'test';
     let newsText = '9';
-    let newsHref = '/news_detail';
+    let newsHref = '/user/news_detail';
     let newsImgSrc = '/imgs/user/uno-hotel.jpg';
     let newsPostTime = '2024-12-01';
     let newsCard = `
