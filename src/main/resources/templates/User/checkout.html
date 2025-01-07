@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check in out - 結帳</title>
+<link rel="stylesheet"
+	th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
+<link rel="stylesheet" th:href="@{/css/user/index.css}">
+</head>
+
+<body>
+
+    <!-- 標題列 -->
+    <header class="p-1 border-bottom shadow-sm">
+    </header>
+
+    <!-- 主要內容 -->
+    <main class="container pb-3">
+        <div class="row">
+            <div class="row big-title mb-3 align-items-center ">
+                <h1 class="col text-center fw-bold display-5">結帳</h1>
+            </div>
+            <!-- Form Section -->
+            <div class="col-md-6">
+                <div class="border rounded p-4 booking-form">
+                    <form>
+                        <div class="mb-3 form-group">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email">
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2 fill-member-data"
+                                id="fillMemberData">填入會員資料</button>
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="lastName" class="form-label">姓</label>
+                            <input type="text" class="form-control" id="lastName">
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="firstName" class="form-label">名</label>
+                            <input type="text" class="form-control" id="firstName">
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="coupon" class="form-label">選擇優惠券</label>
+                            <select class="form-select coupon-selector" id="coupon">
+                                <option value="0">不使用優惠券</option>
+                                <option value="500">新會員優惠：折500</option>
+                                <option value="1000">特別優惠：折1000</option>
+                                <option value="2000">限時優惠：折2000</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="creditCard" class="form-label">信用卡卡號</label>
+                            <select class="form-select mb-2 saved-cards" id="savedCards">
+                                <option value="">使用已儲存的卡號</option>
+                                <option value="card1">**** **** **** 1234</option>
+                                <option value="card2">**** **** **** 5678</option>
+                            </select>
+                            <input type="text" class="form-control new-card" id="creditCard" placeholder="輸入新的卡號">
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="expiryDate" class="form-label">到期日</label>
+                            <input type="text" class="form-control expiry-date" id="expiryDate" placeholder="MMYY">
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="securityCode" class="form-label">安全碼</label>
+                            <input type="text" class="form-control security-code" id="securityCode" placeholder="">
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="notes" class="form-label">備註</label>
+                            <textarea class="form-control notes-area" id="notes" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input agree-terms" id="terms">
+                            <label class="form-check-label" for="terms">我同意服務條款</label>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center payment-summary">
+                            <div class="price-details">
+                                <p class="text-decoration-line-through mb-0 original-price" id="originalPrice">
+                                </p>
+                                <p>$<span class="fs-4 mb-0 final-price" id="finalPrice"></span></p>
+                                <p class="small text-muted coupon-info" id="couponInfo"></p>
+                            </div>
+                            <button type="submit" class="btn btn-dark pay-now">立即付款！</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Hotel Selection Section -->
+            <div class="col-md-6">
+                <div class="mb-4 hotel-selection">
+                    <div class="border rounded p-3 d-flex hotel-item">
+                        <div class="placeholder-image bg-light rounded me-3 hotel-image"
+                            style="width: 100px; height: 100px;"></div>
+                        <div class="hotel-details">
+                            <h5 class="mb-1 hotel-name">台中金典酒店</h5>
+                            <p class="text-success mb-1 hotel-dates">2024/11/03 - 2024/11/04</p>
+                            <p>$<span class="fs-5 mb-1 hotel-price">12000</span></p>
+                            <p class="small mb-0 hotel-description">雙人房<br>不含早餐<br>最優惠價格！</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4 hotel-selection">
+                    <div class="border rounded p-3 d-flex hotel-item">
+                        <div class="placeholder-image bg-light rounded me-3 hotel-image"
+                            style="width: 100px; height: 100px;"></div>
+                        <div class="hotel-details">
+                            <h5 class="mb-1 hotel-name">台中林酒店</h5>
+                            <p class="text-success mb-1 hotel-dates">2024/11/04 - 2024/11/05</p>
+                            <p>$<span class="fs-5 mb-1 hotel-price">32000</span></p>
+                            <p class="small mb-0 hotel-description">雙人房<br>含早餐<br>最優惠價格！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底欄 -->
+	<footer>
+		<div class="row border-top">
+			<div class="container">
+				<ul class="nav justify-content-center">
+					<li class="nav-item"><a th:href="@{/user/}" class="nav-link px-2 text-body-secondary">首頁</a></li>
+					<li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
+					<li class="nav-item"><a th:href="@{/user/order}"
+							class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+					<li class="nav-item"><a th:href="@{/user/faq}" class="nav-link px-2 text-body-secondary">常見問題</a>
+					</li>
+					<li class="nav-item"><a th:href="@{/user/contactUs}"
+							class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+					<li class="nav-item"><a th:href="@{/login/}" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+				</ul>
+				<div class="d-flex justify-content-center align-items-start mb-0">
+					<img th:src="@{/imgs/user/checKInOut_logo_light.png}" alt="checkinout" width="128">
+				</div>
+				<!-- <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p> -->
+			</div>
+		</div>
+	</footer>
+	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
+    <script src="/js/user/loginCheck.js" defer></script>
+    <script>
+        let totalPrice = 0;
+        let originalPrice;
+        $('.hotel-price').each((index, element) => {
+            totalPrice += parseInt($(element).text()) || 0;
+        });
+        originalPrice = totalPrice;
+        $('#originalPrice').text(`$${totalPrice}`);
+        $('#finalPrice').text(`$${totalPrice}`);
+
+        document.getElementById('fillMemberData').addEventListener('click', function () {
+            document.getElementById('firstName').value = '吳';
+            document.getElementById('lastName').value = '小';
+            document.getElementById('email').value = 'TIA104@tibame.com';
+        });
+
+        document.getElementById('coupon').addEventListener('change', function () {
+            const discount = parseInt(this.value) || 0;
+            const finalPrice = originalPrice - discount;
+            document.getElementById('originalPrice').textContent = `$${originalPrice}`;
+            document.getElementById('finalPrice').textContent = `$${finalPrice}`;
+            if (discount != 0) {
+                document.getElementById('couponInfo').textContent = `已使用優惠券：折${discount}`;
+            } else {
+                document.getElementById('couponInfo').textContent = ``;
+
+            }
+        });
+    </script>
+
+</body>
+
+</html>

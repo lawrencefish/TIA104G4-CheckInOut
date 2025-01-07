@@ -3,20 +3,17 @@ package com.member.model;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("memberService")
+@Service("MemberService")
 public class MemberService {
 
 	@Autowired
-	MemberRepository repository;
+	private MemberRepository repository;
 
-	@Autowired
-	private SessionFactory sessionFactory;
-
+	@Transactional
 	public void addMember(MemberVO memberVO) {
 		repository.save(memberVO);
 	}
@@ -26,14 +23,26 @@ public class MemberService {
 		repository.save(memberVO);
 	}
 
-	@Transactional
 	public void deleteMember(Integer memberId) {
 		if (repository.existsById(memberId)) {
 			repository.deleteByMemberID(memberId);
 		}
 	}
 
-	public MemberVO queryMember(Integer memberId) {
+	public MemberVO login(String account, String password) {
+		if (repository.existsByAccount(account)) {
+			if (repository.findByAccount(account).getPassword().equals(password)) {
+				return repository.findByAccount(account);
+			}
+		}
+		return null;
+	}
+	
+	public Boolean existsByAccount(String account) {
+		return repository.existsByAccount(account);
+	}
+
+	public MemberVO findByMemberId(Integer memberId) {
 		Optional<MemberVO> optional = repository.findById(memberId);
 		return optional.orElse(null);
 	}

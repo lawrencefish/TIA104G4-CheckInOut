@@ -68,4 +68,6 @@ public class HotelFacilityController {
                     .body(Collections.singletonMap("error", "更新失敗：" + e.getMessage()));
         }
     }
+
+
 }

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check in Out</title>
+<link rel="stylesheet"
+	th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
+<link rel="stylesheet" th:href="@{/css/user/news_detail.css}">
+
+
+</head>
+
+<body>
+
+	<!-- 標題列 -->
+	<header class="p-1 border-bottom shadow-sm">
+	</header>
+
+	<!-- 主要內容 -->
+	<main>
+		<div class="container shadow-sm rounded-2">
+			<!-- 大標題 -->
+			<div class="row big-title mb-5 align-items-center">
+				<h1 class="col text-center fw-bold display-5">最新消息</h1>
+			</div>
+			<div
+				class="row news-body d-flex justify-content-center align-items-start">
+				<div class="col-3">
+					<img src='/img/uno-hotel.jpg' class="img-fluid"
+						style="min-height: 20vh;">
+				</div>
+				<div class="col-5 ms-5">
+					<h5 class="news-title">測試標題</h5>
+					<p class="text-muted news-date">2024-12-01</p>
+					<p class="news-text">測試文章測試文章測試文章測試文章測試文章測試文章測試文章測試文章測試文章測試文章測試文章測試文章測試文章測試文章</p>
+				</div>
+			</div>
+			<div class="row justify-content-center">
+				<a class="col-2 btn btn-primary mt-3 mb-3" th:href="@{/user/news}">回到上一頁</a>
+			</div>
+		</div>
+	</main>
+
+	<!-- 底欄 -->
+	<footer>
+		<div class="row border-top">
+			<div class="container">
+				<ul class="nav justify-content-center">
+					<li class="nav-item"><a th:href="@{/user/}" class="nav-link px-2 text-body-secondary">首頁</a></li>
+					<li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
+					<li class="nav-item"><a th:href="@{/user/order}"
+							class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+					<li class="nav-item"><a th:href="@{/user/faq}" class="nav-link px-2 text-body-secondary">常見問題</a>
+					</li>
+					<li class="nav-item"><a th:href="@{/user/contactUs}"
+							class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+					<li class="nav-item"><a th:href="@{/login/}" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+				</ul>
+				<div class="d-flex justify-content-center align-items-start mb-0">
+					<img th:src="@{/imgs/user/checKInOut_logo_light.png}" alt="checkinout" width="128">
+				</div>
+				<!-- <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p> -->
+			</div>
+		</div>
+	</footer>
+	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
+	<script th:src="@{js/user/news.js}"></script>
+	<script src="/js/user/loginCheck.js" defer></script>
+
+</body>
+
+</html>

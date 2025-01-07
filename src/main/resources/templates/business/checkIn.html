@@ -675,6 +675,8 @@
     </footer>
 
     <script>
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
+
         //假資料
         const orders = [
             {

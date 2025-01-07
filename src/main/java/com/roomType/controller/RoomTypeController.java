@@ -35,7 +35,7 @@ public class RoomTypeController {
 
         // 查詢該酒店的房型
         List<RoomTypeVO> roomTypes = roomTypeService.findByHotelId(hotel.getHotelId());
-        System.out.println("Fetched room types: " + roomTypes); // 日誌輸出
+//        System.out.println("Fetched room types: " + roomTypes); // 日誌輸出
         return ResponseEntity.ok(roomTypes);
     }
 
