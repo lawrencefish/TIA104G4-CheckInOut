@@ -51,7 +51,7 @@ public class RoomTypePhotoWrite {
             }
 
             pstmt.close();
-            System.out.println("圖片新增成功！");
+            System.out.println("房型圖片新增成功！");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

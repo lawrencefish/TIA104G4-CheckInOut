@@ -64,7 +64,7 @@ public class HotelPhotoWriter {
             }
 
             pstmt.close();
-            System.out.println("圖片插入成功.........");
+            System.out.println("旅館圖片插入成功.........");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
