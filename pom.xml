@@ -188,6 +188,20 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<!-- <version>8.0.29</version> -->       <!-- spring-boot(2.7.0) 已內建依賴8.029，但預設未下載 -->
 		</dependency>
+		
+		<!--        redis-->
+        <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        
+        <!--       jedis-->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>5.2.0</version>
+        </dependency>
 
 		
 		

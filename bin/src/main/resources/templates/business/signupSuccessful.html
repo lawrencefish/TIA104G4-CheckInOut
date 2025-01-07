@@ -110,35 +110,27 @@
             margin-bottom: 10px;
         }
 
-        /* 按鈕樣式 */
-        main .login-btn {
-            margin-top: 20px;
-            /* 增加按鈕與其他內容的距離 */
-            padding: 10px 20px;
-            /* 調整按鈕大小 */
-            background-color: #007bff;
-            /* 按鈕背景色 */
-            color: #fff;
-            /* 按鈕文字顏色 */
-            font-size: 1.2rem;
-            /* 按鈕文字大小 */
-            border: none;
-            /* 移除按鈕邊框 */
-            border-radius: 8px;
-            /* 圓角按鈕 */
-            cursor: pointer;
-            /* 指針變成手型 */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            /* 增加按鈕陰影 */
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            /* 增加動畫效果 */
+        .button-group {
+            display: flex;
+            gap: 2vw; /* 使用相對單位 */
+            margin-top: 2vh;
         }
 
-        main .login-btn:hover {
+        .button-group a {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #007bff;
+            color: #fff;
+            padding: 1vh 2vw; /* 使用相對單位 */
+            font-size: 1vw; /* 根據視窗寬度縮放 */
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .button-group a:hover {
             background-color: #0056b3;
-            /* 滑鼠懸停時改變背景色 */
-            transform: scale(1.05);
-            /* 滑鼠懸停時略微放大按鈕 */
+            transform: scale(1.1);
         }
 
         /* Footer 樣式 */
@@ -178,7 +170,9 @@
             <h1>註冊成功</h1>
             <h2>歡迎加入 Check in out！</h2>
             <p>註冊資料驗證中，請留意信件資訊。</p>
-            <button class="login-btn">點我登入</button>
+            <div class="button-group">
+                <a th:href="@{/login}">前往登入</a>
+            </div>
         </main>
 
     </div>
@@ -189,9 +183,6 @@
     </footer>
 
     <script>
-        document.querySelector(".login-btn").addEventListener("click", function () {
-            document.location.href = "login-1.html";
-        })
     </script>
 </body>
 
