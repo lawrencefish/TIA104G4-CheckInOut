@@ -73,17 +73,18 @@ CREATE TABLE member (
     birthday DATE NOT NULL,
     gender VARCHAR(2) NOT NULL,
     status TINYINT NOT NULL COMMENT '1 = 啟動, 0 = 停用',
+    city_num INT,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 INSERT INTO member (
-    account, password, last_name, first_name, phone_number, birthday, gender, status
+    account, password, last_name, first_name, phone_number, birthday, gender, status, city_num
 ) VALUES
-('johndoe@example.com', 'pass1234', 'Doe', 'John', '0912345678', '1990-05-20', 'M', 1),
-('janedoe@example.com', 'securepwd', 'Doe', 'Jane', '0987654321', '1992-07-15', 'F', 1),
-('samlee@example.com', 'mypassword', 'Lee', 'Sam', '0933445566', '1985-03-10', 'M', 0),
-('emilywang@example.com', 'strongpwd', 'Wang', 'Emily', '0922334455', '1995-11-22', 'F', 1),
-('mikechan@example.com', 'qwerty123', 'Chan', 'Mike', '0966112233', '1988-01-05', 'M', 0);
+('johndoe@example.com', 'pass1234', 'Doe', 'John', '0912345678', '1990-05-20', 'M', 1, 0),
+('janedoe@example.com', 'securepwd', 'Doe', 'Jane', '0987654321', '1992-07-15', 'F', 1, 1),
+('samlee@example.com', 'mypassword', 'Lee', 'Sam', '0933445566', '1985-03-10', 'M', 0, 1),
+('emilywang@example.com', 'strongpwd', 'Wang', 'Emily', '0922334455', '1995-11-22', 'F', 1, 2),
+('mikechan@example.com', 'qwerty123', 'Chan', 'Mike', '0966112233', '1988-01-05', 'M', 0, 0);
 
 CREATE TABLE admin (
     admin_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -357,6 +358,7 @@ CREATE TABLE creditcard (
     creditcard_id INT AUTO_INCREMENT PRIMARY KEY,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     creditcard_name VARCHAR(30) NOT NULL,
+    
     creditcard_num VARCHAR(16) NOT NULL,
     creditcard_security VARCHAR(6) NOT NULL,
     expiry_date VARCHAR(4) NOT NULL,
