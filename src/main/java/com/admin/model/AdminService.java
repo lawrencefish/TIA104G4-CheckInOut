@@ -2,8 +2,10 @@ package com.admin.model;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 
@@ -12,6 +14,7 @@ public class AdminService {
 	
 	@Autowired
 	private AdminRepository repository;
+	
 	
 //	@Autowired
 //	private SessionFactory sessionFactory;
@@ -33,6 +36,21 @@ public class AdminService {
 		}
 		return null; // 登入失敗
 	}
+	
+//	public List<Admin> searchAdmins(String keyword, String status, String permissions){
+//		List<Admin> admins = repository.findAll();
+//		
+//		return admins.stream().filter(admin -> 
+//					(keyword.isEmpty() || 
+//					admin.getAdminAccount().contains(keyword) ||
+//					admin.getEmail().contains(keyword) ||
+//					admin.getPhoneNumber().contains(keyword)) &&
+//					(status.equals("all") ||
+//					admin.getStatus().toString().equals(status)) &&
+//					(permissions.equals("all") ||
+//					admin.getPermissions().toString().equals(permissions)))
+//					.collect(Collectors.toList());
+//	}
 	
 	// 新增管理員
 	public Admin insert (Admin admin) {
