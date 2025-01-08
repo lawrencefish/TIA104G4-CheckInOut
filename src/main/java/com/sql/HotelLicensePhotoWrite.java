@@ -71,7 +71,7 @@ public class HotelLicensePhotoWrite {
             rs.close();
             stmt.close();
             pstmt.close();
-            System.out.println("所有酒店图片更新成功！");
+            System.out.println("身分證、證照圖片更新成功！");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
