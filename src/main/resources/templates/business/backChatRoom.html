@@ -376,16 +376,16 @@
             </a>
         </div>
         <nav>
-            <a href="1-1.html">櫃台系統</a>
-            <a href="2-1.html">飯店管理</a>
-            <a href="#">訂單管理</a>
-            <a href="4-1.html">評論管理</a>
-            <a href="5-1.html" class="active">客戶管理</a>
-            <a href="#">報表分析</a>
+            <a th:href="@{/frontDesk}">櫃台系統</a>
+            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/orders}">訂單管理</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
+            <a th:href="@{/report}">報表分析</a>
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-            <span class="icon">💬</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button">台北君悅酒店</button>
             <div class="dropdown">
                 <ul>
