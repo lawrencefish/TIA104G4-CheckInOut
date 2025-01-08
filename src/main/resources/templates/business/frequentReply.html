@@ -93,8 +93,10 @@
         /* Hotel Button */
         header .user .hotel-button {
             background-color: #2c3e50;
+            /* 深藍色 */
             color: #fff;
             border: 1px solid #34495e;
+            /* 邊框顏色和背景稍微區分 */
             padding: 10px 20px;
             font-size: 1rem;
             font-weight: 600;
@@ -164,59 +166,18 @@
             border-bottom: none;
         }
 
-        /* Footer 樣式 */
-        footer {
-            background-color: #333;
-            /* footer 改為深色 */
-            padding: 10px 30px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #fff;
-            border-top: 1px solid #ddd;
-            margin-top: auto;
-        }
 
-        /* 導覽列 */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-        }
-
-        .navbar .logo {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .navbar nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-
-        .navbar nav ul li a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* 主容器 */
+        /* Layout */
         .container {
             display: flex;
-            margin: 20px;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
         }
 
-        /* 側邊欄 */
         aside {
             width: 300px;
+            /* aside寬度保持300px */
             padding: 20px;
         }
 
@@ -240,6 +201,51 @@
             color: #fff;
         }
 
+        /* main主內容 */
+        /* 主體樣式 */
+        main {
+            width: 1500px;
+            /* 修改為1500px */
+            background-color: #fff;
+            padding: 30px;
+            margin-left: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        main h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            /* 增加底部間距 */
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            /* 加入底部邊框 */
+            padding-bottom: 10px;
+            /* 調整與底部邊框的間距 */
+        }
+
+        .content-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .content-section:not(.hidden) {
+            display: block;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
         aside select {
             border-radius: 10px;
             border: 1px solid #ccc;
@@ -258,6 +264,7 @@
             margin-bottom: 5px;
         }
 
+        /* Button styling already exists, but ensure consistency */
         aside .btn-add {
             width: 100%;
             margin-top: 5px;
@@ -265,103 +272,85 @@
             border: 1px solid #ccc;
             cursor: pointer;
             background-color: #f5f5f5;
-            /* 預設背景色 */
             transition: background-color 0.3s ease;
-            /* 增加過渡效果 */
         }
 
         aside .btn-add:hover {
             background-color: #dcdcdc;
         }
 
-        .client-names {
-            border-radius: 10px;
-            /* border: 1px solid #ccc; */
-            padding: 0.5rem;
-            font-size: 1rem;
+        .review-section {
             width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* 主要聊天區 */
-        .chat-area {
-            flex: 1;
-            margin-left: 20px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .chat .customer,
-        .chat .response {
-            margin-bottom: 20px;
-        }
-
-        .chat h4 {
-            margin-bottom: 5px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .message {
-            background-color: #f1f1f1;
             padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
+            border-radius: 7px;
+            font-size: 1rem;
+            resize: vertical;
         }
 
-        .reply {
+        .review-section textarea {
+            width: 100%;
+            height: 40px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        .review-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .response-section {
             margin-top: 20px;
         }
 
-        .reply textarea {
+        .response-section h3 {
+            /* font-size: 1.5rem; */
+            margin-bottom: 10px;
+        }
+
+        .response-section textarea {
             width: 100%;
-            height: 100px;
+            height: 250px;
             padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 7px;
+            font-size: 1rem;
+            resize: vertical;
         }
 
-        .reply button {
+        .response-section button {
             margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
+            padding: 5px 10px;
+            border-radius: 7px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
             cursor: pointer;
+            transition: background-color 0.3s;
+
         }
 
-        .reply button:hover {
-            background-color: #0056b3;
+        .response-section button:hover {
+            background-color: #dcdcdc;
         }
 
-        /* .chat .response {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .chat .response .message {
-            background-color: #e0f7fa;
-            padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
+        .response-section .btn-add {
             float: right;
-        } */
-
-        .response-group {
-            text-align: right;
-            margin-bottom: 10px; /* 每次新增訊息分組換行 */
         }
 
-        .response-group .message {
-            background-color: #e0f7fa; /* 淡藍色背景 */
-            padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
-            float: right;
-            clear: both;
+        .form-group {
+            margin-bottom: 1rem;/* 區塊間距 */
+            border-radius: 8px;/* 圓角外框 */
+            padding: 1rem;/* 內部填充 */
+            box-sizing: border-box;/* 確保寬度包含 padding */
+        }
+
+        .form-label {
+            font-weight: bold;/* 字體加粗 */
+            display: block;/* 確保標籤獨占一行 */
+            margin-bottom: 0.5rem;/* 與輸入框的間距 */
         }
     </style>
 </head>
@@ -376,16 +365,16 @@
             </a>
         </div>
         <nav>
-            <a th:href="@{/frontDesk}">櫃台系統</a>
+           <a th:href="@{/frontDesk}">櫃台系統</a>
             <a th:href="@{/business}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
-            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/comment}" class="active">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
             <a th:href="@{/report}">報表分析</a>
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
+             <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
@@ -396,18 +385,11 @@
         </div>
     </header>
 
-    <!-- 側邊欄與主要內容 -->
+
+    <!-- 主體內容 -->
     <div class="container">
+        <!-- Aside -->
         <aside class="sidebar" id="aside">
-            <h3>所有客戶</h3>
-            <label for="client-names"></label>
-            <select id="client-names">
-                <option>李相赫</option>
-                <option>崔祐齊</option>
-                <option>文炫竣</option>
-                <option>李珉炯</option>
-                <option>柳岷析</option>
-            </select>
             <label for="common-replies">常用回覆</label>
             <select id="common-replies">
                 <option>Hello World</option>
@@ -416,60 +398,58 @@
                 <option>Option 4</option>
                 <option>Option 5</option>
             </select>
-            <a href="4-3.html"><button class="btn-add">新增</button></a>
+            <button class="btn-add">新增</button>
         </aside>
 
-        <main class="chat-area">
-            <div class="chat" id="chatArea">
-                <div class="customer">
-                    <h4>李相赫</h4>
-                    <div class="message">第五冠是獻給粉絲的</div>
-                </div>
+        <!-- Main -->
+        <main class="main-content" id="main">
+            <div class="review-section form-group">
+                <label for="title" class="form-label">常用回覆標題</label>
+                <textarea id="titleInput" class="form-textarea" placeholder="輸入標題"></textarea>
             </div>
-    
-            <div class="reply">
-                <textarea id="replyInput" placeholder="輸入文字...."></textarea>
-                <button id="sendButton">送出</button>
+            
+            <div class="response-section form-group">
+                <label for="response" class="form-label">預設回覆</label>
+                <textarea id="responseInput" class="form-textarea" placeholder="輸入回覆內容"></textarea>
+                <button id="saveButton" class="btn-add">儲存</button>
             </div>
         </main>
-    
-        <script>
-            const username = prompt("請輸入您的使用者名稱：");
-            const ws = new WebSocket(`ws://localhost:8080/chat/${username}`);
+
+
+    </div>
+
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+
+    <script>
+        document.querySelector('.hotel-button').addEventListener('click', () => {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
         
-            const chatArea = document.getElementById('chatArea');
-            const replyInput = document.getElementById('replyInput');
-            const sendButton = document.getElementById('sendButton');
-        
-            ws.onopen = () => {
-                console.log("WebSocket connection established.");
-            };
-        
-            ws.onmessage = (event) => {
-                const message = event.data;
-        
-                // 添加到聊天區域
-                const messageDiv = document.createElement('div');
-                messageDiv.textContent = message;
-                messageDiv.classList.add('message');
-                chatArea.appendChild(messageDiv);
-        
-                chatArea.scrollTop = chatArea.scrollHeight;
-            };
-        
-            ws.onclose = () => {
-                console.log("WebSocket connection closed.");
-            };
-        
-            sendButton.addEventListener('click', () => {
-                const message = replyInput.value.trim();
-                if (message) {
-                    ws.send(message);
-                    replyInput.value = '';
-                }
-            });
-        </script>
-        
+    document.getElementById('saveButton').addEventListener('click', () => {
+        // 選取輸入框
+        const titleInput = document.getElementById('titleInput').value.trim();
+        const responseInput = document.getElementById('responseInput').value.trim();
+
+        // 檢查是否為空
+        if (!titleInput) {
+            alert('請輸入常用回覆標題！');
+            return;
+        }
+
+        if (!responseInput) {
+            alert('請輸入預設回覆內容！');
+            return;
+        }
+
+        // 模擬保存成功
+        alert('儲存成功！');
+    });
+    </script>
+
+
 </body>
 
 </html>

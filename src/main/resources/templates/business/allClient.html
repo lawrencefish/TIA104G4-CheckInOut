@@ -309,8 +309,9 @@
 
         /* 對所有 input 和 select 元素設置圓角 */
         .search-name input,
-        .search-hotel input,
-        .search-room input,
+        .search-number input,
+        .search-mail input,
+        .search-phone input,
         .search select {
             border-radius: 10px;
             /* 圓角半徑 */
@@ -360,11 +361,17 @@
 
         button {
             border-radius: 10px;
+            /* 設定圓角半徑，值越大，圓角越明顯 */
             padding: 5px 10px;
+            /* 調整按鈕內邊距 */
             border: 1px solid #ccc;
+            /* 邊框樣式 */
             background-color: #f0f0f0;
+            /* 按鈕背景色 */
             cursor: pointer;
+            /* 指標變成手形 */
             transition: background-color 0.3s;
+            /* 增加滑順效果 */
         }
 
         /* 鼠標懸停時的效果 */
@@ -378,7 +385,7 @@
     <!-- Header -->
     <header>
         <div class="logo">
-           <a th:href="@{/frontDesk}">
+            <a th:href="@{/frontDesk}">
                 <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
                 <span>飯店管理系統</span>
             </a>
@@ -387,13 +394,13 @@
             <a th:href="@{/frontDesk}">櫃台系統</a>
             <a th:href="@{/business}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
-            <a th:href="@{/comment}" class="active">評論管理</a>
-            <a th:href="@{/client}">客戶管理</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}" class="active">客戶管理</a>
             <a th:href="@{/report}">報表分析</a>
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-             <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
@@ -409,20 +416,19 @@
     <div class="container">
         <!-- Aside -->
         <aside class="sidebar" id="aside">
+            <div class="search-number">
+                <input type="text" placeholder="依編號搜尋">
+            </div>
             <div class="search-name">
-                <input type="text" placeholder="依客戶姓名搜尋">
+                <input type="text" placeholder="依姓名搜尋">
             </div>
-            <div class="search-hotel">
-                <input type="text" placeholder="依飯店搜尋">
+            <div class="search-mail">
+                <input type="text" placeholder="依信箱搜尋">
             </div>
-            <div class="search-room">
-                <input type="text" placeholder="依房型搜尋">
+            <div class="search-phone">
+                <input type="text" placeholder="依電話搜尋">
             </div>
             <div class="search">
-                <select>
-                    <option>星數高至低</option>
-                    <option>星數低至高</option>
-                </select>
                 <button>搜尋</button>
             </div>
         </aside>
@@ -430,50 +436,51 @@
         <!-- Main -->
         <main class="main-content" id="main">
             <section class="form-section">
-                <div class="date-range">
-                    <input type="date" value="2024-11-01">
-                    <span>~</span>
-                    <input type="date" value="2024-11-27">
-                </div>
-
                 <table>
                     <thead>
                         <tr>
-                            <th>評論編號</th>
-                            <th>客戶</th>
-                            <th>飯店</th>
-                            <th>房型</th>
-                            <th>日期</th>
-                            <th>星數</th>
+                            <th>客戶編號</th>
+                            <th>姓名</th>
+                            <th>電子信箱</th>
+                            <th>電話</th>
+                            <th>備註</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr class="first-row">
                             <td>001</td>
-                            <td>李相赫</td>
-                            <td>緯育大飯店</td>
-                            <td>單人房</td>
-                            <td>2024/11/6</td>
-                            <td>⭐️⭐️⭐️⭐️⭐️</td>
-                            <td><a href="4-2.html"><button>查看</button></a></td>
+                            <td>崔玄準</td>
+                            <td>doran@t1.com</td>
+                            <td>0987654001</td>
+                            <td>上路</td>
                         </tr>
-                        <tr>
+                        <tr class="second-row">
                             <td>002</td>
-                            <td>熊汶安</td>
-                            <td>緯育大飯店</td>
-                            <td>雙人房</td>
-                            <td>2024/11/7</td>
-                            <td>⭐️⭐️⭐️⭐️</td>
-                            <td><a href="4-2.html"><button>查看</button></a></td>
+                            <td>文炫竣</td>
+                            <td>oner@t1.com</td>
+                            <td>0987654002</td>
+                            <td>打野</td>
                         </tr>
-                        <tr>
+                        <tr class="third-row">
                             <td>003</td>
-                            <td>張家航</td>
-                            <td>緯育大飯店</td>
-                            <td>四人房</td>
-                            <td>2024/11/8</td>
-                            <td>⭐️⭐️⭐️</td>
-                            <td><a href="4-2.html"><button>查看</button></a></td>
+                            <td>李相赫</td>
+                            <td>faker@t1.com</td>
+                            <td>0987654003</td>
+                            <td>中路</td>
+                        </tr>
+                        <tr class="fourth-row">
+                            <td>004</td>
+                            <td>李珉炯</td>
+                            <td>gumayusi@t1.com</td>
+                            <td>0987654004</td>
+                            <td>下路</td>
+                        </tr>
+                        <tr class="fifth-row">
+                            <td>005</td>
+                            <td>柳岷析</td>
+                            <td>keria@t1.com</td>
+                            <td>0987654005</td>
+                            <td>輔助</td>
                         </tr>
                     </tbody>
                 </table>
@@ -501,8 +508,19 @@
             const dropdown = document.querySelector('.dropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         });
-    </script>
 
+        document.addEventListener("DOMContentLoaded", function () {
+            const tableBody = document.querySelector("tbody"); // 找到 <tbody>
+            if (tableBody) {
+                tableBody.addEventListener("click", function (event) {
+                    const clickedRow = event.target.closest("tr"); // 找到被點擊的 <tr>
+                    if (clickedRow) {
+                        window.location.href = "5-2.html"; // 導向 5-2.html
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

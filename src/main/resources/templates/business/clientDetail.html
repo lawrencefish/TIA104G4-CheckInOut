@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            position: relative;
+        }
+
+        header .user .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hotel Button */
+        header .user .hotel-button {
+            background-color: #2c3e50;
+            color: #fff;
+            border: 1px solid #34495e;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect */
+        header .user .hotel-button:hover {
+            background-color: #34495e;
+            /* 稍微變深的顏色 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            /* 更柔和的陰影 */
+        }
+
+        /* Active state */
+        header .user .hotel-button:active {
+            background-color: #1a252f;
+            /* 點擊時變得更深 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focused state (accessibility improvement) */
+        header .user .hotel-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            /* 聚焦時顯示藍色陰影 */
+        }
+
+
+        /* Dropdown menu */
+        header .user .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            overflow: hidden;
+        }
+
+        header .user .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        header .user .dropdown ul li {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        header .user .dropdown ul li:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user .dropdown ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 側邊欄 */
+        .sidebar {
+            width: 300px;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sidebar-btn {
+            width: 100%;
+            margin-top: 5px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-btn:hover {
+            background-color: #dcdcdc;
+        }
+
+        /* 主內容 */
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .main-content h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .customer-form {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            position: relative;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        input,
+        textarea,
+        button {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        .form-group {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .edit-btn {
+            position: absolute;
+            top: 40;
+            right: 30;
+            transform: translateX(1400%);
+            border-radius: 10px;
+        }
+
+        .edit-btn:hover {
+            cursor: pointer;
+            background-color: #dcdcdc;
+        }
+
+        .btn-save,
+        .btn-cancel {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+        }
+
+        .btn-save:hover,
+        .btn-cancel:hover {
+            opacity: 0.8;
+        }
+
+        .readonly {
+            background-color: #f5f5f5;
+            border: none;
+            cursor: default;
+        }
+
+        .readonly:focus {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a th:href="@{/frontDesk}">
+                <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+        <nav>
+            <a th:href="@{/frontDesk}">櫃台系統</a>
+            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/orders}">訂單管理</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}" class="active">客戶管理</a>
+            <a th:href="@{/report}">報表分析</a>
+        </nav>
+        <div class="user">
+            <span class="icon">🔔</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
+            <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
+            <div class="dropdown">
+                <ul>
+                    <li>帳號設定</li>
+                    <li>登出</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 側邊欄 -->
+        <aside class="sidebar">
+            <a href="5-3.html"><button class="sidebar-btn">檢舉客戶</button></a>
+            <a href="5-4.html"><button class="sidebar-btn">評論客戶</button></a>
+        </aside>
+
+        <!-- 主內容 -->
+        <main class="main-content">
+            <h1>客戶資料</h1>
+            <div class="form-group">
+                <button id="edit-btn" class="edit-btn">編輯</button>
+            </div>
+            <form class="customer-form">
+                <div class="form-group">
+                    <label for="clientid">客戶編號</label>
+                    <div id="clientid">12345678</div>
+                    <div class="form-group">
+                        <label for="clientpic">客戶頭像</label>
+                        <img src="./img/faker.jpg" alt="頭貼">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="lastname">中文姓</label>
+                        <input type="text" id="lastname" class="readonly" value="李" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="firstname">中文名</label>
+                        <input type="text" id="firstname" class="readonly" value="相赫" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gender">性別</label>
+                        <input type="text" id="gender" class="readonly" value="男" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="bday">生日</label>
+                        <input type="text" id="bday" class="readonly" value="1996/5/7" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="phone">連絡電話</label>
+                    <input type="text" id="phone" class="readonly" value="0912-345-678" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="email">電子信箱</label>
+                    <input type="text" id="email" class="readonly" value="faker@t1.com" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="note">備註</label>
+                    <input type="text" id="note" class="readonly" value="GOAT" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="history">歷史訂單</label>
+                    <div id="history">
+                        2024/11/10 精緻雙人房<br>
+                        2024/10/10 精緻雙人房<br>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn-save">儲存</button>
+                    <button class="btn-cancel">取消</button>
+                </div>
+            </form>
+        </main>
+    </div>
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+    <script>
+        document.querySelector('.hotel-button').addEventListener('click', () => {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        const editBtn = document.getElementById('edit-btn');
+        const readonlyFields = document.querySelectorAll('.readonly');
+
+        editBtn.addEventListener('click', () => {
+            readonlyFields.forEach(field => {
+                field.classList.remove('readonly');
+                field.removeAttribute('readonly');
+                field.style.border = '1px solid #ccc';
+            });
+        });
+
+        const saveBtn = document.querySelector('.btn-save');
+        const cancelBtn = document.querySelector('.btn-cancel');
+        const originalData = {};
+
+        // 函數：將所有欄位恢復為 readonly 狀態
+        function setFieldsToReadonly() {
+            readonlyFields.forEach(field => {
+                field.classList.add('readonly'); // 添加 readonly 樣式
+                field.setAttribute('readonly', 'readonly'); // 設置 readonly 屬性
+                field.style.border = 'none'; // 移除編輯時的邊框
+            });
+        }
+        // 函數：恢復原始資料
+        function restoreOriginalData() {
+            readonlyFields.forEach(field => {
+                if (originalData[field.id] !== undefined) {
+                    field.value = originalData[field.id]; // 恢復原始值
+                }
+            });
+        }
+        // 保存按鈕點擊事件
+        saveBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // 防止表單提交
+            setFieldsToReadonly();
+        });
+
+        // 取消按鈕點擊事件
+        cancelBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // 防止表單提交
+            restoreOriginalData(); // 恢復原始資料
+            setFieldsToReadonly();
+        });
+    </script>
+</body>
+
+</html>

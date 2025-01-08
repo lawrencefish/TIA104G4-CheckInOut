@@ -93,8 +93,10 @@
         /* Hotel Button */
         header .user .hotel-button {
             background-color: #2c3e50;
+            /* 深藍色 */
             color: #fff;
             border: 1px solid #34495e;
+            /* 邊框顏色和背景稍微區分 */
             padding: 10px 20px;
             font-size: 1rem;
             font-weight: 600;
@@ -164,59 +166,18 @@
             border-bottom: none;
         }
 
-        /* Footer 樣式 */
-        footer {
-            background-color: #333;
-            /* footer 改為深色 */
-            padding: 10px 30px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #fff;
-            border-top: 1px solid #ddd;
-            margin-top: auto;
-        }
 
-        /* 導覽列 */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-        }
-
-        .navbar .logo {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .navbar nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-
-        .navbar nav ul li a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* 主容器 */
+        /* Layout */
         .container {
             display: flex;
-            margin: 20px;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
         }
 
-        /* 側邊欄 */
         aside {
             width: 300px;
+            /* aside寬度保持300px */
             padding: 20px;
         }
 
@@ -240,6 +201,51 @@
             color: #fff;
         }
 
+        /* main主內容 */
+        /* 主體樣式 */
+        main {
+            width: 1500px;
+            /* 修改為1500px */
+            background-color: #fff;
+            padding: 30px;
+            margin-left: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        main h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            /* 增加底部間距 */
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            /* 加入底部邊框 */
+            padding-bottom: 10px;
+            /* 調整與底部邊框的間距 */
+        }
+
+        .content-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .content-section:not(.hidden) {
+            display: block;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
         aside select {
             border-radius: 10px;
             border: 1px solid #ccc;
@@ -258,110 +264,90 @@
             margin-bottom: 5px;
         }
 
+        /* Button styling already exists, but ensure consistency */
         aside .btn-add {
             width: 100%;
             margin-top: 5px;
             border-radius: 7px;
             border: 1px solid #ccc;
             cursor: pointer;
-            background-color: #f5f5f5;
-            /* 預設背景色 */
-            transition: background-color 0.3s ease;
-            /* 增加過渡效果 */
+            background-color: #f5f5f5; /* 預設背景色 */
+            transition: background-color 0.3s ease; /* 增加過渡效果 */
         }
 
         aside .btn-add:hover {
             background-color: #dcdcdc;
         }
 
-        .client-names {
-            border-radius: 10px;
-            /* border: 1px solid #ccc; */
-            padding: 0.5rem;
-            font-size: 1rem;
+        .review-section {
             width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* 主要聊天區 */
-        .chat-area {
-            flex: 1;
-            margin-left: 20px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .chat .customer,
-        .chat .response {
-            margin-bottom: 20px;
-        }
-
-        .chat h4 {
-            margin-bottom: 5px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .message {
-            background-color: #f1f1f1;
             padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 1rem;
+            resize: vertical;
         }
 
-        .reply {
+        .review-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .review-item {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        /* .review-item h4 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        } */
+
+        .review-item p {
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .response-section {
             margin-top: 20px;
         }
 
-        .reply textarea {
+        .response-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .response-section textarea {
             width: 100%;
-            height: 100px;
+            height: 300px;
             padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 7px;
+            font-size: 1rem;
+            resize: vertical;
         }
 
-        .reply button {
+        .response-section button {
             margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
+            padding: 5px 10px;
+            border-radius: 7px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
             cursor: pointer;
+            transition: background-color 0.3s;
+
         }
 
-        .reply button:hover {
-            background-color: #0056b3;
+        .response-section button:hover {
+            background-color: #dcdcdc;
         }
 
-        /* .chat .response {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .chat .response .message {
-            background-color: #e0f7fa;
-            padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
+        .response-section .btn-add {
             float: right;
-        } */
-
-        .response-group {
-            text-align: right;
-            margin-bottom: 10px; /* 每次新增訊息分組換行 */
-        }
-
-        .response-group .message {
-            background-color: #e0f7fa; /* 淡藍色背景 */
-            padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
-            float: right;
-            clear: both;
         }
     </style>
 </head>
@@ -370,7 +356,7 @@
     <!-- Header -->
     <header>
         <div class="logo">
-            <a th:href="@{/frontDesk}">
+             <a th:href="@{/frontDesk}">
                 <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
                 <span>飯店管理系統</span>
             </a>
@@ -379,7 +365,7 @@
             <a th:href="@{/frontDesk}">櫃台系統</a>
             <a th:href="@{/business}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
-            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/comment}" class="active">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
             <a th:href="@{/report}">報表分析</a>
         </nav>
@@ -396,18 +382,11 @@
         </div>
     </header>
 
-    <!-- 側邊欄與主要內容 -->
+
+    <!-- 主體內容 -->
     <div class="container">
+        <!-- Aside -->
         <aside class="sidebar" id="aside">
-            <h3>所有客戶</h3>
-            <label for="client-names"></label>
-            <select id="client-names">
-                <option>李相赫</option>
-                <option>崔祐齊</option>
-                <option>文炫竣</option>
-                <option>李珉炯</option>
-                <option>柳岷析</option>
-            </select>
             <label for="common-replies">常用回覆</label>
             <select id="common-replies">
                 <option>Hello World</option>
@@ -419,57 +398,63 @@
             <a href="4-3.html"><button class="btn-add">新增</button></a>
         </aside>
 
-        <main class="chat-area">
-            <div class="chat" id="chatArea">
-                <div class="customer">
+        <!-- Main -->
+        <main class="main-content" id="main">
+            
+            <div class="review-section">
+                <h3>評論編號&nbsp;&nbsp;001</h3><br>
+                <h4>訂單號<span style="font-weight: normal;"> 001</span></h4>
+                <h4>飯店房型<span style="font-weight: normal;"> 緯育大飯店 單人房</span></h4>
+                <h4>日期<span style="font-weight: normal;"> 2024/11/6</span></h4>
+                <div class="review-item">
                     <h4>李相赫</h4>
-                    <div class="message">第五冠是獻給粉絲的</div>
+                    <p>機殼：銀欣 RM41-506
+                        主機板：Supermicro H11SSL-I
+                        CPU：AMD EPYC 7872 16C/32T 2.8Ghz
+                        記憶體：SK Hynix DDR4-2400 REGECC 64GB*8
+                        SSD：SAMSUNG PM9A1a 2TB、980PRO 512GB*4
+                        電源：Seasonic FOCUS GX-1000
+                        系統散熱：Noctua NH-U9 TR4-SP3、NF-A12x25、NF-A8*4</p>
                 </div>
             </div>
-    
-            <div class="reply">
-                <textarea id="replyInput" placeholder="輸入文字...."></textarea>
-                <button id="sendButton">送出</button>
+
+            <div class="response-section">
+                <h3>回覆</h3>
+                <textarea id="responseInput" placeholder="輸入回覆內容"></textarea>
+                <button id="sendButton" class="btn-add">送出</button>
             </div>
         </main>
-    
-        <script>
-            const username = prompt("請輸入您的使用者名稱：");
-            const ws = new WebSocket(`ws://localhost:8080/chat/${username}`);
-        
-            const chatArea = document.getElementById('chatArea');
-            const replyInput = document.getElementById('replyInput');
-            const sendButton = document.getElementById('sendButton');
-        
-            ws.onopen = () => {
-                console.log("WebSocket connection established.");
-            };
-        
-            ws.onmessage = (event) => {
-                const message = event.data;
-        
-                // 添加到聊天區域
-                const messageDiv = document.createElement('div');
-                messageDiv.textContent = message;
-                messageDiv.classList.add('message');
-                chatArea.appendChild(messageDiv);
-        
-                chatArea.scrollTop = chatArea.scrollHeight;
-            };
-        
-            ws.onclose = () => {
-                console.log("WebSocket connection closed.");
-            };
-        
-            sendButton.addEventListener('click', () => {
-                const message = replyInput.value.trim();
-                if (message) {
-                    ws.send(message);
-                    replyInput.value = '';
-                }
-            });
-        </script>
-        
+
+    </div>
+
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+
+    <script>
+        // 切換 Dropdown 顯示
+        document.querySelector('.hotel-button').addEventListener('click', () => {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // 回覆按鈕事件
+        document.getElementById('sendButton').addEventListener('click', () => {
+            const responseInput = document.getElementById('responseInput');
+            const responseText = responseInput.value.trim();
+
+            if (!responseText) {
+                // 如果內容為空，彈出提示
+                alert('請輸入回覆內容！');
+            } else {
+                // 模擬處理回覆邏輯
+                alert('回覆成功：' + responseText);
+                responseInput.value = ''; // 清空輸入框
+            }
+        });
+    </script>
+
+
 </body>
 
 </html>
