@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            position: relative;
+        }
+
+        header .user .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hotel Button */
+        header .user .hotel-button {
+            background-color: #2c3e50;
+            color: #fff;
+            border: 1px solid #34495e;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect */
+        header .user .hotel-button:hover {
+            background-color: #34495e;
+            /* 稍微變深的顏色 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            /* 更柔和的陰影 */
+        }
+
+        /* Active state */
+        header .user .hotel-button:active {
+            background-color: #1a252f;
+            /* 點擊時變得更深 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focused state (accessibility improvement) */
+        header .user .hotel-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            /* 聚焦時顯示藍色陰影 */
+        }
+
+
+        /* Dropdown menu */
+        header .user .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            overflow: hidden;
+        }
+
+        header .user .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        header .user .dropdown ul li {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        header .user .dropdown ul li:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user .dropdown ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        /* 導覽列 */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .navbar .logo {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .navbar nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 主容器 */
+        .container {
+            display: flex;
+            margin: 20px;
+        }
+
+        /* 側邊欄 */
+        aside {
+            width: 300px;
+            padding: 20px;
+        }
+
+        aside nav {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        aside nav a {
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1rem;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        aside nav a.active,
+        aside nav a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        aside select {
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            /* Add some space below the dropdown */
+        }
+
+        /* Adjust aside label styling */
+        aside label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        aside .btn-add {
+            width: 100%;
+            margin-top: 5px;
+            border-radius: 7px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            /* 預設背景色 */
+            transition: background-color 0.3s ease;
+            /* 增加過渡效果 */
+        }
+
+        aside .btn-add:hover {
+            background-color: #dcdcdc;
+        }
+
+        .client-names {
+            border-radius: 10px;
+            /* border: 1px solid #ccc; */
+            padding: 0.5rem;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 主要聊天區 */
+        .chat-area {
+            flex: 1;
+            margin-left: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat .customer,
+        .chat .response {
+            margin-bottom: 20px;
+        }
+
+        .chat h4 {
+            margin-bottom: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .message {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .reply {
+            margin-top: 20px;
+        }
+
+        .reply textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .reply button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .reply button:hover {
+            background-color: #0056b3;
+        }
+
+        /* .chat .response {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .chat .response .message {
+            background-color: #e0f7fa;
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+            float: right;
+        } */
+
+        .response-group {
+            text-align: right;
+            margin-bottom: 10px; /* 每次新增訊息分組換行 */
+        }
+
+        .response-group .message {
+            background-color: #e0f7fa; /* 淡藍色背景 */
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+            float: right;
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="#">
+                <img src="logo.png" alt="Logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+        <nav>
+            <a th:href="@{/frontDesk}">櫃台系統</a>
+            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/orders}">訂單管理</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
+            <a th:href="@{/report}">報表分析</a>
+        </nav>
+        <div class="user">
+            <span class="icon">🔔</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
+            <button class="hotel-button">台北君悅酒店</button>
+            <div class="dropdown">
+                <ul>
+                    <li>帳號設定</li>
+                    <li>登出</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- 側邊欄與主要內容 -->
+    <div class="container">
+        <aside class="sidebar" id="aside">
+            <h3>所有客戶</h3>
+            <label for="client-names"></label>
+            <select id="client-names">
+                <option>李相赫</option>
+                <option>崔祐齊</option>
+                <option>文炫竣</option>
+                <option>李珉炯</option>
+                <option>柳岷析</option>
+            </select>
+            <label for="common-replies">常用回覆</label>
+            <select id="common-replies">
+                <option>Hello World</option>
+                <option>Option 2</option>
+                <option>Option 3</option>
+                <option>Option 4</option>
+                <option>Option 5</option>
+            </select>
+            <a href="4-3.html"><button class="btn-add">新增</button></a>
+        </aside>
+
+        <main class="chat-area">
+            <div class="chat" id="chatArea">
+                <div class="customer">
+                    <h4>李相赫</h4>
+                    <div class="message">第五冠是獻給粉絲的</div>
+                </div>
+            </div>
+    
+            <div class="reply">
+                <textarea id="replyInput" placeholder="輸入文字...."></textarea>
+                <button id="sendButton">送出</button>
+            </div>
+        </main>
+    
+        <script>
+            const username = prompt("請輸入您的使用者名稱：");
+            const ws = new WebSocket(`ws://localhost:8080/chat/${username}`);
+        
+            const chatArea = document.getElementById('chatArea');
+            const replyInput = document.getElementById('replyInput');
+            const sendButton = document.getElementById('sendButton');
+        
+            ws.onopen = () => {
+                console.log("WebSocket connection established.");
+            };
+        
+            ws.onmessage = (event) => {
+                const message = event.data;
+        
+                // 添加到聊天區域
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = message;
+                messageDiv.classList.add('message');
+                chatArea.appendChild(messageDiv);
+        
+                chatArea.scrollTop = chatArea.scrollHeight;
+            };
+        
+            ws.onclose = () => {
+                console.log("WebSocket connection closed.");
+            };
+        
+            sendButton.addEventListener('click', () => {
+                const message = replyInput.value.trim();
+                if (message) {
+                    ws.send(message);
+                    replyInput.value = '';
+                }
+            });
+        </script>
+        
+</body>
+
+</html>
