@@ -2,11 +2,43 @@ package com.membercoupon.model;
 
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import com.coupon.model.CouponVO;
+import com.member.model.MemberVO;
+
+
+@Entity
+@Table (name = "member_coupon")
 public class MemberCouponVO {
-    private int memberCouponId;
-    private int memberId;
-    private int couponId;
-    private boolean couponStatus; // true = 生效, false = 失效
+   
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@NotBlank(message = "不可為空")
+	@Column(name= "membercoupon_id")
+	private int memberCouponId;
+	
+	@ManyToOne
+	@JoinColumn(name= "member_id", nullable = false)
+    private MemberVO member;
+	
+	@ManyToOne
+	@JoinColumn(name= "coupon_id", nullable = false)
+    private CouponVO coupon;
+	
+	@Column(name= "coupon_status", nullable = false)
+	@NotNull(message = "狀態不可為空")
+    private byte couponStatus; // true = 生效, false = 失效
+	
+	
+	@Column(name= "create_time")
     private Timestamp createTime;
 
     public int getMemberCouponId() {
@@ -17,27 +49,33 @@ public class MemberCouponVO {
         this.memberCouponId = memberCouponId;
     }
 
-    public int getMemberId() {
-        return memberId;
-    }
+   
 
-    public void setMemberId(int memberId) {
-        this.memberId = memberId;
-    }
+    public MemberVO getMember() {
+		return member;
+	}
 
-    public int getCouponId() {
-        return couponId;
-    }
+	public void setMember(MemberVO member) {
+		this.member = member;
+	}
 
-    public void setCouponId(int couponId) {
-        this.couponId = couponId;
-    }
+	public CouponVO getCoupon() {
+		return coupon;
+	}
 
-    public boolean isCouponStatus() {
+	public void setCoupon(CouponVO coupon) {
+		this.coupon = coupon;
+	}
+
+	public byte getCouponStatus() {
+		return couponStatus;
+	}
+
+	public byte isCouponStatus() {
         return couponStatus;
     }
 
-    public void setCouponStatus(boolean couponStatus) {
+    public void setCouponStatus(byte couponStatus) {
         this.couponStatus = couponStatus;
     }
 
