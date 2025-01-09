@@ -26,6 +26,22 @@ public class ScheduledTaskService {
     public void executeDailyTask() {
         System.out.println("好棒喔!!  半夜12點了!!");
 
+        updateRoomInventory();
+    }
+
+    // 每小时执行一次任务
+    @Scheduled(cron = "0 0 * * * ?") // 每小时的整点
+    public void executeHourlyTask() {
+        System.out.println("好棒喔!!  現在是整點了!!");
+    }
+
+    // 每10分钟执行一次任务
+    @Scheduled(cron = "0 0/10 * * * ?") // 每10分钟
+    public void executePeriodicTask() {
+        System.out.println("好棒喔!!  又過10分鐘了!!");
+    }
+
+    public void updateRoomInventory() {
         System.out.println("開始執行每日庫存新增任務!!");
         // 1. 獲取所有房型
         List<RoomTypeVO> roomTypes = roomTypeService.findAll();
@@ -63,17 +79,5 @@ public class ScheduledTaskService {
             }
         }
         System.out.println("每日庫存新增任務完成！");
-    }
-
-    // 每小时执行一次任务
-    @Scheduled(cron = "0 0 * * * ?") // 每小时的整点
-    public void executeHourlyTask() {
-        System.out.println("好棒喔!!  現在是整點了!!");
-    }
-
-    // 每10分钟执行一次任务
-    @Scheduled(cron = "0 0/10 * * * ?") // 每10分钟
-    public void executePeriodicTask() {
-        System.out.println("好棒喔!!  又過10分鐘了!!");
     }
 }
