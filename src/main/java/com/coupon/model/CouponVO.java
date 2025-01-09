@@ -1,13 +1,19 @@
 package com.coupon.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.membercoupon.model.MemberCouponVO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +30,12 @@ public class CouponVO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coupon_id")
     private Integer couponId;
+    
+//    @OneToMany(mappedBy = "coupon")
+//    private List<MemberCouponVO> memberCoupons;
+    
+    @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL)
+    private List<MemberCouponVO> memberCoupons = new ArrayList<>();
 
     @Column(name = "create_time", nullable = false, updatable = false, 
             columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
