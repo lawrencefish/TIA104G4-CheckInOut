@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CouponService {
     
-	@Autowired
+    @Autowired
     private CouponRepository couponRepository;
 	
 	private SessionFactory sessionFactory;
