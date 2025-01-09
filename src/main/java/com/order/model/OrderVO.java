@@ -51,7 +51,7 @@ public class OrderVO implements java.io.Serializable {
 	@NotBlank(message = "退房日期不可為空")
 	private Date checkOutDate;
 	
-	// 連接到飯店，多對一。
+	// 連接到飯店，多對一
 	@NotBlank(message = "旅館不可為空")
     @ManyToOne
     @JoinColumn(name = "hotel_id", nullable = false)
