@@ -14,6 +14,7 @@ public class Run {
 
         RoomUploader.run();
         PriceUploader.run();
+        RoomInventoryUploader.run();
 
         // 結束計時
         long endTime = System.currentTimeMillis();
