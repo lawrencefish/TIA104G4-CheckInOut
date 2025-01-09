@@ -1,3 +1,4 @@
+
 package com.membercoupon.model;
 
 import java.util.List;
@@ -12,5 +13,4 @@ public interface MemberCouponRepository extends JpaRepository <MemberCouponVO, I
 
 	
 	
-
 }

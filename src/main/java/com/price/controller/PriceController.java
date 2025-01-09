@@ -29,6 +29,21 @@ public class PriceController {
         return ResponseEntity.ok(prices);
     }
 
+    @PostMapping("/{roomTypeId}/add")
+    public ResponseEntity<String> addPrices(
+            @PathVariable Integer roomTypeId,
+            @RequestBody List<PriceVO> priceVOList) {
+        try {
+            priceService.addPrices(roomTypeId, priceVOList); // 調用 Service
+            return ResponseEntity.ok("所有價格新增成功");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("價格新增失敗：" + e.getMessage());
+        }
+    }
+
     // 更新房型價格
     @PutMapping("/prices/{roomTypeId}")
     public ResponseEntity<String> updatePrices(

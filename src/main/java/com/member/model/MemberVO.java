@@ -19,6 +19,7 @@ import javax.persistence.Table;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.Valid;
@@ -58,6 +59,7 @@ public class MemberVO implements java.io.Serializable {
 	@Pattern(regexp = "^[\\u4e00-\\u9FFFa-zA-Z]{1,20}$")
 	private String firstName;
 	@Lob
+    @Size(max = 2 * 1024 * 1024, message = "圖片大小不能超過 2MB") // 限制圖片大小
 	@Column(name = "avatar")
 	private byte[] avatar;
 	@Column(name = "birthday")
@@ -182,7 +184,5 @@ public class MemberVO implements java.io.Serializable {
 				+ birthday + ", phoneNumber=" + phoneNumber + ", gender=" + gender + ", status=" + status
 				+ ", createTime=" + createTime + "]";
 	}
-	
-	
 	
 }

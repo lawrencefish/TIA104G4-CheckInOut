@@ -70,4 +70,41 @@ public class PriceService {
         }
         priceRepository.deleteById(priceId);
     }
+
+    /**
+     * 新增多筆價格資料
+     *
+     * @param roomTypeId  房型 ID
+     * @param priceVOList 價格資料列表
+     */
+    public void addPrices(Integer roomTypeId, List<PriceVO> priceVOList) {
+        // 使用 roomTypeRepository 查詢房型
+        RoomTypeVO roomType = roomTypeRepository.findById(roomTypeId)
+                .orElseThrow(() -> new IllegalArgumentException("指定的房型不存在"));
+
+        // 遍歷每個 PriceVO，設置 RoomType 並保存
+        for (PriceVO priceVO : priceVOList) {
+            priceVO.setRoomType(roomType); // 設置關聯的房型
+            validatePriceData(priceVO);    // 驗證價格資料有效性
+            priceRepository.save(priceVO); // 儲存價格到資料庫
+        }
+    }
+
+    /**
+     * 驗證價格資料的有效性
+     *
+     * @param priceVO 價格資料
+     */
+    private void validatePriceData(PriceVO priceVO) {
+        if (priceVO.getPrice() == null || priceVO.getPrice() <= 0) {
+            throw new IllegalArgumentException("價格必須大於 0");
+        }
+        if (priceVO.getBreakfastPrice() != null && priceVO.getBreakfastPrice() < 0) {
+            throw new IllegalArgumentException("早餐價格不能為負數");
+        }
+        if (priceVO.getStartDate() != null && priceVO.getEndDate() != null
+                && priceVO.getStartDate().isAfter(priceVO.getEndDate())) {
+            throw new IllegalArgumentException("開始日期不能晚於結束日期");
+        }
+    }
 }

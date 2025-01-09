@@ -24,7 +24,9 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Range;
 
 import com.creditcard.model.CreditcardVO;
+import com.hotel.model.HotelVO;
 import com.member.model.MemberVO;
+import com.membercoupon.model.MemberCouponVO;
 import com.orderDetail.model.OrderDetailVO;
 
 @Entity
@@ -49,10 +51,10 @@ public class OrderVO implements java.io.Serializable {
 	private Date checkOutDate;
 	
 	// 連接到飯店，多對一
-//	@NotBlank(message = "旅館不可為空")
-//  @ManyToOne
-//  @JoinColumn(name = "hotel_id", nullable = false)
-//	private HotelVO hotel;
+	@NotBlank(message = "旅館不可為空")
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", nullable = false)
+	private HotelVO hotel;
 	
 	// 連接到會員，多對一
 	@NotBlank(message = "會員不可為空")
@@ -66,8 +68,8 @@ public class OrderVO implements java.io.Serializable {
     @JoinColumn(name = "creditcard_id", nullable = false)
 	private CreditcardVO creditcard;
 	
-    //連接到會員優惠券，ㄧ對一
-//  @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+//    //連接到會員優惠券，ㄧ對一
+//    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
 //	private MemberCouponVO MemberCoupon;
 	
 	@Column(name = "total_amount", nullable = false)

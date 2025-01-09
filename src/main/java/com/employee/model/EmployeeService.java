@@ -41,6 +41,10 @@ public class EmployeeService {
     public EmployeeVO getEmployeeById(Integer employeeId) {
         return employeeRepository.findById(employeeId).orElse(null);
     }
+    
+    public EmployeeVO getEmployeeByName(String employeeName) {
+        return employeeRepository.findByName(employeeName).orElse(null);
+    }
 
     public void update(EmployeeVO employee) {
         employeeRepository.save(employee); // 假設使用 JPA Repository 的 save 方法

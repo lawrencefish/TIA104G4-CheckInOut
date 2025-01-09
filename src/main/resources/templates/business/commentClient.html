@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            position: relative;
+        }
+
+        header .user .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hotel Button */
+        header .user .hotel-button {
+            background-color: #2c3e50;
+            color: #fff;
+            border: 1px solid #34495e;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect */
+        header .user .hotel-button:hover {
+            background-color: #34495e;
+            /* 稍微變深的顏色 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            /* 更柔和的陰影 */
+        }
+
+        /* Active state */
+        header .user .hotel-button:active {
+            background-color: #1a252f;
+            /* 點擊時變得更深 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focused state (accessibility improvement) */
+        header .user .hotel-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            /* 聚焦時顯示藍色陰影 */
+        }
+
+
+        /* Dropdown menu */
+        header .user .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            overflow: hidden;
+        }
+
+        header .user .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        header .user .dropdown ul li {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        header .user .dropdown ul li:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user .dropdown ul li:last-child {
+            border-bottom: none;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .main-content h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 表單樣式 */
+        .report-form {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .file-upload input {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        small {
+            color: #666;
+        }
+
+        /* 按鈕樣式 */
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 16px;
+        }
+
+        .btn-cancel {
+            background-color: #f8f8f8;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 16px;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-cancel:hover {
+            background-color: #dcdcdc;
+        }
+
+        .popout-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .popout-container.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popout {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .close-popout {
+            background-color: #f8f8f8;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            border-radius: 16px;
+        }
+
+        .close-popout:hover {
+            background-color: #dcdcdc;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+             <a th:href="@{/frontDesk}">
+                <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+        <nav>
+            <a th:href="@{/frontDesk}">櫃台系統</a>
+            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/orders}">訂單管理</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}" class="active">客戶管理</a>
+            <a th:href="@{/report}">報表分析</a>
+        </nav>
+        <div class="user">
+            <span class="icon">🔔</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
+            <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
+            <div class="dropdown">
+                <ul>
+                    <li>帳號設定</li>
+                    <li>登出</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <main class="main-content">
+            <h1>評論客戶</h1>
+            <form class="report-form">
+                <div class="form-group">
+                    <label for="clientid">客戶編號</label>
+                    <div id="clientid">12345678</div>
+                </div>
+                <div class="form-group">
+                    <label for="clientemail">客戶電子信箱</label>
+                    <div id="clientid">faker@t1.com</div>
+                </div>
+                <div class="form-group">
+                    <label for="reason">評論</label>
+                    <textarea id="reason" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="attachments">附加照片/檔案</label>
+                    <div class="file-upload">
+                        <input type="file" id="file1">
+                        <input type="file" id="file2">
+                    </div>
+                    <small>支援的檔案類型：.jpg, .png ...</small>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-submit">送出</button>
+                    <button type="button" class="btn btn-cancel">取消</button>
+                </div>
+            </form>
+        </main>
+    </div>
+    <div class="popout-container">
+        <div class="popout">
+            <h3>我們已經收到您的評論</h3>
+            <p>謝謝您!</p>
+            <button class="close-popout">確認</button>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+    <script>
+        document.querySelector('.hotel-button').addEventListener('click', () => {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        const submitBtn = document.querySelector('.btn-submit');
+        const popoutContainer = document.querySelector('.popout-container');
+        const popout = document.querySelector('.popout'); // 選取彈窗本身
+        const closePopout = document.querySelector('.close-popout');
+
+        // 打開彈窗
+        submitBtn.addEventListener('click', () => {
+            popoutContainer.classList.add('show');
+            event.preventDefault();
+        });
+
+        // 點擊彈窗外部區域關閉彈窗
+        popoutContainer.addEventListener('click', (event) => {
+            if (event.target === popoutContainer) {
+                popoutContainer.classList.remove('show');
+            }
+        });
+
+        // 點擊彈窗內部阻止冒泡
+        popout.addEventListener('click', (event) => {
+            event.stopPropagation(); // 阻止冒泡，防止觸發 popoutContainer 的 click 事件
+        });
+
+        // 點擊「確認」按鈕關閉彈窗
+        closePopout.addEventListener('click', () => {
+            popoutContainer.classList.remove('show');
+        });
+    </script>
+</body>
+
+</html>
