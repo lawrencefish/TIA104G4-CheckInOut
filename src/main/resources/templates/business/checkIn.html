@@ -532,15 +532,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr data-id="00048763" data-customer-id="00001" data-name="Zeus" data-room="1" data-people="2"
-                            data-status="尚未報到">
-                            <td>00048763</td>
-                            <td>00001</td>
-                            <td>Zeus</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>尚未報到</td>
-                        </tr>
+
                     </tbody>
                 </table>
             </section>
@@ -559,24 +551,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr data-id="00048763" data-customer-id="00001" data-name="Zeus" data-room="1" data-people="2"
-                            data-status="尚未報到" data-type="豪華雙人房">
-                            <td>00048763</td>
-                            <td>00001</td>
-                            <td>Zeus</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>尚未報到</td>
-                        </tr>
-                        <tr data-id="00048765" data-customer-id="00002" data-name="Faker" data-room="1" data-people="1"
-                            data-status="已報到" data-type="標準雙人房">
-                            <td>00048765</td>
-                            <td>00002</td>
-                            <td>Faker</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>已報到</td>
-                        </tr>
+
                     </tbody>
 
                 </table>
@@ -596,24 +571,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr data-id="00048763" data-customer-id="00001" data-name="Zeus" data-room="1" data-people="2"
-                            data-status="尚未報到">
-                            <td>00048763</td>
-                            <td>00001</td>
-                            <td>Zeus</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>尚未報到</td>
-                        </tr>
-                        <tr data-id="00048765" data-customer-id="00002" data-name="Faker" data-room="1" data-people="1"
-                            data-status="已報到">
-                            <td>00048765</td>
-                            <td>00002</td>
-                            <td>Faker</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>已報到</td>
-                        </tr>
+
                     </tbody>
                 </table>
             </section>
@@ -676,82 +634,8 @@
 
     <script>
         const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
+        const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
 
-        //假資料
-        const orders = [
-            {
-                id: "00048763",
-                customerId: "00001",
-                name: "Zeus",
-                roomType: "豪華雙人房",
-                room: null,
-                people: 2,
-                status: "尚未報到"
-            },
-            {
-                id: "00048764",
-                customerId: "00002",
-                name: "Oner",
-                roomType: "標準雙人房",
-                room: null,
-                people: 1,
-                status: "尚未報到"
-            },
-            {
-                id: "00048765",
-                customerId: "00003",
-                name: "Faker",
-                roomType: "標準雙人房",
-                room: "101",
-                people: 1,
-                status: "已報到"
-            },
-            {
-                id: "00048766",
-                customerId: "00004",
-                name: "Gumayusi",
-                roomType: "豪華雙人房",
-                room: "102",
-                people: 2,
-                status: "已報到"
-            },
-            {
-                id: "00048767",
-                customerId: "00005",
-                name: "Keria",
-                roomType: "家庭房",
-                room: "103",
-                people: 4,
-                status: "已報到"
-            },
-        ];
-
-
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
 
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
@@ -788,144 +672,11 @@
 
             let currentOrder = null; // 儲存當前操作的訂單
 
-            // 假資料
-            const orders = [
-                {
-                    id: "00048763",
-                    customerId: "00001",
-                    name: "Zeus",
-                    roomType: "豪華雙人房",
-                    room: null,
-                    people: 2,
-                    status: "尚未報到",
-                    note: "需要浴缸",
-                },
-                {
-                    id: "00048764",
-                    customerId: "00002",
-                    name: "Oner",
-                    roomType: "標準雙人房",
-                    room: null,
-                    people: 1,
-                    status: "尚未報到",
-                    note: "靠近窗戶",
-                },
-                {
-                    id: "00048765",
-                    customerId: "00003",
-                    name: "Faker",
-                    roomType: "標準雙人房",
-                    room: "101",
-                    people: 1,
-                    status: "已報到",
-                    note: "高樓層優先",
-                },
-                {
-                    id: "00048766",
-                    customerId: "00004",
-                    name: "Gumayusi",
-                    roomType: "豪華雙人房",
-                    room: "102",
-                    people: 2,
-                    status: "已報到",
-                    note: "加床",
-                },
-                {
-                    id: "00048767",
-                    customerId: "00005",
-                    name: "Keria",
-                    roomType: "家庭房",
-                    room: "103",
-                    people: 4,
-                    status: "已報到",
-                    note: "加床",
-                },
-            ];
-
             // 初始化表格內容
-            function renderTables() {
-                Object.keys(sections).forEach((key) => {
-                    const tbody = sections[key].querySelector("tbody");
-                    tbody.innerHTML = ""; // 清空表格
-                    orders
-                        .filter((order) =>
-                            key === "全部訂單" ? true : order.status === (key === "未報到" ? "尚未報到" : "已報到")
-                        )
-                        .forEach((order) => {
-                            const row = document.createElement("tr");
-                            row.dataset.id = order.id;
-                            row.dataset.name = order.name;
-                            row.dataset.roomType = order.roomType;
-                            row.dataset.room = order.room || "";
-                            row.dataset.note = order.note || "";
-                            row.dataset.status = order.status;
-                            row.innerHTML = `
-                        <td>${order.id}</td>
-                        <td>${order.customerId}</td>
-                        <td>${order.name}</td>
-                        <td>${order.room || "未分配"}</td>
-                        <td>${order.people}</td>
-                        <td>${order.status}</td>
-                    `;
-                            tbody.appendChild(row);
-                        });
-                });
-                bindTableEvents();
-            }
 
             // 綁定表格行點擊事件
-            function bindTableEvents() {
-                document.querySelectorAll("table tbody tr").forEach((row) => {
-                    row.addEventListener("click", function () {
-                        const {id, name, roomType, room, note, status} = this.dataset;
-                        currentOrder = orders.find((order) => order.id === id);
-
-                        if (status === "尚未報到") {
-                            // 未報到彈窗
-                            notArrivedOrderId.textContent = id;
-                            notArrivedCustomerName.textContent = name;
-                            notArrivedRoomType.textContent = roomType;
-                            notArrivedCustomerNote.textContent = note || "無";
-                            roomAssignmentSelect.value = ""; // 重置房號
-                            checkInCheckbox.checked = false;
-                            notArrivedAdditionalNote.value = ""; // 清空新增備註
-                            notArrivedModal.classList.remove("hidden");
-                        } else {
-                            // 已報到彈窗
-                            arrivedOrderId.textContent = id;
-                            arrivedCustomerName.textContent = name;
-                            arrivedRoomType.textContent = roomType;
-                            arrivedRoom.textContent = room || "未分配";
-                            arrivedNote.textContent = note || "無";
-                            arrivedModal.classList.remove("hidden");
-                        }
-                    });
-                });
-            }
 
             // 儲存未報到訂單
-            document.getElementById("not-arrived-save-button").addEventListener("click", function () {
-                if (!currentOrder) return;
-
-                const selectedRoom = roomAssignmentSelect.value;
-                const additionalNote = notArrivedAdditionalNote.value;
-                const isCheckedIn = checkInCheckbox.checked;
-
-                if (!selectedRoom) {
-                    alert("請選擇房號！");
-                    return;
-                }
-
-                currentOrder.room = selectedRoom;
-                currentOrder.status = isCheckedIn ? "已報到" : "尚未報到";
-
-                alert(
-                    `訂單已更新！\n房號分配：${selectedRoom}\n新增備註：${additionalNote}\n報到狀態：${currentOrder.status}`
-                );
-
-                notArrivedModal.classList.add("hidden");
-                renderTables(); // 重新渲染表格
-            });
 
             // 切換區塊顯示
             buttons.forEach((button) => {
@@ -993,6 +744,39 @@
                 logoutModal.classList.remove("show"); // 隱藏彈窗
             }
         });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // 獲取 hotelId
+            const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
+
+            // 從後端 API 獲取當天訂單數據
+            fetch(`/order/today?hotelId=${hotelId}`)
+                .then(response => response.json())
+                .then(orders => {
+                    const allOrdersTbody = document.querySelector("#all-orders-section tbody");
+
+                    // 清空全部訂單表格
+                    allOrdersTbody.innerHTML = "";
+
+                    // 填充表格
+                    orders.forEach(order => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                    <td>${order.orderId}</td>
+                    <td>${order.member ? order.member.memberId : "未提供"}</td>
+                    <td>${order.guestFirstName} ${order.guestLastName}</td>
+                    <td>${order.orderDetail ? order.orderDetail.length : 0}</td>
+                    <td>${order.orderDetail ? order.orderDetail.reduce((sum, detail) => sum + (detail.people || 0), 0) : 0}</td>
+                    <td>${order.status === 1 ? "已報到" : "尚未報到"}</td>
+                `;
+                        allOrdersTbody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error("Error fetching orders:", error));
+        });
+
+
 
     </script>
 </body>
