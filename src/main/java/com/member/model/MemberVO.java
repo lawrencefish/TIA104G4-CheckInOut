@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -80,6 +81,7 @@ public class MemberVO implements java.io.Serializable {
     //連接到訂單，一對多
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<OrderVO> order;
+
     
 	public MemberVO() {
 
