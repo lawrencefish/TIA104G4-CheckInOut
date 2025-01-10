@@ -52,7 +52,7 @@ const loginNav = `
 `;
 const loginModalDiv = `
 	<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered" style="max-width:25vw;">
+		<div class="modal-dialog modal-dialog-centered" style="max-width:40vw;">
 			<div class="modal-content text-center">
 				<div class="modal-body" id="login-modal-body">
 				</div>
@@ -64,7 +64,7 @@ const loginModalDiv = `
 let loginMessage = "";
 
 const loginMessageDiv =`
-<div id="loginMessage" class="fs-5 mb-3"></div>
+<div id="loginMessage" class="fs-6 mb-3"></div>
 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">確定</button>
 `
 
@@ -124,9 +124,9 @@ function login(e) {
 
     apiRequest('/user/api/login', 'POST', { account, password })
         .then(data => {
-            console.log(data.message);
             if (data.status === 'success') {
                 showLoginView();
+                showLoginModal(data.message);
                 if (redirectUrl){
                     window.location.href = redirectUrl;
                     redirectUrl = "";
@@ -145,6 +145,12 @@ function loginCheck() {
     return apiRequest('/user/api/loginCheck', 'POST')
         .then(data => {
             if (data.memberId != null && data.account != null) {
+                if(window.location.pathname == '/user/register'){
+                    showLoginModal("你已經是會員咯！");
+                    setTimeout(function() {
+                        window.location.href = "/user/";
+                    }, 2000);     
+                }
                 return data.account;
             } else {
                 if (data.url) {
@@ -159,7 +165,6 @@ function loginCheck() {
             return null;
         });
 }
-
 
 // 登出功能
 function logout(e) {
@@ -217,7 +222,7 @@ function showLoginModal(Message) {
     if (modalBody) {
         modalBody.innerHTML = (loginMessage) ? loginMessageDiv : loginFormView;
         if (loginMessage) {
-            document.querySelector('#loginMessage').textContent = loginMessage;
+            document.querySelector('#loginMessage').innerHTML = loginMessage;
         }
     }
 

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Range;
 
 import com.creditcard.model.CreditcardVO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hotel.model.HotelVO;
 import com.member.model.MemberVO;
 import com.membercoupon.model.MemberCouponVO;
@@ -52,10 +53,10 @@ public class OrderVO implements java.io.Serializable {
 	private Date checkOutDate;
 	
 	// 連接到飯店，多對一
+	@JsonIgnore
 	@NotBlank(message = "旅館不可為空")
     @ManyToOne
     @JoinColumn(name = "hotel_id", nullable = false)
-	@JsonIgnore
 	private HotelVO hotel;
 	
 	// 連接到會員，多對一
@@ -107,142 +108,177 @@ public class OrderVO implements java.io.Serializable {
      
 	public OrderVO() {
 	}
+	
 
 	public Integer getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(Integer orderId) {
-		this.orderId = orderId;
-	}
 
 	public Timestamp getCreateTime() {
 		return createTime;
 	}
 
-	public void setCreateTime(Timestamp createTime) {
-		this.createTime = createTime;
-	}
 
 	public byte getStatus() {
 		return status;
 	}
 
-	public void setStatus(byte status) {
-		this.status = status;
-	}
 
 	public Date getCheckInDate() {
 		return checkInDate;
 	}
 
-	public void setCheckInDate(Date checkInDate) {
-		this.checkInDate = checkInDate;
-	}
 
 	public Date getCheckOutDate() {
 		return checkOutDate;
 	}
 
-	public void setCheckOutDate(Date checkOutDate) {
-		this.checkOutDate = checkOutDate;
-	}
-
-	public MemberVO getMember() {
-		return member;
-	}
-
-	public void setMember(MemberVO member) {
-		this.member = member;
-	}
-
-	public CreditcardVO getCreditcard() {
-		return creditcard;
-	}
-
-	public void setCreditcard(CreditcardVO creditcard) {
-		this.creditcard = creditcard;
-	}
-
-	public Integer getTotalAmount() {
-		return totalAmount;
-	}
-
-	public void setTotalAmount(Integer totalAmount) {
-		this.totalAmount = totalAmount;
-	}
-
-	public String getGuestLastName() {
-		return guestLastName;
-	}
-
-	public void setGuestLastName(String guestLastName) {
-		this.guestLastName = guestLastName;
-	}
-
-	public String getGuestFirstName() {
-		return guestFirstName;
-	}
-
-	public void setGuestFirstName(String guestFirstName) {
-		this.guestFirstName = guestFirstName;
-	}
-
-	public String getMemo() {
-		return memo;
-	}
-
-	public void setMemo(String memo) {
-		this.memo = memo;
-	}
-
-	public Integer getRating() {
-		return rating;
-	}
-
-	public void setRating(Integer rating) {
-		this.rating = rating;
-	}
-
-	public String getCommentContent() {
-		return commentContent;
-	}
-
-	public void setCommentContent(String commentContent) {
-		this.commentContent = commentContent;
-	}
-
-	public String getCommentReply() {
-		return commentReply;
-	}
-
-	public void setCommentReply(String commentReply) {
-		this.commentReply = commentReply;
-	}
-
-	public String getCommentCreateTime() {
-		return commentCreateTime;
-	}
-
-	public void setCommentCreateTime(String commentCreateTime) {
-		this.commentCreateTime = commentCreateTime;
-	}
-
-	public List<OrderDetailVO> getOrderDetail() {
-		return orderDetail;
-	}
-
-	public void setOrderDetail(List<OrderDetailVO> orderDetail) {
-		this.orderDetail = orderDetail;
-	}
 
 	public HotelVO getHotel() {
 		return hotel;
 	}
 
+
+	public MemberVO getMember() {
+		return member;
+	}
+
+
+	public CreditcardVO getCreditcard() {
+		return creditcard;
+	}
+
+
+	public Integer getTotalAmount() {
+		return totalAmount;
+	}
+
+
+	public String getGuestLastName() {
+		return guestLastName;
+	}
+
+
+	public String getGuestFirstName() {
+		return guestFirstName;
+	}
+
+
+	public String getMemo() {
+		return memo;
+	}
+
+
+	public Integer getRating() {
+		return rating;
+	}
+
+
+	public String getCommentContent() {
+		return commentContent;
+	}
+
+
+	public String getCommentReply() {
+		return commentReply;
+	}
+
+
+	public String getCommentCreateTime() {
+		return commentCreateTime;
+	}
+
+
+	public List<OrderDetailVO> getOrderDetail() {
+		return orderDetail;
+	}
+
+
+	public void setOrderId(Integer orderId) {
+		this.orderId = orderId;
+	}
+
+
+	public void setCreateTime(Timestamp createTime) {
+		this.createTime = createTime;
+	}
+
+
+	public void setStatus(byte status) {
+		this.status = status;
+	}
+
+
+	public void setCheckInDate(Date checkInDate) {
+		this.checkInDate = checkInDate;
+	}
+
+
+	public void setCheckOutDate(Date checkOutDate) {
+		this.checkOutDate = checkOutDate;
+	}
+
+
 	public void setHotel(HotelVO hotel) {
 		this.hotel = hotel;
 	}
+
+
+	public void setMember(MemberVO member) {
+		this.member = member;
+	}
+
+
+	public void setCreditcard(CreditcardVO creditcard) {
+		this.creditcard = creditcard;
+	}
+
+
+	public void setTotalAmount(Integer totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+
+	public void setGuestLastName(String guestLastName) {
+		this.guestLastName = guestLastName;
+	}
+
+
+	public void setGuestFirstName(String guestFirstName) {
+		this.guestFirstName = guestFirstName;
+	}
+
+
+	public void setMemo(String memo) {
+		this.memo = memo;
+	}
+
+
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+
+	public void setCommentContent(String commentContent) {
+		this.commentContent = commentContent;
+	}
+
+
+	public void setCommentReply(String commentReply) {
+		this.commentReply = commentReply;
+	}
+
+
+	public void setCommentCreateTime(String commentCreateTime) {
+		this.commentCreateTime = commentCreateTime;
+	}
+
+
+	public void setOrderDetail(List<OrderDetailVO> orderDetail) {
+		this.orderDetail = orderDetail;
+	}
+
 
 	@Override
 	public String toString() {
