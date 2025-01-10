@@ -1,19 +1,21 @@
 package com.sql;
 
+import com.ScheduledTask.ScheduledTaskService;
+
 public class Run {
     public static void main(String[] args) {
         // 開始計時
         long startTime = System.currentTimeMillis();
 
-        RandomHotelPhotoUploader.run();
         HotelLicensePhotoWrite.run();
+        RandomHotelPhotoUploader.run();
         RoomTypePhotoWrite.run();
 
-        HotelFacilityUploader.run();
-        RoomTypeFacilityUploader.run();
-
-        RoomUploader.run();
-        PriceUploader.run();
+//        HotelFacilityUploader.run();
+//        RoomTypeFacilityUploader.run();
+//        RoomUploader.run();
+//        PriceUploader.run();
+//        RoomInventoryUploader.run();
 
         // 結束計時
         long endTime = System.currentTimeMillis();

@@ -21,6 +21,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Range;
 
 import com.creditcard.model.CreditcardVO;
@@ -62,12 +63,14 @@ public class OrderVO implements java.io.Serializable {
 	@NotBlank(message = "會員不可為空")
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
+	@JsonIgnore
 	private MemberVO member;
-	
+
 	// 連接到creditcard，多對一
     @NotNull(message ="必須配對一張信用卡")
     @ManyToOne
     @JoinColumn(name = "creditcard_id", nullable = false)
+	@JsonIgnore
 	private CreditcardVO creditcard;
 	
 //    //連接到會員優惠券，ㄧ對一
@@ -100,11 +103,13 @@ public class OrderVO implements java.io.Serializable {
 	
 	// 連接到orderDetail
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<OrderDetailVO> orderDetail;
      
 	public OrderVO() {
 	}
 	
+
 	public Integer getOrderId() {
 		return orderId;
 	}

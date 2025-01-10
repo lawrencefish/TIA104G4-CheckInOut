@@ -2,17 +2,13 @@ package com.sql;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.time.LocalDate;
 
-public class RoomTypeFacilityUploader {
+public class RoomInventoryUploader {
 
     public static void main(String[] args) {
         Connection con = null;
@@ -25,64 +21,51 @@ public class RoomTypeFacilityUploader {
         String userid = "root";
         String passwd = "123456";
 
-        // 查詢 room_type 資料
-        String selectRoomTypes = "SELECT room_type_id FROM room_type ORDER BY room_type_id";
+        // 查詢房型資料
+        String selectRoomTypes = "SELECT room_type_id, room_num FROM room_type ORDER BY room_type_id";
 
-        // 輸出文件路徑
-        String outputFilePath = "room_type_facility.sql";
+        // 輸出文件的路徑
+        String outputFilePath = "room_inventory.sql";
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
             con = DriverManager.getConnection(url, userid, passwd);
 
-            // 查詢所有 room_type_id
+            // 查詢所有房型
             pstmt = con.prepareStatement(selectRoomTypes);
             rs = pstmt.executeQuery();
 
-            List<Integer> roomTypeIds = new ArrayList<>();
-            while (rs.next()) {
-                roomTypeIds.add(rs.getInt("room_type_id"));
-            }
-            rs.close();
-            pstmt.close();
-
-            if (roomTypeIds.isEmpty()) {
-                System.out.println("No room types found in the database.");
-                return;
-            }
-
-            List<Integer> facilityIds = new ArrayList<>();
-            for (int i = 11; i <= 20; i++) {
-                facilityIds.add(i);
-            }
-
-            Random random = new Random();
-
             // 起始的 INSERT 語句
-            sqlBuilder.append("INSERT INTO room_type_facility (room_type_id, facility_id) VALUES ");
+            sqlBuilder.append("INSERT INTO room_inventory (room_type_id, date, available_quantity) VALUES ");
+
+            // 日期範圍
+            LocalDate startDate = LocalDate.of(2024, 12, 1);
+            LocalDate endDate = LocalDate.of(2025, 3, 31);
 
             boolean firstRecord = true;
 
-            for (int roomTypeId : roomTypeIds) {
-                // 隨機選擇 3 個不重複的 facility_id
-                Collections.shuffle(facilityIds, random);
-                List<Integer> selectedFacilities = facilityIds.subList(0, 3);
+            while (rs.next()) {
+                int roomTypeId = rs.getInt("room_type_id");
+                int roomNum = rs.getInt("room_num");
 
-                for (int facilityId : selectedFacilities) {
+                for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
                     if (!firstRecord) {
                         sqlBuilder.append(", ");
                     }
-                    sqlBuilder.append("(").append(roomTypeId).append(", ").append(facilityId).append(")");
+                    sqlBuilder.append("(")
+                            .append(roomTypeId).append(", '")
+                            .append(date).append("', ")
+                            .append(roomNum).append(")");
                     firstRecord = false;
 
-                    // 每累積一段內容寫入文件
-                    if (sqlBuilder.length() > 10000) { // 累積超過 10,000 字符時寫入
+                    // 定期將內容寫入文件，避免占用過多內存
+                    if (sqlBuilder.length() > 10000) { // 每累積 10,000 字符寫入一次
                         writer.write(sqlBuilder.toString());
                         sqlBuilder.setLength(0);
                     }
                 }
             }
 
-            // 寫入最後剩餘的內容
+            // 最後寫入剩餘的內容
             if (sqlBuilder.length() > 0) {
                 writer.write(sqlBuilder.toString());
             }

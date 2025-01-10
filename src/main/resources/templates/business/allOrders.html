@@ -447,6 +447,26 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        thead th {
+            cursor: pointer;
+            position: relative;
+            padding-right: 20px; /* 預留空間給圖標 */
+        }
+
+        thead th.sort-asc::after {
+            content: "▲";
+            position: absolute;
+            right: 5px;
+            color: #007bff;
+        }
+
+        thead th.sort-desc::after {
+            content: "▼";
+            position: absolute;
+            right: 5px;
+            color: #007bff;
+        }
     </style>
 </head>
 
@@ -523,14 +543,13 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>訂單編號</th>
-                            <th>Check in</th>
-                            <th>Check out</th>
-                            <th>房型</th>
-                            <th>客戶編號</th>
-                            <th>客戶姓名</th>
-                            <th>人數</th>
-                            <th>訂單狀態</th>
+                            <th onclick="changeSort('orderId')">訂單編號</th>
+                            <th onclick="changeSort('checkInDate')">Check in</th>
+                            <th onclick="changeSort('checkOutDate')">Check out</th>
+                            <th onclick="changeSort('memberId')">客戶編號</th>
+                            <th onclick="changeSort('memberName')">客戶姓名</th>
+                            <th onclick="changeSort('totalAmount')">金額</th>
+                            <th onclick="changeSort('status')">訂單狀態</th>
                         </tr>
                     </thead>
                     <tbody id="order-table-body">
@@ -554,117 +573,15 @@
 
     <script>
         const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
+        const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
+        let sortField = 'orderId'; // 預設排序字段
+        let sortDirection = 'desc'; // 預設排序方向
+
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const orders = generateFakeData(30); // 假資料生成
-            let currentPage = 1;
-            const rowsPerPage = 10;
-
-            const orderTableBody = document.getElementById('order-table-body');
-            const paginationContainer = document.querySelector('.pagination');
-            const maxPageButtons = 10; // 超過10頁後隱藏多餘頁數按鈕
-
-            // 初始化顯示第一頁
-            renderTable(currentPage);
-            renderPagination();
-
-            // 隨機生成假中文名字
-            function getRandomChineseName() {
-                const firstNames = ['張', '李', '王', '趙', '陳', '楊', '黃', '吳'];
-                const lastNames = ['小明', '大華', '美美', '阿杰', '淑芬', '子豪', '怡君', '雅婷'];
-                return `${firstNames[Math.floor(Math.random() * firstNames.length)]}${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
-            }
-
-            // 生成假資料
-            function generateFakeData(count) {
-                const data = [];
-                for (let i = 1; i <= count; i++) {
-                    data.push({
-                        id: `00000${i.toString().padStart(2, '0')}`,
-                        checkIn: `2024/11/${10 + (i % 20)}`,
-                        checkOut: `2024/11/${11 + (i % 20)}`,
-                        roomType: '標準雙人房',
-                        customerId: `12345${i}`,
-                        customerName: getRandomChineseName(),
-                        people: Math.ceil(Math.random() * 4),
-                        status: i % 2 === 0 ? '已完成' : '未完成',
-                    });
-                }
-                return data;
-            }
-
-            // 渲染表格
-            function renderTable(page) {
-                orderTableBody.innerHTML = ''; // 清空表格
-                const start = (page - 1) * rowsPerPage;
-                const end = start + rowsPerPage;
-                const pageData = orders.slice(start, end);
-
-                pageData.forEach((order) => {
-                    const row = document.createElement('tr');
-                    row.setAttribute('data-id', order.id);
-                    row.innerHTML = `
-            <td>${order.id}</td>
-            <td>${order.checkIn}</td>
-            <td>${order.checkOut}</td>
-            <td>${order.roomType}</td>
-            <td>${order.customerId}</td>
-            <td>${order.customerName}</td>
-            <td>${order.people}</td>
-            <td class="${order.status === '已完成' ? 'status-complete' : 'status-incomplete'}">${order.status}</td>
-        `;
-                    row.addEventListener('click', () => {
-                        window.location.href = "3-2.html";
-                    });
-                    orderTableBody.appendChild(row);
-                });
-            }
-
-            // 渲染分頁按鈕
-            function renderPagination() {
-                paginationContainer.innerHTML = ''; // 清空分頁按鈕
-                const totalPages = Math.ceil(orders.length / rowsPerPage);
-
-                // 如果超過 maxPageButtons，僅顯示前 maxPageButtons 頁
-                for (let i = 1; i <= Math.min(totalPages, maxPageButtons); i++) {
-                    const button = document.createElement('button');
-                    button.textContent = i;
-                    button.classList.add('page-button');
-                    if (i === currentPage) button.classList.add('active');
-                    button.addEventListener('click', () => {
-                        currentPage = i;
-                        renderTable(currentPage);
-                        renderPagination();
-                    });
-                    paginationContainer.appendChild(button);
-                }
-            }
-
-            // 搜尋功能
-            document.getElementById('search-btn').addEventListener('click', () => {
-                const date = document.getElementById('filter-date').value;
-                const name = document.getElementById('filter-name').value.toLowerCase();
-
-                const filteredData = orders.filter((order) => {
-                    return (
-                        (!date || order.checkIn === date) &&
-                        (!name || order.customerName.toLowerCase().includes(name) || order.id.includes(name))
-                    );
-                });
-
-                orders.splice(0, orders.length, ...filteredData); // 更新顯示的資料
-                currentPage = 1; // 重置到第一頁
-                renderTable(currentPage);
-                renderPagination();
-            });
-        });
-
-
 
         // 取得彈窗和按鈕
         const logoutModal = document.getElementById("logout-modal");
@@ -702,6 +619,127 @@
             }
         });
 
+
+        // 1/10新增內容
+        document.addEventListener('DOMContentLoaded', () => {
+            // 局部變數和函數，僅限於此作用域
+            let orders = []; // 儲存 API 返回的數據
+            let currentPage = 1;
+            const rowsPerPage = 10;
+            const orderTableBody = document.getElementById('order-table-body');
+            const paginationContainer = document.querySelector('.pagination');
+            let sortField = 'orderId'; // 預設排序字段
+            let sortDirection = 'desc'; // 預設排序方向
+
+            // 初始化加載數據
+            fetchOrders();
+
+            async function fetchOrders() {
+                try {
+                    const response = await fetch(`${contextPath}/order/all?hotelId=${hotelId}`);
+                    if (!response.ok) throw new Error('API 錯誤，無法獲取數據');
+                    orders = await response.json();
+
+                    // 初始排序
+                    sortOrders();
+
+                    renderTable(currentPage);
+                    renderPagination();
+                } catch (error) {
+                    console.error('數據加載失敗:', error);
+                    alert('無法加載數據，請稍後重試！');
+                }
+            }
+
+            function renderTable(page) {
+                orderTableBody.innerHTML = ''; // 清空表格
+                const start = (page - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+                const pageData = orders.slice(start, end);
+
+                pageData.forEach((order) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td>${order.orderId}</td>
+                <td>${order.checkInDate}</td>
+                <td>${order.checkOutDate}</td>
+                <td>${order.memberId || "N/A"}</td>
+                <td>${order.memberName || "N/A"}</td>
+                <td>${order.totalAmount}</td>
+                <td class="${order.status === "已完成" ? 'status-complete' : 'status-incomplete'}">
+                    ${order.status}
+                </td>
+            `;
+                    orderTableBody.appendChild(row);
+                });
+            }
+
+            function renderPagination() {
+                paginationContainer.innerHTML = '';
+                const totalPages = Math.ceil(orders.length / rowsPerPage);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const button = document.createElement('button');
+                    button.textContent = i;
+                    button.classList.add('page-button');
+                    if (i === currentPage) button.classList.add('active');
+                    button.addEventListener('click', () => {
+                        currentPage = i;
+                        renderTable(currentPage);
+                        renderPagination();
+                    });
+                    paginationContainer.appendChild(button);
+                }
+            }
+
+            function updateSortIcons() {
+                const headers = document.querySelectorAll('thead th');
+                headers.forEach(header => {
+                    header.classList.remove('sort-asc', 'sort-desc'); // 移除排序類
+                    const field = header.getAttribute('onclick').match(/changeSort\('(\w+)'\)/)[1];
+                    if (field === sortField) {
+                        header.classList.add(sortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+                    }
+                });
+            }
+
+            function sortOrders() {
+                orders.sort((a, b) => {
+                    let valueA = a[sortField];
+                    let valueB = b[sortField];
+
+                    // 將數值字段轉換為數字類型
+                    if (sortField === 'orderId' || sortField === 'totalAmount') {
+                        valueA = Number(valueA);
+                        valueB = Number(valueB);
+                    }
+
+                    // 處理數值和字符串排序
+                    if (typeof valueA === 'number' && typeof valueB === 'number') {
+                        return sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
+                    }
+                    if (typeof valueA === 'string' && typeof valueB === 'string') {
+                        return sortDirection === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                    }
+                    return 0; // 如果值為 null 或 undefined，不改變順序
+                });
+            }
+
+            // 將 changeSort 函數暴露到全局作用域
+            window.changeSort = function (field) {
+                if (sortField === field) {
+                    // 切換排序方向
+                    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    // 更改排序字段
+                    sortField = field;
+                    sortDirection = 'asc'; // 默認升序
+                }
+                updateSortIcons();
+                sortOrders();
+                renderTable(currentPage); // 重新渲染表格
+            };
+        });
     </script>
 </body>
 
