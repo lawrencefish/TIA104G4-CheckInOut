@@ -409,21 +409,19 @@
     <div class="container">
         <!-- Aside -->
         <aside class="sidebar" id="aside">
+        <form method="GET" th:action="@{/comment/allComment}" id="searchForm">
             <div class="search-name">
-                <input type="text" placeholder="依客戶姓名搜尋">
+                <input type="text" name="clientName" placeholder="依客戶姓名搜尋">
             </div>
             <div class="search-hotel">
-                <input type="text" placeholder="依飯店搜尋">
-            </div>
-            <div class="search-room">
-                <input type="text" placeholder="依房型搜尋">
+                <input type="text" name="hotelName" placeholder="依飯店搜尋">
             </div>
             <div class="search">
-                <select>
-                    <option>星數高至低</option>
-                    <option>星數低至高</option>
-                </select>
-                <button>搜尋</button>
+<!--                 <select name="sort"> -->
+<!--                     <option value="rating_desc">星數高至低</option> -->
+<!--             		<option value="rating_asc">星數低至高</option> -->
+<!--                 </select> -->
+                <button type="submit">搜尋</button>
             </div>
         </aside>
 
@@ -431,50 +429,29 @@
         <main class="main-content" id="main">
             <section class="form-section">
                 <div class="date-range">
-                    <input type="date" value="2024-11-01">
+                    <input type="date" value="2025-01-01">
                     <span>~</span>
-                    <input type="date" value="2024-11-27">
+                    <input type="date" value="2025-01-31">
                 </div>
 
                 <table>
                     <thead>
                         <tr>
-                            <th>評論編號</th>
+                            <th>訂單編號</th>
                             <th>客戶</th>
                             <th>飯店</th>
-                            <th>房型</th>
                             <th>日期</th>
                             <th>星數</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>001</td>
-                            <td>李相赫</td>
-                            <td>緯育大飯店</td>
-                            <td>單人房</td>
-                            <td>2024/11/6</td>
-                            <td>⭐️⭐️⭐️⭐️⭐️</td>
-                            <td><a href="4-2.html"><button>查看</button></a></td>
-                        </tr>
-                        <tr>
-                            <td>002</td>
-                            <td>熊汶安</td>
-                            <td>緯育大飯店</td>
-                            <td>雙人房</td>
-                            <td>2024/11/7</td>
-                            <td>⭐️⭐️⭐️⭐️</td>
-                            <td><a href="4-2.html"><button>查看</button></a></td>
-                        </tr>
-                        <tr>
-                            <td>003</td>
-                            <td>張家航</td>
-                            <td>緯育大飯店</td>
-                            <td>四人房</td>
-                            <td>2024/11/8</td>
-                            <td>⭐️⭐️⭐️</td>
-                            <td><a href="4-2.html"><button>查看</button></a></td>
-                        </tr>
+                        <tr th:each="comment : ${comments}">
+            			<td th:text="${comment.orderId}"></td>
+            			<td th:text="${comment.clientLastName} + ${comment.clientFirstName}"></td>
+            			<td th:text="${comment.hotelName}"></td>
+            			<td th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            			<td><span th:each="star : ${#numbers.sequence(1, comment.stars)}">⭐</span></td>
+        </tr>
                     </tbody>
                 </table>
 
