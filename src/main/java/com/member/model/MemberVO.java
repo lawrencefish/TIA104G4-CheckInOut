@@ -47,15 +47,15 @@ public class MemberVO implements java.io.Serializable {
 	private String account;
 	@Column(name = "password")
 	@NotEmpty(message = "請輸入密碼!")
-	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d!@#$%^&*+\\-=\\*]{6,12}$")
+	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d!@#$%^&*+\\-=\\*]{8,12}$",message = "請輸入8到12字的密碼，必須包含英文數字")
 	private String password;
 	@Column(name = "last_name")
 	@NotEmpty(message = "請輸入姓")
-	@Pattern(regexp = "^[\\u4e00-\\u9FFFa-zA-Z]{1,20}$")
+	@Pattern(regexp = "^[\\u4e00-\\u9FFFa-zA-Z]{1,20}$",message = "姓名僅限中英文")
 	private String lastName;
 	@Column(name = "first_name")
 	@NotEmpty(message = "請輸入姓")
-	@Pattern(regexp = "^[\\u4e00-\\u9FFFa-zA-Z]{1,20}$")
+	@Pattern(regexp = "^[\\u4e00-\\u9FFFa-zA-Z]{1,20}$",message = "姓名僅限中英文")
 	private String firstName;
 	@Lob
     @Size(max = 2 * 1024 * 1024, message = "圖片大小不能超過 2MB") // 限制圖片大小

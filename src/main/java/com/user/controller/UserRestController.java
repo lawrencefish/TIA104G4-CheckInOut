@@ -2,17 +2,26 @@ package com.user.controller;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
+import javax.validation.Validator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +30,13 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.validation.BindingResult;
+
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +49,8 @@ import com.member.model.MemberVO;
 public class UserRestController {
 	@Autowired
 	MemberService memServ;
+	@Autowired
+	private Validator validator;
 
 	private static final Logger logger = LoggerFactory.getLogger(UserRestController.class);
 
@@ -125,8 +143,7 @@ public class UserRestController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/memberUpdate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody // 明確標註這是回傳 JSON
-	public Map<String, String> updateMember(@RequestPart("json") Map<String, String> memberInfo,
+	public Map<String, String> updateMember(@RequestPart("json") MemberVO memberInfo,
 			@RequestPart(value = "file", required = false) MultipartFile file, HttpSession session) {
 
 		Map<String, String> response = new HashMap<>();
@@ -146,17 +163,17 @@ public class UserRestController {
 		}
 
 		// 更新會員基本資訊
-		member.setAccount(memberInfo.get("account"));
-		member.setLastName(memberInfo.get("lastName"));
-		member.setFirstName(memberInfo.get("firstName"));
-		member.setGender(memberInfo.get("gender"));
-		member.setBirthday(Date.valueOf(memberInfo.get("birthday")));
-		member.setPhoneNumber(memberInfo.get("phoneNumber"));
-		if (memberInfo.get("password") != null && !memberInfo.get("password").isEmpty()) {
-			member.setPassword(memberInfo.get("password"));
+		member.setAccount(memberInfo.getAccount());
+		member.setLastName(memberInfo.getLastName());
+		member.setFirstName(memberInfo.getFirstName());
+		member.setGender(memberInfo.getGender());
+		member.setBirthday(memberInfo.getBirthday());
+		member.setPhoneNumber(memberInfo.getPhoneNumber());
+		if (memberInfo.getPassword() != null && !memberInfo.getPassword().isEmpty()) {
+			member.setPassword(memberInfo.getPassword());
 		}
-		System.out.println(memberInfo);
-		// 處理文件上傳
+
+		// 處理頭像
 		try {
 			if (file != null && !file.isEmpty()) {
 				if (file.getContentType().startsWith("image/")) {
@@ -168,23 +185,106 @@ public class UserRestController {
 					response.put("message", "文件格式不正確，必須為圖片");
 					return response;
 				}
+			} else {
+				Resource defaultfile = new ClassPathResource("static/imgs/user/defaultAvatar.png");
+				byte[] defaultAvatar = FileCopyUtils.copyToByteArray(defaultfile.getInputStream());
+				if (Arrays.equals(member.getAvatar(), defaultAvatar) || member.getAvatar() == null) {
+					member.setAvatar(defaultAvatar);
+				}
 			}
 		} catch (IOException e) {
 			response.put("message", "文件上傳失敗：" + e.getMessage());
 			return response;
 		}
 
+		System.out.println(member);
+
+		Set<ConstraintViolation<MemberVO>> violations = validator.validate(member);
+		if (!violations.isEmpty()) {
+			for (ConstraintViolation<MemberVO> violation : violations) {
+				response.put(violation.getPropertyPath().toString(), violation.getMessage());
+			}
+			System.out.println(response);
+			return response;
+		}
+
 		// 更新會員資料
 		try {
 			memServ.updateMember(member);
+			response.put("success", "success");
 			response.put("message", "更新成功");
-		    HttpHeaders headers = new HttpHeaders();
-		    headers.add("Content-Type", "application/json");
-			logger.info("回傳的資料: " + response);
 			return response;
 		} catch (Exception e) {
 			response.put("message", "更新失敗：" + e.getMessage());
 			return response;
 		}
 	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/memberRegister", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, String> registerMember(@RequestPart("json") MemberVO memberInfo,
+			@RequestPart(value = "file", required = false) MultipartFile file, HttpSession session) {
+
+		Map<String, String> response = new HashMap<>();
+		
+		
+		if (memServ.existsByAccount(memberInfo.getAccount())) {
+			response.put("message", "email已經被註冊過");
+			return response;
+		}
+		
+		//判定年紀
+        LocalDate currentDate = LocalDate.now();
+        Date beAdult = Date.valueOf(currentDate.minusYears(18));
+        if(memberInfo.getBirthday().compareTo(beAdult) > 0 ) {
+			response.put("message", "年滿18歲才可以註冊！");
+			return response;
+        }
+
+		// 處理頭像
+		try {
+			if (file != null && !file.isEmpty()) {
+				if (file.getContentType().startsWith("image/")) {
+					byte[] newAvatar = file.getBytes();
+					memberInfo.setAvatar(newAvatar);
+				} else {
+					response.put("message", "文件格式不正確，必須為圖片");
+					return response;
+				}
+			} else {
+				Resource defaultfile = new ClassPathResource("static/imgs/user/defaultAvatar.png");
+				byte[] defaultAvatar = FileCopyUtils.copyToByteArray(defaultfile.getInputStream());
+				memberInfo.setAvatar(defaultAvatar);
+			}
+		} catch (IOException e) {
+			response.put("message", "文件上傳失敗：" + e.getMessage());
+			return response;
+		}
+
+		System.out.println(memberInfo);
+
+		Set<ConstraintViolation<MemberVO>> violations = validator.validate(memberInfo);
+		if (!violations.isEmpty()) {
+			for (ConstraintViolation<MemberVO> violation : violations) {
+				response.put(violation.getPropertyPath().toString(), violation.getMessage());
+			}
+			System.out.println(response);
+			return response;
+		}
+		
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		memberInfo.setStatus((byte) 1);
+		memberInfo.setCreateTime(timestamp);
+		
+		// 更新會員資料
+		try {
+			memServ.addMember(memberInfo);
+			response.put("success", "success");
+			response.put("message", "註冊成功");
+			return response;
+		} catch (Exception e) {
+			response.put("message", "註冊失敗：" + e.getMessage());
+			return response;
+		}
+	}
+
 }
