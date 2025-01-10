@@ -37,7 +37,7 @@ public class CouponVO {
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL)
     private List<MemberCouponVO> memberCoupons = new ArrayList<>();
 
-    @Column(name = "create_time", nullable = false, updatable = false, 
+    @Column(name = "create_time", nullable = false, updatable = false, insertable = false,
             columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createTime;
 

@@ -30,6 +30,7 @@ import javax.validation.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.creditcard.model.CreditcardVO;
+import com.membercoupon.model.MemberCouponVO;
 import com.order.model.OrderVO;
 import com.orderDetail.model.OrderDetailVO;
 
@@ -83,6 +84,12 @@ public class MemberVO implements java.io.Serializable {
     //連接到訂單，一對多
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<OrderVO> order;
+    
+    //會員優惠券
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<MemberCouponVO> membercoupon;
+    
+    
 
     
 	public MemberVO() {
