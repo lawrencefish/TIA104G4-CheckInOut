@@ -102,6 +102,7 @@ public class OrderVO implements java.io.Serializable {
 	
 	// 連接到orderDetail
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<OrderDetailVO> orderDetail;
      
 	public OrderVO() {
