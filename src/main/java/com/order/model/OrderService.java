@@ -5,6 +5,9 @@ import java.util.Optional;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,17 +50,10 @@ public class OrderService {
 	@Autowired
     private OrderRepository orderRepository;
 
-	public List<CommentDTO> getFilteredComments(String clientName, String hotelName, String sort) {
-	    Sort sorting;
-	    if ("stars_desc".equals(sort)) {
-	        sorting = Sort.by(Sort.Direction.DESC, "rating");
-	    } else if ("stars_asc".equals(sort)) {
-	        sorting = Sort.by(Sort.Direction.ASC, "rating");
-	    } else {
-	        sorting = Sort.unsorted();
-	    }
-
-	    return orderRepository.findCommentsByFilters(clientName, hotelName, sorting);
+	public Page<CommentDTO> getFilteredComments(String clientName, String hotelName, int page, int size) {
+	    
+		Pageable pageable = PageRequest.of(page, size,Sort.unsorted()); // 分頁並加入排序
+	    return orderRepository.findCommentsByFilters(clientName, hotelName, pageable);
 	}
 
 }

@@ -4,6 +4,8 @@ import java.util.List;
 import com.order.dto.*;
 import com.order.model.*;
 import com.comment.model.*;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,24 +30,25 @@ public class CommentController {
 
     @GetMapping("/allComment")
     public String showAllComment(
-            @RequestParam(required = false) String clientName,
-            @RequestParam(required = false) String hotelName,
-            @RequestParam(required = false, defaultValue = "rating_desc") String sort,
+    		@RequestParam(defaultValue = "") String clientName,
+            @RequestParam(defaultValue = "") String hotelName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
             Model model) {
 
-        // 如果沒有搜尋條件，調用獲取所有評論的方法
-        List<CommentDTO> comments;
-        if (clientName == null && hotelName == null) {
-            comments = orderService.getAllComments();
-        } else {
-            // 有搜尋條件時調用過濾方法
-            comments = orderService.getFilteredComments(clientName, hotelName, sort);
-        }
+        // 呼叫服務層取得分頁評論資料
+        Page<CommentDTO> commentPage = orderService.getFilteredComments(clientName, hotelName, page, size);
 
-        // 將評論數據添加到模型中
-        model.addAttribute("comments", comments);
+        // 將分頁數據加入模型
+        model.addAttribute("comments", commentPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", commentPage.getTotalPages());
+        model.addAttribute("clientName", clientName);
+        model.addAttribute("hotelName", hotelName);
+
         return "business/allComment";
     }
+
 
     @GetMapping("/commentDetail")
     public String showCommentDetail() {
