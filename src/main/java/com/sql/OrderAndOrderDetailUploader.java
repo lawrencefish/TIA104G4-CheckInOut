@@ -81,6 +81,10 @@ public class OrderAndOrderDetailUploader {
 		sb.append("    comment_content TEXT DEFAULT NULL,\n");
 		sb.append("    comment_reply TEXT DEFAULT NULL,\n");
 		sb.append("    comment_create_time TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP\n");
+		sb.append("    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id),\n");
+		sb.append("    FOREIGN KEY (member_id) REFERENCES member(member_id),\n");
+		sb.append("    FOREIGN KEY (creditcard_id) REFERENCES creditcard(creditcard_id),\n");
+		sb.append("    FOREIGN KEY (member_coupon_id) REFERENCES member_coupon(member_coupon_id);");
 		sb.append(");\n");
 		return sb.toString();
 	}
@@ -98,6 +102,7 @@ public class OrderAndOrderDetailUploader {
 		sb.append("    guest_num INT NOT NULL,\n");
 		sb.append("    room_num INT NOT NULL,\n");
 		sb.append("    breakfast TINYINT NOT NULL COMMENT '1=含早餐,0=不含',\n");
+		sb.append("    FOREIGN KEY (room_type_id) REFERENCES room_type(room_type_id),\n");
 		sb.append("    FOREIGN KEY (order_id) REFERENCES orders(order_id)\n");
 		sb.append(");\n");
 		return sb.toString();
