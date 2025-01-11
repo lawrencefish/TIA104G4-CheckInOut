@@ -395,32 +395,33 @@
         .pagination {
             display: flex;
             justify-content: center;
-            align-items: center;
             gap: 5px;
             margin-top: 20px;
         }
 
-        .pagination button {
-            padding: 8px 12px;
-            font-size: 1rem;
-            background-color: #f9f9f9;
-            color: #333;
+        .page-button {
+            padding: 5px 10px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            background-color: #f9f9f9;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
         }
 
-        .pagination button.active {
+        .page-button.active {
             background-color: #007bff;
             color: white;
-            font-weight: bold;
-            transform: scale(1.1);
+            border-color: #007bff;
         }
 
-        .pagination button:hover:not(.active) {
-            background-color: #0056b3;
-            color: white;
+        .page-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .page-button:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
         }
 
         /* 狀態欄顏色 */
@@ -677,8 +678,29 @@
             function renderPagination() {
                 paginationContainer.innerHTML = '';
                 const totalPages = Math.ceil(orders.length / rowsPerPage);
+                const maxVisiblePages = 10; // 同時顯示的最多頁數
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-                for (let i = 1; i <= totalPages; i++) {
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+
+                // 添加上一頁按鈕
+                if (currentPage > 1) {
+                    const prevButton = document.createElement('button');
+                    prevButton.textContent = '上一頁';
+                    prevButton.classList.add('page-button');
+                    prevButton.addEventListener('click', () => {
+                        currentPage--;
+                        renderTable(currentPage);
+                        renderPagination();
+                    });
+                    paginationContainer.appendChild(prevButton);
+                }
+
+                // 添加頁碼按鈕
+                for (let i = startPage; i <= endPage; i++) {
                     const button = document.createElement('button');
                     button.textContent = i;
                     button.classList.add('page-button');
@@ -689,6 +711,19 @@
                         renderPagination();
                     });
                     paginationContainer.appendChild(button);
+                }
+
+                // 添加下一頁按鈕
+                if (currentPage < totalPages) {
+                    const nextButton = document.createElement('button');
+                    nextButton.textContent = '下一頁';
+                    nextButton.classList.add('page-button');
+                    nextButton.addEventListener('click', () => {
+                        currentPage++;
+                        renderTable(currentPage);
+                        renderPagination();
+                    });
+                    paginationContainer.appendChild(nextButton);
                 }
             }
 
