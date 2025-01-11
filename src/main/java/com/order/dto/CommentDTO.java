@@ -13,7 +13,7 @@ public class CommentDTO {
     private int stars;
 
     // Constructor
-    public CommentDTO(Integer orderId, String clientLastName, String clientFirstName, String hotelName, Date commentCreateTime, int stars) {
+    public CommentDTO(Integer orderId, String clientLastName, String clientFirstName, String hotelName,  Date commentCreateTime, int stars) {
         this.orderId = orderId;
         this.clientLastName = clientLastName;
         this.clientFirstName = clientFirstName;
