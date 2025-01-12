@@ -1,43 +1,44 @@
 package com.faq.model;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 
 @Service
 public class FaqService {
-    
-    @Autowired
-    private FaqRepository faqRepository;
-    
-    public List<FaqVO> getAllFaqs() {
-        return faqRepository.findAll();
-    }
-    
-    public FaqVO getFaqById(Integer id) {
-        return faqRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "FAQ not found"));
-    }
-    
-    public FaqVO createFaq(FaqVO faq) {
-        return faqRepository.save(faq);
-    }
-    
-    public FaqVO updateFaq(Integer id, FaqVO faq) {
-    	FaqVO existingfaq = getFaqById(id);
-        faq.setQuestion(faq.getQuestion());
-        faq.setAnswer(faq.getAnswer());
-        return faqRepository.save(existingfaq);
-    }
-    
-    public void deleteFaq(Integer id) {
-    	if (!faqRepository.existsById(id)) {
-    		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "FAQ NOT FOUND");
-    	}
-    	faqRepository.deleteById(id);
-    }
+ 
+ private final FaqRepository faqRepository;
+ 
+ @Autowired
+ public FaqService(FaqRepository faqRepository) {
+     this.faqRepository = faqRepository;
+ }
+ 
+ // 查詢所有FAQ
+ public List<FaqVO> getAllFaqs() {
+     return faqRepository.findAll();
+ }
+ 
+ // 根據ID查詢單個FAQ
+ public Optional<FaqVO> getFaqById(Integer id) {
+     return faqRepository.findById(id);
+ }
+ 
+ // 創建新FAQ
+ public FaqVO createFaq(FaqVO faq) {
+     return faqRepository.save(faq);
+ }
+ 
+ // 更新FAQ
+ public FaqVO updateFaq(FaqVO faq) {
+     return faqRepository.save(faq);
+ }
+ 
+ // 刪除FAQ
+ public void deleteFaq(Integer id) {
+     faqRepository.deleteById(id);
+ }
 }
