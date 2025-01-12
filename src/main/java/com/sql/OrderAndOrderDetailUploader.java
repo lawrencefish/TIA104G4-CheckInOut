@@ -6,10 +6,6 @@ import java.util.Random;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -80,11 +76,11 @@ public class OrderAndOrderDetailUploader {
 		sb.append("    rating INT DEFAULT NULL COMMENT '評價星數',\n");
 		sb.append("    comment_content TEXT DEFAULT NULL,\n");
 		sb.append("    comment_reply TEXT DEFAULT NULL,\n");
-		sb.append("    comment_create_time TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP\n");
+		sb.append("    comment_create_time TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,\n");
 		sb.append("    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id),\n");
 		sb.append("    FOREIGN KEY (member_id) REFERENCES member(member_id),\n");
 		sb.append("    FOREIGN KEY (creditcard_id) REFERENCES creditcard(creditcard_id),\n");
-		sb.append("    FOREIGN KEY (member_coupon_id) REFERENCES member_coupon(member_coupon_id);");
+		sb.append("    FOREIGN KEY (member_coupon_id) REFERENCES member_coupon(member_coupon_id)\n");
 		sb.append(");\n");
 		return sb.toString();
 	}
@@ -124,7 +120,7 @@ public class OrderAndOrderDetailUploader {
 		sb.append("    total_amount,\n");
 		sb.append("    guest_last_name, guest_first_name,\n");
 		sb.append("    memo,\n");
-		sb.append("    rating, comment_content, comment_reply\n");
+		sb.append("    rating, comment_content, comment_reply, comment_create_time\n");
 		sb.append(") VALUES\n");
 
 		Random rand = new Random();
@@ -182,10 +178,12 @@ public class OrderAndOrderDetailUploader {
 			String rating = "NULL";
 			String commentContent = "NULL";
 			String commentReply = "NULL";
+			String commentCreatTime = "NULL";
 			if (status == 2) {
 				rating = String.valueOf(rand.nextInt(3) + 3); // 3,4,5
 				commentContent = "'很棒的住宿'";
 				commentReply = "'感謝您的回饋'";
+				commentCreatTime = "CURRENT_TIMESTAMP";
 			}
 
 			// 組合SQL
@@ -195,7 +193,7 @@ public class OrderAndOrderDetailUploader {
 					.append(memberCouponId).append(", ").append(totalAmount).append(", '").append(lastName)
 					.append("', '").append(firstName).append("', ").append(memo == null ? "NULL" : ("'" + memo + "'"))
 					.append(", ").append(rating).append(", ").append(commentContent).append(", ").append(commentReply)
-					.append(")");
+					.append(", ").append(commentCreatTime).append(")");
 
 			if (i < count) {
 				sb.append(",\n");
