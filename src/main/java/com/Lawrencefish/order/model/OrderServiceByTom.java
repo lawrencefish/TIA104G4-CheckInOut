@@ -33,7 +33,7 @@ public class OrderServiceByTom {
 					"orderId", row[0],
 					"memberId", row[1],
 					"memberName", row[2],
-					"status", status == 1 ? "已報到" : "未報到"
+					"status", status // 直接返回數字，不轉換為文字
 			);
 		}).collect(Collectors.toList());
 	}
@@ -53,7 +53,7 @@ public class OrderServiceByTom {
 					"orderId", row[0],
 					"memberId", row[1],
 					"memberName", row[2],
-					"status", status == 1 ? "已退房" : "尚未退房"
+					"status", status // 直接返回數字，不轉換為文字
 			);
 		}).collect(Collectors.toList());
 	}
