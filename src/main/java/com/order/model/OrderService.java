@@ -5,8 +5,14 @@ import java.util.Optional;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.order.dto.CommentDTO;
 
 @Service("OrderService")
 public class OrderService {
@@ -37,4 +43,17 @@ public class OrderService {
 		return repository.findAll();
 	}
 	
+	public List<CommentDTO> getAllComments() {
+        return repository.findAllComments();
+    }
+	
+	@Autowired
+    private OrderRepository orderRepository;
+
+	public Page<CommentDTO> getFilteredComments(String clientName, String hotelName, int page, int size) {
+	    
+		Pageable pageable = PageRequest.of(page, size,Sort.unsorted()); // 分頁並加入排序
+	    return orderRepository.findCommentsByFilters(clientName, hotelName, pageable);
+	}
+
 }
