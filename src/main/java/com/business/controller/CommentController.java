@@ -51,7 +51,10 @@ public class CommentController {
 
 
     @GetMapping("/commentDetail")
-    public String showCommentDetail() {
+    public String getCommentDetail(@RequestParam Integer orderId, Model model) {
+        CommentDTO comment = orderService.getCommentById(orderId);
+        model.addAttribute("comment", comment);
         return "business/commentDetail";
     }
+
 }

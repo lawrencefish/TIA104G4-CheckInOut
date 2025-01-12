@@ -11,15 +11,17 @@ public class CommentDTO {
     private String hotelName;
     private Date commentCreateTime;
     private int stars;
+    private String commentContent;
 
     // Constructor
-    public CommentDTO(Integer orderId, String clientLastName, String clientFirstName, String hotelName,  Date commentCreateTime, int stars) {
+    public CommentDTO(Integer orderId, String clientLastName, String clientFirstName, String hotelName,  Date commentCreateTime, int stars, String commentContent) {
         this.orderId = orderId;
         this.clientLastName = clientLastName;
         this.clientFirstName = clientFirstName;
         this.hotelName = hotelName;
         this.commentCreateTime = commentCreateTime;
         this.stars = stars;
+        this.commentContent = commentContent;
     }
 
     // Getters and setters
@@ -69,5 +71,13 @@ public class CommentDTO {
 
     public void setStars(int stars) {
         this.stars = stars;
+    }
+    
+    public String getCommentContent() {
+        return commentContent;
+    }
+
+    public void setCommentContent(String commentContent) {
+        this.commentContent = commentContent;
     }
 }

@@ -56,4 +56,9 @@ public class OrderService {
 	    return orderRepository.findCommentsByFilters(clientName, hotelName, pageable);
 	}
 
+    public CommentDTO getCommentById(Integer orderId) {
+        return orderRepository.findCommentByOrderId(orderId)
+                .orElseThrow(() -> new RuntimeException("找不到該評論"));
+    }
+
 }
