@@ -1,40 +1,43 @@
 package com.faq.model;
 
 import java.util.List;
-import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class FaqService {
-	
-	
+    
+    @Autowired
     private FaqRepository faqRepository;
-
+    
     public List<FaqVO> getAllFaqs() {
         return faqRepository.findAll();
     }
-
-    public FaqVO getFaqById(int id) {
-        Optional<FaqVO> faq = faqRepository.findById(id);
-        return faq.orElseThrow(() -> new RuntimeException("找不到"));
+    
+    public FaqVO getFaqById(Integer id) {
+        return faqRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "FAQ not found"));
     }
-
+    
     public FaqVO createFaq(FaqVO faq) {
         return faqRepository.save(faq);
     }
-
-    public FaqVO updateFaq(int id, FaqVO updatedFaq) {
-        FaqVO existingFaq = getFaqById(id);
-        existingFaq.setQuestion(updatedFaq.getQuestion());
-        existingFaq.setAnswer(updatedFaq.getAnswer());
-        return faqRepository.save(existingFaq);
+    
+    public FaqVO updateFaq(Integer id, FaqVO faq) {
+    	FaqVO existingfaq = getFaqById(id);
+        faq.setQuestion(faq.getQuestion());
+        faq.setAnswer(faq.getAnswer());
+        return faqRepository.save(existingfaq);
     }
-
-    public void deleteFaq(int id) {
-        faqRepository.deleteById(id);
+    
+    public void deleteFaq(Integer id) {
+    	if (!faqRepository.existsById(id)) {
+    		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "FAQ NOT FOUND");
+    	}
+    	faqRepository.deleteById(id);
     }
 }
