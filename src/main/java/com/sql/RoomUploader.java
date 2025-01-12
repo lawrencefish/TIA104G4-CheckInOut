@@ -1,5 +1,8 @@
 package com.sql;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,54 +10,70 @@ import java.sql.ResultSet;
 
 public class RoomUploader {
 
-    public static void run() {
+    public static void main(String[] args) {
+        StringBuilder sqlBuilder = new StringBuilder();
+
         String url = "jdbc:mysql://localhost:3306/checkinout?serverTimezone=Asia/Taipei";
         String userid = "root";
         String passwd = "123456";
 
         // 查詢 room_type 表
         String selectRoomTypeQuery = "SELECT room_type_id, room_num FROM room_type ORDER BY room_type_id";
-        // 插入 room 表
-        String insertRoomQuery = "INSERT INTO room (room_type_id, number, status) VALUES (?, ?, ?)";
 
-        Connection con = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
+        // 輸出文件的路徑
+        String outputFilePath = "room.sql";
 
-        try {
-            con = DriverManager.getConnection(url, userid, passwd);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
+            Connection con = DriverManager.getConnection(url, userid, passwd);
 
-            // 查詢所有 room_type 資料
-            pstmt = con.prepareStatement(selectRoomTypeQuery);
-            rs = pstmt.executeQuery();
+            PreparedStatement pstmt = con.prepareStatement(selectRoomTypeQuery);
+            ResultSet rs = pstmt.executeQuery();
+
+            // 起始的 INSERT 語句
+            sqlBuilder.append("INSERT INTO room (room_type_id, number, status) VALUES ");
+
+            boolean firstRecord = true;
 
             while (rs.next()) {
                 int roomTypeId = rs.getInt("room_type_id");
                 int roomNum = rs.getInt("room_num");
 
-                // 插入與 room_num 對應的房間數據
                 for (int i = 1; i <= roomNum; i++) {
-                    PreparedStatement insertStmt = con.prepareStatement(insertRoomQuery);
-                    insertStmt.setInt(1, roomTypeId);
-                    insertStmt.setInt(2, i); // 房間號碼 (1, 2, 3, ...)
-                    insertStmt.setInt(3, 1); // 預設狀態為 1 (啟用)
-                    insertStmt.executeUpdate();
-                    insertStmt.close();
+                    if (!firstRecord) {
+                        sqlBuilder.append(", ");
+                    }
+                    sqlBuilder.append("(")
+                            .append(roomTypeId).append(", ")
+                            .append(i).append(", ")
+                            .append(1).append(")");
+                    firstRecord = false;
+
+                    // 每累積一段內容寫入文件，避免內存占用過高
+                    if (sqlBuilder.length() > 10000) { // 累積超過 10,000 字符後寫入
+                        writer.write(sqlBuilder.toString());
+                        sqlBuilder.setLength(0);
+                    }
                 }
-                System.out.printf("Inserted %d rooms for room_type_id: %d%n", roomNum, roomTypeId);
             }
 
-            System.out.println("All rooms inserted successfully.");
+            // 寫入最後剩餘的內容
+            if (sqlBuilder.length() > 0) {
+                writer.write(sqlBuilder.toString());
+            }
+
+            // 添加分號結束語句
+            writer.write(";\n");
+
+            System.out.println("SQL 語句已成功寫入文件：" + outputFilePath);
+
+            rs.close();
+            pstmt.close();
+            con.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (con != null) con.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 }

@@ -11,32 +11,34 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.coupon.model.CouponRepository;
 import com.coupon.model.CouponVO;
 
-@SpringBootApplication
-public class CouponRunner implements CommandLineRunner {
-	
-	@Autowired
-    private CouponRepository couponRepository;
-	
-	@Autowired
-	private SessionFactory sessionFactory;
-	
-	public static void main(String[] args) {
-        SpringApplication.run(CouponRunner.class);
-    }
-	
-	@Override
-    public void run(String... args) throws Exception{
+//@SpringBootApplication
+//public class CouponRunner implements CommandLineRunner {
+//	
+//	@Autowired
+//    private CouponRepository couponRepository;
+//	
+//	@Autowired
+//	private SessionFactory sessionFactory;
+//	
+//	public static void main(String[] args) {
+//        SpringApplication.run(CouponRunner.class);
+//    }
+//	
+//	@Override
+//    public void run(String... args) throws Exception{
         
 		//新增
 		
-        CouponVO couponVO1 = new CouponVO();
-        couponVO1.setActiveDate(LocalDateTime.of(2025, 1, 10, 0, 0));
-        couponVO1.setExpiryDate(LocalDateTime.of(2025, 2, 10, 0, 0));
-        couponVO1.setCouponName("恭喜成功造訪第一個城市");
-        couponVO1.setMinSpend(1000);
-        couponVO1.setTravelCityNum(1);
-        couponVO1.setCouponDetail("10% off for travel to city 1");
-        couponVO1.setDiscountAmount(100);
+// <<<<<<< Brooke2
+//         CouponVO couponVO1 = new CouponVO();
+//         couponVO1.setActiveDate(LocalDateTime.of(2025, 1, 10, 0, 0));
+//         couponVO1.setExpiryDate(LocalDateTime.of(2025, 2, 10, 0, 0));
+//         couponVO1.setCouponName("恭喜成功造訪第一個城市");
+//         couponVO1.setMinSpend(1000);
+//         couponVO1.setTravelCityNum(1);
+//         couponVO1.setCouponDetail("10% off for travel to city 1");
+//         couponVO1.setDiscountAmount(100);
+=======
 
 //        Coupon coupon2 = new Coupon();
 //        coupon2.setActiveDate(LocalDateTime.of(2025, 1, 15, 0, 0));
@@ -49,9 +51,9 @@ public class CouponRunner implements CommandLineRunner {
 //
 //        // Save to database
 //        couponRepository.save(coupon1);
-        couponRepository.save(couponVO1);
-
-        System.out.println("Coupons initialized successfully!");
-    }
-
-}
+//        couponRepository.save(couponVO1);
+//
+//        System.out.println("Coupons initialized successfully!");
+////    }
+//
+//}

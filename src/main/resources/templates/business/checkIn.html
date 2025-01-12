@@ -526,94 +526,47 @@
                             <th>訂單編號</th>
                             <th>客戶編號</th>
                             <th>客戶姓名</th>
-                            <th>房數</th>
-                            <th>人數</th>
                             <th>訂單狀態</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr data-id="00048763" data-customer-id="00001" data-name="Zeus" data-room="1" data-people="2"
-                            data-status="尚未報到">
-                            <td>00048763</td>
-                            <td>00001</td>
-                            <td>Zeus</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>尚未報到</td>
-                        </tr>
+                    <tbody id="not-arrived-table-body">
+                    <!-- 未報到資料 -->
                     </tbody>
                 </table>
             </section>
+
             <!-- 已報到區 -->
             <section id="arrived-section" class="content-section hidden">
                 <h2>已報到</h2>
                 <table>
                     <thead>
-                        <tr>
-                            <th>訂單編號</th>
-                            <th>客戶編號</th>
-                            <th>客戶姓名</th>
-                            <th>房數</th>
-                            <th>人數</th>
-                            <th>訂單狀態</th>
-                        </tr>
+                    <tr>
+                        <th>訂單編號</th>
+                        <th>客戶編號</th>
+                        <th>客戶姓名</th>
+                        <th>訂單狀態</th>
+                    </tr>
                     </thead>
-                    <tbody>
-                        <tr data-id="00048763" data-customer-id="00001" data-name="Zeus" data-room="1" data-people="2"
-                            data-status="尚未報到" data-type="豪華雙人房">
-                            <td>00048763</td>
-                            <td>00001</td>
-                            <td>Zeus</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>尚未報到</td>
-                        </tr>
-                        <tr data-id="00048765" data-customer-id="00002" data-name="Faker" data-room="1" data-people="1"
-                            data-status="已報到" data-type="標準雙人房">
-                            <td>00048765</td>
-                            <td>00002</td>
-                            <td>Faker</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>已報到</td>
-                        </tr>
+                    <tbody id="arrived-table-body">
+                    <!-- 已報到資料 -->
                     </tbody>
-
                 </table>
             </section>
+
             <!-- 全部訂單區 -->
             <section id="all-orders-section" class="content-section hidden">
                 <h2>全部訂單</h2>
                 <table>
                     <thead>
-                        <tr>
-                            <th>訂單編號</th>
-                            <th>客戶編號</th>
-                            <th>客戶姓名</th>
-                            <th>房數</th>
-                            <th>人數</th>
-                            <th>訂單狀態</th>
-                        </tr>
+                    <tr>
+                        <th>訂單編號</th>
+                        <th>客戶編號</th>
+                        <th>客戶姓名</th>
+                        <th>訂單狀態</th>
+                    </tr>
                     </thead>
-                    <tbody>
-                        <tr data-id="00048763" data-customer-id="00001" data-name="Zeus" data-room="1" data-people="2"
-                            data-status="尚未報到">
-                            <td>00048763</td>
-                            <td>00001</td>
-                            <td>Zeus</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>尚未報到</td>
-                        </tr>
-                        <tr data-id="00048765" data-customer-id="00002" data-name="Faker" data-room="1" data-people="1"
-                            data-status="已報到">
-                            <td>00048765</td>
-                            <td>00002</td>
-                            <td>Faker</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>已報到</td>
-                        </tr>
+                    <tbody id="all-orders-table-body">
+                    <!-- 全部訂單資料 -->
                     </tbody>
                 </table>
             </section>
@@ -676,285 +629,12 @@
 
     <script>
         const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
-
-        //假資料
-        const orders = [
-            {
-                id: "00048763",
-                customerId: "00001",
-                name: "Zeus",
-                roomType: "豪華雙人房",
-                room: null,
-                people: 2,
-                status: "尚未報到"
-            },
-            {
-                id: "00048764",
-                customerId: "00002",
-                name: "Oner",
-                roomType: "標準雙人房",
-                room: null,
-                people: 1,
-                status: "尚未報到"
-            },
-            {
-                id: "00048765",
-                customerId: "00003",
-                name: "Faker",
-                roomType: "標準雙人房",
-                room: "101",
-                people: 1,
-                status: "已報到"
-            },
-            {
-                id: "00048766",
-                customerId: "00004",
-                name: "Gumayusi",
-                roomType: "豪華雙人房",
-                room: "102",
-                people: 2,
-                status: "已報到"
-            },
-            {
-                id: "00048767",
-                customerId: "00005",
-                name: "Keria",
-                roomType: "家庭房",
-                room: "103",
-                people: 4,
-                status: "已報到"
-            },
-        ];
-
-
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
+        const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
 
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const buttons = document.querySelectorAll("#buttons-section button");
-            const sections = {
-                "未報到": document.getElementById("not-arrived-section"),
-                "已報到": document.getElementById("arrived-section"),
-                "全部訂單": document.getElementById("all-orders-section"),
-            };
-
-            const notArrivedModal = document.getElementById("not-arrived-modal");
-            const arrivedModal = document.getElementById("arrived-modal");
-
-            // 未報到彈窗元素
-            const notArrivedOrderId = document.getElementById("not-arrived-order-id");
-            const notArrivedCustomerName = document.getElementById("not-arrived-customer-name");
-            const notArrivedRoomType = document.getElementById("not-arrived-room-type");
-            const notArrivedCustomerNote = document.getElementById("not-arrived-customer-note");
-            const roomAssignmentSelect = document.getElementById("room-assignment");
-            const checkInCheckbox = document.getElementById("check-in-success");
-            const notArrivedAdditionalNote = document.getElementById("not-arrived-additional-note");
-
-            // 已報到彈窗元素
-            const arrivedOrderId = document.getElementById("arrived-order-id");
-            const arrivedCustomerName = document.getElementById("arrived-customer-name");
-            const arrivedRoomType = document.getElementById("arrived-room-type");
-            const arrivedRoom = document.getElementById("arrived-room");
-            const arrivedNote = document.getElementById("arrived-note");
-
-            let currentOrder = null; // 儲存當前操作的訂單
-
-            // 假資料
-            const orders = [
-                {
-                    id: "00048763",
-                    customerId: "00001",
-                    name: "Zeus",
-                    roomType: "豪華雙人房",
-                    room: null,
-                    people: 2,
-                    status: "尚未報到",
-                    note: "需要浴缸",
-                },
-                {
-                    id: "00048764",
-                    customerId: "00002",
-                    name: "Oner",
-                    roomType: "標準雙人房",
-                    room: null,
-                    people: 1,
-                    status: "尚未報到",
-                    note: "靠近窗戶",
-                },
-                {
-                    id: "00048765",
-                    customerId: "00003",
-                    name: "Faker",
-                    roomType: "標準雙人房",
-                    room: "101",
-                    people: 1,
-                    status: "已報到",
-                    note: "高樓層優先",
-                },
-                {
-                    id: "00048766",
-                    customerId: "00004",
-                    name: "Gumayusi",
-                    roomType: "豪華雙人房",
-                    room: "102",
-                    people: 2,
-                    status: "已報到",
-                    note: "加床",
-                },
-                {
-                    id: "00048767",
-                    customerId: "00005",
-                    name: "Keria",
-                    roomType: "家庭房",
-                    room: "103",
-                    people: 4,
-                    status: "已報到",
-                    note: "加床",
-                },
-            ];
-
-            // 初始化表格內容
-            function renderTables() {
-                Object.keys(sections).forEach((key) => {
-                    const tbody = sections[key].querySelector("tbody");
-                    tbody.innerHTML = ""; // 清空表格
-                    orders
-                        .filter((order) =>
-                            key === "全部訂單" ? true : order.status === (key === "未報到" ? "尚未報到" : "已報到")
-                        )
-                        .forEach((order) => {
-                            const row = document.createElement("tr");
-                            row.dataset.id = order.id;
-                            row.dataset.name = order.name;
-                            row.dataset.roomType = order.roomType;
-                            row.dataset.room = order.room || "";
-                            row.dataset.note = order.note || "";
-                            row.dataset.status = order.status;
-                            row.innerHTML = `
-                        <td>${order.id}</td>
-                        <td>${order.customerId}</td>
-                        <td>${order.name}</td>
-                        <td>${order.room || "未分配"}</td>
-                        <td>${order.people}</td>
-                        <td>${order.status}</td>
-                    `;
-                            tbody.appendChild(row);
-                        });
-                });
-                bindTableEvents();
-            }
-
-            // 綁定表格行點擊事件
-            function bindTableEvents() {
-                document.querySelectorAll("table tbody tr").forEach((row) => {
-                    row.addEventListener("click", function () {
-                        const {id, name, roomType, room, note, status} = this.dataset;
-                        currentOrder = orders.find((order) => order.id === id);
-
-                        if (status === "尚未報到") {
-                            // 未報到彈窗
-                            notArrivedOrderId.textContent = id;
-                            notArrivedCustomerName.textContent = name;
-                            notArrivedRoomType.textContent = roomType;
-                            notArrivedCustomerNote.textContent = note || "無";
-                            roomAssignmentSelect.value = ""; // 重置房號
-                            checkInCheckbox.checked = false;
-                            notArrivedAdditionalNote.value = ""; // 清空新增備註
-                            notArrivedModal.classList.remove("hidden");
-                        } else {
-                            // 已報到彈窗
-                            arrivedOrderId.textContent = id;
-                            arrivedCustomerName.textContent = name;
-                            arrivedRoomType.textContent = roomType;
-                            arrivedRoom.textContent = room || "未分配";
-                            arrivedNote.textContent = note || "無";
-                            arrivedModal.classList.remove("hidden");
-                        }
-                    });
-                });
-            }
-
-            // 儲存未報到訂單
-            document.getElementById("not-arrived-save-button").addEventListener("click", function () {
-                if (!currentOrder) return;
-
-                const selectedRoom = roomAssignmentSelect.value;
-                const additionalNote = notArrivedAdditionalNote.value;
-                const isCheckedIn = checkInCheckbox.checked;
-
-                if (!selectedRoom) {
-                    alert("請選擇房號！");
-                    return;
-                }
-
-                currentOrder.room = selectedRoom;
-                currentOrder.status = isCheckedIn ? "已報到" : "尚未報到";
-
-                alert(
-                    `訂單已更新！\n房號分配：${selectedRoom}\n新增備註：${additionalNote}\n報到狀態：${currentOrder.status}`
-                );
-
-                notArrivedModal.classList.add("hidden");
-                renderTables(); // 重新渲染表格
-            });
-
-            // 切換區塊顯示
-            buttons.forEach((button) => {
-                button.addEventListener("click", function () {
-                    buttons.forEach((btn) => btn.classList.remove("active"));
-                    this.classList.add("active");
-
-                    const sectionName = this.textContent;
-                    Object.keys(sections).forEach((key) => {
-                        if (key === sectionName) {
-                            sections[key].classList.remove("hidden");
-                        } else {
-                            sections[key].classList.add("hidden");
-                        }
-                    });
-                });
-            });
-
-            // 關閉彈窗
-            document.getElementById("not-arrived-close-button").addEventListener("click", function () {
-                notArrivedModal.classList.add("hidden");
-            });
-
-            document.getElementById("arrived-close-button").addEventListener("click", function () {
-                arrivedModal.classList.add("hidden");
-            });
-
-            // 初始化表格
-            renderTables();
         });
 
         // 取得彈窗和按鈕
@@ -993,6 +673,112 @@
                 logoutModal.classList.remove("show"); // 隱藏彈窗
             }
         });
+
+        // 1/10新增內容
+        document.addEventListener("DOMContentLoaded", function () {
+            const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
+            const tableBodies = {
+                notArrived: document.getElementById("not-arrived-table-body"),
+                arrived: document.getElementById("arrived-table-body"),
+                all: document.getElementById("all-orders-table-body"),
+            };
+
+            const buttons = {
+                notArrived: document.getElementById("btn-not-arrived"),
+                arrived: document.getElementById("btn-arrived"),
+                all: document.getElementById("btn-all-orders"),
+            };
+
+            const sections = {
+                notArrived: document.getElementById("not-arrived-section"),
+                arrived: document.getElementById("arrived-section"),
+                all: document.getElementById("all-orders-section"),
+            };
+
+            let allOrders = []; // 保存所有訂單數據
+
+            // 1. Fetch 今日訂單
+            fetch(`${contextPath}/order/today/checkin?hotelId=${hotelId}`)
+                .then((response) => response.json())
+                .then((orders) => {
+                    allOrders = orders;
+                    // 預設顯示未報到區域並渲染
+                    renderTable(allOrders.filter((order) => order.status === "未報到"), tableBodies.notArrived);
+                    switchSection("notArrived");
+                })
+                .catch((error) => console.error("Error fetching orders:", error));
+
+            // 2. 渲染表格函數
+            function renderTable(orders, tableBody) {
+                if (!tableBody) {
+                    console.error("找不到表格的 tbody 元素。");
+                    return;
+                }
+
+                tableBody.innerHTML = ""; // 清空表格內容
+
+                if (orders.length === 0) {
+                    // 如果沒有資料，顯示提示文字
+                    const row = document.createElement("tr");
+                    const cell = document.createElement("td");
+                    cell.colSpan = 4; // 設置 colspan 為表格的欄位數量
+                    cell.textContent = "沒有相關訂單";
+                    cell.style.textAlign = "center"; // 文字置中
+                    row.appendChild(cell);
+                    tableBody.appendChild(row);
+                } else {
+                    // 如果有資料，渲染表格內容
+                    orders.forEach((order) => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                <td>${order.orderId}</td>
+                <td>${order.memberId || "未提供"}</td>
+                <td>${order.memberName || "未提供"}</td>
+                <td>${order.status}</td>
+            `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            }
+
+
+            // 3. 按鈕篩選功能
+            buttons.notArrived.addEventListener("click", () => {
+                renderTable(allOrders.filter((order) => order.status === "未報到"), tableBodies.notArrived);
+                switchSection("notArrived");
+            });
+
+            buttons.arrived.addEventListener("click", () => {
+                renderTable(allOrders.filter((order) => order.status === "已報到"), tableBodies.arrived);
+                switchSection("arrived");
+            });
+
+            buttons.all.addEventListener("click", () => {
+                renderTable(allOrders, tableBodies.all); // 顯示全部訂單
+                switchSection("all");
+            });
+
+            // 4. 切換區域顯示
+            function switchSection(activeSection) {
+                Object.keys(sections).forEach((key) => {
+                    if (key === activeSection) {
+                        sections[key].classList.remove("hidden");
+                    } else {
+                        sections[key].classList.add("hidden");
+                    }
+                });
+
+                // 更新按鈕樣式
+                Object.keys(buttons).forEach((key) => {
+                    if (key === activeSection) {
+                        buttons[key].classList.add("active");
+                    } else {
+                        buttons[key].classList.remove("active");
+                    }
+                });
+            }
+        });
+
 
     </script>
 </body>

@@ -402,19 +402,12 @@
         <main class="main-content" id="main">
             
             <div class="review-section">
-                <h3>評論編號&nbsp;&nbsp;001</h3><br>
-                <h4>訂單號<span style="font-weight: normal;"> 001</span></h4>
-                <h4>飯店房型<span style="font-weight: normal;"> 緯育大飯店 單人房</span></h4>
-                <h4>日期<span style="font-weight: normal;"> 2024/11/6</span></h4>
+                <h3>訂單編號&nbsp;&nbsp;<span th:text="${comment.orderId}"></span></h3><br>
+                <h4>飯店&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.hotelName}"></span></h4>
+                <h4>評論時間&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></span></h4>
+                <h4>顧客姓名&nbsp;&nbsp;<span style="font-weight: normal;"th:text="${comment.clientLastName} + ${comment.clientFirstName}"></h4>
                 <div class="review-item">
-                    <h4>李相赫</h4>
-                    <p>機殼：銀欣 RM41-506
-                        主機板：Supermicro H11SSL-I
-                        CPU：AMD EPYC 7872 16C/32T 2.8Ghz
-                        記憶體：SK Hynix DDR4-2400 REGECC 64GB*8
-                        SSD：SAMSUNG PM9A1a 2TB、980PRO 512GB*4
-                        電源：Seasonic FOCUS GX-1000
-                        系統散熱：Noctua NH-U9 TR4-SP3、NF-A12x25、NF-A8*4</p>
+                     <p th:text="${comment.commentContent}"></p>
                 </div>
             </div>
 

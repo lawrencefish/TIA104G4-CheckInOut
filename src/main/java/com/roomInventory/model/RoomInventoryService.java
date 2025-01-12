@@ -60,4 +60,11 @@ public class RoomInventoryService {
         // 保存更改
         return roomInventoryRepository.save(existingInventory);
     }
+    //by YuCheng
+	public List<RoomInventoryDTO> findRoomInventoryByTypeHotelAndPrice(LocalDate startDate, LocalDate endDate,
+			double latitudeCenter, double longitudeCenter) {
+		return roomInventoryRepository.findRoomInventoryByTypeHotelAndPrice(startDate, endDate, latitudeCenter,
+				longitudeCenter);
+	}
+
 }

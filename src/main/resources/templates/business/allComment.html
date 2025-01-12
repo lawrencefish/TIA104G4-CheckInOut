@@ -371,6 +371,29 @@
         button:hover {
             background-color: #dcdcdc;
         }
+        
+        .pagination button {
+    		margin: 0 5px;
+   			padding: 5px 10px;
+    		border: 1px solid #ddd;
+    		background-color: #f9f9f9;
+    		cursor: pointer;
+    		transition: background-color 0.3s;
+		}
+
+		.pagination button.active {
+    		background-color: #007bff;
+    		color: white;
+    		border-color: #007bff;
+    		font-weight: bold;
+		}
+
+		.pagination button:disabled {
+    		background-color: #eee;
+    		color: #aaa;
+    		cursor: not-allowed;
+		}
+        
     </style>
 </head>
 
@@ -409,21 +432,19 @@
     <div class="container">
         <!-- Aside -->
         <aside class="sidebar" id="aside">
+        <form method="GET" th:action="@{/comment/allComment}" id="searchForm">
             <div class="search-name">
-                <input type="text" placeholder="依客戶姓名搜尋">
+                <input type="text" name="clientName" placeholder="依客戶姓名搜尋" th:value="${clientName}">
             </div>
             <div class="search-hotel">
-                <input type="text" placeholder="依飯店搜尋">
-            </div>
-            <div class="search-room">
-                <input type="text" placeholder="依房型搜尋">
+                <input type="text" name="hotelName" placeholder="依飯店搜尋" th:value="${hotelName}">
             </div>
             <div class="search">
-                <select>
-                    <option>星數高至低</option>
-                    <option>星數低至高</option>
-                </select>
-                <button>搜尋</button>
+<!--                 <select name="sort"> -->
+<!--                     <option value="rating_desc">星數高至低</option> -->
+<!--             		<option value="rating_asc">星數低至高</option> -->
+<!--                 </select> -->
+                <button type="submit">搜尋</button>
             </div>
         </aside>
 
@@ -431,63 +452,59 @@
         <main class="main-content" id="main">
             <section class="form-section">
                 <div class="date-range">
-                    <input type="date" value="2024-11-01">
+                    <input type="date" value="2025-01-01">
                     <span>~</span>
-                    <input type="date" value="2024-11-27">
+                    <input type="date" value="2025-01-31">
                 </div>
 
                 <table>
                     <thead>
                         <tr>
-                            <th>評論編號</th>
+                            <th>訂單編號</th>
                             <th>客戶</th>
                             <th>飯店</th>
-                            <th>房型</th>
                             <th>日期</th>
                             <th>星數</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>001</td>
-                            <td>李相赫</td>
-                            <td>緯育大飯店</td>
-                            <td>單人房</td>
-                            <td>2024/11/6</td>
-                            <td>⭐️⭐️⭐️⭐️⭐️</td>
-                            <td><a href="4-2.html"><button>查看</button></a></td>
-                        </tr>
-                        <tr>
-                            <td>002</td>
-                            <td>熊汶安</td>
-                            <td>緯育大飯店</td>
-                            <td>雙人房</td>
-                            <td>2024/11/7</td>
-                            <td>⭐️⭐️⭐️⭐️</td>
-                            <td><a href="4-2.html"><button>查看</button></a></td>
-                        </tr>
-                        <tr>
-                            <td>003</td>
-                            <td>張家航</td>
-                            <td>緯育大飯店</td>
-                            <td>四人房</td>
-                            <td>2024/11/8</td>
-                            <td>⭐️⭐️⭐️</td>
-                            <td><a href="4-2.html"><button>查看</button></a></td>
-                        </tr>
+                        <tr th:each="comment : ${comments}" th:onclick="|location.href='/comment/commentDetail?orderId=${comment.orderId}'|"
+    										style="cursor: pointer;">
+            			<td th:text="${comment.orderId}"></td>
+            			<td th:text="${comment.clientLastName} + ${comment.clientFirstName}"></td>
+            			<td th:text="${comment.hotelName}"></td>
+            			<td th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            			<td><span th:each="star : ${#numbers.sequence(1, comment.stars)}">⭐</span></td>
+        </tr>
                     </tbody>
                 </table>
 
             </section>
             <section class="page-section">
-                <div class="page-number">
-                    <span>1</span>
-                    <span>2</span>
-                    <span>3</span>
-                    <span>...</span>
-                    <button>Next</button>
-                </div>
-            </section>
+    <div class="pagination">
+    <button th:disabled="${currentPage == 0}"
+            th:href="@{/orders/allComments(page=${currentPage - 1}, size=50, clientName=${clientName ?: ''}, hotelName=${hotelName ?: ''})}">
+        Previous
+    </button>
+
+    <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+        <a th:classappend="${i == currentPage} ? 'active' : ''"
+           th:href="@{/orders/allComments(page=${i}, size=50, clientName=${clientName ?: ''}, hotelName=${hotelName ?: ''})}">
+            <span th:text="${i + 1}"></span>
+        </a>
+    </span>
+
+    <button th:disabled="${currentPage + 1 == totalPages}"
+            th:href="@{/orders/allComments(page=${currentPage + 1}, size=50, clientName=${clientName ?: ''}, hotelName=${hotelName ?: ''})}">
+        Next
+    </button>
+</div>
+
+
+</section>
+
+
+
         </main>
 
     </div>
@@ -501,6 +518,23 @@
             const dropdown = document.querySelector('.dropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         });
+        
+        document.querySelectorAll('button[data-href]').forEach(button => {
+            button.addEventListener('click', function () {
+                if (!this.disabled) {
+                    window.location.href = this.getAttribute('data-href');
+                }
+            });
+        });
+        
+        document.querySelectorAll('.pagination a, .pagination button').forEach(button => {
+            button.addEventListener('click', function (event) {
+                if (button.href && !button.disabled) {
+                    window.location.href = button.href;
+                }
+            });
+        });
+
     </script>
 
 </body>
