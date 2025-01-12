@@ -403,11 +403,11 @@
             
             <div class="review-section">
                 <h3>訂單編號&nbsp;&nbsp;<span th:text="${comment.orderId}"></span></h3><br>
-                <h4>飯店房型<span style="font-weight: normal;" th:text="${comment.hotelName}"></span></h4>
-                <h4>日期<span style="font-weight: normal;" th:text="${comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss'}"></span></h4>
+                <h4>飯店&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.hotelName}"></span></h4>
+                <h4>評論時間&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></span></h4>
+                <h4>顧客姓名&nbsp;&nbsp;<span style="font-weight: normal;"th:text="${comment.clientLastName} + ${comment.clientFirstName}"></h4>
                 <div class="review-item">
-                   <h4 th:text="${comment.clientLastName} + ${comment.clientFirstName}"></h4>
-                     <p th:text="${comment.content}"></p>
+                     <p th:text="${comment.commentContent}"></p>
                 </div>
             </div>
 
