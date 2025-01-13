@@ -3,6 +3,9 @@ let startDate = null;  // 儲存入住日期
 let endDate = null;    // 儲存退房日期
 const MONTH_NAMES = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
 
+// 可禁用的日期列表
+const disabledDates = ["2025-01-25", "2025-01-26", "2025-01-27"];  // 預設禁用的日期
+
 /**
  * 檢查是否為閏年
  * @param {number} year - 要檢查的年份
@@ -44,6 +47,7 @@ function generateCalendar(containerId, year, month) {
             <button class="btn btn-sm btn-outline-secondary prev-month">&lt;</button>
             <strong>${year} 年 ${MONTH_NAMES[month]}</strong>
             <button class="btn btn-sm btn-outline-secondary next-month">&gt;</button>
+            <button type="button" class="btn btn-sm btn-outline-danger clear-dates">清除日期</button>
         </div>
     `;
 
@@ -71,8 +75,8 @@ function generateCalendar(containerId, year, month) {
                 const dateString = formatDate(new Date(year, month, day));
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                const isDisabled = new Date(dateString) < today;  // 今天之前的日期不可選
-
+                const isDisabled = new Date(dateString) < today || disabledDates.includes(dateString);  // 禁用條件
+                let price = "";
                 // 日期格子內容（含日期和價格）
                 calendarHtml += `
                     <td data-date="${dateString}" 
@@ -80,7 +84,7 @@ function generateCalendar(containerId, year, month) {
                         style="cursor: ${isDisabled ? 'not-allowed' : 'pointer'}; width: ${cellWidth}px;">
                         <div class="date-content">
                             <div class="date-number">${day}</div>
-                            <div class="price-display">NT$2,000</div>
+                            <div class="price-display">${price}</div>
                         </div>
                     </td>
                 `;
@@ -112,12 +116,19 @@ function generateCalendar(containerId, year, month) {
         highlightDateRange();
     });
 
+    // 綁定清除日期按鈕點擊事件
+    $container.find('.clear-dates').on('click', function(e) {
+        e.stopPropagation();
+        clearSelectedDates();
+    });
+
     // 綁定日期選擇事件（排除已停用的日期）
     $container.find('.calendar-cell:not(.disabled)').on('click', function(e) {
         e.stopPropagation();
         const selectedDate = $(this).data('date');
         handleDateSelection(selectedDate);
     });
+
 }
 
 /**
@@ -147,19 +158,44 @@ function handleDateSelection(dateString) {
         const daysDiff = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
 
         if (daysDiff < 1) {
-            alert('請選擇至少兩日的範圍！');
-            endDate = null;
+            showModal('請選擇至少兩日的範圍！');
+            clearSelectedDates();
+
             return;
         }
         if (daysDiff > 30) {
-            alert('請勿選擇超過30日的範圍！');
-            endDate = null;
+            showModal('請勿選擇超過30日的範圍！');
+            clearSelectedDates();
             return;
         }
+
+        // 驗證是否有禁用日期出現在範圍內
+        const rangeContainsDisabled = disabledDates.some(disabledDate => {
+            const disabledDateTime = new Date(disabledDate).getTime();
+            return disabledDateTime >= new Date(startDate).getTime() && disabledDateTime <= new Date(endDate).getTime();
+        });
+
+        if (rangeContainsDisabled) {
+            showModal('選擇的日期範圍包含不可用的日期，請重新選擇！');
+            clearSelectedDates();
+            return;
+        }
+        console.log(startDate,endDate);
+
     }
 
     highlightDateRange();  // 更新日期範圍的視覺效果
     updateDateRangeDisplay();  // 更新日期範圍的顯示文字
+}
+
+/**
+ * 清除所選日期範圍
+ */
+function clearSelectedDates() {
+    startDate = null;
+    endDate = null;
+    highlightDateRange();  // 清除範圍的視覺效果
+    updateDateRangeDisplay();  // 清空顯示文字
 }
 
 /**

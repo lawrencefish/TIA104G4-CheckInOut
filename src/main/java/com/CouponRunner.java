@@ -38,7 +38,6 @@ import com.coupon.model.CouponVO;
 //         couponVO1.setTravelCityNum(1);
 //         couponVO1.setCouponDetail("10% off for travel to city 1");
 //         couponVO1.setDiscountAmount(100);
-=======
 
 //        Coupon coupon2 = new Coupon();
 //        coupon2.setActiveDate(LocalDateTime.of(2025, 1, 15, 0, 0));

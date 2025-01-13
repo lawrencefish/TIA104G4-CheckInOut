@@ -17,7 +17,7 @@ async function initMap() {
     gmpClickable: true,
     disableDefaultUI: true,
   });
-
+  //設定縣市
   $.getJSON("/vendors/twCity.json", function (e) {
     let features = e.features;
     let taiwan = [];      // 行政區域多邊形特徵值的陣列
@@ -77,9 +77,7 @@ async function initMap() {
       polygonPath[index].addListener('click', function (e) {
         // 點擊時獲取滑鼠的經緯度座標
         let coordinate = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-        console.log(coordinate);
         $("#place").val(name[index]);
-        console.log(coordinate);
         console.log(name[index]);
         // 將資訊視窗打開在地圖上
       });
@@ -88,7 +86,7 @@ async function initMap() {
   });
 
   //地標設定
-  const data = {
+  const mapCityData = {
     "locations": [
       { "name": "新北市", "longitude": 121.5367, "latitude": 24.8280 },
       { "name": "高雄市", "longitude": 120.666, "latitude": 22.9377 },
@@ -115,7 +113,7 @@ async function initMap() {
     ]
   };
   // 迭代 locations 陣列，為每個縣市創建一個 <div>
-  data.locations.forEach(location => {
+  mapCityData.locations.forEach(location => {
     const markerContent = document.createElement("div");
     markerContent.textContent = location.name; // 標記內容為縣市名稱
     markerContent.classList.add("landmark"); // 標記內容為縣市名稱
@@ -135,15 +133,20 @@ async function initMap() {
 
 initMap();
 
+
 function clickOnNum(e) {
   let num = $(this).siblings("input[type='text']");
   let currentVal = parseInt(num.val());
   if (!currentVal) currentVal = 0;
-  console.log(currentVal)
   if ($(this).hasClass('plus')) {
-    num.val(currentVal + 1);
+    if (currentVal >= 10) {
+      showModal("數量不能大於10");
+      currentVal = 10;
+    } else {
+      num.val(currentVal + 1);
+    }
   } else if ($(this).hasClass('minus') && currentVal > 1) {
-    num.val(currentVal - 1);
+      num.val(currentVal - 1);
   }
 }
 
@@ -151,3 +154,28 @@ $('.room_num').find('.plus').on('click', clickOnNum);
 $('.room_num').find('.minus').on('click', clickOnNum);
 $('.people_num').find('.plus').on('click', clickOnNum);
 $('.people_num').find('.minus').on('click', clickOnNum);
+
+//日曆處理
+// 當文件載入完成後執行初始化
+$(document).ready(function () {
+  const today = new Date();
+
+  // 初始化日曆，顯示當前月份
+  generateCalendar('#calendar-wrapper', today.getFullYear(), today.getMonth());
+
+  // 點擊日期範圍顯示區域時切換日曆的顯示狀態
+  $('#date-range').on('click', function (e) {
+    e.stopPropagation();
+    const $calendar = $('#calendar-wrapper');
+    $calendar.toggleClass('d-none');
+  });
+
+  // 點擊日曆和日期範圍顯示區域以外的地方時關閉日曆
+  $(document).on('click', function (e) {
+    if (!$(e.target).closest('#calendar-wrapper, #date-range').length) {
+      $('#calendar-wrapper').addClass('d-none');
+    }
+  });
+});
+
+//
