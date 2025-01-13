@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS faq;
 DROP TABLE IF EXISTS admin;
 DROP TABLE IF EXISTS member;
 DROP TABLE IF EXISTS hotel;
-DROP TABLE IF EXISTS frequent_reply;
+DROP TABLE IF EXISTS frequent_reply_list;
 
 CREATE TABLE frequent_reply_list (
     frequent_reply_id INT PRIMARY KEY AUTO_INCREMENT, -- 常用回覆ID (主鍵，自增)
