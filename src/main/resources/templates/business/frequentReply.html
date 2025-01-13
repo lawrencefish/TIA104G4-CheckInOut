@@ -370,7 +370,7 @@
             <a th:href="@{/orders}">訂單管理</a>
             <a th:href="@{/comment}" class="active">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
-<!--            <a th:href="@{/report}">報表分析</a>-->
+            <a th:href="@{/report}">報表分析</a>
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
@@ -390,30 +390,27 @@
     <div class="container">
         <!-- Aside -->
         <aside class="sidebar" id="aside">
-            <label for="common-replies">常用回覆</label>
-            <select id="common-replies">
-                <option>Hello World</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-                <option>Option 4</option>
-                <option>Option 5</option>
-            </select>
-            <button class="btn-add">新增</button>
-        </aside>
+    <label for="common-replies">常用回覆</label>
+    <select id="common-replies" onchange="loadReply()">
+        <!-- 選項會由 JavaScript 動態載入 -->
+    </select>
+    <button class="btn-add" onclick="createNewReply()">新增</button>
+</aside>
 
         <!-- Main -->
         <main class="main-content" id="main">
-            <div class="review-section form-group">
-                <label for="title" class="form-label">常用回覆標題</label>
-                <textarea id="titleInput" class="form-textarea" placeholder="輸入標題"></textarea>
-            </div>
-            
-            <div class="response-section form-group">
-                <label for="response" class="form-label">預設回覆</label>
-                <textarea id="responseInput" class="form-textarea" placeholder="輸入回覆內容"></textarea>
-                <button id="saveButton" class="btn-add">儲存</button>
-            </div>
-        </main>
+    <div class="review-section form-group">
+        <label for="title" class="form-label">常用回覆標題</label>
+        <textarea id="titleInput" class="form-textarea" placeholder="輸入標題"></textarea>
+    </div>
+
+    <div class="response-section form-group">
+        <label for="response" class="form-label">預設回覆</label>
+        <textarea id="responseInput" class="form-textarea" placeholder="輸入回覆內容"></textarea>
+        <button id="saveButton" class="btn-add" onclick="saveOrUpdateReply()">儲存</button>
+        <button id="deleteButton" class="btn-add" onclick="deleteReply()">刪除</button>
+    </div>
+</main>
 
 
     </div>
@@ -428,25 +425,88 @@
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         });
         
-    document.getElementById('saveButton').addEventListener('click', () => {
-        // 選取輸入框
-        const titleInput = document.getElementById('titleInput').value.trim();
-        const responseInput = document.getElementById('responseInput').value.trim();
-
-        // 檢查是否為空
-        if (!titleInput) {
-            alert('請輸入常用回覆標題！');
-            return;
+     // 載入所有常用回覆
+        function loadReplies() {
+            fetch('/frequentReply/all')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('common-replies');
+                    select.innerHTML = ''; // 清空選單
+                    data.forEach(reply => {
+                        const option = document.createElement('option');
+                        option.value = reply.id; // 假設後端返回的資料有 `id` 欄位
+                        option.textContent = reply.title;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('載入常用回覆失敗:', error));
         }
 
-        if (!responseInput) {
-            alert('請輸入預設回覆內容！');
-            return;
+        // 載入選中的常用回覆
+        function loadReply() {
+            const id = document.getElementById('common-replies').value;
+            if (!id) return;
+
+            fetch(`/frequentReply/all/${id}`) // 假設有 `/all/{id}` 的 API
+                .then(response => response.json())
+                .then(reply => {
+                    document.getElementById('titleInput').value = reply.title;
+                    document.getElementById('responseInput').value = reply.content;
+                })
+                .catch(error => console.error('載入回覆失敗:', error));
         }
 
-        // 模擬保存成功
-        alert('儲存成功！');
-    });
+        // 新增常用回覆
+        function createNewReply() {
+            document.getElementById('titleInput').value = '';
+            document.getElementById('responseInput').value = '';
+        }
+
+        // 儲存或更新常用回覆
+        function saveOrUpdateReply() {
+            const id = document.getElementById('common-replies').value || null; // 如果是新增，ID 為 null
+            const title = document.getElementById('titleInput').value.trim();
+            const content = document.getElementById('responseInput').value.trim();
+
+            if (!title || !content) {
+                alert('請輸入標題和回覆內容！');
+                return;
+            }
+
+            fetch('/frequentReply/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, title, content })
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('儲存失敗');
+                    alert('儲存成功！');
+                    loadReplies(); // 重新載入選單
+                })
+                .catch(error => console.error('儲存失敗:', error));
+        }
+
+        // 刪除選中的常用回覆
+        function deleteReply() {
+            const id = document.getElementById('common-replies').value;
+            if (!id) {
+                alert('請選擇要刪除的回覆！');
+                return;
+            }
+
+            fetch(`/frequentReply/delete/${id}`, { method: 'DELETE' })
+                .then(response => {
+                    if (!response.ok) throw new Error('刪除失敗');
+                    alert('刪除成功！');
+                    loadReplies(); // 重新載入選單
+                    createNewReply(); // 清空右側編輯區
+                })
+                .catch(error => console.error('刪除失敗:', error));
+        }
+
+        // 初始化載入資料
+        document.addEventListener('DOMContentLoaded', loadReplies);
+
     </script>
 
 

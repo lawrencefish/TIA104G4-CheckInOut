@@ -367,7 +367,7 @@
             <a th:href="@{/orders}">訂單管理</a>
             <a th:href="@{/comment}" class="active">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
-<!--            <a th:href="@{/report}">報表分析</a>-->
+            <a th:href="@{/report}">報表分析</a>
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
@@ -395,7 +395,7 @@
                 <option>Option 4</option>
                 <option>Option 5</option>
             </select>
-            <a href="4-3.html"><button class="btn-add">新增</button></a>
+            <a th:href="@{/frequentReply}"><button class="btn-add">新增</button></a>
         </aside>
 
         <!-- Main -->
@@ -406,9 +406,11 @@
                 <h4>飯店&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.hotelName}"></span></h4>
                 <h4>評論時間&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></span></h4>
                 <h4>顧客姓名&nbsp;&nbsp;<span style="font-weight: normal;"th:text="${comment.clientLastName} + ${comment.clientFirstName}"></h4>
+                <input type="hidden" id="orderId" th:value="${comment.orderId}" />
                 <div class="review-item">
                      <p th:text="${comment.commentContent}"></p>
                 </div>
+                
             </div>
 
             <div class="response-section">
@@ -431,20 +433,42 @@
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         });
 
-        // 回覆按鈕事件
         document.getElementById('sendButton').addEventListener('click', () => {
             const responseInput = document.getElementById('responseInput');
             const responseText = responseInput.value.trim();
+            const orderId = document.getElementById('orderId').value;
 
             if (!responseText) {
-                // 如果內容為空，彈出提示
                 alert('請輸入回覆內容！');
-            } else {
-                // 模擬處理回覆邏輯
-                alert('回覆成功：' + responseText);
-                responseInput.value = ''; // 清空輸入框
+                return;
             }
+
+            fetch('/comment/saveReply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `orderId=${encodeURIComponent(orderId)}&commentReply=${encodeURIComponent(responseText)}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // 如果伺服器回應不是 200，嘗試解析錯誤訊息
+                    return response.text().then(errorMessage => {
+                        throw new Error(errorMessage || '伺服器回應失敗');
+                    });
+                }
+                return response.text();
+            })
+            .then(message => {
+                alert(message); // 成功訊息
+                responseInput.value = ''; // 清空輸入框
+            })
+            .catch(error => {
+                console.error('伺服器錯誤:', error.message);
+                alert('回覆失敗：' + error.message); // 顯示伺服器的錯誤訊息
+            });
         });
+
     </script>
 
 
