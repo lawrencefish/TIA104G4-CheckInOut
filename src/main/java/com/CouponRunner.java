@@ -1,16 +1,16 @@
-package com;
-
-import java.time.LocalDateTime;
-
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.coupon.model.CouponRepository;
-import com.coupon.model.CouponVO;
-
+//package com;
+//
+//import java.time.LocalDateTime;
+//
+//import org.hibernate.SessionFactory;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.boot.CommandLineRunner;
+//import org.springframework.boot.SpringApplication;
+//import org.springframework.boot.autoconfigure.SpringBootApplication;
+//
+//import com.coupon.model.CouponRepository;
+//import com.coupon.model.CouponVO;
+//
 //@SpringBootApplication
 //public class CouponRunner implements CommandLineRunner {
 //	
@@ -38,7 +38,6 @@ import com.coupon.model.CouponVO;
 //         couponVO1.setTravelCityNum(1);
 //         couponVO1.setCouponDetail("10% off for travel to city 1");
 //         couponVO1.setDiscountAmount(100);
-//=======
 
 //        Coupon coupon2 = new Coupon();
 //        coupon2.setActiveDate(LocalDateTime.of(2025, 1, 15, 0, 0));

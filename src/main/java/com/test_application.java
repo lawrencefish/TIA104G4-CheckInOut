@@ -11,6 +11,7 @@
 //
 //import com.price.model.PriceRepository;
 //import com.price.model.PriceService;
+//import com.price.model.PriceVO;
 //import com.roomInventory.model.RoomInventoryDTO;
 //import com.roomInventory.model.RoomInventoryRepository;
 //import com.roomInventory.model.RoomInventoryService;
@@ -39,10 +40,15 @@
 //	public void run(String... args) throws Exception {
 //		LocalDate startDate = LocalDate.parse("2025-01-09");
 //		LocalDate endDate = LocalDate.parse("2025-01-13");
-//		
-//		List<RoomInventoryDTO> RI = RIservice.findRoomInventoryByTypeHotelAndPrice(startDate,endDate,25.1,121.1);
+//		System.out.println("test");
+//		List<RoomInventoryDTO> RI = RIservice.findAvailableRooms(startDate, endDate, 23, 120, 0.5);
+//		System.out.println(RI);
 //		RI.forEach(ri ->{
+//			PriceVO price = Pservice.getPriceOfDay(ri.getRoomTypeId(),startDate);
 //			System.out.println(ri.toString());
+//			System.out.println(price.getPriceType());
+//			System.out.println(price.getPrice());
+//			
 //		});
 //	}
 //}

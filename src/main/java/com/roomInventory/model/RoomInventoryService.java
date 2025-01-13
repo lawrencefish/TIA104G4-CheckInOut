@@ -61,10 +61,10 @@ public class RoomInventoryService {
         return roomInventoryRepository.save(existingInventory);
     }
     //by YuCheng
-	public List<RoomInventoryDTO> findRoomInventoryByTypeHotelAndPrice(LocalDate startDate, LocalDate endDate,
-			double latitudeCenter, double longitudeCenter) {
-		return roomInventoryRepository.findRoomInventoryByTypeHotelAndPrice(startDate, endDate, latitudeCenter,
-				longitudeCenter);
+	public List<RoomInventoryDTO> findAvailableRooms(LocalDate startDate, LocalDate endDate,
+			double latitudeCenter, double longitudeCenter,double radius) {
+		return roomInventoryRepository.findAvailableRooms(startDate, endDate, latitudeCenter,
+				longitudeCenter,radius);
 	}
 
 }
