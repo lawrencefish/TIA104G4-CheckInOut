@@ -1,9 +1,7 @@
 package com.Lawrencefish.checkin.model;
 
-import com.Lawrencefish.OrderDetail.model.OrderDetailRepositoryByTom;
 import com.Lawrencefish.order.model.OrderRepositoryByTom;
 import com.order.model.OrderVO;
-import com.orderDetail.model.OrderDetailVO;
 import com.room.model.RoomRepository;
 import com.room.model.RoomVO;
 import com.roomType.model.RoomTypeRepository;
@@ -23,9 +21,6 @@ public class CheckInService {
 
     @Autowired
     private RoomTypeRepository roomTypeRepository;
-
-    @Autowired
-    private OrderDetailRepositoryByTom orderDetailRepository;
 
     /**
      * 根據訂單 ID 查詢訂單基本信息。

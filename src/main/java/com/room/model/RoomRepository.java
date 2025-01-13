@@ -22,4 +22,5 @@ public interface RoomRepository extends JpaRepository<RoomVO, Integer> {
     List<RoomVO> findAvailableRoomsByRoomTypeId(@Param("roomTypeId") Integer roomTypeId);
 
     Optional<RoomVO> findByOrderDetailId(Integer orderDetailId);
+
 }
