@@ -443,6 +443,112 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        /* 通用樣式 */
+        #not-checked-out-modal .modal-content h2,
+        #checked-out-modal .modal-content h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        /* 訂單基本信息區塊 */
+        #not-checked-out-modal .order-basic-info,
+        #checked-out-modal .order-basic-info {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+        }
+
+        #not-checked-out-modal .order-basic-info p,
+        #checked-out-modal .order-basic-info p {
+            margin: 5px 0;
+            font-size: 1rem;
+            color: #444;
+        }
+
+        /* 房型明細區塊 */
+        #not-checked-out-modal #not-checked-out-room-type > div,
+        #checked-out-modal #checked-out-room-type > div {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        #not-checked-out-modal #not-checked-out-room-type,
+        #checked-out-modal #checked-out-room-type {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        /* 房型明細標籤 */
+        #not-checked-out-modal #not-checked-out-room-type p,
+        #checked-out-modal #checked-out-room-type p {
+            margin: 5px 0;
+            font-size: 1rem;
+            color: #444;
+        }
+
+        /* 按鈕區域 */
+        #not-checked-out-modal .modal-actions,
+        #checked-out-modal .modal-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #not-checked-out-modal .modal-actions button,
+        #checked-out-modal .modal-actions button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #not-checked-out-modal .modal-actions .btn-confirm,
+        #checked-out-modal .modal-actions .btn-confirm {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        #not-checked-out-modal .modal-actions .btn-close,
+        #checked-out-modal .modal-actions .btn-close {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #not-checked-out-modal .modal-actions button:hover,
+        #checked-out-modal .modal-actions button:hover {
+            opacity: 0.9;
+        }
+
+        /* Checkbox 區域 */
+        #not-checked-out-modal .confirmation-section,
+        #checked-out-modal .confirmation-section {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+        }
+
+        #not-checked-out-modal .confirmation-section label,
+        #checked-out-modal .confirmation-section label {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        #not-checked-out-modal .confirmation-section input[type="checkbox"],
+        #checked-out-modal .confirmation-section input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
     </style>
 </head>
 
@@ -572,37 +678,52 @@
             </section>
 
             <!-- 彈出視窗 -->
+            <!-- 未退房彈窗 -->
             <div id="not-checked-out-modal" class="modal hidden">
                 <div class="modal-content">
-                    <h2>未退房訂單詳情</h2>
+                    <h2>退房訂單詳情</h2>
+
+                    <!-- 訂單基本信息 -->
                     <p><strong>訂單編號：</strong><span id="not-checked-out-order-id"></span></p>
                     <p><strong>客戶姓名：</strong><span id="not-checked-out-customer-name"></span></p>
-                    <p><strong>預定房型：</strong><span id="not-checked-out-room-type"></span></p>
-                    <p><strong>分配房號：</strong><span id="not-checked-out-room"></span></p>
                     <p><strong>客戶備註：</strong><span id="not-checked-out-customer-note"></span></p>
-                    <label>
-                        <input type="checkbox" id="confirm-checkout"> 確認退房
-                    </label>
+
+                    <!-- 房型明細容器 -->
+                    <div id="not-checked-out-room-type">
+                        <!-- 動態生成房型明細 -->
+                    </div>
+
+                    <!-- 確認退房 -->
+                    <div class="confirmation-section">
+                        <label>
+                            <input type="checkbox" id="not-checked-out-confirm"> 確認退房
+                        </label>
+                    </div>
+
+                    <!-- 操作按鈕 -->
                     <div class="modal-actions">
-                        <button id="not-checked-out-save-button">儲存</button>
-                        <button id="not-checked-out-close-button">關閉</button>
+                        <button id="not-checked-out-confirm-button" class="btn btn-success disabled" disabled>確認</button>
+                        <button id="not-checked-out-close-button" class="btn btn-danger">關閉</button>
                     </div>
                 </div>
             </div>
+
 
             <div id="checked-out-modal" class="modal hidden">
                 <div class="modal-content">
                     <h2>已退房訂單詳情</h2>
                     <p><strong>訂單編號：</strong><span id="checked-out-order-id"></span></p>
                     <p><strong>客戶姓名：</strong><span id="checked-out-customer-name"></span></p>
-                    <p><strong>預定房型：</strong><span id="checked-out-room-type"></span></p>
-                    <p><strong>分配房號：</strong><span id="checked-out-room"></span></p>
-                    <p><strong>客戶備註：</strong><span id="checked-out-customer-note"></span></p>
+                    <div id="checked-out-room-type">
+                        <!-- 動態生成訂單明細 -->
+                    </div>
+                    <p id="checked-out-status"></p>
                     <div class="modal-actions">
-                        <button id="checked-out-close-button">關閉</button>
+                        <button id="checked-out-close-button" class="btn btn-danger">關閉</button>
                     </div>
                 </div>
             </div>
+
         </main>
 
     </div>
@@ -660,44 +781,65 @@
 
         //1/10新增內容
         document.addEventListener("DOMContentLoaded", function () {
-            const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]"; // 獲取飯店 ID
-
-            // 表格對應的 tbody 元素
+            const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]"; // 飯店 ID
             const tableBodies = {
                 notCheckedOut: document.getElementById("not-checked-out-table-body"),
                 checkedOut: document.getElementById("checked-out-table-body"),
                 allOrders: document.getElementById("all-orders-table-body"),
             };
 
-            // 按鈕對應的元素
             const buttons = {
                 notCheckedOut: document.getElementById("btn-not-checked-out"),
                 checkedOut: document.getElementById("btn-checked-out"),
                 allOrders: document.getElementById("btn-all-orders"),
             };
 
-            // 各區域的 section 元素
             const sections = {
                 notCheckedOut: document.getElementById("not-checked-out-section"),
                 checkedOut: document.getElementById("checked-out-section"),
                 allOrders: document.getElementById("all-orders-section"),
             };
 
+            // 確認退房的 Checkbox 和按鈕
+            const confirmCheckbox = document.getElementById("not-checked-out-confirm");
+            const confirmButton = document.getElementById("not-checked-out-confirm-button");
+
+            // 初始化按鈕為禁用狀態
+            confirmButton.disabled = true;
+            confirmButton.classList.add("disabled");
+
+            // 監聽 Checkbox 的變化
+            confirmCheckbox.addEventListener("change", function () {
+                if (confirmCheckbox.checked) {
+                    confirmButton.disabled = false; // 啟用按鈕
+                    confirmButton.classList.remove("disabled");
+                } else {
+                    confirmButton.disabled = true; // 禁用按鈕
+                    confirmButton.classList.add("disabled");
+                }
+            });
+
             let allOrders = []; // 保存所有訂單數據
 
-            // Fetch 今日退房的訂單
+            // Fetch 今日訂單並初始化區塊顯示
             fetch(`/order/today/checkout?hotelId=${hotelId}`)
                 .then((response) => response.json())
                 .then((orders) => {
                     allOrders = orders;
-                    // 預設顯示「未退房」
-                    renderTable(
-                        allOrders.filter((order) => order.status === "尚未退房"),
-                        tableBodies.notCheckedOut
-                    );
+
+                    // 預設顯示「未退房」區域
+                    const notCheckedOutOrders = allOrders.filter((order) => order.status === 1); // 篩選未退房
+                    renderTable(notCheckedOutOrders, tableBodies.notCheckedOut);
+
+                    // 切換到未退房區塊
                     switchSection("notCheckedOut");
+
+
+                    // 如果需要初始化「全部訂單」，同時渲染全部訂單
+                    // renderTable(allOrders, tableBodies.allOrders);
                 })
                 .catch((error) => console.error("Error fetching orders:", error));
+
 
             // 渲染表格函數
             function renderTable(orders, tableBody) {
@@ -709,55 +851,272 @@
                 tableBody.innerHTML = ""; // 清空表格內容
 
                 if (orders.length === 0) {
-                    // 如果沒有資料，顯示提示文字
                     const row = document.createElement("tr");
                     const cell = document.createElement("td");
                     cell.colSpan = 4; // 設置 colspan 為表格的欄位數量
-                    cell.textContent = "沒有相關訂單";
+                    cell.textContent = "目前沒有符合條件的訂單";
                     cell.style.textAlign = "center"; // 文字置中
                     row.appendChild(cell);
                     tableBody.appendChild(row);
                 } else {
-                    // 如果有資料，渲染表格內容
                     orders.forEach((order) => {
                         const row = document.createElement("tr");
                         row.innerHTML = `
                 <td>${order.orderId}</td>
                 <td>${order.memberId || "未提供"}</td>
-                <td>${order.memberName || "未提供"}</td>
-                <td>${order.status}</td>
+                <td>${formatMemberName(order.memberName) || "未提供"}</td>
+                <td style="color: ${getStatusColor(order.status)};">${getStatusText(order.status)}</td>
             `;
+
+                        row.addEventListener("click", () => {
+                            if (order.status === 1) {
+                                // 未退房彈窗
+                                showNotCheckedOutDetails(order);
+                            } else if (order.status === 2) {
+                                // 已退房彈窗
+                                showCheckedOutOrderDetails(order);
+                            }
+                        });
+
                         tableBody.appendChild(row);
                     });
                 }
             }
 
 
+            // 名字格式轉換函數
+            function formatMemberName(name) {
+                if (!name) return name;
+                const parts = name.split(" ");
+                if (parts.length === 2) {
+                    return parts[1] + parts[0]; // 將 "詩婷 柯" 轉換為 "柯詩婷"
+                }
+                return name;
+            }
+
+            // 訂單狀態文字轉換函數
+            function getStatusText(status) {
+                switch (status) {
+                    case 0:
+                        return "逾時未報到";
+                    case 1:
+                        return "未退房";
+                    case 2:
+                        return "已退房";
+                    case 3:
+                        return "取消訂單";
+                    default:
+                        return "未知狀態";
+                }
+            }
+
+            // 訂單狀態顏色轉換函數
+            function getStatusColor(status) {
+                switch (status) {
+                    case 0:
+                        return "red";
+                    case 1:
+                        return "red";
+                    case 2:
+                        return "green";
+                    case 3:
+                        return "black";
+                    default:
+                        return "black";
+                }
+            }
+
+            function showNotCheckedOutDetails(order) {
+                // 填充彈窗的基本信息
+                document.getElementById("not-checked-out-order-id").textContent = order.orderId;
+
+                const formattedName = formatMemberName(order.memberName);
+                document.getElementById("not-checked-out-customer-name").textContent = formattedName;
+
+                // 使用訂單編號獲取詳細資料
+                fetch(`${contextPath}/checkIn/getArrivedDetails?orderId=${order.orderId}`)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch checkout order details: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((details) => {
+                        // 填充客戶備註
+                        const customerNoteElement = document.getElementById("not-checked-out-customer-note");
+                        if (customerNoteElement) {
+                            customerNoteElement.textContent = details.memo || "無備註";
+                        }
+
+                        // 清空並填充房型明細
+                        const roomTypeContainer = document.getElementById("not-checked-out-room-type");
+                        roomTypeContainer.innerHTML = ""; // 清空內容
+
+                        // 遍歷訂單明細並顯示房型資訊
+                        details.orderDetails.forEach((detail) => {
+                            const detailDiv = document.createElement("div");
+                            detailDiv.classList.add("room-detail");
+                            detailDiv.innerHTML = `
+                                        <p data-room-id="${detail.roomId}"><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
+                                        <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
+                                        <p><strong>分配房號：</strong>${detail.assignedRoomNumber || "未分配"}</p>
+                                        <p><strong>住客姓名：</strong>${detail.customerName || "未提供"}</p>
+                                        <p><strong>住客電話：</strong>${detail.customerPhoneNumber || "未提供"}</p>
+                                    `;
+                            roomTypeContainer.appendChild(detailDiv);
+                        });
+
+
+                        // 顯示彈窗
+                        document.getElementById("not-checked-out-modal").classList.remove("hidden");
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching checkout details:", error);
+                        alert("無法載入退房訂單詳情，請稍後重試！");
+                    });
+            }
+
+
+            // 發送 checkout 請求
+            document.getElementById("not-checked-out-confirm-button").addEventListener("click", function () {
+                console.log("Confirm button clicked");
+
+                // 提取基本資訊
+                const roomTypeContainer = document.getElementById("not-checked-out-room-type");
+                const orderId = document.getElementById("not-checked-out-order-id").textContent;
+
+                const roomIds = [...roomTypeContainer.children]
+                    .map((detailDiv) => {
+                        const roomElement = detailDiv.querySelector("p[data-room-id]");
+                        if (!roomElement) {
+                            console.error("Room element not found in:", detailDiv);
+                        }
+                        return roomElement ? parseInt(roomElement.dataset.roomId) : null;
+                    })
+                    .filter((roomId) => {
+                        if (roomId === null || isNaN(roomId)) {
+                            console.error("Invalid room ID found:", roomId);
+                        }
+                        return roomId !== null && !isNaN(roomId);
+                    });
+
+                console.log("Collected room IDs for check-out:", roomIds);
+
+                // 如果未找到房間 ID，提示錯誤並退出
+                if (roomIds.length === 0) {
+                    alert("未找到任何房間資訊，無法退房！");
+                    console.error("No room IDs found for order:", orderId);
+                    return;
+                }
+
+                console.log("Collected room IDs for check-out:", roomIds);
+
+                // 發送數據到後端
+                fetch(`${contextPath}/checkOut/saveCheckOutDetails`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ orderId: parseInt(orderId), roomIds }),
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            return response.text().then((text) => {
+                                console.error("Error response from API:", text);
+                                throw new Error(text);
+                            });
+                        }
+                        return response.json(); // 確保解析 JSON 響應
+                    })
+                    .then((data) => {
+                        console.log("Check-out successful:", data);
+                        alert(data.message || "Check-out details saved successfully.");
+                        location.reload(); // 刷新頁面
+                    })
+                    .catch((error) => console.error("Error saving check-out details:", error));
+            });
+
+
+            function showCheckedOutOrderDetails(order) {
+                // 填充基本資訊
+                document.getElementById("checked-out-order-id").textContent = order.orderId;
+                const formattedName = formatMemberName(order.memberName);
+                document.getElementById("checked-out-customer-name").textContent = formattedName;
+
+                // 清空並填充訂單明細容器
+                const roomTypeContainer = document.getElementById("checked-out-room-type");
+                roomTypeContainer.innerHTML = "載入中...";
+
+                // 調用 API 獲取訂單明細
+                fetch(`${contextPath}/checkIn/getCheckedOutDetails?orderId=${order.orderId}`)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch order details: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((details) => {
+                        // 清空訂單明細容器
+                        roomTypeContainer.innerHTML = "";
+
+                        // 遍歷並填充訂單明細
+                        details.orderDetails.forEach((detail) => {
+                            const detailDiv = document.createElement("div");
+                            detailDiv.classList.add("room-detail");
+                            detailDiv.innerHTML = `
+                    <p><strong>房型：</strong>${detail.roomTypeName}</p>
+                    <p><strong>入住人數：</strong>${detail.guestNum || "未提供"}</p>
+                    <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
+                `;
+                            roomTypeContainer.appendChild(detailDiv);
+                        });
+
+                        // 顯示訂單明細完成狀態
+                        document.getElementById("checked-out-status").textContent = "訂單已完成";
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching checked-out details:", error);
+                        alert("無法載入已退房的訂單明細，請稍後重試！");
+                    })
+                    .finally(() => {
+                        // 顯示彈窗
+                        document.getElementById("checked-out-modal").classList.remove("hidden");
+                    });
+            }
+
+
+
+            // 關閉彈窗
+            document.getElementById("checked-out-close-button").addEventListener("click", function () {
+                document.getElementById("checked-out-modal").classList.add("hidden");
+            });
+
+
+            // 關閉彈窗
+            document.getElementById("not-checked-out-close-button").addEventListener("click", () => {
+                document.getElementById("not-checked-out-modal").classList.add("hidden");
+            });
+
+            document.getElementById("checked-out-close-button").addEventListener("click", () => {
+                document.getElementById("checked-out-modal").classList.add("hidden");
+            });
+
             // 按鈕篩選功能
             buttons.notCheckedOut.addEventListener("click", () => {
-                renderTable(
-                    allOrders.filter((order) => order.status === "尚未退房"),
-                    tableBodies.notCheckedOut
-                );
+                renderTable(allOrders.filter((order) => order.status === 1), tableBodies.notCheckedOut);
                 switchSection("notCheckedOut");
             });
 
             buttons.checkedOut.addEventListener("click", () => {
-                renderTable(
-                    allOrders.filter((order) => order.status === "已退房"),
-                    tableBodies.checkedOut
-                );
+                renderTable(allOrders.filter((order) => order.status === 2), tableBodies.checkedOut);
                 switchSection("checkedOut");
             });
 
             buttons.allOrders.addEventListener("click", () => {
-                renderTable(allOrders, tableBodies.allOrders);
+                renderTable(allOrders, tableBodies.allOrders); // 顯示全部訂單
                 switchSection("allOrders");
             });
 
-            // 區塊切換功能
+            // 切換區域顯示
             function switchSection(activeSection) {
-                // 切換區域顯示
                 Object.keys(sections).forEach((key) => {
                     if (key === activeSection) {
                         sections[key].classList.remove("hidden");
@@ -766,7 +1125,7 @@
                     }
                 });
 
-                // 切換按鈕樣式
+                // 更新按鈕樣式
                 Object.keys(buttons).forEach((key) => {
                     if (key === activeSection) {
                         buttons[key].classList.add("active");
@@ -776,7 +1135,6 @@
                 });
             }
         });
-
     </script>
 </body>
 

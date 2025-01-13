@@ -138,6 +138,7 @@ public class CheckInController {
                 detailMap.put("orderDetailId", detail.getOrderDetailId());
                 detailMap.put("roomTypeId", detail.getRoomTypeId());
                 detailMap.put("roomNum", detail.getRoomNum());
+                detailMap.put("guestNum", detail.getGuestNum()); // 新增人數欄位
                 detailMap.put("breakfast", detail.getBreakfast());
 
                 // 查詢房型名稱
@@ -146,6 +147,7 @@ public class CheckInController {
 
                 // 查詢分配的房間信息
                 RoomVO room = checkInService.getRoomByOrderDetailId(detail.getOrderDetailId());
+                detailMap.put("roomId", room.getRoomId()); // 添加房間 ID
                 detailMap.put("assignedRoomNumber", room.getNumber());
                 detailMap.put("customerName", room.getCustomerName());
                 detailMap.put("customerPhoneNumber", room.getCustomerPhoneNumber());
@@ -160,6 +162,50 @@ public class CheckInController {
             // 返回 JSON 格式的錯誤消息
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error retrieving arrived details", "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getCheckedOutDetails")
+    public ResponseEntity<?> getCheckedOutDetails(@RequestParam("orderId") Integer orderId) {
+        try {
+            // 查詢訂單基本信息
+            OrderVO order = checkInService.getOrderById(orderId);
+            if (order == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Order not found"));
+            }
+
+            // 構建返回數據
+            Map<String, Object> response = new HashMap<>();
+            response.put("orderId", order.getOrderId());
+            response.put("memberName", order.getGuestLastName() + order.getGuestFirstName());
+            response.put("checkInDate", order.getCheckInDate());
+            response.put("checkOutDate", order.getCheckOutDate());
+            response.put("memo", order.getMemo());
+
+            // 查詢退房訂單明細
+            List<Map<String, Object>> detailsList = new ArrayList<>();
+            for (OrderDetailVO detail : order.getOrderDetail()) {
+                Map<String, Object> detailMap = new HashMap<>();
+                detailMap.put("orderDetailId", detail.getOrderDetailId());
+                detailMap.put("roomTypeId", detail.getRoomTypeId());
+                detailMap.put("roomNum", detail.getRoomNum());
+                detailMap.put("guestNum", detail.getGuestNum()); // 添加人數欄位
+                detailMap.put("breakfast", detail.getBreakfast());
+
+                // 查詢房型名稱
+                String roomTypeName = checkInService.getRoomTypeNameById(detail.getRoomTypeId());
+                detailMap.put("roomTypeName", roomTypeName);
+
+                detailsList.add(detailMap);
+            }
+
+            response.put("orderDetails", detailsList);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            // 返回 JSON 格式的錯誤消息
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error retrieving checked-out details", "message", e.getMessage()));
         }
     }
 
