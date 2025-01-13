@@ -117,7 +117,7 @@ public class HotelController {
         // 從 session 獲取 HotelVO
         HotelVO hotel = (HotelVO) session.getAttribute("hotel");
         if (hotel == null) {
-            System.out.println("失敗1");
+//            System.out.println("失敗1");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -125,7 +125,7 @@ public class HotelController {
         // 使用 service 獲取圖片
         byte[] imageData = hotelService.getImageByType(hotel, type);
         if (imageData == null) {
-            System.out.println("失敗2");
+//            System.out.println("失敗2");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }

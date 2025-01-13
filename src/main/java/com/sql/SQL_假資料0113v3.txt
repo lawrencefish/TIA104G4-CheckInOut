@@ -23,7 +23,20 @@ DROP TABLE IF EXISTS faq;
 DROP TABLE IF EXISTS admin;
 DROP TABLE IF EXISTS member;
 DROP TABLE IF EXISTS hotel;
+DROP TABLE IF EXISTS frequent_reply_list;
 
+CREATE TABLE frequent_reply_list (
+    frequent_reply_id INT PRIMARY KEY AUTO_INCREMENT, -- 常用回覆ID (主鍵，自增)
+    frequent_reply_title VARCHAR(255) NOT NULL,       -- 回覆標題
+    frequent_reply_text TEXT NOT NULL                 -- 回覆內容
+);
+
+INSERT INTO frequent_reply_list (frequent_reply_title, frequent_reply_text) VALUES
+('感謝入住', '感謝您選擇我們的飯店，很高興您享受了這次住宿！期待您的再次光臨！'),
+('感謝評價', '感謝您的寶貴評價，我們會持續努力提升服務品質，讓您的每次入住更加愉快。'),
+('盡快處理', '我們已收到您的建議，並將盡快採取措施改善。感謝您的耐心與支持！'),
+('深感抱歉', '對於您在住宿期間遇到的問題，我們深感抱歉。我們將立即檢討並改進，確保不再發生。'),
+('期待回訪', '感謝您的建議！未來我們將推出更多優惠與服務，期待您的再次惠顧！');
 
 CREATE TABLE hotel (
     hotel_id INT AUTO_INCREMENT PRIMARY KEY,

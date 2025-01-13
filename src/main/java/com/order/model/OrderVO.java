@@ -39,25 +39,25 @@ public class OrderVO implements java.io.Serializable {
 	private Integer orderId;
 	@Column(name = "create_time")
 	private Timestamp createTime;
-	@Column(name = "status")
+	@Column(name = "status") //  0,已預約 1, 已報到 2, 已退房(完成訂單) 3, 取消訂單
 	private byte status;
 	@Column(name = "check_in_date", nullable = false)
-	@Future
-	@NotBlank(message = "入住日期不可為空")
+//	@Future
+	@NotNull(message = "入住日期不可為空")
 	private Date checkInDate;
 	@Column(name = "check_out_date", nullable = false)
-	@Future
-	@NotBlank(message = "退房日期不可為空")
+//	@Future
+	@NotNull(message = "退房日期不可為空")
 	private Date checkOutDate;
 	
 	// 連接到飯店，多對一
-	@NotBlank(message = "旅館不可為空")
+	@NotNull(message = "旅館不可為空")
     @ManyToOne
     @JoinColumn(name = "hotel_id", nullable = false)
 	private HotelVO hotel;
 	
 	// 連接到會員，多對一
-	@NotBlank(message = "會員不可為空")
+	@NotNull(message = "會員不可為空")
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
 	private MemberVO member;
@@ -73,7 +73,7 @@ public class OrderVO implements java.io.Serializable {
 //	private MemberCouponVO MemberCoupon;
 	
 	@Column(name = "total_amount", nullable = false)
-	@NotBlank(message = "價格不得為空")
+	@NotNull(message = "價格不得為空")
 	private Integer totalAmount;
 	@Column(name = "guest_last_name", nullable = false)
 	@Size(max = 20)
@@ -85,7 +85,7 @@ public class OrderVO implements java.io.Serializable {
 	private String guestFirstName;
 	@Column(name = "memo")
 	private String memo;
-	@NotBlank(message = "評分不得為空")
+//	@NotNull(message = "評分不得為空")
 	@Range(min = 1, max = 5)
 	@Column(name = "rating", nullable = false)
 	private Integer rating;

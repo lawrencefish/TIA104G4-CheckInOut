@@ -45,7 +45,7 @@ public class RoomUploader {
                     sqlBuilder.append("(")
                             .append(roomTypeId).append(", ")
                             .append(i).append(", ")
-                            .append(1).append(")");
+                            .append(0).append(")"); // 將 status 改為 0
                     firstRecord = false;
 
                     // 每累積一段內容寫入文件，避免內存占用過高
