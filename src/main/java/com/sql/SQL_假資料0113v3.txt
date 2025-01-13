@@ -1507,7 +1507,7 @@ INSERT INTO room_inventory (room_type_id, date, available_quantity) VALUES (1, '
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    status TINYINT NOT NULL COMMENT '訂單狀態 (1=完成, 0=未完成)',
+    status TINYINT NOT NULL COMMENT '訂單狀態 (0, 已預約 1, 已報到 2, 已退房(完成訂單) 3, 取消訂單)',
     check_in_date DATE NOT NULL,
     check_out_date DATE NOT NULL,
     hotel_id INT NOT NULL,

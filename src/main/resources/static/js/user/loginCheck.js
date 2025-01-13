@@ -126,13 +126,13 @@ function login(e) {
         .then(data => {
             if (data.status === 'success') {
                 showLoginView();
-                showLoginModal(data.message);
+                showModal(data.message);
                 if (redirectUrl){
                     window.location.href = redirectUrl;
                     redirectUrl = "";
                 }
             } else {
-                showLoginModal(data.message);
+                showModal(data.message);
             }
         })
         .catch(error => {
@@ -146,7 +146,7 @@ function loginCheck() {
         .then(data => {
             if (data.memberId != null && data.account != null) {
                 if(window.location.pathname == '/user/register'){
-                    showLoginModal("你已經是會員咯！");
+                    showModal("你已經是會員咯！");
                     setTimeout(function() {
                         window.location.href = "/user/";
                     }, 2000);     
@@ -155,7 +155,7 @@ function loginCheck() {
             } else {
                 if (data.url) {
                     redirectUrl = data.url;
-                    showLoginModal();
+                    showModal();
                 }
                 return null;
             }
@@ -172,7 +172,7 @@ function logout(e) {
     apiRequest('/user/api/logout', 'POST')
         .then(data => {
             if (data.status === 'success') {
-                showLoginModal("登出成功，三秒後跳轉到首頁");
+                showModal("登出成功，三秒後跳轉到首頁");
                 showLoginView();    
                 setTimeout(function() {
                     window.location.href = "/user/";
@@ -206,7 +206,7 @@ function getAvatar(){
     
 }
 
-function showLoginModal(Message) {
+function showModal(Message) {
     let loginModal = document.querySelector('#loginModal');
 
     if (!loginModal) {
@@ -233,10 +233,10 @@ function showLoginModal(Message) {
     }
 
     // 初始化並顯示新的模態視窗
-    const showloginModal = new bootstrap.Modal(document.querySelector('#loginModal'), {
+    const showModal = new bootstrap.Modal(document.querySelector('#loginModal'), {
         keyboard: true      // 允許按 ESC 鍵關閉
     });
-    showloginModal.show();
+    showModal.show();
 
     // 綁定登入表單事件
     let loginForm = document.querySelector('#login_list');
@@ -258,10 +258,10 @@ function showLoginView() {
 
             let loginBtn = document.querySelector('#navLoginBtn');
             if (loginBtn) {
-                loginBtn.removeEventListener('click', showLoginModal); // 移除舊的事件
+                loginBtn.removeEventListener('click', showModal); // 移除舊的事件
                 loginBtn.addEventListener('click', function (e) {
                     e.preventDefault();
-                    showLoginModal();
+                    showModal();
                 });
             }
 

@@ -27,34 +27,23 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventoryVO, 
     @Query("SELECT r FROM RoomInventoryVO r WHERE r.date = :date")
     List<RoomInventoryVO> findByDate(@Param("date") LocalDate date);
 
-    //搜尋庫存、旅館、房型、房價
-    @Query("""
-    	    SELECT new com.roomInventory.model.RoomInventoryDTO(
-    	        ri.inventoryId, ri.date, ri.availableQuantity, 
-    	        p.priceId, p.startDate, p.endDate, p.priceType, p.breakfastPrice, p.price, 
-    	        h.hotelId, h.name, h.city, h.district, h.address, h.latitude, h.longitude, 
-    	        rt.roomTypeId, rt.roomName, rt.maxPerson, rt.breakfast
-    	    )
-    	    FROM RoomInventoryVO ri
-    	    JOIN ri.roomType rt
-    	    JOIN rt.prices p
-    	    JOIN rt.hotel h
-    	    WHERE ri.date BETWEEN :startDate AND :endDate
-    	      AND h.latitude BETWEEN :latitudeCenter - 0.25 AND :latitudeCenter + 0.25
-    	      AND h.longitude BETWEEN :longitudeCenter - 0.25 AND :longitudeCenter + 0.25
-    	      AND (
-    	        (p.startDate IS NOT NULL AND p.endDate IS NOT NULL AND ri.date BETWEEN p.startDate AND p.endDate AND p.priceType = 3)
-    	        OR
-    	        (p.startDate IS NULL AND p.endDate IS NULL AND FUNCTION('DAYOFWEEK', ri.date) IN (1, 7) AND p.priceType = 2)
-    	        OR
-    	        (p.startDate IS NULL AND p.endDate IS NULL AND FUNCTION('DAYOFWEEK', ri.date) NOT IN (1, 7) AND p.priceType = 1)
-    	      )
-    	    ORDER BY rt.roomTypeId ASC
-    	""")
-    	List<RoomInventoryDTO> findRoomInventoryByTypeHotelAndPrice(
+    //搜尋庫存、旅館、房型
+    @Query("SELECT new com.roomInventory.model.RoomInventoryDTO(" +
+    	       "ri.inventoryId, ri.date, ri.availableQuantity, " +
+    	       "h.hotelId, h.name, h.city, h.district, h.address, " +
+    	       "h.latitude, h.longitude, " +
+    	       "rt.roomTypeId, rt.roomName, rt.maxPerson, rt.breakfast) " +
+    	       "FROM RoomInventoryVO ri " +
+    	       "JOIN ri.roomType rt " +
+    	       "JOIN rt.hotel h " +
+    	       "WHERE ri.date BETWEEN :startDate AND :endDate " +
+    	       "AND h.latitude BETWEEN :latitude - :radius AND :latitude + :radius " +
+    	       "AND h.longitude BETWEEN :longitude - :radius AND :longitude + :radius")
+    	List<RoomInventoryDTO> findAvailableRooms(
     	    @Param("startDate") LocalDate startDate,
     	    @Param("endDate") LocalDate endDate,
-    	    @Param("latitudeCenter") double latitudeCenter,
-    	    @Param("longitudeCenter") double longitudeCenter
-    	);    
+    	    @Param("latitude") Double latitude,
+    	    @Param("longitude") Double longitude,
+    	    @Param("radius") Double radius
+    	);
 }
