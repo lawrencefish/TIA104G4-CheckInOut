@@ -1,6 +1,8 @@
+const apikey = 'AIzaSyAQ4SS_rzxn4J8dPktZjUiVMAkjGA_dCuo';
+
 //地圖初始設定
 (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
-  key: "AIzaSyAQ4SS_rzxn4J8dPktZjUiVMAkjGA_dCuo",
+  key: apikey,
   v: "weekly",
 });
 let map;
@@ -146,23 +148,13 @@ function clickOnNum(e) {
       num.val(currentVal + 1);
     }
   } else if ($(this).hasClass('minus') && currentVal > 1) {
-      num.val(currentVal - 1);
+    num.val(currentVal - 1);
   }
 }
-
-$('.room_num').find('.plus').on('click', clickOnNum);
-$('.room_num').find('.minus').on('click', clickOnNum);
-$('.people_num').find('.plus').on('click', clickOnNum);
-$('.people_num').find('.minus').on('click', clickOnNum);
 
 //日曆處理
 // 當文件載入完成後執行初始化
 $(document).ready(function () {
-  const today = new Date();
-
-  // 初始化日曆，顯示當前月份
-  generateCalendar('#calendar-wrapper', today.getFullYear(), today.getMonth());
-
   // 點擊日期範圍顯示區域時切換日曆的顯示狀態
   $('#date-range').on('click', function (e) {
     e.stopPropagation();
@@ -176,6 +168,55 @@ $(document).ready(function () {
       $('#calendar-wrapper').addClass('d-none');
     }
   });
+
+  $('.room_num').find('.plus').on('click', clickOnNum);
+  $('.room_num').find('.minus').on('click', clickOnNum);
+  $('.people_num').find('.plus').on('click', clickOnNum);
+  $('.people_num').find('.minus').on('click', clickOnNum);
+
+  $('#sumbitBtn').on('click', (e) => {
+    e.preventDefault();
+    fetchBooking();
+  })
+
 });
 
-//
+//送出表單&判斷
+function checkSearchInfo() {
+  let start_date = $('#startDate').text();
+  let end_date = $('#endDate').text();
+  if ($('#people').val() < $('#room').val()) {
+    showModal("入住人數大於住房人數，請重新輸入");
+    $('#people').val() = "";
+  } else if (start_date == "" || end_date == "") {
+    showModal("請選取入住日期跟退房日期");
+    $('#date-range').text() = "選擇入住跟退房日期";
+  } else {
+    return true;
+  }
+  return false;
+}
+
+function fetchBooking() {
+  if (checkSearchInfo) {
+    $.ajax({
+      url: '/booking/api/search',
+      type: 'POST',
+      data: JSON.stringify({
+        guestNum: $('#people').val(),
+        roomNum: $('#room').val(),
+        checkInDate: $('#startDate').text(),
+        checkOutDate: $('#endDate').text(),
+        place: $('#place').val(),
+      }),
+      contentType: 'application/json',
+      dataType: 'json',
+      success: function (data) {
+        console.log('Response:', data);
+      },
+      error: function (xhr, textStatus, errorThrown) {
+        console.error('Error:', textStatus, errorThrown);
+      },
+    });
+  }
+}
