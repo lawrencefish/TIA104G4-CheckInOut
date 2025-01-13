@@ -114,7 +114,6 @@ public class PriceService {
 	public PriceVO getPriceOfDay(Integer roomTypeId, LocalDate date) {
 		List<PriceVO> roomPrice = priceRepository.findByRoomType_RoomTypeId(roomTypeId);
 		DayOfWeek dayOfWeek = date.getDayOfWeek();
-		System.out.println(dayOfWeek);
 		// 先處理特別日價格
 		for (PriceVO rp : roomPrice) {
 			if (rp.getStartDate() != null && rp.getEndDate() != null) {

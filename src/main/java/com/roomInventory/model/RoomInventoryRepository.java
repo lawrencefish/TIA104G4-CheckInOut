@@ -27,7 +27,7 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventoryVO, 
     @Query("SELECT r FROM RoomInventoryVO r WHERE r.date = :date")
     List<RoomInventoryVO> findByDate(@Param("date") LocalDate date);
 
-    //搜尋庫存、旅館、房型
+    //搜尋庫存、旅館、房型、房價
     @Query("SELECT new com.roomInventory.model.RoomInventoryDTO(" +
     	       "ri.inventoryId, ri.date, ri.availableQuantity, " +
     	       "h.hotelId, h.name, h.city, h.district, h.address, " +
@@ -46,4 +46,16 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventoryVO, 
     	    @Param("longitude") Double longitude,
     	    @Param("radius") Double radius
     	);
+    
+    //從ID找庫存
+    @Query("SELECT ri FROM RoomInventoryVO ri WHERE ri.roomType.roomTypeId = :roomTypeId AND ri.date = :date")
+    RoomInventoryVO findByRoomTypeIdAndDate(
+        @Param("roomTypeId") int roomTypeId,
+        @Param("date") LocalDate date
+    );
+    
+    //取得每日庫存量
+    @Query(value = "SELECT date, COUNT(*) FROM room_inventory GROUP BY date", nativeQuery = true)
+    List<Object[]> countRoomsByDate();
+
 }
