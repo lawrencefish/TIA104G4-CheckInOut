@@ -2,6 +2,8 @@ package com.Lawrencefish.order.model;
 
 import com.order.model.OrderRepository;
 import com.order.model.OrderVO;
+import com.roomType.model.RoomTypeRepository;
+import com.roomType.model.RoomTypeVO;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 public class OrderServiceByTom {
 	@Autowired
 	private OrderRepositoryByTom orderRepository;
+	@Autowired
+	private RoomTypeRepository roomTypeRepository;
 
 	public List<Map<String, Object>> getTodayOrders(Integer hotelId) {
 		// 獲取今天日期
@@ -74,10 +78,86 @@ public class OrderServiceByTom {
 			map.put("checkInDate", order.getCheckInDate());
 			map.put("checkOutDate", order.getCheckOutDate());
 			map.put("memberId", order.getMember() != null ? order.getMember().getMemberId() : null);
-			map.put("memberName", order.getMember() != null ? order.getMember().getLastName() + " " + order.getMember().getFirstName() : "未指定");
+			map.put("memberName", order.getMember() != null ? order.getMember().getLastName() + "" + order.getMember().getFirstName() : "未指定");
 			map.put("totalAmount", order.getTotalAmount());
-			map.put("status", order.getStatus() == 1 ? "已完成" : "未完成");
+			map.put("status", order.getStatus());
 			return map;
 		}).collect(Collectors.toList());
+	}
+
+	public List<Map<String, Object>> searchOrders(Integer hotelId, String date, String keyword) {
+		List<OrderVO> orders;
+
+		if (date != null && !date.isEmpty() && keyword != null && !keyword.isEmpty()) {
+			orders = orderRepository.searchByDateAndKeyword(hotelId, date, keyword);
+		} else if (date != null && !date.isEmpty()) {
+			orders = orderRepository.searchByDate(hotelId, date);
+		} else if (keyword != null && !keyword.isEmpty()) {
+			orders = orderRepository.searchByKeyword(hotelId, keyword);
+		} else {
+			throw new IllegalArgumentException("查詢參數錯誤");
+		}
+
+		return orders.stream().map(order -> {
+			Map<String, Object> map = new HashMap<>();
+			map.put("orderId", order.getOrderId());
+			map.put("checkInDate", order.getCheckInDate().toString());
+			map.put("checkOutDate", order.getCheckOutDate().toString());
+			map.put("memberId", order.getMember() != null ? order.getMember().getMemberId() : null);
+			map.put("memberName", order.getMember() != null ? order.getMember().getLastName() + order.getMember().getFirstName() : "未指定");
+			map.put("totalAmount", order.getTotalAmount());
+			map.put("status", order.getStatus());
+			return map;
+		}).collect(Collectors.toList());
+	}
+
+	public Map<String, Object> getOrderDetails(Integer orderId) {
+		// 查詢 Order
+		OrderVO order = orderRepository.findById(orderId)
+				.orElseThrow(() -> new RuntimeException("Order not found for ID: " + orderId));
+
+		// 建構回傳資料
+		Map<String, Object> response = new HashMap<>();
+		response.put("orderId", order.getOrderId());
+		response.put("checkInDate", order.getCheckInDate());
+		response.put("checkOutDate", order.getCheckOutDate());
+		response.put("memberId", order.getMember().getMemberId());
+		response.put("memberFirstName", order.getMember().getFirstName());
+		response.put("memberLastName", order.getMember().getLastName());
+		response.put("totalAmount", order.getTotalAmount());
+		response.put("status", order.getStatus());
+		response.put("memo", order.getMemo());
+
+
+		// 查詢訂單明細
+		List<Map<String, Object>> detailsList = order.getOrderDetail().stream().map(detail -> {
+			Map<String, Object> detailMap = new HashMap<>();
+			detailMap.put("orderDetailId", detail.getOrderDetailId());
+			detailMap.put("guestNum", detail.getGuestNum());
+			detailMap.put("roomNum", detail.getRoomNum());
+			detailMap.put("breakfast", detail.getBreakfast());
+
+			// 查詢房型名稱
+			RoomTypeVO roomType = roomTypeRepository.findById(detail.getRoomTypeId())
+					.orElseThrow(() -> new RuntimeException("Room type not found for ID: " + detail.getRoomTypeId()));
+			detailMap.put("roomTypeName", roomType.getRoomName());
+
+			return detailMap;
+		}).collect(Collectors.toList());
+
+		response.put("orderDetails", detailsList);
+		return response;
+	}
+
+	public boolean cancelOrder(Integer orderId) {
+		// 查詢訂單是否存在
+		OrderVO order = orderRepository.findById(orderId)
+				.orElseThrow(() -> new RuntimeException("Order not found for ID: " + orderId));
+
+		// 更新訂單狀態為 3 (取消)
+		order.setStatus((byte) 3); // 将整数 3 转换为 byte 类型
+		orderRepository.save(order);
+
+		return true;
 	}
 }

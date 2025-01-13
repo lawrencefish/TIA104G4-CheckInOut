@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepositoryByTom extends JpaRepository<OrderVO, Integer> {
 
@@ -41,4 +42,33 @@ public interface OrderRepositoryByTom extends JpaRepository<OrderVO, Integer> {
     @Query(value = "SELECT o FROM OrderVO o JOIN FETCH o.member WHERE o.hotel.hotelId = :hotelId ORDER BY o.orderId DESC")
     List<OrderVO> findOrdersWithMemberInfo(@Param("hotelId") Integer hotelId);
 
+
+    // 日期與關鍵字的複合查詢
+    @Query("SELECT o FROM OrderVO o " +
+            "WHERE o.hotel.hotelId = :hotelId " +
+            "AND (CAST(o.checkInDate AS string) LIKE %:date% " +
+            "OR CAST(o.checkOutDate AS string) LIKE %:date%) " +
+            "AND (CAST(o.orderId AS string) LIKE %:keyword% " +
+            "OR o.member.firstName LIKE %:keyword% " +
+            "OR o.member.lastName LIKE %:keyword% " +
+            "OR CAST(o.member.memberId AS string) LIKE %:keyword%)")
+    List<OrderVO> searchByDateAndKeyword(@Param("hotelId") Integer hotelId,
+                                         @Param("date") String date,
+                                         @Param("keyword") String keyword);
+
+    // 僅日期的查詢
+    @Query("SELECT o FROM OrderVO o " +
+            "WHERE o.hotel.hotelId = :hotelId " +
+            "AND (CAST(o.checkInDate AS string) LIKE %:date% " +
+            "OR CAST(o.checkOutDate AS string) LIKE %:date%)")
+    List<OrderVO> searchByDate(@Param("hotelId") Integer hotelId, @Param("date") String date);
+
+    // 僅關鍵字的查詢
+    @Query("SELECT o FROM OrderVO o " +
+            "WHERE o.hotel.hotelId = :hotelId " +
+            "AND (CAST(o.orderId AS string) LIKE %:keyword% " +
+            "OR o.member.firstName LIKE %:keyword% " +
+            "OR o.member.lastName LIKE %:keyword% " +
+            "OR CAST(o.member.memberId AS string) LIKE %:keyword%)")
+    List<OrderVO> searchByKeyword(@Param("hotelId") Integer hotelId, @Param("keyword") String keyword);
 }
