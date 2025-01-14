@@ -877,6 +877,7 @@
                     alert('特殊價格已成功設置！');
                     document.getElementById('special-price-form').reset();
                     document.getElementById('special-inputs').style.display = 'none';
+                    location.reload()
                 })
                 .catch(error => console.error('Error submitting special price:', error));
         });
