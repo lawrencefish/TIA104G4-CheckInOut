@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 	    @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    @Column(name = "frequent_reply_id")
-	    private Long replyId;
+	    private Integer replyId;
 
 	    @NotBlank(message = "標題不得為空")
 	    @Size(max = 50, message = "標題長度不可超過50字")
@@ -31,11 +31,11 @@ import javax.validation.constraints.Size;
 	    public FrequentReplyVO() {
 	    }
 
-	    public Long getReplyId() {
+	    public Integer getReplyId() {
 	        return replyId;
 	    }
 
-	    public void setReplyId(Long replyId) {
+	    public void setReplyId(Integer replyId) {
 	        this.replyId = replyId;
 	    }
 

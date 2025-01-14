@@ -1,10 +1,17 @@
 package com.business.controller;
 
 import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
 import com.order.dto.*;
 import com.order.model.*;
 import com.comment.model.*;
+import com.frequentReply.model.FrequentReplyService;
+import com.frequentReply.model.FrequentReplyVO;
+import com.hotel.model.HotelVO;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +34,9 @@ public class CommentController {
         this.orderService = orderService;
     }
     
+    @Autowired
+    private FrequentReplyService frequentReplyService;
+    
     @GetMapping("")
     public String showComment() {
         return "redirect:/comment/allComment";
@@ -34,21 +44,28 @@ public class CommentController {
 
     @GetMapping("/allComment")
     public String showAllComment(
-    		@RequestParam(defaultValue = "") String clientName,
-            @RequestParam(defaultValue = "") String hotelName,
+            @RequestParam(defaultValue = "") String clientName,
+            @RequestParam(required = false) Integer orderId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size,
-            Model model) {
+            Model model, HttpSession session) {
 
-        // 呼叫服務層取得分頁評論資料
-        Page<CommentDTO> commentPage = orderService.getFilteredComments(clientName, hotelName, page, size);
+        // 確保從 session 中獲取的 hotel 是正確類型
+        HotelVO hotel = (HotelVO) session.getAttribute("hotel");
+        if (hotel == null) {
+            throw new IllegalStateException("Hotel not found in session.");
+        }
+        String hotelName = hotel.getName();
+
+        // 呼叫服務層取得分頁評論資料，過濾條件包含當前飯店名稱
+        Page<CommentDTO> commentPage = orderService.getFilteredComments(clientName, hotelName, orderId, page, size);
 
         // 將分頁數據加入模型
         model.addAttribute("comments", commentPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", commentPage.getTotalPages());
         model.addAttribute("clientName", clientName);
-        model.addAttribute("hotelName", hotelName);
+        model.addAttribute("orderId", orderId);
 
         return "business/allComment";
     }
@@ -58,6 +75,8 @@ public class CommentController {
     public String getCommentDetail(@RequestParam Integer orderId, Model model) {
         CommentDTO comment = orderService.getCommentById(orderId);
         model.addAttribute("comment", comment);
+        List<FrequentReplyVO> replies = frequentReplyService.getAllReplies();
+        model.addAttribute("replies", replies);
         return "business/commentDetail";
     }
     
