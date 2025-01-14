@@ -29,7 +29,9 @@ function profileGetInfo() {
 
 function updateMemberInfo(e) {
     const formData = new FormData();
-    checkPassword();
+    if(!checkPassword()){
+        return;
+    };
 
     const memberInfo = {
         account: document.querySelector('#email').value,
@@ -54,16 +56,22 @@ function updateMemberInfo(e) {
         data: formData,
         processData: false,
         contentType: false,
-        success: function(response) {
-            alert('會員資料更新成功！');
-            console.log("成功耶");
-            console.log(response);
+        success: function(res) {
+            if (res.success === 'success'){
+            showLoginModal('會員資料更新成功！');
             profileGetInfo();
+            showLoginView();
+            }else{
+                console.log(res);
+                let errorMessage ="" 
+                Object.keys(res).forEach(key => {
+                    errorMessage +=`${res[key]}<br>`;
+                });
+                showLoginModal(`<h4>驗證資料失敗：</h4>${errorMessage}`);
+            }
         },
         error: function(xhr, status, error) {
-            console.log("失敗耶");
-            console.log(error);
-            alert('更新失敗：' + error);
+            showLoginModal('<h4>會員資料更新失敗：</h4>'+error);
         }
     });
 }
@@ -97,10 +105,11 @@ function checkPassword(){
     let newPassword = document.querySelector('#newPassword').value;
     let newPasswordAgain = document.querySelector('#newPasswordAgain').value;
 
-    if (newPassword != newPasswordAgain){
+    if (!(newPassword =="" && newPasswordAgain =="") && (newPassword != newPasswordAgain)){
         showLoginModal("密碼不一致，請重新輸入");
         document.querySelector('#newPassword').value  = "";
         document.querySelector('#newPasswordAgain').value  = "";
-        return true;
+        return false;
     }
+    return true;
 }

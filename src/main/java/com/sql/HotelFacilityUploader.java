@@ -1,8 +1,8 @@
 package com.sql;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,19 +10,14 @@ import java.util.Random;
 
 public class HotelFacilityUploader {
 
-    public static void run() {
-        Connection con = null;
-        PreparedStatement pstmt = null;
+    public static void main(String[] args) {
+        StringBuilder sqlBuilder = new StringBuilder();
 
-        String url = "jdbc:mysql://localhost:3306/checkinout?serverTimezone=Asia/Taipei";
-        String userid = "root";
-        String passwd = "123456";
-        String insert = "INSERT INTO hotel_facility (hotel_id, facility_id) VALUES (?, ?)";
+        // 輸出文件路徑
+        String outputFilePath = "hotel_facility.sql";
 
-        try {
-            con = DriverManager.getConnection(url, userid, passwd);
-
-            // Generate hotel_id range and facility_id range
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
+            // 生成 hotel_id 和 facility_id 範圍
             List<Integer> hotelIds = new ArrayList<>();
             for (int i = 1; i <= 140; i++) {
                 hotelIds.add(i);
@@ -35,31 +30,43 @@ public class HotelFacilityUploader {
 
             Random random = new Random();
 
+            // 起始的 INSERT 語句
+            sqlBuilder.append("INSERT INTO hotel_facility (hotel_id, facility_id) VALUES ");
+
+            boolean firstRecord = true;
+
             for (int hotelId : hotelIds) {
-                // Randomly select 3 unique facility_ids for each hotel_id
+                // 隨機選擇 3 個設施 ID
                 Collections.shuffle(facilityIds, random);
                 List<Integer> selectedFacilities = facilityIds.subList(0, 3);
 
                 for (int facilityId : selectedFacilities) {
-                    pstmt = con.prepareStatement(insert);
-                    pstmt.setInt(1, hotelId);
-                    pstmt.setInt(2, facilityId);
-                    pstmt.executeUpdate();
+                    if (!firstRecord) {
+                        sqlBuilder.append(", ");
+                    }
+                    sqlBuilder.append("(").append(hotelId).append(", ").append(facilityId).append(")");
+                    firstRecord = false;
 
-                    System.out.println("Inserted hotel_id: " + hotelId + ", facility_id: " + facilityId);
+                    // 定期將內容寫入文件，避免內存占用過高
+                    if (sqlBuilder.length() > 10000) { // 每累積 10,000 字符寫入一次
+                        writer.write(sqlBuilder.toString());
+                        sqlBuilder.setLength(0);
+                    }
                 }
             }
 
-            System.out.println("All facilities uploaded successfully.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (pstmt != null) pstmt.close();
-                if (con != null) con.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+            // 寫入最後剩餘的內容
+            if (sqlBuilder.length() > 0) {
+                writer.write(sqlBuilder.toString());
             }
+
+            // 添加分號結束語句
+            writer.write(";\n");
+
+            System.out.println("SQL 語句已成功寫入文件：" + outputFilePath);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

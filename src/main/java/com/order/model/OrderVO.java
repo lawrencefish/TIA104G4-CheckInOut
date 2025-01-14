@@ -1,6 +1,6 @@
 package com.order.model;
 
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -94,7 +94,7 @@ public class OrderVO implements java.io.Serializable {
 	@Column(name = "comment_reply")
 	private String commentReply;
 	@Column(name = "comment_create_time")
-	private String commentCreateTime;
+	private Date commentCreateTime;
 	
 	// 連接到orderDetail
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -215,11 +215,11 @@ public class OrderVO implements java.io.Serializable {
 		this.commentReply = commentReply;
 	}
 
-	public String getCommentCreateTime() {
+	public Date getCommentCreateTime() {
 		return commentCreateTime;
 	}
 
-	public void setCommentCreateTime(String commentCreateTime) {
+	public void setCommentCreateTime(Date commentCreateTime) {
 		this.commentCreateTime = commentCreateTime;
 	}
 

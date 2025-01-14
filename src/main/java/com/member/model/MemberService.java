@@ -30,7 +30,12 @@ public class MemberService {
 
 	@Transactional
 	public void addMember(MemberVO memberVO) {
-		repository.save(memberVO);
+	    try {
+	        repository.save(memberVO);
+	    } catch (Exception e) {
+	    	System.out.println(e);
+	        throw new RuntimeException("註冊會員資料失敗", e);
+	    }
 	}
 
 	@Transactional
