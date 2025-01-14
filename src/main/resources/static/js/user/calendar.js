@@ -248,9 +248,9 @@ function updateDateRangeDisplay() {
 
     if (startDate) {
         if (endDate) {
-            html = `入住: <span id="startDate">${startDate}</span> - 退房: <span id="endDate">${endDate}</span>`;
+            html = `入住: <span id="start_date">${startDate}</span> - 退房: <span id="end_date">${endDate}</span>`;
         } else {
-            html = `入住: <span id="startDate">${startDate}</span>`;
+            html = `入住: <span id="start_date">${startDate}</span>`;
         }
     } else {
         html = '選擇日期';

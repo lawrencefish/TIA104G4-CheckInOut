@@ -8,12 +8,10 @@
 <link rel="stylesheet"
 	th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
 <link rel="stylesheet" th:href="@{/css/user/search.css}">
-<link rel="stylesheet" href="/vendors/bootstrap/css/dropdowns.css">
 
 </head>
 
 <body>
-
 	<!-- 標題列 -->
 	<header class="p-1 border-bottom shadow-sm">
 	</header>
@@ -24,20 +22,20 @@
 				<div class="col-6 d-flex flex-column shadow-sm main-content">
 					<div class="row d-inline-flex my-2">
 						<div class="col-2 text-start">
-							<a href="index.html" class="btn btn-light">返回</a>
+							<a href="/user/" class="btn btn-light">返回</a>
 						</div>
 						<div class="col-10 text-end">
 							<div class="dropdown">
 								<button class="btn btn-light dropdown-toggle" id="hotel-filter"
 									data-bs-toggle="dropdown" aria-expanded="false">篩選</button>
-								<ul class="dropdown-menu dropdown-menu-end" style="width: 20vw">
-									<li class="my-2"><a class="dropdown-item" href="#">最優評價</a></li>
-									<li class="my-2"><a class="dropdown-item" href="#">最低價優先</a></li>
-									<li class="my-2 px-3"><label for="price-range"
-										class="form-label">房價區間</label> <input type="range"
-										class="form-range" min="0" max="30000" step="1000"
-										id="price-range"></li>
+								<ul class="dropdown-menu dropdown-menu-end">
+									<li class="my-2"><a id="lowPriceFirst" class="dropdown-item" href="">最低價優先</a></li>
+									<li class="my-2"><a id="highPriceFirst" class="dropdown-item" href="">最高價優先</a></li>
+									<li class="my-2"><a id="nearestFirst" class="dropdown-item" href="#">距離最近優先</a></li>
 								</ul>
+							</div>
+							<div>
+								<input id="pac-input" class="input-group fs-6 px-3" placeholder="想找哪裡？" style="height:3vh; width:10vw;">
 							</div>
 						</div>
 					</div>

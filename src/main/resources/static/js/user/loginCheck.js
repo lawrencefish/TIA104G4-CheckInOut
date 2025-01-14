@@ -85,10 +85,35 @@ const loginFormView =`
         </div>
     </form>
 `;
+
+let footer = `
+		<div class="row border-top">
+			<div class="container">
+				<ul class="nav justify-content-center">
+					<li class="nav-item"><a href="/user/" class="nav-link px-2 text-body-secondary">首頁</a></li>
+					<li class="nav-item"><a	href="/user/cart" class="nav-link px-2 text-body-secondary">購物車</a></li>
+					<li class="nav-item"><a href="/user/news" class="nav-link px-2 text-body-secondary">最新消息</a></li>
+					<li class="nav-item"><a href="/user/order" class="nav-link px-2 text-body-secondary">訂單管理</a>
+					</li>
+					<li class="nav-item"><a href="/user/faq" class="nav-link px-2 text-body-secondary">常見問題</a>
+					</li>
+					<li class="nav-item"><a href="/user/contactUs"
+							class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+					<li class="nav-item"><a href="/login/" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+				</ul>
+				<div class="d-flex justify-content-center align-items-start mb-0">
+					<img src="/imgs/user/checKInOut_logo_light.png" alt="checkinout" width="128">
+				</div>
+				<p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p>
+			</div>
+		</div>
+`
+
 let redirectUrl ="";
 
 document.addEventListener('DOMContentLoaded', function () {
     showLoginView();
+    document.querySelector('footer').innerHTML = footer;
 });
 
 // 通用 API 請求函數
