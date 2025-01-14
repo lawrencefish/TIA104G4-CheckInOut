@@ -6,6 +6,7 @@ import com.roomType.model.RoomTypeVO;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Optional;
 
 @Entity
 @Table(name = "room")
@@ -32,6 +33,16 @@ public class RoomVO {
 //    @ManyToOne
 //    @JoinColumn(name = "order_detail_id", nullable = true)
 //    private OrderDetailVO orderDetail;
+    @Column(name = "order_detail_id")
+    private Integer orderDetailId;
+
+    public Integer getOrderDetailId() {
+        return orderDetailId;
+    }
+
+    public void setOrderDetailId(Integer orderDetailId) {
+        this.orderDetailId = orderDetailId;
+    }
 
     // customer_name VARCHAR(50) DEFAULT NULL
     @Size(max = 50, message = "住客姓名最多 50 字")
@@ -109,4 +120,5 @@ public class RoomVO {
     public void setStatus(Byte status) {
         this.status = status;
     }
+
 }

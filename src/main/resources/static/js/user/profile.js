@@ -58,7 +58,7 @@ function updateMemberInfo(e) {
         contentType: false,
         success: function(res) {
             if (res.success === 'success'){
-            showLoginModal('會員資料更新成功！');
+            showModal('會員資料更新成功！');
             profileGetInfo();
             showLoginView();
             }else{
@@ -67,11 +67,11 @@ function updateMemberInfo(e) {
                 Object.keys(res).forEach(key => {
                     errorMessage +=`${res[key]}<br>`;
                 });
-                showLoginModal(`<h4>驗證資料失敗：</h4>${errorMessage}`);
+                showModal(`<h4>驗證資料失敗：</h4>${errorMessage}`);
             }
         },
         error: function(xhr, status, error) {
-            showLoginModal('<h4>會員資料更新失敗：</h4>'+error);
+            showModal('<h4>會員資料更新失敗：</h4>'+error);
         }
     });
 }
@@ -106,7 +106,7 @@ function checkPassword(){
     let newPasswordAgain = document.querySelector('#newPasswordAgain').value;
 
     if (!(newPassword =="" && newPasswordAgain =="") && (newPassword != newPasswordAgain)){
-        showLoginModal("密碼不一致，請重新輸入");
+        showModal("密碼不一致，請重新輸入");
         document.querySelector('#newPassword').value  = "";
         document.querySelector('#newPasswordAgain').value  = "";
         return false;

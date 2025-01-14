@@ -7,13 +7,6 @@ public class RoomInventoryDTO {
     private Integer inventoryId;
 	private LocalDate date;
     private Integer availableQuantity;
-    //Price物件
-    private Integer priceId;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private Byte priceType;
-    private Integer breakfastPrice;
-    private Integer price;
     //hotel物件
     private Integer hotelId;
     private String name;
@@ -28,32 +21,36 @@ public class RoomInventoryDTO {
     private Integer maxPerson;
     private Byte breakfast;
     
-    public RoomInventoryDTO(Integer inventoryId, LocalDate date, Integer availableQuantity, Integer priceId,
-			LocalDate startDate, LocalDate endDate, Byte priceType, Integer breakfastPrice, Integer price,
-			Integer hotelId, String name, String city, String district, String address, Double latitude,
-			Double longitude, Integer roomTypeId, String roomName, Integer maxPerson, Byte breakfast) {
-		super();
-		this.inventoryId = inventoryId;
-		this.date = date;
-		this.availableQuantity = availableQuantity;
-		this.priceId = priceId;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.priceType = priceType;
-		this.breakfastPrice = breakfastPrice;
-		this.price = price;
-		this.hotelId = hotelId;
-		this.name = name;
-		this.city = city;
-		this.district = district;
-		this.address = address;
-		this.latitude = latitude;
-		this.longitude = longitude;
-		this.roomTypeId = roomTypeId;
-		this.roomName = roomName;
-		this.maxPerson = maxPerson;
-		this.breakfast = breakfast;
-	}
+    public RoomInventoryDTO(
+            Integer inventoryId,
+            LocalDate date,
+            Integer availableQuantity,
+            Integer hotelId,
+            String name,
+            String city,
+            String district,
+            String address,
+            Double latitude,
+            Double longitude,
+            Integer roomTypeId,
+            String roomName,
+            Integer maxPerson,
+            Byte breakfast) {
+        this.inventoryId = inventoryId;
+        this.date = date;
+        this.availableQuantity = availableQuantity;
+        this.hotelId = hotelId;
+        this.name = name;
+        this.city = city;
+        this.district = district;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.roomTypeId = roomTypeId;
+        this.roomName = roomName;
+        this.maxPerson = maxPerson;
+        this.breakfast = breakfast;
+    }
     
 	public Integer getInventoryId() {
 		return inventoryId;
@@ -63,24 +60,6 @@ public class RoomInventoryDTO {
 	}
 	public Integer getAvailableQuantity() {
 		return availableQuantity;
-	}
-	public Integer getPriceId() {
-		return priceId;
-	}
-	public LocalDate getStartDate() {
-		return startDate;
-	}
-	public LocalDate getEndDate() {
-		return endDate;
-	}
-	public Byte getPriceType() {
-		return priceType;
-	}
-	public Integer getBreakfastPrice() {
-		return breakfastPrice;
-	}
-	public Integer getPrice() {
-		return price;
 	}
 	public Integer getHotelId() {
 		return hotelId;
@@ -124,24 +103,6 @@ public class RoomInventoryDTO {
 	public void setAvailableQuantity(Integer availableQuantity) {
 		this.availableQuantity = availableQuantity;
 	}
-	public void setPriceId(Integer priceId) {
-		this.priceId = priceId;
-	}
-	public void setStartDate(LocalDate startDate) {
-		this.startDate = startDate;
-	}
-	public void setEndDate(LocalDate endDate) {
-		this.endDate = endDate;
-	}
-	public void setPriceType(Byte priceType) {
-		this.priceType = priceType;
-	}
-	public void setBreakfastPrice(Integer breakfastPrice) {
-		this.breakfastPrice = breakfastPrice;
-	}
-	public void setPrice(Integer price) {
-		this.price = price;
-	}
 	public void setHotelId(Integer hotelId) {
 		this.hotelId = hotelId;
 	}
@@ -175,16 +136,14 @@ public class RoomInventoryDTO {
 	public void setBreakfast(Byte breakfast) {
 		this.breakfast = breakfast;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "RoomInventoryDTO [inventoryId=" + inventoryId + ", date=" + date + ", availableQuantity="
-				+ availableQuantity + ", priceId=" + priceId + ", startDate=" + startDate + ", endDate=" + endDate
-				+ ", priceType=" + priceType + ", breakfastPrice=" + breakfastPrice + ", price=" + price + ", hotelId="
-				+ hotelId + ", name=" + name + ", city=" + city + ", district=" + district + ", address=" + address
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", roomTypeId=" + roomTypeId + ", roomName="
-				+ roomName + ", maxPerson=" + maxPerson + ", breakfast=" + breakfast + "]";
-	}  
-
+				+ availableQuantity + ", hotelId=" + hotelId + ", name=" + name + ", city=" + city + ", district="
+				+ district + ", address=" + address + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", roomTypeId=" + roomTypeId + ", roomName=" + roomName + ", maxPerson=" + maxPerson + ", breakfast="
+				+ breakfast + "]";
+	}
 	
 }

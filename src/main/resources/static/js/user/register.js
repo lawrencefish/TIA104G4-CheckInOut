@@ -28,7 +28,7 @@ function registerMemberInfo() {
     };
 
     if (password != confirmPassword) {
-        showLoginModal('密碼與確認密碼不符');
+        showModal('密碼與確認密碼不符');
         return;
     }
 
@@ -48,7 +48,7 @@ function registerMemberInfo() {
         contentType: false,
         success: function (res) {
             if (res.success === 'success') {
-                showLoginModal('會員資料註冊成功！');
+                showModal('會員資料註冊成功！');
                 setTimeout(function () {
                     window.location.href = "/user/";
                 }, 3000);
@@ -57,11 +57,11 @@ function registerMemberInfo() {
                 Object.keys(res).forEach(key => {
                     errorMessage += `${res[key]}<br>`;
                 });
-                showLoginModal(`<h4>註冊失敗：</h4>${errorMessage}`);
+                showModal(`<h4>註冊失敗：</h4>${errorMessage}`);
             }
         },
         error: function (xhr, status, error) {
-            showLoginModal('<h4>會員資料註冊失敗：</h4>' + error);
+            showModal('<h4>會員資料註冊失敗：</h4>' + error);
         }
     });
 }

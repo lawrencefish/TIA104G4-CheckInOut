@@ -5,6 +5,8 @@ import com.roomType.model.RoomTypeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -107,4 +109,37 @@ public class PriceService {
             throw new IllegalArgumentException("開始日期不能晚於結束日期");
         }
     }
+    
+	// 取得對應房型價格
+	public PriceVO getPriceOfDay(Integer roomTypeId, LocalDate date) {
+		List<PriceVO> roomPrice = priceRepository.findByRoomType_RoomTypeId(roomTypeId);
+		DayOfWeek dayOfWeek = date.getDayOfWeek();
+		// 先處理特別日價格
+		for (PriceVO rp : roomPrice) {
+			if (rp.getStartDate() != null && rp.getEndDate() != null) {
+				if ((date.isEqual(rp.getStartDate()) || date.isAfter(rp.getStartDate()))
+						&& (date.isEqual(rp.getEndDate()) || date.isBefore(rp.getEndDate()))) {
+					return rp; // 返回特別日價格
+				}
+			}
+		}
+		// 處理平日價格
+		if (!(dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY)) {
+			for (PriceVO rp : roomPrice) {
+				if (rp.getPriceType() == 1) { // 平日價格類型
+					return rp; // 返回平日價格
+				}
+			}
+		}
+		// 處理假日價格
+		if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+			for (PriceVO rp : roomPrice) {
+				if (rp.getPriceType() == 2) { // 假日價格類型
+					return rp; // 返回假日價格
+				}
+			}
+		}
+		return null; // 如果沒有符合條件的價格，返回 null
+	}
+
 }
