@@ -31,10 +31,12 @@ public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
 		       "FROM OrderVO o " +
 		       "LEFT JOIN o.hotel h " +  // 保留 LEFT JOIN 處理 hotel 為 null 的情況
 		       "WHERE (:clientName IS NULL OR CONCAT(COALESCE(o.guestLastName, ''), COALESCE(o.guestFirstName, '')) LIKE CONCAT('%', :clientName, '%')) " +
-		       "AND (:hotelName IS NULL OR COALESCE(h.name, '') LIKE CONCAT('%', :hotelName, '%'))")
+		       "AND (:hotelName IS NULL OR COALESCE(h.name, '') LIKE CONCAT('%', :hotelName, '%'))" +
+			   "AND (:orderId IS NULL OR o.orderId = :orderId)")
 		Page<CommentDTO> findCommentsByFilters(
 		    @Param("clientName") String clientName,
 		    @Param("hotelName") String hotelName,
+		    @Param("orderId") Integer orderId,
 		    Pageable pageable
 		);
 

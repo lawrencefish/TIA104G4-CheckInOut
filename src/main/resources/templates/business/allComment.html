@@ -309,7 +309,7 @@
 
         /* 對所有 input 和 select 元素設置圓角 */
         .search-name input,
-        .search-hotel input,
+        .search-order input,
         .search-room input,
         .search select {
             border-radius: 10px;
@@ -351,7 +351,7 @@
 
         /* 可選，為所有欄位增加一點陰影效果 */
         .search-name input,
-        .search-hotel input,
+        .search-order input,
         .search-room input,
         .search select {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -436,8 +436,8 @@
             <div class="search-name">
                 <input type="text" name="clientName" placeholder="依客戶姓名搜尋" th:value="${clientName}">
             </div>
-            <div class="search-hotel">
-                <input type="text" name="hotelName" placeholder="依飯店搜尋" th:value="${hotelName}">
+            <div class="search-order">
+                <input type="text" name="orderId" placeholder="依訂單編號搜尋" th:value="${orderId}">
             </div>
             <div class="search">
 <!--                 <select name="sort"> -->
@@ -463,7 +463,7 @@
                             <th>訂單編號</th>
                             <th>客戶</th>
                             <th>飯店</th>
-                            <th>日期</th>
+                            <th>評論時間</th>
                             <th>星數</th>
                         </tr>
                     </thead>

@@ -18,14 +18,24 @@ public class FrequentReplyService {
         return frequentReplyRepository.findAll();
     }
 
+    public FrequentReplyVO getReplyById(Integer id) {
+        return frequentReplyRepository.findById(id).orElse(null);
+    }
+    
     /**
-     * 新增或更新常用回覆
+     * 更新常用回覆
      * @param reply FrequentReplyVO
      */
     public void saveOrUpdateReply(FrequentReplyVO reply) {
         frequentReplyRepository.save(reply);
     }
 
+    public void addReply(FrequentReplyVO reply) {
+        reply.setReplyId(null); // 或依據資料庫的自動生成策略
+        frequentReplyRepository.save(reply);
+    }
+
+    
     /**
      * 刪除常用回覆
      * @param id 常用回覆的 ID

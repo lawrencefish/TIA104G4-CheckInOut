@@ -367,7 +367,6 @@
             <a th:href="@{/orders}">訂單管理</a>
             <a th:href="@{/comment}" class="active">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
-            <a th:href="@{/report}">報表分析</a>
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
@@ -384,40 +383,41 @@
 
 
     <!-- 主體內容 -->
-    <div class="container">
-        <!-- Aside -->
-        <aside class="sidebar" id="aside">
-            <label for="common-replies">常用回覆</label>
-            <select id="common-replies">
-                <option>Hello World</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-                <option>Option 4</option>
-                <option>Option 5</option>
-            </select>
-            <a th:href="@{/frequentReply}"><button class="btn-add">新增</button></a>
-        </aside>
+   <div class="container">
+    <!-- Aside -->
+    <aside class="sidebar" id="aside">
+        <label for="common-replies">常用回覆</label>
+        <select id="common-replies" onchange="loadReply()">
+            <!-- 使用後端的 replies 資料 -->
+            <option th:each="reply : ${replies}"
+                    th:value="${reply.replyId}"
+                    th:text="${reply.title}">
+            </option>
+        </select>
+        <a th:href="@{/frequentReply}"><button class="btn-add">新增</button></a>
+    </aside>
 
-        <!-- Main -->
-        <main class="main-content" id="main">
-            
-            <div class="review-section">
-                <h3>訂單編號&nbsp;&nbsp;<span th:text="${comment.orderId}"></span></h3><br>
-                <h4>飯店&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.hotelName}"></span></h4>
-                <h4>評論時間&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></span></h4>
-                <h4>顧客姓名&nbsp;&nbsp;<span style="font-weight: normal;"th:text="${comment.clientLastName} + ${comment.clientFirstName}"></h4>
-                <input type="hidden" id="orderId" th:value="${comment.orderId}" />
-                <div class="review-item">
-                     <p th:text="${comment.commentContent}"></p>
-                </div>
-                
+    <!-- Main -->
+    <main class="main-content" id="main">
+        <div class="review-section">
+            <h3>訂單編號&nbsp;&nbsp;<span th:text="${comment.orderId}"></span></h3><br>
+            <h4>飯店&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.hotelName}"></span></h4>
+            <h4>評論時間&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></span></h4>
+            <h4>顧客姓名&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.clientLastName} + ${comment.clientFirstName}"></h4>
+            <input type="hidden" id="orderId" th:value="${comment.orderId}" />
+            <div class="review-item">
+                <p th:text="${comment.commentContent}"></p>
             </div>
+        </div>
 
-            <div class="response-section">
-                <h3>回覆</h3>
-                <textarea id="responseInput" placeholder="輸入回覆內容"></textarea>
-                <button id="sendButton" class="btn-add">送出</button>
-            </div>
+        <div class="response-section">
+            <h3>回覆</h3>
+            <textarea id="responseInput" placeholder="輸入回覆內容"></textarea>
+            <button id="sendButton" class="btn-add">送出</button>
+        </div>
+    </main>
+</div>
+
         </main>
 
     </div>
@@ -468,6 +468,22 @@
                 alert('回覆失敗：' + error.message); // 顯示伺服器的錯誤訊息
             });
         });
+        
+     // 取得常用回覆並顯示到輸入框
+        function loadReply() {
+            const selectedId = document.getElementById('common-replies').value;
+
+            // 從後端獲取對應的回覆資料
+            fetch(`/frequentReply/all/${selectedId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('無法載入回覆資料');
+                    return response.json();
+                })
+                .then(reply => {
+                    document.getElementById('responseInput').value = reply.content || '';
+                })
+                .catch(error => console.error('載入回覆出錯:', error));
+        }
 
     </script>
 

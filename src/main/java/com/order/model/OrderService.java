@@ -51,10 +51,10 @@ public class OrderService {
 	@Autowired
     private OrderRepository orderRepository;
 
-	public Page<CommentDTO> getFilteredComments(String clientName, String hotelName, int page, int size) {
+	public Page<CommentDTO> getFilteredComments(String clientName, String hotelName, Integer orderId, int page, int size) {
 	    
 		Pageable pageable = PageRequest.of(page, size,Sort.unsorted()); // 分頁並加入排序
-	    return orderRepository.findCommentsByFilters(clientName, hotelName, pageable);
+	    return orderRepository.findCommentsByFilters(clientName, hotelName, orderId, pageable);
 	}
 
     public CommentDTO getCommentById(Integer orderId) {
