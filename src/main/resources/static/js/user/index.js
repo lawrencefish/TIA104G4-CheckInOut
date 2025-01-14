@@ -1,10 +1,28 @@
-const apikey = 'AIzaSyAQ4SS_rzxn4J8dPktZjUiVMAkjGA_dCuo';
+const apikey = "AIzaSyAQ4SS_rzxn4J8dPktZjUiVMAkjGA_dCuo";
 
-//地圖初始設定
-(g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
-  key: apikey,
-  v: "weekly",
-});
+// 初始化 Google Maps JavaScript API
+(g => {
+  var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window;
+  b = b[c] || (b[c] = {});
+  var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams,
+    u = () => h || (h = new Promise(async (f, n) => {
+      // 建立 script 元素，用來載入 Google Maps API
+      await (a = m.createElement("script"));
+      // 設定 API 的參數
+      e.set("libraries", [...r] + "");
+      for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]);
+      e.set("callback", c + ".maps." + q);
+      a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+      d[q] = f;
+      // 當 API 載入失敗時，回傳錯誤
+      a.onerror = () => h = n(Error(p + " could not load."));
+      a.nonce = m.querySelector("script[nonce]")?.nonce || "";
+      m.head.append(a); // 將 script 元素插入到 <head>
+    }));
+  d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n));
+})
+  ({ key: apikey, v: "weekly" ,libraries: "places"});
+
 let map;
 
 //設定地圖
@@ -20,6 +38,13 @@ async function initMap() {
     disableDefaultUI: true,
   });
   //設定縣市
+  const input = document.getElementById("place");
+  const options = {
+    componentRestrictions: { country: "tw" }  // 限制在台灣
+  };
+  const autocomplete = new google.maps.places.Autocomplete(input, options);
+  
+
   $.getJSON("/vendors/twCity.json", function (e) {
     let features = e.features;
     let taiwan = [];      // 行政區域多邊形特徵值的陣列
@@ -150,6 +175,10 @@ function clickOnNum(e) {
   } else if ($(this).hasClass('minus') && currentVal > 1) {
     num.val(currentVal - 1);
   }
+  if ($('#roomNum').val() > $('#guestNum').val() && $('#guestNum').val() != "" && $('#roomNum').val() != "") {
+    showModal("房數大於入住人數，請重新輸入");
+    $('#roomNum').val($('#guestNum').val());
+  }
 }
 
 //日曆處理
@@ -174,49 +203,65 @@ $(document).ready(function () {
   $('.people_num').find('.plus').on('click', clickOnNum);
   $('.people_num').find('.minus').on('click', clickOnNum);
 
-  $('#sumbitBtn').on('click', (e) => {
-    e.preventDefault();
-    fetchBooking();
+  $('#roomNum').on('input', function (e) {
+    e.stopPropagation();
+    if (e.target.value > 10) {
+      showModal("數量不能大於10");
+      $('#roomNum').val(10);
+    }
+    if ($('#roomNum').val() > $('#guestNum').val() && $('#guestNum').val() != "" && $('#roomNum').val() != "") {
+      showModal("房數大於入住人數，請重新輸入");
+      $('#roomNum').val($('#guestNum').val());
+    }
   })
+
+
+  $('#guestNum').on('input', function (e) {
+    e.stopPropagation();
+    if (e.target.value > 10) {
+      showModal("數量不能大於10");
+      $('#guestNum').val(10);
+    }
+    if ($('#roomNum').val() > $('#guestNum').val() && $('#guestNum').val() != "" && $('#roomNum').val() != "") {
+      showModal("房數大於入住人數，請重新輸入");
+      $('#guestNum').val($('#roomNum').val());
+    }
+  });
+
+  $('#sumbitBtn').on('click', (e) => {
+    let start_date = $('#start_date').text();
+    let end_date = $('#end_date').text();
+    if (start_date != "" && end_date != "") {
+      e.preventDefault();
+      fetchBooking();
+    } else {
+      showModal("請選取入住日期跟退房日期");
+      $('#date-range').text("選擇入住跟退房日期");
+
+    }
+  })
+
 
 });
 
-//送出表單&判斷
-function checkSearchInfo() {
-  let start_date = $('#startDate').text();
-  let end_date = $('#endDate').text();
-  if ($('#people').val() < $('#room').val()) {
-    showModal("入住人數大於住房人數，請重新輸入");
-    $('#people').val() = "";
-  } else if (start_date == "" || end_date == "") {
-    showModal("請選取入住日期跟退房日期");
-    $('#date-range').text() = "選擇入住跟退房日期";
-  } else {
-    return true;
-  }
-  return false;
-}
-
 function fetchBooking() {
-  if (checkSearchInfo) {
-    $.ajax({
-      url: '/booking/api/search',
-      type: 'POST',
-      data: JSON.stringify({
-        guestNum: $('#people').val(),
-        roomNum: $('#room').val(),
-        checkInDate: $('#startDate').text(),
-        checkOutDate: $('#endDate').text(),
-        place: $('#place').val(),
-      }),
-      contentType: 'application/json',
-      dataType: 'json',
-      success: function (data) {
-        console.log('Response:', data);
-      },
-      error: function (xhr, textStatus, errorThrown) {
-        console.error('Error:', textStatus, errorThrown);
-      },
-    });
-  }
+  $.ajax({
+    url: '/booking/api/search',
+    type: 'POST',
+    data: JSON.stringify({
+      guestNum: $('#guestNum').val(),
+      roomNum: $('#roomNum').val(),
+      checkInDate: $('#start_date').text(),
+      checkOutDate: $('#end_date').text(),
+      place: $('#place').val(),
+    }),
+    contentType: 'application/json',
+    dataType: 'json',
+    success: function (data) {
+      window.location.href = data.url;
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      console.error('Error:', textStatus, errorThrown);
+    },
+  });
 }
