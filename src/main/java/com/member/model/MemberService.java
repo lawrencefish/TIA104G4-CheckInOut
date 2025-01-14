@@ -90,4 +90,8 @@ public class MemberService {
 		return repository.findAll();
 	}
 
+	public MemberVO getOneMem(Integer memberId) {
+		return null;
+	}
+
 }
