@@ -8,6 +8,7 @@ import com.member.model.MemberVO;
 import com.order.model.OrderVO;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 	
 	@Entity
 	@Table(name = "contact_us")
@@ -38,7 +39,7 @@ import java.sql.Timestamp;
 	    private String contactUsText;
 
 	    @Column(name = "create_time", nullable = false)
-	    private Timestamp createTime;
+	    private LocalDateTime createTime;
 
 	    // 客訴圖片 (如果不想在Entity存byte[]，可考慮只存路徑或改其他型態)
 	    @Lob
@@ -103,13 +104,13 @@ import java.sql.Timestamp;
 			this.contactUsText = contactUsText;
 		}
 
-		public Timestamp getCreateTime() {
-			return createTime;
-		}
-
-		public void setCreateTime(Timestamp createTime) {
-			this.createTime = createTime;
-		}
+//		public Timestamp getCreateTime() {
+//			return createTime;
+//		}
+//
+//		public void setCreateTime(Timestamp createTime) {
+//			this.createTime = createTime;
+//		}
 
 		public byte[] getComplaintPic() {
 			return complaintPic;
@@ -164,6 +165,11 @@ import java.sql.Timestamp;
 		}
 
 		public void setAdminId(Integer adminId) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void setCreateTime(LocalDateTime now) {
 			// TODO Auto-generated method stub
 			
 		}

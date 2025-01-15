@@ -60,7 +60,7 @@
 				<label for="email" class="form-label">信箱</label> <input type="email"
 					class="form-control" id="email" name="email" required>
 			</div>
-			<div class="mb-3">
+			<!-- <div class="mb-3">
 				<label for="orderNumber" class="form-label">訂單編號</label> <input
 					type="text" class="form-control" id="orderNumber"
 					name="orderNumber">
@@ -73,18 +73,18 @@
 				<label for="checkInDate" class="form-label">入住日期</label> <input
 					type="date" class="form-control" id="checkInDate"
 					name="checkInDate">
-			</div>
+			</div> -->
 			<div class="mb-3">
 				<label for="message" class="form-label">請輸入內容</label>
 				<textarea class="form-control" id="message" name="message" rows="4"
 					required></textarea>
 			</div>
-			<div class="mb-3">
+			<!-- <div class="mb-3">
 				<label for="photo" class="form-label">上傳照片</label> <input
 					type="file" class="form-control" id="photo" name="photo"
 					accept="image/*">
 				<div class="preview mt-3" id="photoPreview"></div>
-			</div>
+			</div> -->
 			<button type="submit" class="btn btn-primary w-100">送出</button>
 		</form>
 	</div>
@@ -110,7 +110,7 @@
 		</div>
 	</footer>
 
-	<script>
+	<!-- <script>
         // 照片預覽功能
         document.getElementById('photo').addEventListener('change', function (event) {
             const file = event.target.files[0];
@@ -150,7 +150,130 @@
         });
     </script>
 	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
-	<script src="/js/user/loginCheck.js" defer></script>
+	<script src="/js/user/loginCheck.js" defer></script> -->
+	<script>
+    // 照片預覽功能
+    document.getElementById('photo').addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('photoPreview');
+        preview.innerHTML = ''; // 清空之前的預覽
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // 表單提交事件處理
+    document.getElementById('contactForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        
+        // 基本驗證
+        const form = event.target;
+        let isValid = true;
+        form.querySelectorAll('[required]').forEach(input => {
+            if (!input.value.trim()) {
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            alert('請填寫所有必填欄位！');
+            return;
+        }
+
+        try {
+            // 準備表單數據
+            const formData = new FormData();
+            formData.append('firstName', document.getElementById('firstName').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('contactUsText', document.getElementById('message').value);
+            
+            // 選填欄位
+            const orderNumber = document.getElementById('orderNumber').value;
+            if (orderNumber) {
+                formData.append('orderId', orderNumber);
+            }
+
+            const hotelName = document.getElementById('hotelName').value;
+            if (hotelName) {
+                formData.append('hotelName', hotelName);
+            }
+
+            const checkInDate = document.getElementById('checkInDate').value;
+            if (checkInDate) {
+                formData.append('checkInDate', checkInDate);
+            }
+
+            // 處理照片
+            const photoFile = document.getElementById('photo').files[0];
+            if (photoFile) {
+                formData.append('complaintPic', photoFile);
+            }
+
+            // 發送 API 請求
+            const response = await fetch('/api/contact-us', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('API request failed');
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('表單成功送出！我們將在三到五個工作天回覆');
+                form.reset();
+                document.getElementById('photoPreview').innerHTML = '';
+            } else {
+                throw new Error(result.message || '提交失敗，請稍後再試');
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+            let errorMessage = '提交失敗，請稍後再試';
+            
+            // 處理特定錯誤訊息
+            if (error.message.includes('需要登入')) {
+                errorMessage = '需要登入才能關聯訂單或飯店';
+            }
+            
+            alert(errorMessage);
+        }
+    });
+
+    // 可選：添加即時驗證
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    document.getElementById('email').addEventListener('blur', function(e) {
+        if (!validateEmail(e.target.value)) {
+            e.target.classList.add('is-invalid');
+            // 可以添加提示訊息
+            let feedback = this.nextElementSibling;
+            if (!feedback || !feedback.classList.contains('invalid-feedback')) {
+                feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback';
+                this.parentNode.appendChild(feedback);
+            }
+            feedback.textContent = '請輸入有效的電子郵件地址';
+        } else {
+            e.target.classList.remove('is-invalid');
+            const feedback = this.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.remove();
+            }
+        }
+    });
+</script>
 
 </body>
 

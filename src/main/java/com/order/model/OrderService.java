@@ -61,4 +61,8 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("找不到該評論"));
     }
 
-}
+	public OrderVO findById(Integer orderId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
