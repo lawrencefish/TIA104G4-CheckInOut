@@ -1,75 +1,79 @@
-document.getElementById('contactForm').addEventListener('submit', async function(event) {
-    event.preventDefault();
-    
-    // 驗證表單
-    const form = event.target;
-    let isValid = true;
-    
-    form.querySelectorAll('[required]').forEach(input => {
-        if (!input.value.trim()) {
-            isValid = false;
-        }
-    });
-    
-    if (!isValid) {
-        alert('請填寫所有必填欄位！');
-        return;
-    }
-    
-    // 準備表單資料
-    const formData = new FormData();
-    formData.append('firstName', document.getElementById('firstName').value);
-    formData.append('email', document.getElementById('email').value);
-    formData.append('orderNumber', document.getElementById('orderNumber').value);
-    formData.append('hotelName', document.getElementById('hotelName').value);
-    formData.append('checkInDate', document.getElementById('checkInDate').value);
-    formData.append('message', document.getElementById('message').value);
-    
-    // 處理照片上傳
-    const photoInput = document.getElementById('photo');
-    if (photoInput.files[0]) {
-        formData.append('photo', photoInput.files[0]);
-    }
-    
-    try {
-        // 發送 API 請求
-        const response = await fetch('/api/contact', {
-            method: 'POST',
-            body: formData
-        });
-        
-        if (!response.ok) {
-            throw new Error('伺服器回應錯誤');
-        }
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            alert('表單成功送出！我們將在三到五個工作天回覆');
-            form.reset();
-            document.getElementById('photoPreview').innerHTML = '';
-        } else {
-            alert(result.message || '表單提交失敗，請稍後再試');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('發生錯誤，請稍後再試');
-    }
+const form = document.getElementById('contactUsForm');
+
+// 表單驗證
+form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    contactUs(e)
 });
 
-// 保持原有的照片預覽功能
-document.getElementById('photo').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    const preview = document.getElementById('photoPreview');
-    preview.innerHTML = '';
-    
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            preview.appendChild(img);
-        };
-        reader.readAsDataURL(file);
+function contactUs() {
+    const formData = new FormData();
+    const name = form.querySelector('input[name="name"]').value;
+    const email = form.querySelector('input[name="email"]').value;
+    const subject = form.querySelector('input[name="subject"]').value;
+    const message = form.querySelector('input[name="message"]').value;
+  
+    const contactUs = {
+		name: name,
+		email: email,
+		subject: subject,
+		message: message
+    };//
+
+   if (password != confirmPassword) {
+        showLoginModal('密碼與確認密碼不符');
+        return;
     }
+
+    console.log(contactUs);
+    formData.append('json', new Blob([JSON.stringify(contactUs)], { type: 'application/json' }));
+
+    const fileInput = document.querySelector('#imageUpload');
+    if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    }
+
+    $.ajax({
+        url: '/api/contactUs',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            if (res.success === 'success') {
+                showLoginModal('表單成功送出！');
+                setTimeout(function () {
+                    window.location.href = "/contactUs/";
+                }, 3000);
+            } else {
+                let errorMessage = ""
+                Object.keys(res).forEach(key => {
+                    errorMessage += `${res[key]}<br>`;
+                });
+                showLoginModal(`<h4>發送表單失敗</h4>${errorMessage}`);
+            }
+        },
+        error: function (xhr, status, error) {
+            showLoginModal('<h4>失敗：</h4>' + error);
+        }
+    });
+}
+
+document.querySelector('#removePic').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.querySelector('#imagePreview').style.display = 'none';
+    document.querySelector('.avatar-icon').style.display = 'block';
+    document.querySelector('#imagePreview').src = "";
+    document.querySelector('#imageUpload').value = "";
+})
+
+document.querySelector('#clear').addEventListener('click', function (e) {
+    form.querySelector('input[name="last_name"]').value = "";
+    form.querySelector('input[name="first_name"]').value = "";
+    form.querySelector('input[name="account"]').value = "";
+    form.querySelector('input[name="password"]').value = "";
+    form.querySelector('input[name="confirm_password"]').value = "";
+    form.querySelector('select[name="gender"]').value = "";
+    form.querySelector('input[name="birthday"]').value = "";
+    form.querySelector('input[name="phone_number"]').value = "";
 });

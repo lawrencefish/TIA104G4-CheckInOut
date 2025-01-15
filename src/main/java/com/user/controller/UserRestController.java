@@ -22,10 +22,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.member.model.MemberService;
 import com.member.model.MemberVO;
+import com.order.model.OrderVO;
 
 @RestController
 @RequestMapping("/user/api")
@@ -286,5 +290,32 @@ public class UserRestController {
 			return response;
 		}
 	}
-
-}
+	
+	
+	//更新訂單狀態時觸發檢查優惠券
+//    @PutMapping("/updateStatus/{orderId}")
+//    public String updateOrderStatus(@PathVariable Integer orderId, 
+//                                  @RequestParam("status") Integer status) {
+//        try {
+//            // 更新訂單狀態
+//            OrderVO order = orderService.getOrderById(orderId);
+//            
+//            if (order != null) {
+//                order.setOrderStatus(status);
+//                orderService.updateOrder(order);
+//                
+//                // 如果是退房狀態(2)，觸發檢查優惠券
+//                if (status == 2) {
+//                    couponService.checkAndIssueCityCouponsAfterCheckout(order.getMemberId());
+//                    return "訂單狀態更新成功，已觸發優惠券檢查";
+//                }
+//                
+//                return "訂單狀態更新成功";
+//            }
+//            return "訂單不存在";
+//            
+//        } catch (Exception e) {
+//            System.out.println("更新訂單狀態失敗:" + e.getMessage());
+//            return "更新失敗:" + e.getMessage();
+//        }
+    }

@@ -2486,6 +2486,7 @@ CREATE TABLE contact_us (
     member_id INT DEFAULT NULL,
     contact_us_text TEXT NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    
     complaint_pic MEDIUMBLOB DEFAULT NULL,
     email VARCHAR(100) NOT NULL,
     review_status TINYINT NOT NULL COMMENT '0=未審核, 1=已處理, 2=不處理',

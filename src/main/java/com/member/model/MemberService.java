@@ -15,12 +15,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service("MemberService")
 public class MemberService {
@@ -96,6 +91,10 @@ public class MemberService {
 	}
 
 	public MemberVO getOneMem(Integer memberId) {
+		return null;
+	}
+
+	public MemberVO findById(Integer memberId) {
 		return null;
 	}
 
