@@ -58,4 +58,6 @@ public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
 	            "FROM OrderVO o " +
 	            "WHERE o.orderId = :orderId")
 	     Optional<AvgRatingsAndCommentDTO> findRatingAndCommentByOrderId(@Param("orderId") Integer orderId);
-	}
+
+
+}

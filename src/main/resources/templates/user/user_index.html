@@ -22,18 +22,18 @@
 					<a th:href="@{/user/news}" class="banner rounded-pill mb-3" style="height: 100px;"></a>
 					<form id="searchForm">
 						<div class="my-3 form-floating">
-							<input type="text" class="form-control" id="place" placeholder="想去哪裡？" required> <label
+							<input type="text" class="form-control" id="place" placeholder="想去哪裡？"> <label
 								for="place">想去哪裡？</label>
 						</div>
 						<div class="people_num input-group my-3">
-							<input type="text" class="form-control" id="people" placeholder="人數" required> <label
-								for="people"></label>
+							<input type="text" class="form-control border-end-0" id="guestNum" placeholder="人數" >
+							<span class="input-group-text bg-transparent border-start-0">人</span>
 							<button class="btn btn-outline-dark plus" type="button">+</button>
 							<button class="btn btn-outline-dark minus" type="button">-</button>
 						</div>
 						<div class="room_num input-group my-3">
-							<input type="text" class="form-control" id="room" placeholder="房間數" required> <label
-								for="room"></label>
+							<input type="text" class="form-control border-end-0" id="roomNum" placeholder="房間數"> 
+							<span class="input-group-text bg-transparent border-start-0">間</span>
 							<button class="btn btn-outline-dark plus" type="button">+</button>
 							<button class="btn btn-outline-dark minus" type="button">-</button>
 						</div>
@@ -53,25 +53,6 @@
 		</div>
 	</main>
 	<footer>
-		<div class="row border-top">
-			<div class="container">
-				<ul class="nav justify-content-center">
-					<li class="nav-item"><a th:href="@{/user/}" class="nav-link px-2 text-body-secondary">首頁</a></li>
-					<li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
-					<li class="nav-item"><a th:href="@{/user/order}" class="nav-link px-2 text-body-secondary">訂單管理</a>
-					</li>
-					<li class="nav-item"><a th:href="@{/user/faq}" class="nav-link px-2 text-body-secondary">常見問題</a>
-					</li>
-					<li class="nav-item"><a th:href="@{/user/contactUs}"
-							class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
-					<li class="nav-item"><a th:href="@{/login/}" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
-				</ul>
-				<div class="d-flex justify-content-center align-items-start mb-0">
-					<img th:src="@{/imgs/user/checKInOut_logo_light.png}" alt="checkinout" width="128">
-				</div>
-				<!-- <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p> -->
-			</div>
-		</div>
 	</footer>
 	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
 	<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>

@@ -83,15 +83,15 @@ public class OrderVO implements java.io.Serializable {
 	@Column(name = "guest_first_name", nullable = false)
 	@Size(max = 20)
 	private String guestFirstName;
-	@Column(name = "memo")
+	@Column(name = "memo" , columnDefinition = "TEXT")
 	private String memo;
-//	@NotNull(message = "評分不得為空")
+
 	@Range(min = 1, max = 5)
 	@Column(name = "rating", nullable = false)
 	private Integer rating;
-	@Column(name = "comment_content")
+	@Column(name = "comment_content", columnDefinition = "TEXT")
 	private String commentContent;
-	@Column(name = "comment_reply")
+	@Column(name = "comment_reply", columnDefinition = "TEXT")
 	private String commentReply;
 	@Column(name = "comment_create_time")
 	private Date commentCreateTime;

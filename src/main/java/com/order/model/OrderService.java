@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.order.dto.AvgRatingsAndCommentDTO;
 import com.order.dto.CommentDTO;
 
 @Service("OrderService")
@@ -50,10 +51,10 @@ public class OrderService {
 	@Autowired
     private OrderRepository orderRepository;
 
-	public Page<CommentDTO> getFilteredComments(String clientName, String hotelName, int page, int size) {
+	public Page<CommentDTO> getFilteredComments(String clientName, String hotelName, Integer orderId, int page, int size) {
 	    
 		Pageable pageable = PageRequest.of(page, size,Sort.unsorted()); // 分頁並加入排序
-	    return orderRepository.findCommentsByFilters(clientName, hotelName, pageable);
+	    return orderRepository.findCommentsByFilters(clientName, hotelName, orderId, pageable);
 	}
 
     public CommentDTO getCommentById(Integer orderId) {
@@ -79,8 +80,11 @@ public class OrderService {
         repository.save(order);
     }
 
-
-
+    public AvgRatingsAndCommentDTO getAvgRatingAndCommentCounts(Integer orderId) {
+        Optional<AvgRatingsAndCommentDTO> optionalStats = orderRepository.findRatingAndCommentByOrderId(orderId);
+        AvgRatingsAndCommentDTO stats = optionalStats.orElse(new AvgRatingsAndCommentDTO(0L, 0.0));
+        return stats;
+    }
 
 	public OrderVO findById(Integer orderId) {
 		// TODO Auto-generated method stub

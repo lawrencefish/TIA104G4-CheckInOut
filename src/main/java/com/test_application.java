@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.googleAPI.GeocodingService;
+import com.order.model.OrderService;
 import com.price.model.PriceRepository;
 import com.price.model.PriceService;
 import com.price.model.PriceVO;
@@ -24,6 +25,8 @@ public class test_application implements CommandLineRunner {
 	PriceRepository Prepository;
 	@Autowired
 	PriceService Pservice;
+	@Autowired
+	OrderService orderService;
 
 	@Autowired
 	RoomInventoryRepository RIrepository;
@@ -42,6 +45,11 @@ public class test_application implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		
+//		Double ratings = orderService.getAvgRatingAndCommentCounts(1).orElse(null).getAvgRatings();
+//		long comments = orderService.getAvgRatingAndCommentCounts(1).orElse(null).getCommentConuts();
+//		System.out.println(ratings+","+comments);
+//
 //		String tibame = "彰化縣";
 //		Double[] latLnt = gService.getCoordinatesFromPlace(tibame);
 //		System.out.println(latLnt[0]+","+latLnt[1]);
