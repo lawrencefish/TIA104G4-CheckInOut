@@ -32,7 +32,7 @@ import com.orderDetail.model.OrderDetailVO;
 @Entity
 @Table(name = "orders")
 public class OrderVO implements java.io.Serializable {
-	
+
 	@Id
 	@Column(name = "order_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,29 +49,29 @@ public class OrderVO implements java.io.Serializable {
 //	@Future
 	@NotNull(message = "退房日期不可為空")
 	private Date checkOutDate;
-	
+
 	// 連接到飯店，多對一
 	@NotNull(message = "旅館不可為空")
-    @ManyToOne
-    @JoinColumn(name = "hotel_id", nullable = false)
+	@ManyToOne
+	@JoinColumn(name = "hotel_id", nullable = false)
 	private HotelVO hotel;
-	
+
 	// 連接到會員，多對一
 	@NotNull(message = "會員不可為空")
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
+	@ManyToOne
+	@JoinColumn(name = "member_id", nullable = false)
 	private MemberVO member;
-	
+
 	// 連接到creditcard，多對一
-    @NotNull(message ="必須配對一張信用卡")
-    @ManyToOne
-    @JoinColumn(name = "creditcard_id", nullable = false)
+	@NotNull(message ="必須配對一張信用卡")
+	@ManyToOne
+	@JoinColumn(name = "creditcard_id", nullable = false)
 	private CreditcardVO creditcard;
-	
+
 //    //連接到會員優惠券，ㄧ對一
 //    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
 //	private MemberCouponVO MemberCoupon;
-	
+
 	@Column(name = "total_amount", nullable = false)
 	@NotNull(message = "價格不得為空")
 	private Integer totalAmount;
@@ -95,11 +95,11 @@ public class OrderVO implements java.io.Serializable {
 	private String commentReply;
 	@Column(name = "comment_create_time")
 	private Date commentCreateTime;
-	
+
 	// 連接到orderDetail
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<OrderDetailVO> orderDetail;
-     
+
 	public OrderVO() {
 	}
 
@@ -229,6 +229,14 @@ public class OrderVO implements java.io.Serializable {
 
 	public void setOrderDetail(List<OrderDetailVO> orderDetail) {
 		this.orderDetail = orderDetail;
+	}
+
+	public HotelVO getHotel() {
+		return hotel;
+	}
+
+	public void setHotel(HotelVO hotel) {
+		this.hotel = hotel;
 	}
 
 	@Override

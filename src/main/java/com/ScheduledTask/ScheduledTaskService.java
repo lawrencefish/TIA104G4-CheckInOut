@@ -24,7 +24,7 @@ public class ScheduledTaskService {
     // 每天 0 点执行一次任务
     @Scheduled(cron = "0 0 0 * * ?") // 每天凌晨 0 点
     public void executeDailyTask() {
-        System.out.println("好棒喔!!  半夜12點了!!");
+//        System.out.println("好棒喔!!  半夜12點了!!");
 
         updateRoomInventory();
     }
@@ -32,13 +32,13 @@ public class ScheduledTaskService {
     // 每小时执行一次任务
     @Scheduled(cron = "0 0 * * * ?") // 每小时的整点
     public void executeHourlyTask() {
-        System.out.println("好棒喔!!  現在是整點了!!");
+//        System.out.println("好棒喔!!  現在是整點了!!");
     }
 
     // 每10分钟执行一次任务
     @Scheduled(cron = "0 0/10 * * * ?") // 每10分钟
     public void executePeriodicTask() {
-        System.out.println("好棒喔!!  又過10分鐘了!!");
+//        System.out.println("好棒喔!!  又過10分鐘了!!");
     }
 
     public void updateRoomInventory() {
@@ -64,6 +64,10 @@ public class ScheduledTaskService {
         System.out.println("步驟4完成");
         // 5. 新增缺少的庫存資料
         for (RoomTypeVO roomType : roomTypes) {
+            if (roomType.getStatus() != 1) {
+                System.out.println("跳過房型: 房型ID=" + roomType.getRoomTypeId() + ", 原因 = 尚未審核或審核未通過");
+                continue;
+            }
             for (LocalDate date = today; !date.isAfter(endDate); date = date.plusDays(1)) {
                 String key = date + "-" + roomType.getRoomTypeId();
                 if (!existingKeys.contains(key)) {
