@@ -68,7 +68,7 @@ public class SignUpController {
             RedirectAttributes redirectAttributes,
             HttpServletRequest request,
             Model model) {
-        System.out.println("有接受到");
+//        System.out.println("有接受到");
 
 //        // 1. 表單驗證
 //        if (bindingResult.hasErrors()) {
@@ -79,17 +79,17 @@ public class SignUpController {
         // 2. 驗證檔案
         if (idFrontFile.isEmpty()) {
             model.addAttribute("duplicateError", "所有照片皆需上傳！");
-            System.out.println("沒有照片");
+//            System.out.println("沒有照片");
             return "business/signUp-1";
         }
         if (idBackFile.isEmpty()) {
             model.addAttribute("duplicateError", "所有照片皆需上傳！");
-            System.out.println("沒有照片");
+//            System.out.println("沒有照片");
             return "business/signUp-1";
         }
         if (licenseFile.isEmpty()) {
             model.addAttribute("duplicateError", "所有照片皆需上傳！");
-            System.out.println("沒有照片");
+//            System.out.println("沒有照片");
             return "business/signUp-1";
         }
 
@@ -118,7 +118,7 @@ public class SignUpController {
             hotelVO.setLicense(licenseFile.getBytes());
         } catch (IOException e) {
             model.addAttribute("duplicateError", "文件上傳過程中出錯，請重新嘗試！");
-            System.out.println("文件上傳過程中出錯");
+//            System.out.println("文件上傳過程中出錯");
             return "business/signUp-1";
         }
 
@@ -127,7 +127,7 @@ public class SignUpController {
             hotelService.save(hotelVO);
         } catch (Exception e) {
             model.addAttribute("duplicateError", "保存資料時發生錯誤，請稍後再試！");
-            System.out.println("保存資料時發生錯誤");
+//            System.out.println("保存資料時發生錯誤");
             return "business/signUp-1";
         }
 
@@ -139,7 +139,7 @@ public class SignUpController {
 
         // 保存到 Session
         request.getSession().setAttribute("hotel", hotelVO);
-        System.out.println("旅館新增成功");
+//        System.out.println("旅館新增成功");
         return "redirect:/signUp/signUp-2"; // 跳轉到下一步
     }
 

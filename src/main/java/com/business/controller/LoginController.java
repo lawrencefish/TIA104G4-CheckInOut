@@ -86,6 +86,16 @@ public class LoginController {
             return "business/login-1";
         }
 
+        // 驗證酒店狀態
+        int status = hotel.getStatus();
+        if (status == 0) {
+            model.addAttribute("generalError", "尚未審核通過");
+            return "business/login-1";
+        } else if (status == 2) {
+            model.addAttribute("generalError", "審核未通過");
+            return "business/login-1";
+        }
+
         // 驗證成功 -> 存入 Session
         request.getSession().setAttribute("hotel", hotel);
 
