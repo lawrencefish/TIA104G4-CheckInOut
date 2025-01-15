@@ -811,7 +811,7 @@
                 // 添加 "回到第一页" 按钮
                 if (currentPage > 1) {
                     const firstButton = document.createElement('button');
-                    firstButton.textContent = '回到第一頁';
+                    firstButton.textContent = '第一頁';
                     firstButton.classList.add('page-button', 'first-page');
                     firstButton.addEventListener('click', () => {
                         currentPage = 1;
@@ -864,7 +864,7 @@
                 // 添加 "跳到最后一页" 按钮
                 if (currentPage < totalPages) {
                     const lastButton = document.createElement('button');
-                    lastButton.textContent = '跳到最後一頁';
+                    lastButton.textContent = '最後一頁';
                     lastButton.classList.add('page-button', 'last-page');
                     lastButton.addEventListener('click', () => {
                         currentPage = totalPages;
