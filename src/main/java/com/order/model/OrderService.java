@@ -60,6 +60,27 @@ public class OrderService {
         return orderRepository.findCommentByOrderId(orderId)
                 .orElseThrow(() -> new RuntimeException("找不到該評論"));
     }
+    
+    @Transactional
+    public void saveReply(Integer orderId, String commentReply) {
+        // 檢查訂單是否存在
+        Optional<OrderVO> orderOptional = repository.findById(orderId);
+        if (orderOptional.isEmpty()) {
+            throw new RuntimeException("找不到對應的訂單，無法儲存回覆");
+        }
+
+        // 獲取訂單實體
+        OrderVO order = orderOptional.get();
+
+        // 更新回覆內容和時間
+        order.setCommentReply(commentReply);
+        
+        // 儲存更新後的訂單
+        repository.save(order);
+    }
+
+
+
 
 	public OrderVO findById(Integer orderId) {
 		// TODO Auto-generated method stub

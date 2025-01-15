@@ -395,32 +395,33 @@
         .pagination {
             display: flex;
             justify-content: center;
-            align-items: center;
             gap: 5px;
             margin-top: 20px;
         }
 
-        .pagination button {
-            padding: 8px 12px;
-            font-size: 1rem;
-            background-color: #f9f9f9;
-            color: #333;
+        .page-button {
+            padding: 5px 10px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            background-color: #f9f9f9;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
         }
 
-        .pagination button.active {
+        .page-button.active {
             background-color: #007bff;
             color: white;
-            font-weight: bold;
-            transform: scale(1.1);
+            border-color: #007bff;
         }
 
-        .pagination button:hover:not(.active) {
-            background-color: #0056b3;
-            color: white;
+        .page-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .page-button:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
         }
 
         /* 狀態欄顏色 */
@@ -467,6 +468,31 @@
             right: 5px;
             color: #007bff;
         }
+
+        table td.status-reserved {
+            color: blue;
+            font-weight: bold;
+        }
+
+        table td.status-unchecked {
+            color: orange;
+            font-weight: bold;
+        }
+
+        table td.status-overdue {
+            color: red;
+            font-weight: bold;
+        }
+
+        table td.status-complete {
+            color: green;
+            font-weight: bold;
+        }
+
+        table td.status-cancelled {
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -485,7 +511,7 @@
             <a th:href="@{/orders}" class="active">訂單管理</a>
            <a th:href="@{/comment}">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
-            <a th:href="@{/report}">報表分析</a>
+<!--            <a th:href="@{/report}">報表分析</a>-->
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
@@ -557,11 +583,17 @@
                     </tbody>
                 </table>
             </section>
-            <section class="pagination">
-                <button id="prev-page" disabled>&larr;</button>
-                <span id="current-page">1</span>
-                <button id="next-page">&rarr;</button>
-            </section>
+
+            <div class="pagination">
+                <button class="pagination-btn first-page">回到第一页</button>
+                <button class="pagination-btn prev-page">上一页</button>
+                <div id="page-numbers" class="page-numbers">
+                    <!-- 页码动态生成 -->
+                </div>
+                <button class="pagination-btn next-page">下一页</button>
+                <button class="pagination-btn last-page">跳到最后一页</button>
+            </div>
+
 
         </main>
     </div>
@@ -651,34 +683,159 @@
                 }
             }
 
+            // 日期格式化函數
+            function formatDate(dateString) {
+                if (!dateString) return '未知日期';
+                const date = new Date(dateString);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
             function renderTable(page) {
+                if (!orderTableBody) {
+                    console.error("Table body element not found.");
+                    return;
+                }
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // 將時間設為當天開始時間
+
                 orderTableBody.innerHTML = ''; // 清空表格
+
                 const start = (page - 1) * rowsPerPage;
                 const end = start + rowsPerPage;
-                const pageData = orders.slice(start, end);
+                const pageData = orders.slice(start, end); // 取出對應頁的數據
 
-                pageData.forEach((order) => {
+                pageData.forEach(order => {
+                    const checkInDate = new Date(order.checkInDate);
+                    const checkOutDate = new Date(order.checkOutDate);
+                    checkInDate.setHours(0, 0, 0, 0);
+                    checkOutDate.setHours(0, 0, 0, 0);
+                    let statusText = '';
+                    let statusClass = '';
+
+                    if (checkInDate.getTime() === today.getTime()) {
+                        // Check-in 是今天且狀態是 0
+                        if (order.status === 0) {
+                            statusText = '未報到';
+                            statusClass = 'status-unchecked';
+                        } else if (order.status === 1) {
+                            statusText = '已報到';
+                            statusClass = 'status-complete';
+                        } else if (order.status === 2) {
+                            statusText = '未知狀態';
+                            statusClass = 'status-unknow';
+                        } else if (order.status === 3) {
+                            statusText = '取消訂單';
+                            statusClass = 'status-cancelled';
+                        }
+                    } else if (checkOutDate.getTime() === today.getTime()) {
+                        // Check-out 是今天且狀態是 0
+                        if (order.status === 0) {
+                            statusText = '逾時未報到';
+                            statusClass = 'status-overdue';
+                        } else if (order.status === 1) {
+                            statusText = '未退房';
+                            statusClass = 'status-unchecked';
+                        } else if (order.status === 2) {
+                            statusText = '已退房';
+                            statusClass = 'status-complete';
+                        } else if (order.status === 3) {
+                            statusText = '取消訂單';
+                            statusClass = 'status-cancelled';
+                        }
+                    } else if (checkOutDate.getTime() < today.getTime()) {
+                        // 歷史訂單
+                        if (order.status === 0 || order.status === 1) {
+                            statusText = '逾時未報到';
+                            statusClass = 'status-overdue';
+                        } else if (order.status === 2) {
+                            statusText = '訂單完成';
+                            statusClass = 'status-complete';
+                        } else if (order.status === 3) {
+                            statusText = '取消訂單';
+                            statusClass = 'status-cancelled';
+                        }
+                    } else if (checkInDate.getTime() > today.getTime()) {
+                        // 未來訂單
+                        if (order.status === 0) {
+                            statusText = '預約成功';
+                            statusClass = 'status-reserved';
+                        } else if (order.status === 1) {
+                            statusText = '預約成功';
+                            statusClass = 'status-reserved';
+                        } else if (order.status === 2) {
+                            statusText = '預約成功';
+                            statusClass = 'status-reserved';
+                        } else if (order.status === 3) {
+                            statusText = '取消訂單';
+                            statusClass = 'status-cancelled';
+                        }
+                    }
+
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                <td>${order.orderId}</td>
-                <td>${order.checkInDate}</td>
-                <td>${order.checkOutDate}</td>
-                <td>${order.memberId || "N/A"}</td>
-                <td>${order.memberName || "N/A"}</td>
-                <td>${order.totalAmount}</td>
-                <td class="${order.status === "已完成" ? 'status-complete' : 'status-incomplete'}">
-                    ${order.status}
-                </td>
-            `;
+            <td>${order.orderId}</td>
+            <td>${formatDate(order.checkInDate)}</td>
+            <td>${formatDate(order.checkOutDate)}</td>
+            <td>${order.memberId || "N/A"}</td>
+            <td>${order.memberName || "N/A"}</td>
+            <td>${order.totalAmount}</td>
+            <td class="${statusClass}">
+                ${statusText}
+            </td>
+        `;
+
+                    // 添加點擊事件
+                    row.addEventListener('click', () => {
+                        window.location.href = `${contextPath}/orders/orderDetail?orderId=${order.orderId}`;
+                    });
+
                     orderTableBody.appendChild(row);
                 });
             }
 
             function renderPagination() {
                 paginationContainer.innerHTML = '';
-                const totalPages = Math.ceil(orders.length / rowsPerPage);
+                const totalPages = Math.ceil(orders.length / rowsPerPage); // 计算总页数
+                const maxVisiblePages = 10; // 同时显示的最多页数
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-                for (let i = 1; i <= totalPages; i++) {
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+
+                // 添加 "回到第一页" 按钮
+                if (currentPage > 1) {
+                    const firstButton = document.createElement('button');
+                    firstButton.textContent = '回到第一頁';
+                    firstButton.classList.add('page-button', 'first-page');
+                    firstButton.addEventListener('click', () => {
+                        currentPage = 1;
+                        renderTable(currentPage);
+                        renderPagination();
+                    });
+                    paginationContainer.appendChild(firstButton);
+                }
+
+                // 添加上一页按钮
+                if (currentPage > 1) {
+                    const prevButton = document.createElement('button');
+                    prevButton.textContent = '上一頁';
+                    prevButton.classList.add('page-button', 'prev-page');
+                    prevButton.addEventListener('click', () => {
+                        currentPage--;
+                        renderTable(currentPage);
+                        renderPagination();
+                    });
+                    paginationContainer.appendChild(prevButton);
+                }
+
+                // 添加页码按钮
+                for (let i = startPage; i <= endPage; i++) {
                     const button = document.createElement('button');
                     button.textContent = i;
                     button.classList.add('page-button');
@@ -690,7 +847,34 @@
                     });
                     paginationContainer.appendChild(button);
                 }
+
+                // 添加下一页按钮
+                if (currentPage < totalPages) {
+                    const nextButton = document.createElement('button');
+                    nextButton.textContent = '下一頁';
+                    nextButton.classList.add('page-button', 'next-page');
+                    nextButton.addEventListener('click', () => {
+                        currentPage++;
+                        renderTable(currentPage);
+                        renderPagination();
+                    });
+                    paginationContainer.appendChild(nextButton);
+                }
+
+                // 添加 "跳到最后一页" 按钮
+                if (currentPage < totalPages) {
+                    const lastButton = document.createElement('button');
+                    lastButton.textContent = '跳到最後一頁';
+                    lastButton.classList.add('page-button', 'last-page');
+                    lastButton.addEventListener('click', () => {
+                        currentPage = totalPages;
+                        renderTable(currentPage);
+                        renderPagination();
+                    });
+                    paginationContainer.appendChild(lastButton);
+                }
             }
+
 
             function updateSortIcons() {
                 const headers = document.querySelectorAll('thead th');
@@ -739,6 +923,62 @@
                 sortOrders();
                 renderTable(currentPage); // 重新渲染表格
             };
+
+            // 複合查詢
+            const searchButton = document.getElementById("search-btn");
+            const dateInput = document.getElementById("filter-date");
+            const keywordInput = document.getElementById("filter-name");
+            const tableBody = document.getElementById("orders-table-body");
+
+            // 搜尋功能
+            // 複合查詢功能
+            searchButton.addEventListener("click", () => {
+                const selectedDate = dateInput.value; // 取得日期
+                const keyword = keywordInput.value.trim(); // 取得關鍵字
+
+                const queryParams = new URLSearchParams();
+
+                // 如果有選擇日期，加入參數
+                if (selectedDate) queryParams.append("date", selectedDate);
+
+                // 如果有輸入關鍵字，加入參數
+                if (keyword) queryParams.append("keyword", keyword);
+
+                // 如果未輸入任何條件，提示用戶
+                if (!selectedDate && !keyword) {
+                    alert("請至少輸入一個查詢條件！");
+                    return;
+                }
+
+                // 發送 API 請求
+                const fullUrl = `${contextPath}/order/search?${queryParams.toString()}`;
+                console.log("Request URL:", fullUrl);
+
+                fetch(fullUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch search results: HTTP ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(results => {
+                        if (!results || results.length === 0) {
+                            alert("未找到符合條件的結果！");
+                            return;
+                        }
+
+                        // 清空表格內容並更新為新數據
+                        orders = results; // 更新全域變數 orders
+                        currentPage = 1; // 重置為第 1 頁
+                        renderTable(currentPage); // 渲染新的表格內容
+                        renderPagination(); // 更新分頁按鈕
+                    })
+                    .catch(error => {
+                        console.error("Error fetching search results:", error);
+                        alert("查詢失敗，請稍後再試！");
+                    });
+            });
+
         });
     </script>
 </body>
