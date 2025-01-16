@@ -51,8 +51,8 @@ import com.roomTypeImg.model.RoomTypeImgService;
 import com.roomTypeImg.model.RoomTypeImgVO;
 
 @RestController
-@RequestMapping("/booking/api")
-public class UserBookingController {
+@RequestMapping("/order/api")
+public class UserOrderController {
 
 	@Autowired
 	RoomInventoryService RIservice;
@@ -73,92 +73,12 @@ public class UserBookingController {
 	@Autowired
 	RoomTypeFacilityService RTFService;
 
-	@GetMapping("/image/room/{roomId}/{num}")
-	public ResponseEntity<byte[]> getRoomImage(@PathVariable Integer roomId, @PathVariable Integer num) {
-		List<RoomTypeImgVO> roomTypeImg = roomTypeImgService.findImagesByRoomTypeId(roomId);
-		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG) // 假設圖片為 JPEG 格式
-				.body(roomTypeImg.get(num).getPicture());
-	}
-
-	@GetMapping("/image/hotel/{hoteId}/{num}")
-	public ResponseEntity<byte[]> getHotelImage(@PathVariable Integer hoteId, @PathVariable Integer num) {
-		List<HotelImgVO> hotelImg = hotelImgService.getImagesByHotelId(hoteId);
-		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(hotelImg.get(num).getPicture());
-	}
-
 	// 存入購物車訂單明細
-	@PostMapping("/addCart")
-	public ResponseEntity<Map<String, String>> addCart(@RequestBody Map<String, String> orderDetail,
-			HttpSession session) {
-		// 先嘗試從 session 取出 cartList，若為 null 則初始化
+	@PostMapping("/getCart")
+	public ResponseEntity<Map<String,Object>> getCart(HttpSession session){
 		List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
-		if (cartList == null) {
-			cartList = new ArrayList<>();
-		}
-
-		Map<String, Object> cart = new HashMap<>();
-		List<Map<String, Object>> cartDetailList = new ArrayList<>();
-		Map<String, Object> cartDetail = new HashMap<>();
-
-		Integer hotelId = Integer.valueOf(orderDetail.get("hotelId"));
-		String hotelName = orderDetail.get("hotelName");
-		Double review = Double.valueOf(orderDetail.get("review"));
-		cart.put("hotelId", hotelId);
-		cart.put("hotelName", hotelName);
-		cart.put("review", review);
-
-		// 解析 LocalDate
-		LocalDate checkInDate = LocalDate.parse(orderDetail.get("checkInDate"));
-		LocalDate checkOutDate = LocalDate.parse(orderDetail.get("checkOutDate"));
-
-		// 解析 Integer
-		Integer roomTypeId = Integer.valueOf(orderDetail.get("roomTypeId"));
-		String roomTypeName = orderDetail.get("roomTypeName");
-		Integer guestNum = Integer.valueOf(orderDetail.get("guestNum"));
-		Integer roomNum = Integer.valueOf(orderDetail.get("roomNum"));
-		Integer price = Integer.valueOf(orderDetail.get("price"));
-		Integer breakfast = Integer.valueOf(orderDetail.get("breakfast"));
-
-		// 存入 cartDetail
-		cartDetail.put("checkInDate", checkInDate);
-		cartDetail.put("checkOutDate", checkOutDate);
-		cartDetail.put("roomTypeName", roomTypeName);
-		cartDetail.put("roomTypeId", roomTypeId);
-		cartDetail.put("guestNum", guestNum);
-		cartDetail.put("roomNum", roomNum);
-		cartDetail.put("price", price);
-		cartDetail.put("breakfast", breakfast);
-		cartDetailList.add(cartDetail);
-
-		cart.put("cartDetail", cartDetailList);
-
-		// **檢查相同 hotelId 是否已存在於 cartList**
-		boolean found = false;
-		for (Map<String, Object> existingCart : cartList) {
-			if (existingCart.get("hotelId").equals(hotelId)) {
-				List<Map<String, Object>> existingCartDetailList = (List<Map<String, Object>>) existingCart
-						.get("cartDetail");
-				existingCartDetailList.add(cartDetail);
-				found = true;
-				break;
-			}
-		}
-
-		// 如果 hotelId **尚未存在**，新增整個 cart
-		if (!found) {
-			cartList.add(cart);
-		}
-
-		// 更新 session
-		session.setAttribute("cartList", cartList);
-
-		// 回傳成功訊息
-		Map<String, String> response = new HashMap<>();
-		response.put("message", "ok");
-
-		// Debug 輸出
-		System.out.println("目前購物車：" + session.getAttribute("cartList"));
-
+		Map<String, Object> response = new HashMap<>();
+		response.put("cartList", cartList);
 		return ResponseEntity.ok(response);
 	}
 
