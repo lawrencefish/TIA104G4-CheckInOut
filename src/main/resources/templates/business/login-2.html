@@ -538,6 +538,7 @@
 
 
     <script>
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         // 點擊「忘記密碼」按鈕顯示忘記密碼彈窗
         document.getElementById("forgot-password-btn").addEventListener("click", function () {
             document.getElementById("forgot-password-modal").classList.add("show");
@@ -553,7 +554,7 @@
             // 將 employeeNumber 儲存在 sessionStorage
             sessionStorage.setItem("employeeNumber", employeeNumber);
 
-            fetch("/api/employee/forgot-password/send-code", {
+            fetch(`${contextPath}/api/employee/forgot-password/send-code`, {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams({ employeeNumber }),
@@ -575,7 +576,7 @@
             }
 
             // 呼叫後端 API 驗證
-            fetch("/api/employee/forgot-password/verify-code", {
+            fetch(`${contextPath}/api/employee/forgot-password/verify-code`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ employeeNumber, verificationCode }),
@@ -626,7 +627,7 @@
             }
 
             // 發送密碼重設請求到後端
-            fetch("/api/employee/forgot-password/reset-password", {
+            fetch(`${contextPath}/api/employee/forgot-password/reset-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ employeeNumber, newPassword }),
