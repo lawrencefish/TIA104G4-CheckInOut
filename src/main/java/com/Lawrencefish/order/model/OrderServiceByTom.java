@@ -127,7 +127,8 @@ public class OrderServiceByTom {
 		response.put("totalAmount", order.getTotalAmount());
 		response.put("status", order.getStatus());
 		response.put("memo", order.getMemo());
-
+		// 直接包含 HotelVO
+		response.put("hotel", order.getHotel());
 
 		// 查詢訂單明細
 		List<Map<String, Object>> detailsList = order.getOrderDetail().stream().map(detail -> {

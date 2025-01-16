@@ -88,4 +88,9 @@ public class OrderService {
     	
     }
 
+	public OrderVO findById(Integer orderId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
+
