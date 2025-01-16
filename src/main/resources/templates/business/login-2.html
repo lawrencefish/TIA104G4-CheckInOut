@@ -322,6 +322,98 @@
             text-decoration: underline;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
+
+        .modal-content .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .modal-content button {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-content .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .modal-content .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-content .btn-secondary {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        .modal-content .btn-secondary:hover {
+            background-color: #aaa;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #forgot-password-btn {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #forgot-password-btn:hover {
+            color: #0056b3;
+        }
         /* Footer 樣式 */
         footer {
             background-color: #333;
@@ -340,15 +432,6 @@
             font-size: 14px;
             text-align: center; /* 左右居中 */
             margin: 5px auto; /* 與上下元素間隔 */
-        }
-
-        /* 針對欄位錯誤的額外樣式 */
-        .field-error {
-            color: red;
-            font-size: 12px;
-            margin-top: 5px; /* 與輸入框的距離 */
-            display: block; /* 讓其占滿一行 */
-            text-align: left; /* 可選：改為左對齊 */
         }
     </style>
 </head>
@@ -402,7 +485,48 @@
             </form>
 
             <div class="links">
-                <a href="#">忘記密碼</a>
+                <a id="forgot-password-btn" href="#">忘記密碼</a>
+            </div>
+
+            <!-- 忘記密碼彈窗 -->
+            <div id="forgot-password-modal" class="modal">
+                <div class="modal-content">
+                    <h2>忘記密碼</h2>
+                    <div class="form-group">
+                        <label for="forgot-employee-number">員工編號</label>
+                        <input type="text" id="forgot-employee-number" placeholder="請輸入員工編號">
+                    </div>
+                    <div class="form-group">
+                        <button type="button" id="send-code-button">寄送驗證碼</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="forgot-verification-code">驗證碼</label>
+                        <input type="text" id="forgot-verification-code" placeholder="請輸入驗證碼">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-secondary" id="cancel-forgot-password">取消</button>
+                        <button class="btn-primary" id="confirm-code">確認</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 重設密碼彈窗 -->
+            <div id="reset-password-modal" class="modal">
+                <div class="modal-content">
+                    <h2>重設密碼</h2>
+                    <div class="form-group">
+                        <label for="new-password">新密碼</label>
+                        <input type="password" id="new-password" placeholder="請輸入新密碼">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-new-password">再次輸入新密碼</label>
+                        <input type="password" id="confirm-new-password" placeholder="請再次輸入新密碼">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-secondary" id="cancel-reset-password">取消</button>
+                        <button class="btn-primary" id="confirm-reset-password">確認</button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -414,6 +538,115 @@
 
 
     <script>
+        // 點擊「忘記密碼」按鈕顯示忘記密碼彈窗
+        document.getElementById("forgot-password-btn").addEventListener("click", function () {
+            document.getElementById("forgot-password-modal").classList.add("show");
+        });
+
+        // 點擊「取消」按鈕隱藏忘記密碼彈窗
+        document.getElementById("cancel-forgot-password").addEventListener("click", function () {
+            document.getElementById("forgot-password-modal").classList.remove("show");
+        });
+
+        document.getElementById("send-code-button").addEventListener("click", function () {
+            const employeeNumber = document.getElementById("forgot-employee-number").value;
+            // 將 employeeNumber 儲存在 sessionStorage
+            sessionStorage.setItem("employeeNumber", employeeNumber);
+
+            fetch("/api/employee/forgot-password/send-code", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ employeeNumber }),
+            })
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error("Error:", error));
+        });
+
+        // 點擊「確認」按鈕進行驗證
+        document.getElementById("confirm-code").addEventListener("click", function () {
+            const employeeNumber = document.getElementById("forgot-employee-number").value;
+            const verificationCode = document.getElementById("forgot-verification-code").value;
+
+            // 檢查欄位是否已輸入
+            if (!employeeNumber || !verificationCode) {
+                alert("請填寫員工編號和驗證碼！");
+                return;
+            }
+
+            // 呼叫後端 API 驗證
+            fetch("/api/employee/forgot-password/verify-code", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ employeeNumber, verificationCode }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.text(); // 驗證成功的訊息
+                    } else {
+                        return response.text().then((errorMessage) => {
+                            throw new Error(errorMessage); // 抛出錯誤以便進一步處理
+                        });
+                    }
+                })
+                .then((data) => {
+                    // console.log("驗證成功:", data);
+                    alert(data); // 驗證成功訊息
+                    // 顯示重設密碼彈窗
+                    document.getElementById("forgot-password-modal").classList.remove("show");
+                    document.getElementById("reset-password-modal").classList.add("show");
+                })
+                .catch((error) => {
+                    console.error("錯誤:", error.message);
+                    alert(error.message); // 顯示錯誤訊息
+                });
+        });
+
+
+        // 點擊「取消」隱藏重設密碼彈窗
+        document.getElementById("cancel-reset-password").addEventListener("click", function () {
+            document.getElementById("reset-password-modal").style.display = "none";
+        });
+
+        // 點擊「確認」按鈕提交新密碼
+        document.getElementById("confirm-reset-password").addEventListener("click", function () {
+            const newPassword = document.getElementById("new-password").value;
+            const confirmNewPassword = document.getElementById("confirm-new-password").value;
+            const employeeNumber = sessionStorage.getItem("employeeNumber"); // 從 sessionStorage 獲取員工編號
+
+            // 檢查密碼是否一致
+            if (!newPassword || !confirmNewPassword) {
+                alert("密碼欄位不能為空！");
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                alert("密碼不一致，請重新輸入！");
+                return;
+            }
+
+            // 發送密碼重設請求到後端
+            fetch("/api/employee/forgot-password/reset-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ employeeNumber, newPassword }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        alert("密碼重設成功！");
+                        // 關閉彈窗並清空 sessionStorage
+                        document.getElementById("reset-password-modal").style.display = "none";
+                        sessionStorage.removeItem("employeeNumber");
+                        window.location.href = "/login"; // 跳轉到登入頁
+                    } else {
+                        return response.text().then((text) => alert(text));
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    alert("密碼重設失敗，請稍後再試！");
+                });
+        });
 
     </script>
 </body>

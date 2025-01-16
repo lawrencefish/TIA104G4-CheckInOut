@@ -1130,6 +1130,7 @@
                 const assignments = [];
                 const roomTypeContainer = document.getElementById("not-arrived-room-type");
                 const orderId = document.getElementById("not-arrived-order-id").textContent;
+                const assignedRooms = new Set(); // 用來檢查是否重複分配
 
                 // 遍歷所有房型區塊，收集數據
                 [...roomTypeContainer.children].forEach((detailDiv) => {
@@ -1142,6 +1143,15 @@
                     //     alert("所有字段均為必填項，請完成後再提交！");
                     //     return;
                     // }
+
+                    // 檢查是否有重複分配
+                    if (assignedRooms.has(assignedRoomId)) {
+                        alert(`房號重複，請選擇其他房號！`);
+                        throw new Error("重複分配房號");
+                    }
+
+                    // 將分配的房號加入已使用集合
+                    assignedRooms.add(assignedRoomId);
 
                     assignments.push({
                         orderId: parseInt(orderId),

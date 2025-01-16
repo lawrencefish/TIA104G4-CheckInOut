@@ -88,4 +88,12 @@ public class EmployeeService {
     public void save(EmployeeVO employee) {
         employeeRepository.save(employee);
     }
+
+    public Optional<EmployeeVO> findByEmployeeNumber(String employeeNumber) {
+        return employeeRepository.findByEmployeeNumber(employeeNumber);
+    }
+
+    public boolean existsByHotelId(Integer hotelId) {
+        return employeeRepository.existsByHotel_HotelId(hotelId);
+    }
 }
