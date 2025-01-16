@@ -930,6 +930,12 @@
             const keywordInput = document.getElementById("filter-name");
             const tableBody = document.getElementById("orders-table-body");
 
+            keywordInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    searchButton.click();
+                }
+            });
+
             // 搜尋功能
             // 複合查詢功能
             searchButton.addEventListener("click", () => {
