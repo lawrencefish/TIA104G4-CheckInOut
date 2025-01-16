@@ -37,4 +37,6 @@ public interface EmployeeRepository extends JpaRepository<EmployeeVO, Integer> {
     boolean existsByEmployeeNumberAndHotel_HotelId(String employeeNumber, Integer hotelId);
 
     boolean existsByEmailAndHotel_HotelId(String email, Integer hotelId);
+
+    boolean existsByHotel_HotelId(Integer hotelId);
 }

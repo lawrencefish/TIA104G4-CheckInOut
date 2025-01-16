@@ -77,7 +77,7 @@ public class CheckInController {
     @PostMapping("/saveCheckInDetails")
     public ResponseEntity<?> saveCheckInDetails(@RequestBody List<CheckInRequest> requests) {
         try {
-            System.out.println("Received requests: " + requests);
+//            System.out.println("Received requests: " + requests);
 
             for (CheckInRequest request : requests) {
                 System.out.println("Processing request for Order ID: " + request.getOrderId() +
@@ -86,15 +86,15 @@ public class CheckInController {
                         ", Customer Phone: " + request.getCustomerPhoneNumber());
 
                 // 更新訂單狀態為 "已報到"
-                System.out.println("Updating order status for Order ID: " + request.getOrderId());
+//                System.out.println("Updating order status for Order ID: " + request.getOrderId());
                 checkInService.updateOrderStatus(request.getOrderId(), (byte) 1);
 
                 // 更新房間狀態為 "已占用"
-                System.out.println("Updating room status for Room ID: " + request.getAssignedRoomId());
+//                System.out.println("Updating room status for Room ID: " + request.getAssignedRoomId());
                 checkInService.updateRoomStatus(request.getAssignedRoomId(), (byte) 1);
 
                 // 更新住客信息到 room 表
-                System.out.println("Updating room customer info for Room ID: " + request.getAssignedRoomId());
+//                System.out.println("Updating room customer info for Room ID: " + request.getAssignedRoomId());
                 // 更新房間的住客信息並寫入 OrderDetailId
                 checkInService.updateRoomCustomerInfo(
                         request.getAssignedRoomId(),
@@ -104,7 +104,7 @@ public class CheckInController {
                 );
             }
 
-            System.out.println("All requests processed successfully.");
+//            System.out.println("All requests processed successfully.");
             return ResponseEntity.ok("Check-in details saved successfully.");
         } catch (Exception e) {
             System.out.println("Error occurred while saving check-in details: " + e.getMessage());

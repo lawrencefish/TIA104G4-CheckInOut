@@ -24,7 +24,7 @@ public class CheckOutController {
     @PostMapping("/saveCheckOutDetails")
     public ResponseEntity<?> saveCheckOutDetails(@RequestBody CheckOutRequest checkOutRequest) {
         try {
-            System.out.println("Received check-out request: " + checkOutRequest);
+//            System.out.println("Received check-out request: " + checkOutRequest);
 
             // 驗證輸入數據
             if (checkOutRequest.getRoomIds() == null || checkOutRequest.getRoomIds().isEmpty()) {
@@ -43,15 +43,15 @@ public class CheckOutController {
                 checkOutService.clearRoomCustomerInfo(roomId); // 清空房間住客信息
             }
 
-            System.out.println("Check-out process completed successfully for Order ID: " + checkOutRequest.getOrderId());
+//            System.out.println("Check-out process completed successfully for Order ID: " + checkOutRequest.getOrderId());
             return ResponseEntity.ok(Map.of("message", "Check-out details saved successfully."));
         } catch (IllegalArgumentException e) {
             // 處理非法參數
-            System.err.println("Invalid argument: " + e.getMessage());
+//            System.err.println("Invalid argument: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             // 處理其他異常
-            System.err.println("Error during check-out process: " + e.getMessage());
+//            System.err.println("Error during check-out process: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error saving check-out details", "message", e.getMessage()));
