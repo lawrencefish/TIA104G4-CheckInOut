@@ -553,6 +553,14 @@
             border: 1px solid #ddd;
         }
 
+        .modal-order-details{
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
         /* 關閉按鈕 */
         #modal-close-button {
             display: block;
@@ -731,18 +739,22 @@
         <!-- 彈出視窗 -->
         <div id="room-modal" class="modal hidden">
             <div class="modal-content">
-                <h2>房間訂單詳情</h2>
+                <h2>房間狀態</h2>
                 <p><strong>房間號碼：</strong><span id="modal-room-number">載入中...</span></p> <!-- 新增顯示房間號碼 -->
                 <p class="status-indicator"><strong>狀態：</strong><span id="modal-room-status" class="status-occupied">使用中</span></p> <!-- 新增狀態標示 -->
+                <div class="modal-order-details">
                 <p><strong>訂單編號：</strong><span id="modal-order-id">載入中...</span></p>
                 <p><strong>會員編號：</strong><span id="modal-member-id">載入中...</span></p>
                 <p><strong>會員姓名：</strong><span id="modal-member-name">載入中...</span></p>
                 <p><strong>備註：</strong><span id="modal-note">載入中...</span></p>
+                </div>
                 <div id="modal-order-details">
                     <!-- 訂單明細 -->
                 </div>
+                <div class="modal-order-details">
                 <p><strong>住客姓名：</strong><span id="modal-customer-name"></span></p>
                 <p><strong>住客電話：</strong><span id="modal-customer-phone"></span></p>
+                </div>
                 <button id="modal-close-button" class="btn btn-primary">關閉</button>
             </div>
         </div>
@@ -750,7 +762,7 @@
 <!--         空房狀態-->
         <div id="room-status-modal" class="modal hidden">
             <div class="modal-content">
-                <h2>房間狀態管理</h2>
+                <h2>房間狀態</h2>
                 <p><strong>房間號碼：</strong><span id="status-room-number">載入中...</span></p>
                 <p><strong>當前狀態：</strong><span id="status-room-current">載入中...</span></p>
                 <p>
@@ -918,7 +930,6 @@
                                                     data.orderDetails.forEach(detail => {
                                                                                 const detailDiv = document.createElement("div");
                                                                                 detailDiv.innerHTML = `
-                                                <p><strong>明細編號：</strong>${detail.orderDetailId}</p>
                                                 <p><strong>入住人數：</strong>${detail.guestNum}</p>
                                                 <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
                                             `;
