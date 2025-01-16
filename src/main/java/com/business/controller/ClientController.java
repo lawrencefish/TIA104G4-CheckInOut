@@ -68,7 +68,7 @@ public class ClientController {
     @PostMapping("/update")
     public String updateClient(@ModelAttribute MemberVO updatedClient) {
         orderService.updateMember(updatedClient);
-        return "redirect:/clientDetail/" + updatedClient.getMemberId(); // 重定向到詳細頁
+        return "redirect:/client/clientDetail/" + updatedClient.getMemberId(); // 重定向到詳細頁
     }
     
 }
