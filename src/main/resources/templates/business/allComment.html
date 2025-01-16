@@ -408,7 +408,8 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
             <a th:href="@{/comment}" class="active">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
