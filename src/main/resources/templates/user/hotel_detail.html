@@ -18,6 +18,7 @@
 	<main>
 		<div class="container hotel-main">
 			<!-- 酒店圖片跑馬燈 -->
+			<span th:text="${userName}" style="display:none;"></span>
 			<div class="row mb-4">
 				<div class="col-12">
 					<div id="hotelCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -55,6 +56,11 @@
 					<h2 class="hotel_title">君悅酒店</h2>
 					<p class="hotel_address">台北市信義區松壽路2號</p>
 					<p class="text-muted">位於市中心，擁有優越的地理位置與頂級服務。</p>
+					<a th:href="@{/user/chatroom(hotel=${hotelId})}" class="btn btn-outline-success my-3 w-100">
+    				進入聊天室(測試)
+					</a>
+
+
 				</div>
 				<div class="col-md-4">
 					<div class="map-placeholder" style="height: 200px;">

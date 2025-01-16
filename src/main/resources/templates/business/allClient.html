@@ -165,7 +165,84 @@
         header .user .dropdown ul li:last-child {
             border-bottom: none;
         }
+        
+		/* 登出的彈窗樣式 */
+        #logout-modal {
+            display: none;
+            /* 初始為隱藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 半透明背景 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
 
+        #logout-modal.show {
+            display: flex;
+            /* 顯示彈窗 */
+        }
+
+        #logout-modal .logout-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        #logout-modal .logout-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        #logout-modal .logout-modal-content p {
+            margin: 10px 0;
+        }
+
+        #logout-modal .logout-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #logout-modal .logout-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-logout-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-switch-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+        /* x 按鈕 */
+        #logout-modal .logout-modal-content .logout-modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        #logout-modal .logout-modal-content .logout-modal-close-btn:hover {
+            color: #333;
+        }
 
         /* Layout */
         .container {
@@ -405,29 +482,47 @@
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
-                    <li>帳號設定</li>
-                    <li>登出</li>
+                    <li><a th:href="@{/account}">帳號設定</a></li>
+                    <li id="logout-option">登出</li>
                 </ul>
             </div>
         </div>
     </header>
-
+	<!-- 登出彈窗 -->
+    <div id="logout-modal" class="hidden">
+        <div class="logout-modal-content">
+            <span class="logout-modal-close-btn" id="logout-modal-close-btn">×</span>
+            <h2>登出選項</h2>
+            <p>您確定要登出或切換使用者嗎？</p>
+            <div class="logout-modal-actions">
+                <!-- 登出按鈕 -->
+                <form th:action="@{/logout}" method="POST" id="logout-form">
+                    <button type="submit" id="logout-modal-logout-button">登出</button>
+                </form>
+                <!-- 切換使用者按鈕 -->
+                <form th:action="@{/switch-user}" method="POST" id="switch-user-form">
+                    <button type="submit" id="logout-modal-switch-button">切換使用者</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- 主體內容 -->
     <div class="container">
         <!-- Aside -->
         <aside class="sidebar" id="aside">
+         <form th:action="@{/client/search}" method="GET" id="searchForm">
             <div class="search-number">
-                <input type="text" placeholder="依編號搜尋">
+                <input type="text" name="clientId" placeholder="依編號搜尋" th:value="${clientId}">
             </div>
             <div class="search-name">
-                <input type="text" placeholder="依姓名搜尋">
+                <input type="text" name="clientName" placeholder="依姓名搜尋" th:value="${clientName}">
             </div>
             <div class="search-mail">
-                <input type="text" placeholder="依信箱搜尋">
+                <input type="text" name="clientMail" placeholder="依信箱搜尋" th:value="${clientMail}">
             </div>
             <div class="search-phone">
-                <input type="text" placeholder="依電話搜尋">
+                <input type="text" name="clientPhone" placeholder="依電話搜尋" th:value="${clientPhone}">
             </div>
             <div class="search">
                 <button>搜尋</button>
@@ -438,64 +533,36 @@
         <main class="main-content" id="main">
             <section class="form-section">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>客戶編號</th>
-                            <th>姓名</th>
-                            <th>電子信箱</th>
-                            <th>電話</th>
-                            <th>備註</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="first-row">
-                            <td>001</td>
-                            <td>崔玄準</td>
-                            <td>doran@t1.com</td>
-                            <td>0987654001</td>
-                            <td>上路</td>
-                        </tr>
-                        <tr class="second-row">
-                            <td>002</td>
-                            <td>文炫竣</td>
-                            <td>oner@t1.com</td>
-                            <td>0987654002</td>
-                            <td>打野</td>
-                        </tr>
-                        <tr class="third-row">
-                            <td>003</td>
-                            <td>李相赫</td>
-                            <td>faker@t1.com</td>
-                            <td>0987654003</td>
-                            <td>中路</td>
-                        </tr>
-                        <tr class="fourth-row">
-                            <td>004</td>
-                            <td>李珉炯</td>
-                            <td>gumayusi@t1.com</td>
-                            <td>0987654004</td>
-                            <td>下路</td>
-                        </tr>
-                        <tr class="fifth-row">
-                            <td>005</td>
-                            <td>柳岷析</td>
-                            <td>keria@t1.com</td>
-                            <td>0987654005</td>
-                            <td>輔助</td>
+    <thead>
+        <tr>
+            <th>客戶編號</th>
+            <th>姓名</th>
+            <th>電子信箱</th>
+            <th>電話</th>            
+        </tr>
+    </thead>
+    <tbody>
+                        <!-- 使用 Thymeleaf 渲染數據 -->
+                       <tr th:each="client : ${clients}" th:onclick="|window.location.href='/client/clientDetail/${client.memberId}'|" style="cursor: pointer;">
+                            <td th:text="${client.memberId}"></td>
+                            <td th:text="${client.lastName} + ${client.firstName}"></td>
+                            <td th:text="${client.account}"></td>
+                            <td th:text="${client.phoneNumber}"></td>                          
                         </tr>
                     </tbody>
-                </table>
+</table>
+
 
             </section>
-            <section class="page-section">
-                <div class="page-number">
-                    <span>1</span>
-                    <span>2</span>
-                    <span>3</span>
-                    <span>...</span>
-                    <button>Next</button>
-                </div>
-            </section>
+<!--             <section class="page-section"> -->
+<!--                 <div class="page-number"> -->
+<!--                     <span>1</span> -->
+<!--                     <span>2</span> -->
+<!--                     <span>3</span> -->
+<!--                     <span>...</span> -->
+<!--                     <button>Next</button> -->
+<!--                 </div> -->
+<!--             </section> -->
         </main>
 
     </div>
@@ -505,22 +572,49 @@
         &copy; 2024 Check in out. All rights reserved.
     </footer>
     <script>
-        document.querySelector('.hotel-button').addEventListener('click', () => {
-            const dropdown = document.querySelector('.dropdown');
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
+  //飯店彈窗
+    document.querySelector('.hotel-button').addEventListener('click', () => {
+        const dropdown = document.querySelector('.dropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const tableBody = document.querySelector("tbody"); // 找到 <tbody>
-            if (tableBody) {
-                tableBody.addEventListener("click", function (event) {
-                    const clickedRow = event.target.closest("tr"); // 找到被點擊的 <tr>
-                    if (clickedRow) {
-                        window.location.href = "5-2.html"; // 導向 5-2.html
-                    }
-                });
-            }
-        });
+    // 取得彈窗和按鈕
+    const logoutModal = document.getElementById("logout-modal");
+    const logoutModalCloseBtn = document.getElementById("logout-modal-close-btn");
+    const logoutModalLogoutButton = document.getElementById("logout-modal-logout-button");
+    const logoutModalSwitchButton = document.getElementById("logout-modal-switch-button");
+    const logoutOption = document.getElementById("logout-option"); // 假設觸發按鈕未修改 id
+
+    // 顯示彈窗
+    logoutOption.addEventListener("click", function () {
+        logoutModal.classList.add("show"); // 添加 class 顯示彈窗
+    });
+
+    // 關閉彈窗 (x 按鈕)
+    logoutModalCloseBtn.addEventListener("click", function () {
+        logoutModal.classList.remove("show"); // 移除 class 隱藏彈窗
+    });
+
+    // 登出按鈕功能
+    logoutModalLogoutButton.addEventListener("click", function () {
+        alert("您已登出！");
+        document.location.href = "login-1.html";
+    });
+
+    // 切換使用者按鈕功能
+    logoutModalSwitchButton.addEventListener("click", function () {
+        alert("切換使用者！");
+        document.location.href = "login-2.html";; // 隱藏彈窗
+    });
+
+    // 點擊彈窗外部關閉 (選擇性功能)
+    window.addEventListener("click", function (e) {
+        if (e.target === logoutModal) {
+            logoutModal.classList.remove("show"); // 隱藏彈窗
+        }
+    });
+        
+        
     </script>
 </body>
 

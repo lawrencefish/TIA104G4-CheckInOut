@@ -312,43 +312,64 @@
         }
 
         .reply {
-            margin-top: 20px;
-        }
+    		margin-top: 20px;
+    		display: flex;
+    		align-items: center;
+    		justify-content: space-between;
+		}
 
-        .reply textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+		.reply textarea {
+    		width: 80%;
+   			height: 50px;
+   			padding: 10px;
+    		border: 1px solid #ccc;
+    		border-radius: 5px;
+    		resize: none; /* 禁止調整大小 */
+		}
 
-        .reply button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+		.reply button {
+    		margin-left: 10px;
+    		padding: 10px 20px;
+    		background-color: #007bff;
+    		color: white;
+    		border: none;
+    		border-radius: 5px;
+    		cursor: pointer;
+    		height: 50px; /* 確保與輸入框對齊 */
+		}
 
         .reply button:hover {
             background-color: #0056b3;
         }
 
-        /* .chat .response {
-            margin-bottom: 20px;
-            text-align: right;
-        }
+        /* 顯示其他使用者的訊息在左側 */
+		.chat .message {
+    		margin: 10px 0;
+    		padding: 10px;
+    		border-radius: 8px;
+    		display: inline-block;
+    		max-width: 70%;
+   			 word-wrap: break-word;
+		}
 
-        .chat .response .message {
-            background-color: #e0f7fa;
-            padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
-            float: right;
-        } */
+		/* 顯示自己的訊息在右側 */
+		.chat .my-message {
+    		margin: 10px 0;
+    		padding: 10px;
+    		border-radius: 8px;
+    		display: inline-block;
+    		max-width: 70%;
+    		word-wrap: break-word;
+    		background-color: #e0f7fa; /* 淡藍色背景 */
+    		float: right;
+    		clear: both;
+    		text-align: right;
+		}
+
+		/* 清除浮動 */
+		.chat .clearfix {
+    		clear: both;
+		}
 
         .response-group {
             text-align: right;
@@ -423,8 +444,7 @@
         <main class="chat-area">
             <div class="chat" id="chatArea">
                 <div class="customer">
-                    <h4>李相赫</h4>
-                    <div class="message">第五冠是獻給粉絲的</div>
+                    
                 </div>
             </div>
     
@@ -434,42 +454,99 @@
             </div>
         </main>
     
-        <script>
-            const username = prompt("請輸入您的使用者名稱：");
-            const ws = new WebSocket(`ws://localhost:8080/chat/${username}`);
-        
-            const chatArea = document.getElementById('chatArea');
-            const replyInput = document.getElementById('replyInput');
-            const sendButton = document.getElementById('sendButton');
-        
-            ws.onopen = () => {
-                console.log("WebSocket connection established.");
-            };
-        
-            ws.onmessage = (event) => {
-                const message = event.data;
-        
-                // 添加到聊天區域
+       <script>
+    	// 獲取飯店名稱作為使用者名稱
+    	const hotelButton = document.querySelector('.hotel-button');
+    	const username = hotelButton ? hotelButton.textContent.trim() : 'Unknown'; // 確保取得飯店名稱
+
+    	if (!username || username === 'Unknown') {
+        console.error('飯店名稱未正確加載，無法建立 WebSocket 連接。');
+   		 } else {
+        // 建立 WebSocket 連接
+        const ws = new WebSocket(`ws://localhost:8080/chat/${username}`);
+
+        const chatArea = document.getElementById('chatArea');
+        const replyInput = document.getElementById('replyInput');
+        const sendButton = document.getElementById('sendButton');
+
+        ws.onopen = () => {
+            console.log("WebSocket connection established.");
+        };
+
+        ws.onmessage = (event) => {
+            const message = event.data;
+
+            try {
+                const parsedMessage = JSON.parse(message);
+
+                // 創建訊息的 DOM 元素
                 const messageDiv = document.createElement('div');
-                messageDiv.textContent = message;
                 messageDiv.classList.add('message');
-                chatArea.appendChild(messageDiv);
-        
-                chatArea.scrollTop = chatArea.scrollHeight;
-            };
-        
-            ws.onclose = () => {
-                console.log("WebSocket connection closed.");
-            };
-        
-            sendButton.addEventListener('click', () => {
-                const message = replyInput.value.trim();
-                if (message) {
-                    ws.send(message);
-                    replyInput.value = '';
+
+                // 判斷訊息是否是自己發送的
+                if (parsedMessage.sender === username) {
+                    messageDiv.classList.add('my-message');
+                } else {
+                    messageDiv.classList.add('other-message');
                 }
-            });
-        </script>
+
+                messageDiv.textContent = `${parsedMessage.sender}: ${parsedMessage.content}`;
+                chatArea.appendChild(messageDiv);
+
+                // 清除浮動（確保訊息不會重疊）
+                const clearDiv = document.createElement('div');
+                clearDiv.classList.add('clearfix');
+                chatArea.appendChild(clearDiv);
+
+                // 自動滾動到底部
+                chatArea.scrollTop = chatArea.scrollHeight;
+            } catch (e) {
+                console.error("無法解析收到的訊息為 JSON：", message);
+            }
+        };
+
+        const sendMessage = () => {
+            const messageContent = replyInput.value.trim();
+            if (messageContent) {
+                // 即時顯示自己的訊息
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'my-message');
+                messageDiv.textContent = `${messageContent}`;
+                chatArea.appendChild(messageDiv);
+
+                // 清除浮動（確保訊息不會重疊）
+                const clearDiv = document.createElement('div');
+                clearDiv.classList.add('clearfix');
+                chatArea.appendChild(clearDiv);
+
+                // 自動滾動到底部
+                chatArea.scrollTop = chatArea.scrollHeight;
+
+                // 發送 JSON 格式的訊息到伺服器
+                const message = JSON.stringify({
+                    sender: username,
+                    content: messageContent,
+                    timestamp: new Date().toISOString(),
+                });
+                ws.send(message);
+
+                // 清空輸入框
+                replyInput.value = '';
+            		}
+        		};
+
+        		sendButton.addEventListener('click', sendMessage);
+
+        		// 新增 keydown 事件監聽
+        		replyInput.addEventListener('keydown', (event) => {
+            		if (event.key === 'Enter' && !event.shiftKey) { 
+                		event.preventDefault(); // 阻止默認換行行為
+                		sendMessage(); // 調用發送函數
+            			}
+        			});
+    			}
+			</script>
+
         
 </body>
 
