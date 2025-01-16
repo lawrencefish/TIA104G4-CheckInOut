@@ -50,7 +50,7 @@ public class CommentController {
             @RequestParam(defaultValue = "50") int size,
             Model model, HttpSession session) {
 
-        // 確保從 session 中獲取的 hotel 是正確類型
+        // 從 session 中獲取當前飯店名稱
         HotelVO hotel = (HotelVO) session.getAttribute("hotel");
         if (hotel == null) {
             throw new IllegalStateException("Hotel not found in session.");
@@ -66,6 +66,7 @@ public class CommentController {
         model.addAttribute("totalPages", commentPage.getTotalPages());
         model.addAttribute("clientName", clientName);
         model.addAttribute("orderId", orderId);
+        model.addAttribute("hotelName", hotelName); // 添加 hotelName 以供分頁使用
 
         return "business/allComment";
     }

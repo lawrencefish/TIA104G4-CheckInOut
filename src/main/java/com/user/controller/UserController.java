@@ -4,6 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,15 +23,24 @@ public class UserController {
     @Autowired
     private MemberService memberService;
 	
-	@GetMapping("")
-	public String userIndex() {
-		return "/user/user_index";
-	}
+    @GetMapping("")
+    public String userIndex(HttpSession session, Model model) {
+        MemberVO member = (MemberVO) session.getAttribute("member");
+        if (member != null) {
+            String userName = member.getLastName() + member.getFirstName();
+            model.addAttribute("userName", userName);
+        } else {
+            model.addAttribute("userName", "訪客"); // 如果未登入，提供默認值
+        }
+        return "/user/user_index";
+    }
 
-	@GetMapping("/chatroom")
-	public String chatroom() {
-		return "/user/chatroom";
-	}
+
+    @GetMapping("/chatroom")
+    public String chatroom(@RequestParam String userName, Model model, HttpSession session) {
+        model.addAttribute("userName", userName);
+        return "user/chatroom"; 
+    }
 
 	@GetMapping("/checkout")
 	public String checkout() {

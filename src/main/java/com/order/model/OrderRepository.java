@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.member.model.MemberVO;
 import com.order.dto.*;
 
 public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
@@ -59,5 +60,17 @@ public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
 	            "WHERE o.orderId = :orderId")
 	     Optional<AvgRatingsAndCommentDTO> findRatingAndCommentByOrderId(@Param("orderId") Integer orderId);
 
+	    @Query("SELECT o.member FROM OrderVO o WHERE o.hotel.name = :hotelName GROUP BY o.member.memberId ORDER BY o.member.memberId ASC")
+	    List<MemberVO> findClientsByHotelName(@Param("hotelName") String hotelName);
 
+	    @Query("SELECT m FROM MemberVO m WHERE "
+	            + "(:clientId IS NULL OR m.memberId = :clientId) AND "
+	            + "(:clientName IS NULL OR CONCAT(m.lastName, m.firstName) LIKE %:clientName%) AND "
+	            + "(:clientMail IS NULL OR m.account LIKE %:clientMail%) AND "
+	            + "(:clientPhone IS NULL OR m.phoneNumber LIKE %:clientPhone%)")
+	    List<MemberVO> searchClients(
+	            @Param("clientId") Integer clientId,
+	            @Param("clientName") String clientName,
+	            @Param("clientMail") String clientMail,
+	            @Param("clientPhone") String clientPhone);
 }

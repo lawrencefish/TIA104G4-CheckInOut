@@ -18,6 +18,7 @@
 	<main>
 		<div class="container">
 			<div class="row justify-content-start align-self-start mb-3">
+			<span th:text="${userName}" style="display:none;"></span>
 				<div class=" search-area col-4 d-flex flex-column flex-shrink-0 rounded-2 shadow-sm py-3 px-3">
 					<a th:href="@{/user/news}" class="banner rounded-pill mb-3" style="height: 100px;"></a>
 					<form id="searchForm">
