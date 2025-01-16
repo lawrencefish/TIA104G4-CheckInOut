@@ -20,10 +20,7 @@ public class OrderService {
 
 	@Autowired
 	OrderRepository repository;
-	
-	@Autowired
-	private SessionFactory sessionFactory;
-	
+		
 	@Transactional
 	public void addOrder(OrderVO orderVO) {
 		repository.save(orderVO);
@@ -84,6 +81,11 @@ public class OrderService {
         Optional<AvgRatingsAndCommentDTO> optionalStats = orderRepository.findRatingAndCommentByOrderId(orderId);
         AvgRatingsAndCommentDTO stats = optionalStats.orElse(new AvgRatingsAndCommentDTO(0L, 0.0));
         return stats;
+    }
+    
+    public List<OrderVO> findByHotelId(Integer HotelId){
+		return  orderRepository.findByHotelHotelIdAndRatingIsNotNullAndCommentContentIsNotNull(HotelId);
+    	
     }
 
 }

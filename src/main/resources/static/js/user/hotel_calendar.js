@@ -273,7 +273,7 @@ function formatDate(date) {
 //取得庫存值
 function getAllInventory() {
     return $.ajax({
-        url: '/search/api/all_inventory',
+        url: '/booking/api/all_inventory',
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',

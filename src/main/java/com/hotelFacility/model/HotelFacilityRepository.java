@@ -24,6 +24,8 @@ public interface HotelFacilityRepository extends JpaRepository<HotelFacilityVO, 
      */
     @Query("SELECT hf.facility.facilityId FROM HotelFacilityVO hf WHERE hf.hotel.hotelId = :hotelId")
     List<Integer> findFacilityIdsByHotelId(Integer hotelId);
+    
+    List<HotelFacilityVO> findFacilityByHotelHotelId(Integer hotelId);
 
     @Transactional
     @Modifying

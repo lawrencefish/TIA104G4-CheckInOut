@@ -246,7 +246,7 @@ $(document).ready(function () {
 
 function fetchBooking() {
   $.ajax({
-    url: '/booking/api/search',
+    url: '/search/api/search',
     type: 'POST',
     data: JSON.stringify({
       guestNum: $('#guestNum').val(),

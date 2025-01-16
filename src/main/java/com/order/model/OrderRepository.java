@@ -53,10 +53,15 @@ public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
 	           "WHERE o.orderId = :orderId")
 	    Optional<CommentDTO> findCommentByOrderId(@Param("orderId") Integer orderId);
 	 
-	    @Query("SELECT new com.order.dto.AvgRatingsAndCommentDTO(" +
-	            "COUNT(o.commentContent), AVG(o.rating)) " +
-	            "FROM OrderVO o " +
-	            "WHERE o.orderId = :orderId")
-	     Optional<AvgRatingsAndCommentDTO> findRatingAndCommentByOrderId(@Param("orderId") Integer orderId);
+	 @Query("SELECT new com.order.dto.AvgRatingsAndCommentDTO(" +
+		       "COUNT(o.commentContent), AVG(o.rating)) " +
+		       "FROM OrderVO o " +
+		       "WHERE o.hotel.hotelId = :hotelId")
+		Optional<AvgRatingsAndCommentDTO> findRatingAndCommentByOrderId(@Param("hotelId") Integer hotelId);
+	    
+	    List<OrderVO> findByHotelHotelIdAndRatingIsNotNullAndCommentContentIsNotNull(Integer hotelId);
+
 	}
+
+	
 
