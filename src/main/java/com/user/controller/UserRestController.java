@@ -61,28 +61,37 @@ public class UserRestController {
 	// 登入
 	@PostMapping("/login")
 	public Map<String, String> memberLogin(@RequestBody Map<String, String> loginRequest, HttpSession session) {
-		String account = loginRequest.get("account");
-		String password = loginRequest.get("password");
-		String url = loginRequest.get("url");
+	    String account = loginRequest.get("account");
+	    String password = loginRequest.get("password");
+	    String url = loginRequest.get("url");
 
-		Map<String, String> response = new HashMap<>();
-		if (memServ.existsByAccount(account)) {
-			MemberVO member = memServ.login(account, password);
-			if (member != null) {
-				System.out.println("登入成功" + member.getAccount());
-				session.setAttribute("memberId", member.getMemberId());
-				session.setAttribute("account", member.getAccount());
-				response.put("status", "success");
-				response.put("message", "登入成功");
-			} else {
-				response.put("status", "failed");
-				response.put("message", "密碼錯誤，請重新輸入");
-			}
-		} else {
-			response.put("status", "failed");
-			response.put("message", "查無此人");
-		}
-		return response;
+	    Map<String, String> response = new HashMap<>();
+	    if (memServ.existsByAccount(account)) {
+	        MemberVO member = memServ.login(account, password);
+	        if (member != null) {
+	            System.out.println("登入成功: " + member.getAccount());
+
+	            // 組合客戶名稱
+	            String userName = member.getFirstName() + member.getLastName();
+
+	            // 儲存到 Session
+	            session.setAttribute("memberId", member.getMemberId());
+	            session.setAttribute("account", member.getAccount());
+	            session.setAttribute("member", member);
+	            session.setAttribute("userName", userName); 
+
+	            response.put("status", "success");
+	            response.put("message", "登入成功");
+	            response.put("userName", userName); // 回傳客戶名稱
+	        } else {
+	            response.put("status", "failed");
+	            response.put("message", "密碼錯誤，請重新輸入");
+	        }
+	    } else {
+	        response.put("status", "failed");
+	        response.put("message", "查無此人");
+	    }
+	    return response;
 	}
 
 	// 檢查登入狀態

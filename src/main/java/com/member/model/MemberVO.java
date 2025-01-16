@@ -1,6 +1,6 @@
 package com.member.model;
 
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;

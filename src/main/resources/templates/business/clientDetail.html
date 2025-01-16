@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>飯店管理系統</title>
     <style>
-        /* 全局樣式 */
+       /* 全局樣式 */
         * {
             margin: 0;
             padding: 0;
@@ -93,8 +93,10 @@
         /* Hotel Button */
         header .user .hotel-button {
             background-color: #2c3e50;
+            /* 深藍色 */
             color: #fff;
             border: 1px solid #34495e;
+            /* 邊框顏色和背景稍微區分 */
             padding: 10px 20px;
             font-size: 1rem;
             font-weight: 600;
@@ -162,6 +164,84 @@
 
         header .user .dropdown ul li:last-child {
             border-bottom: none;
+        }
+        
+		/* 登出的彈窗樣式 */
+        #logout-modal {
+            display: none;
+            /* 初始為隱藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 半透明背景 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #logout-modal.show {
+            display: flex;
+            /* 顯示彈窗 */
+        }
+
+        #logout-modal .logout-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        #logout-modal .logout-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        #logout-modal .logout-modal-content p {
+            margin: 10px 0;
+        }
+
+        #logout-modal .logout-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #logout-modal .logout-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-logout-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-switch-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+        /* x 按鈕 */
+        #logout-modal .logout-modal-content .logout-modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        #logout-modal .logout-modal-content .logout-modal-close-btn:hover {
+            color: #333;
         }
 
         /* Footer 樣式 */
@@ -326,7 +406,8 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
             <a th:href="@{/comment}">評論管理</a>
             <a th:href="@{/client}" class="active">客戶管理</a>
@@ -338,12 +419,31 @@
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
-                    <li>帳號設定</li>
-                    <li>登出</li>
+                     <li><a th:href="@{/account}">帳號設定</a></li>
+                    <li id="logout-option">登出</li>
                 </ul>
             </div>
         </div>
     </header>
+
+	<!-- 登出彈窗 -->
+    <div id="logout-modal" class="hidden">
+        <div class="logout-modal-content">
+            <span class="logout-modal-close-btn" id="logout-modal-close-btn">×</span>
+            <h2>登出選項</h2>
+            <p>您確定要登出或切換使用者嗎？</p>
+            <div class="logout-modal-actions">
+                <!-- 登出按鈕 -->
+                <form th:action="@{/logout}" method="POST" id="logout-form">
+                    <button type="submit" id="logout-modal-logout-button">登出</button>
+                </form>
+                <!-- 切換使用者按鈕 -->
+                <form th:action="@{/switch-user}" method="POST" id="switch-user-form">
+                    <button type="submit" id="logout-modal-switch-button">切換使用者</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <!-- 側邊欄 -->
@@ -358,54 +458,58 @@
             <div class="form-group">
                 <button id="edit-btn" class="edit-btn">編輯</button>
             </div>
-            <form class="customer-form">
-                <div class="form-group">
-                    <label for="clientid">客戶編號</label>
-                    <div id="clientid">12345678</div>
-                    <div class="form-group">
-                        <label for="clientpic">客戶頭像</label>
-                        <img src="./img/faker.jpg" alt="頭貼">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="lastname">中文姓</label>
-                        <input type="text" id="lastname" class="readonly" value="李" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="firstname">中文名</label>
-                        <input type="text" id="firstname" class="readonly" value="相赫" readonly>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="gender">性別</label>
-                        <input type="text" id="gender" class="readonly" value="男" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="bday">生日</label>
-                        <input type="text" id="bday" class="readonly" value="1996/5/7" readonly>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="phone">連絡電話</label>
-                    <input type="text" id="phone" class="readonly" value="0912-345-678" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="email">電子信箱</label>
-                    <input type="text" id="email" class="readonly" value="faker@t1.com" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="note">備註</label>
-                    <input type="text" id="note" class="readonly" value="GOAT" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="history">歷史訂單</label>
-                    <div id="history">
-                        2024/11/10 精緻雙人房<br>
-                        2024/10/10 精緻雙人房<br>
-                    </div>
-                </div>
+            <form class="customer-form" th:action="@{/client/update}" method="post">
+            <input type="hidden" name="memberId" th:value="${client.memberId}">
+    <div class="form-group">
+        <label for="clientid">客戶編號</label>
+        <div id="clientid" th:text="${client.memberId}"></div>
+        <div class="form-group">
+            <label for="clientpic">客戶頭像</label>
+            <img th:src="@{${client.avatar}}" alt="頭像">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="lastname">中文姓</label>
+            <input type="text" id="lastname" name="lastName" class="readonly" th:value="${client.lastName}" readonly>
+        </div>
+        <div class="form-group">
+            <label for="firstname">中文名</label>
+            <input type="text" id="firstname" name="firstName" class="readonly" th:value="${client.firstName}" readonly>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="gender">性別</label>
+        <input type="text" id="gender" name="gender" class="readonly" 
+               th:value="${client.gender == 'M' ? '男' : (client.gender == 'F' ? '女' : '未知')}" 
+               readonly>
+        </div>
+        <div class="form-group">
+            <label for="bday">生日</label>
+            <input type="date" name="birthday" class="readonly" th:value="${#dates.format(client.birthday, 'yyyy-MM-dd')}" readonly>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="phone">連絡電話</label>
+        <input type="text" id="phone" name="phoneNumber" class="readonly" th:value="${client.phoneNumber}" readonly>
+    </div>
+    <div class="form-group">
+        <label for="email">電子信箱</label>
+        <input type="text" id="email" name="account" class="readonly" th:value="${client.account}" readonly>
+    </div>
+<!--     <div class="form-group"> -->
+<!--         <label for="note">備註</label> -->
+<!--         <input type="text" id="note" class="readonly" th:value="${client.note}" readonly> -->
+<!--     </div> -->
+<!--     <div class="form-group"> -->
+<!--         <label for="history">歷史訂單</label> -->
+<!--         <div id="history" th:utext="${client.history}"> -->
+<!--             2024/11/10 精緻雙人房<br> -->
+<!--             2024/10/10 精緻雙人房<br> -->
+<!--         </div> -->
+<!--     </div> -->
+
                 <div class="form-group">
                     <button class="btn-save">儲存</button>
                     <button class="btn-cancel">取消</button>
@@ -418,10 +522,47 @@
         &copy; 2024 Check in out. All rights reserved.
     </footer>
     <script>
-        document.querySelector('.hotel-button').addEventListener('click', () => {
-            const dropdown = document.querySelector('.dropdown');
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
+  //飯店彈窗
+    document.querySelector('.hotel-button').addEventListener('click', () => {
+        const dropdown = document.querySelector('.dropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // 取得彈窗和按鈕
+    const logoutModal = document.getElementById("logout-modal");
+    const logoutModalCloseBtn = document.getElementById("logout-modal-close-btn");
+    const logoutModalLogoutButton = document.getElementById("logout-modal-logout-button");
+    const logoutModalSwitchButton = document.getElementById("logout-modal-switch-button");
+    const logoutOption = document.getElementById("logout-option"); // 假設觸發按鈕未修改 id
+
+    // 顯示彈窗
+    logoutOption.addEventListener("click", function () {
+        logoutModal.classList.add("show"); // 添加 class 顯示彈窗
+    });
+
+    // 關閉彈窗 (x 按鈕)
+    logoutModalCloseBtn.addEventListener("click", function () {
+        logoutModal.classList.remove("show"); // 移除 class 隱藏彈窗
+    });
+
+    // 登出按鈕功能
+    logoutModalLogoutButton.addEventListener("click", function () {
+        alert("您已登出！");
+        document.location.href = "login-1.html";
+    });
+
+    // 切換使用者按鈕功能
+    logoutModalSwitchButton.addEventListener("click", function () {
+        alert("切換使用者！");
+        document.location.href = "login-2.html";; // 隱藏彈窗
+    });
+
+    // 點擊彈窗外部關閉 (選擇性功能)
+    window.addEventListener("click", function (e) {
+        if (e.target === logoutModal) {
+            logoutModal.classList.remove("show"); // 隱藏彈窗
+        }
+    });
 
         const editBtn = document.getElementById('edit-btn');
         const readonlyFields = document.querySelectorAll('.readonly');
@@ -436,35 +577,19 @@
 
         const saveBtn = document.querySelector('.btn-save');
         const cancelBtn = document.querySelector('.btn-cancel');
-        const originalData = {};
 
-        // 函數：將所有欄位恢復為 readonly 狀態
-        function setFieldsToReadonly() {
-            readonlyFields.forEach(field => {
-                field.classList.add('readonly'); // 添加 readonly 樣式
-                field.setAttribute('readonly', 'readonly'); // 設置 readonly 屬性
-                field.style.border = 'none'; // 移除編輯時的邊框
-            });
-        }
-        // 函數：恢復原始資料
-        function restoreOriginalData() {
-            readonlyFields.forEach(field => {
-                if (originalData[field.id] !== undefined) {
-                    field.value = originalData[field.id]; // 恢復原始值
-                }
-            });
-        }
-        // 保存按鈕點擊事件
-        saveBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // 防止表單提交
-            setFieldsToReadonly();
+        // 儲存時提交表單
+        saveBtn.addEventListener('click', () => {
+            document.querySelector('.customer-form').submit();
         });
 
-        // 取消按鈕點擊事件
-        cancelBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // 防止表單提交
-            restoreOriginalData(); // 恢復原始資料
-            setFieldsToReadonly();
+        // 取消時恢復為原始狀態
+        cancelBtn.addEventListener('click', () => {
+            readonlyFields.forEach(field => {
+                field.classList.add('readonly');
+                field.setAttribute('readonly', 'readonly');
+                field.style.border = 'none';
+            });
         });
     </script>
 </body>
