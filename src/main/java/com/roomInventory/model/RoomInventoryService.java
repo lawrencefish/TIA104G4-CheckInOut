@@ -70,10 +70,17 @@ public class RoomInventoryService {
 			double longitudeCenter, double radius) {
 		return roomInventoryRepository.findAvailableRooms(startDate, endDate, latitudeCenter, longitudeCenter, radius);
 	}
+	//從旅館找房
+	public List<HotelRoomInventoryDTO> findAvailableRoomsFromHotel(Integer hotelId) {
+		return roomInventoryRepository.findAvailableRoomsFromHotel(hotelId);
+	}
 
 	// 從ID搜尋庫存
 	public RoomInventoryVO findByRoomTypeIdAndDate(Integer roomTypeId, LocalDate date) {
 		return roomInventoryRepository.findByRoomTypeIdAndDate(roomTypeId, date);
+	}
+	public RoomInventoryVO findByRoomTypeId(Integer roomTypeId) {
+		return roomInventoryRepository.findByRoomTypeRoomTypeId(roomTypeId);
 	}
 
 	// 取得每日庫存量

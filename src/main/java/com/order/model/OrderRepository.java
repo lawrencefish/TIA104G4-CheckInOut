@@ -73,4 +73,6 @@ public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
 	            @Param("clientName") String clientName,
 	            @Param("clientMail") String clientMail,
 	            @Param("clientPhone") String clientPhone);
+
+		List<OrderVO> findByHotelHotelIdAndRatingIsNotNullAndCommentContentIsNotNull(Integer hotelId);
 }

@@ -26,7 +26,7 @@ public class HotelImgService {
         return hotelImgRepository.findById(imageId)
                 .orElseThrow(() -> new RuntimeException("Image not found with ID: " + imageId));
     }
-
+    
     // 上傳圖片
     public List<HotelImgVO> uploadImages(List<MultipartFile> photos, Integer hotelId) throws IOException {
         // 確認飯店是否存在
@@ -58,4 +58,9 @@ public class HotelImgService {
         }
         hotelImgRepository.save(hotelImgVO);
     }
+    //找個數
+    public Integer countByHotelId(Integer hotelId) {
+    	return hotelImgRepository.countByHotelHotelId(hotelId);
+    }
+
 }

@@ -171,12 +171,12 @@ function hotelLoading(data, map) {
     // 處理每個飯店的資料
     data.hotels.forEach((d) => {
         let hotelName = d.hotel;
-        let hotelReview = (d.ratings == 0 || d.ratings == null) ? "無法顯示分數" : d.ratings+"分";
-        let hotelReviewConut = (d.comments == 0 || d.comments == null) ? "無法顯示評論" : d.comments+"則評論";
+        let hotelReview =  Math.round(d.ratings*10)/10;
+        let hotelReviewConut = d.comments ;
         let hotelCity = d.city + d.district;
         let hotelPrice = d.lowestTotalPrice; // 預設價格
         let hotelID = d.hotelID; // 飯店 ID
-        let hotelIMG = "/booking/api/image/hotel/" + d.hotelID;
+        let hotelIMG = "/search/api/image/hotel/" + d.hotelID+"/0";
         let position = { lat: d.lat, lng: d.lng }; // 標記的位置
         // 建立飯店卡片
         let hotelCard = `
@@ -195,11 +195,11 @@ function hotelLoading(data, map) {
                                         <h5 class="card-title mb-1">${hotelName}</h5>
                                         <div class="card-text mb-4">
                                             <span class="badge bg-success">${hotelCity}</span>
-                                            <span class="badge bg-primary"><span>${hotelReview}</span></span>
-                                            <span class="badge bg-secondary"><span>${hotelReviewConut}</span></span>
+                                            <span class="badge bg-primary ${hotelReview == null || hotelReview == 0 ? "d-none" : ""}"><span>平均${hotelReview}</span>分</span>
+                                            <span class="badge bg-secondary ${hotelReviewConut == null || hotelReviewConut == 0 ? "d-none" : ""}"><span>${hotelReviewConut}</span>則評論</span>
                                         </div>
                                         <div class="card-footer bg-body border-0 p-0">
-                                            <p class="hotel-price h4">NT$<span class="price">${hotelPrice}</span></p>
+                                            <p class="hotel-price h4">NT$<span class="price">${hotelPrice}</span>元起</p>
                                             <a class="btn btn-primary" href="/user/hotel_detail/${hotelID}">立刻訂房</a>
                                         </div>
                                     </div>
@@ -288,8 +288,8 @@ function findRoomWithLowestTotalPrice(data) {
         // 對該飯店的每個房型進行計算
         hotel.rooms.forEach(room => {
             // 計算該房型所有日期的總價格
-            const totalPrice = room.dates.reduce((sum, date) => sum + date.price, 0);
-
+            console.log(room);
+            const totalPrice = room.total_price;
             // 更新最小價格與最便宜房型
             if (totalPrice < minPriceSum) {
                 minPriceSum = totalPrice;
@@ -315,7 +315,7 @@ function clearMarkers() {
 //取得搜尋結果
 function getSearchResult() {
     return $.ajax({
-        url: '/booking/api/search_result',
+        url: '/search/api/search_result',
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -324,7 +324,7 @@ function getSearchResult() {
 //取得新地點
 function updateSearchResult(currentCenter) {
     return $.ajax({
-        url: '/booking/api/map_search',
+        url: '/search/api/map_search',
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',

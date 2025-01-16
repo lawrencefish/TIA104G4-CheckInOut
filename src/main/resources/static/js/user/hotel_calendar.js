@@ -8,12 +8,11 @@ let disableDate = [];
 let dateArray = [];
 
 // 初始化日曆，顯示當前月份
-$(document).ready(function () {
-    getAllInventory()
+ $('#date-range').on('click',function(e){
+    fetchCalendarInfo()
         .then(function (data) {
             const today = new Date();
-            dateArray = data;
-            console.log(dateArray);
+            dateArray = data.date;
             // 等資料加載完後再生成日曆
             generateCalendar('#calendar-wrapper', today.getFullYear(), today.getMonth());
         })
@@ -90,17 +89,23 @@ function generateCalendar(containerId, year, month) {
                 calendarHtml += `<td class="text-muted" style="width: ${cellWidth}px;"></td>`;
             } else {
                 const dateString = formatDate(new Date(year, month, day));
-                const today = new Date();
+                const date = new Date(dateString);
+                const today = new Date();    
+                date.setHours(0,0,0,0);
+                today.setHours(0, 0, 0, 0);
                 // 找到與 dateString 匹配的項目
                 const matchedItem = dateArray.find(item => item.date === dateString);
+                let price = "";
+                if (matchedItem && (today.getTime() <= date.getTime())){
+                    price =  matchedItem.price ? "$"+matchedItem.price : "";
+                }
                 // 判斷是否禁用
                 let disable = !matchedItem || parseInt(matchedItem.count) <= 0 ? dateString : null;
                 if (disable) {
                     disableDate.push(disable); // 將禁用的日期加入 disableDate
+                    price = " ";
                 }
-                today.setHours(0, 0, 0, 0);
                 const isDisabled = new Date(dateString) < today || disableDate.includes(dateString);
-                let info = "";
                 // 日期格子內容（含日期和價格）
                 calendarHtml += `
                     <td data-date="${dateString}" 
@@ -108,7 +113,7 @@ function generateCalendar(containerId, year, month) {
                         style="cursor: ${isDisabled ? 'not-allowed' : 'pointer'}; width: ${cellWidth}px;">
                         <div class="date-content">
                             <div class="date-number">${day}</div>
-                            <div class="info-display">${info}</div>
+                            <div class="info-display">${price}</div>
                         </div>
                     </td>
                 `;
@@ -203,7 +208,6 @@ function handleDateSelection(dateString) {
             clearSelectedDates();
             return;
         }
-        console.log(startDate, endDate);
     }
 
     highlightDateRange();  // 更新日期範圍的視覺效果
@@ -271,12 +275,16 @@ function formatDate(date) {
 }
 
 //取得庫存值
-function getAllInventory() {
+function fetchCalendarInfo() {
     return $.ajax({
-        url: '/search/api/all_inventory',
+        url: '/booking/api/calendar/inventory',
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
+        data: JSON.stringify({
+            id: hotelId,
+            roomNum: $('#room_num').val() == "" ? 0 : $('#room_num').val(),
+            guestNum: $('#people_num').val() == "" ? 0 : $('#people_num').val()
+        })
     });
-  }
-  
+}

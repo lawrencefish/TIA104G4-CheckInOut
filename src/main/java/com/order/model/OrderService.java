@@ -62,7 +62,13 @@ public class OrderService {
 		return orderRepository.findCommentsByFilters(clientName, hotelName, orderId, pageable);
 	}
 
-	public CommentDTO getCommentById(Integer orderId) {
+    
+    public List<OrderVO> findByHotelId(Integer HotelId){
+		return  orderRepository.findByHotelHotelIdAndRatingIsNotNullAndCommentContentIsNotNull(HotelId);
+    	
+    }
+
+    public CommentDTO getCommentById(Integer orderId) {
 		return orderRepository.findCommentByOrderId(orderId)
 				.orElseThrow(() -> new RuntimeException("找不到該評論"));
 	}
@@ -96,7 +102,6 @@ public class OrderService {
 		return null;
 	}
 
-	
  	public List<MemberVO> findClientsByHotel(String hotelName) {
          return orderRepository.findClientsByHotelName(hotelName);
      }
