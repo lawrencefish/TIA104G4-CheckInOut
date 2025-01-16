@@ -566,6 +566,7 @@
 </footer>
 
 <script>
+    const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
     // document.querySelector(".send_btn").addEventListener("click", function () {
     //     const emailInput = document.querySelector("#email");
     //     if (emailInput.value.trim() === "") {
@@ -670,7 +671,7 @@
         // 將 taxId 儲存在 sessionStorage
         sessionStorage.setItem("taxId", taxId);
 
-        fetch("/api/forgot-password/send-code", {
+        fetch(`${contextPath}/api/forgot-password/send-code`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({ taxId: taxId }),
@@ -690,7 +691,7 @@
             return;
         }
 
-        fetch("/api/forgot-password/verify-code", {
+        fetch(`${contextPath}/api/forgot-password/verify-code`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({ taxId: taxId, code: code }),
@@ -730,7 +731,7 @@
         }
 
         // 發送重設密碼的請求
-        fetch("/api/forgot-password/reset-password", {
+        fetch(`${contextPath}/api/forgot-password/reset-password`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({ taxId, newPassword }),

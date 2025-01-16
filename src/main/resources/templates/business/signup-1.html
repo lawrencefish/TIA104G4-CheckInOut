@@ -569,6 +569,7 @@
 </footer>
 
 <script>
+    const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
     function previewImage(input, previewContainer) {
         const file = input.files[0];
 
@@ -663,7 +664,7 @@
         }
 
         // 發送驗證碼的請求
-        fetch("/api/verification/send", {
+        fetch(`${contextPath}/api/verification/send`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
@@ -699,7 +700,7 @@
         }
 
         // 發送驗證碼驗證請求
-        fetch(`/api/verification/check?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`)
+        fetch(`${contextPath}/api/verification/check?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`)
             .then(response => response.json())
             .then(isValid => {
                 if (isValid) {
@@ -734,7 +735,7 @@
         const fullAddress = `${city}${district}${address}`;
 
         // 發送 API 請求
-        fetch(`/api/address/geocode?address=${encodeURIComponent(fullAddress)}`)
+        fetch(`${contextPath}/api/address/geocode?address=${encodeURIComponent(fullAddress)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error("API 請求失敗");
