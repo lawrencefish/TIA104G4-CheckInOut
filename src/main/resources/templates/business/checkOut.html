@@ -1020,21 +1020,21 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ orderId: parseInt(orderId), roomIds }),
                 })
-                    .then((response) => {
-                        if (!response.ok) {
-                            return response.text().then((text) => {
-                                console.error("Error response from API:", text);
-                                throw new Error(text);
-                            });
-                        }
-                        return response.json(); // 確保解析 JSON 響應
-                    })
+                    .then((response) => response.json())
                     .then((data) => {
-                        console.log("Check-out successful:", data);
-                        alert(data.message || "Check-out details saved successfully.");
-                        location.reload(); // 刷新頁面
+                        if (data.error) {
+                            // 顯示錯誤訊息
+                            alert(`退房失敗：${data.error}`);
+                        } else {
+                            // 顯示成功訊息
+                            alert(data.message || "退房成功！");
+                            location.reload(); // 刷新頁面
+                        }
                     })
-                    .catch((error) => console.error("Error saving check-out details:", error));
+                    .catch((error) => {
+                        console.error("Check-out error:", error);
+                        alert("退房請求失敗，請稍後重試！");
+                    });
             });
 
 

@@ -4,16 +4,15 @@ import com.employee.model.EmployeeService;
 import com.employee.model.EmployeeVO;
 import com.hotel.model.HotelVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @Controller
 @RequestMapping("employee")
@@ -93,23 +92,24 @@ public class EmployeeController {
     }
 
     @PostMapping("/set")
-    public String setEmployee(@ModelAttribute EmployeeVO employeeVO, RedirectAttributes redirectAttributes) {
+    public String setEmployee(@ModelAttribute EmployeeVO employeeVO, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         // 驗證輸入欄位
         StringBuilder errorMessage = new StringBuilder();
         if (employeeVO.getEmployeeNumber() == null || employeeVO.getEmployeeNumber().trim().isEmpty()) {
-            errorMessage.append("員工編號不可為空！<br>");
+            errorMessage.append("員工編號不可為空！");
         }
         if (employeeVO.getName() == null || employeeVO.getName().trim().isEmpty()) {
-            errorMessage.append("姓名不可為空！<br>");
+            errorMessage.append("姓名不可為空！");
         }
         if (employeeVO.getTitle() == null || employeeVO.getTitle().trim().isEmpty()) {
-            errorMessage.append("職位不可為空！<br>");
+            employeeVO.setTitle("負責人");
+//            errorMessage.append("職位不可為空！");
         }
         if (employeeVO.getPhoneNumber() == null || employeeVO.getPhoneNumber().trim().isEmpty()) {
-            errorMessage.append("電話號碼不可為空！<br>");
+            errorMessage.append("電話號碼不可為空！");
         }
         if (employeeVO.getEmail() == null || employeeVO.getEmail().trim().isEmpty()) {
-            errorMessage.append("電子郵件不可為空！<br>");
+            errorMessage.append("電子郵件不可為空！");
         }
 
         // 若有錯誤訊息，回傳至頁面並顯示錯誤
@@ -123,6 +123,22 @@ public class EmployeeController {
         if (existingEmployee == null) {
             redirectAttributes.addFlashAttribute("employeeError", "未找到對應的員工資料！");
             return "redirect:/account/accountSet"; // 跳轉回員工列表頁面或其他適合的頁面
+        }
+
+        // 獲取當前登入員工的資訊
+        EmployeeVO currentEmployee = (EmployeeVO) request.getSession().getAttribute("employee");
+        if (currentEmployee == null) {
+            redirectAttributes.addFlashAttribute("employeeError", "未登入，無法執行操作！");
+            return "redirect:/account/accountSet";
+        }
+
+        // 如果嘗試修改的員工是負責人，則只有負責人可以修改
+        if ("負責人".equals(existingEmployee.getTitle()) && !"負責人".equals(currentEmployee.getTitle())) {
+            redirectAttributes.addFlashAttribute("employeeError", "你沒資格！");
+            return "redirect:/account/accountSet";
+        }
+        if ("負責人".equals(currentEmployee.getTitle()) && "負責人".equals(existingEmployee.getTitle())) {
+            employeeVO.setTitle("負責人");
         }
 
         // 更新員工資料，包括 employeeNumber 和 name
@@ -202,5 +218,22 @@ public class EmployeeController {
         request.getSession().setAttribute("employee", employee);
 
         return "redirect:/account/accountSet"; // 返回頁面以顯示成功消息
+    }
+
+    @DeleteMapping("/delete/{employeeId}")
+    public ResponseEntity<?> deleteEmployee(@PathVariable Integer employeeId, HttpServletRequest request) {
+        try {
+            // 從 Session 中獲取當前操作的員工
+            EmployeeVO currentEmployee = (EmployeeVO) request.getSession().getAttribute("employee");
+            if (currentEmployee == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "未登入，無法執行操作"));
+            }
+            // 執行刪除邏輯
+            employeeService.deleteEmployee(employeeId, currentEmployee);
+            return ResponseEntity.ok(Map.of("message", "再見掰掰！"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
     }
 }

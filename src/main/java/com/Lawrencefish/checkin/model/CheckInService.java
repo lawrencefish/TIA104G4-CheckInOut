@@ -8,8 +8,11 @@ import com.roomType.model.RoomTypeRepository;
 import com.roomType.model.RoomTypeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service()
 public class CheckInService {
@@ -52,6 +55,16 @@ public class CheckInService {
     public void updateOrderStatus(Integer orderId, Byte status) {
         OrderVO order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+        // 檢查當前狀態是否允許更新
+        Byte currentStatus = order.getStatus();
+//        if (currentStatus != 0) { // 0 表示未報到
+//            throw new RuntimeException("Order ID " + orderId + " cannot be updated. Current status: " + currentStatus);
+//        }
+        if (currentStatus == 1) { // 0 表示未報到
+            throw new RuntimeException("此訂單已被處理");
+        } else if (currentStatus != 0){
+            throw new RuntimeException("Order ID " + orderId + " cannot be updated. Current status: " + currentStatus);
+        }
         order.setStatus(status); // 將訂單狀態設為 1（已報到）
         orderRepository.save(order);
     }
@@ -81,5 +94,28 @@ public class CheckInService {
     public RoomVO getRoomByOrderDetailId(Integer orderDetailId) {
         return roomRepository.findByOrderDetailId(orderDetailId)
                 .orElseThrow(() -> new RuntimeException("Room not found for the given order detail ID"));
+    }
+
+    @Transactional
+    public void processCheckIn(List<CheckInRequest> requests) {
+        Set<Integer> processedOrders = new HashSet<>(); // 用來記錄已更新的訂單 ID
+        for (CheckInRequest request : requests) {
+            // 如果該訂單已處理，跳過狀態更新
+            if (!processedOrders.contains(request.getOrderId())) {
+                // 更新訂單狀態為 "已報到"
+                updateOrderStatus(request.getOrderId(), (byte) 1);
+                // 將訂單 ID 記錄為已處理
+                processedOrders.add(request.getOrderId());
+            }
+            // 更新房間狀態為 "已占用"
+            updateRoomStatus(request.getAssignedRoomId(), (byte) 1);
+            // 更新房間的住客信息
+            updateRoomCustomerInfo(
+                    request.getAssignedRoomId(),
+                    request.getCustomerName(),
+                    request.getCustomerPhoneNumber(),
+                    request.getOrderDetailId()
+            );
+        }
     }
 }
