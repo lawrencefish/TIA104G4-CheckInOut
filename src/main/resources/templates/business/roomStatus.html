@@ -1011,15 +1011,19 @@
                                     // 將按鈕加入對應的房型卡片
                                     buttonContainer.appendChild(button);
                                 });
-                                // 清空加載圖片並顯示內容
-                                loadingElement.style.display = "none";
-                                roomDynamicSections.style.display = "block";
+                                // // 清空加載圖片並顯示內容
+                                // loadingElement.style.display = "none";
+                                // roomDynamicSections.style.display = "block";
                             })
                             .catch(error => console.error("Error fetching rooms:", error)); // 處理房間資料的錯誤
                     });
                 })
                 .catch(error => console.error("Error fetching room types:", error)); // 處理房型資料的錯誤
+            // 清空加載圖片並顯示內容
+            loadingElement.style.display = "none";
+            roomDynamicSections.style.display = "block";
         });
+
 
     </script>
 </body>
