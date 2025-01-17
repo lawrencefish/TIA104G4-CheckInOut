@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS checkinout;
 use checkinout;
 
+DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS room;
 DROP TABLE IF EXISTS contact_us;
 DROP TABLE IF EXISTS order_detail;
@@ -24,7 +25,7 @@ DROP TABLE IF EXISTS admin;
 DROP TABLE IF EXISTS member;
 DROP TABLE IF EXISTS hotel;
 DROP TABLE IF EXISTS frequent_reply_list;
-DROP TABLE IF EXISTS comments;
+
 
 CREATE TABLE frequent_reply_list (
     frequent_reply_id INT PRIMARY KEY AUTO_INCREMENT, -- 常用回覆ID (主鍵，自增)
