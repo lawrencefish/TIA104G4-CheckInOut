@@ -27,6 +27,7 @@ public class RoomTypeVO {
 
     // hotel_id INT NOT NULL
     // 多對一: 多個 RoomType 對應 一個 Hotel
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "hotel_id", nullable = false)
     private HotelVO hotel;
