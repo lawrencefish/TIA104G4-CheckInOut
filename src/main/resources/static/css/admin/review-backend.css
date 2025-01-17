@@ -111,17 +111,17 @@ body {
   text-align: center;
 }
 
-.filter-chip[data-status="pending"] .count-badge {
+.filter-chip[data-status="0"] .count-badge {
   background: #fff7ed;
   color: #ea580c;
 }
 
-.filter-chip[data-status="approved"] .count-badge {
+.filter-chip[data-status="1"] .count-badge {
   background: #f0fdf4;
   color: #16a34a;
 }
 
-.filter-chip[data-status="rejected"] .count-badge {
+.filter-chip[data-status="2"] .count-badge {
   background: #fef2f2;
   color: #dc2626;
 }
@@ -171,17 +171,17 @@ body {
   font-weight: 500;
 }
 
-.status-badge.pending {
+.status-badge.status-0 { /* 待審核 */
   background: #fff7ed;
   color: #ea580c;
 }
 
-.status-badge.approved {
+.status-badge.status-1 { /* 已通過 */
   background: #f0fdf4;
   color: #16a34a;
 }
 
-.status-badge.rejected {
+.status-badge.status-2 { /* 已拒絕 */
   background: #fef2f2;
   color: #dc2626;
 }

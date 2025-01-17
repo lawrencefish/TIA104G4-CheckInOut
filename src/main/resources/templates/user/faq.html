@@ -1,148 +1,349 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
-
+<html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>常見問題</title>
-<link rel="stylesheet"
-	th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
-<link rel="stylesheet" th:href="@{/vendors/bootstrap/css/headers.css}">
-<link rel="stylesheet" th:href="@{/css/user/template.css}">
-<style>
-.big-title {
-	height: 100px;
-	background-color: #eeeae7;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>常見問題</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .big-title {
+            height: 100px;
+            background-color: #eeeae7;
+        }
 
-.accordion-button:not(.collapsed) {
-	background-color: #f8f9fa;
-	color: #000;
-}
+        .accordion-button:not(.collapsed) {
+            background-color: #f8f9fa;
+            color: #000;
+        }
 
-.accordion-button:focus {
-	box-shadow: none;
-	border-color: rgba(0, 0, 0, .125);
-}
-</style>
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: rgba(0, 0, 0, .125);
+        }
 
+        footer {
+            margin-top: 2rem;
+            padding: 1rem 0;
+            background-color: #f8f9fa;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .error-message {
+            display: none;
+            color: red;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        /* 管理員介面樣式 */
+        .admin-controls {
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+        }
+
+        .admin-controls .btn {
+            margin-right: 0.5rem;
+        }
+    </style>
 </head>
-
 <body>
-	<!-- 標題列 -->
-	<header class="p-3 mb-0 border-bottom shadow-sm">
-	</header>
-	<main>
+    <!-- 標題列 -->
+    <header class="p-3 mb-0 border-bottom shadow-sm">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="/" class="text-decoration-none">
+                    <img src="/imgs/user/logo.png" alt="Logo" height="40">
+                </a>
+                <div>
+                    <a href="/login" class="btn btn-outline-primary me-2">登入</a>
+                    <a href="/register" class="btn btn-primary">註冊</a>
+                </div>
+            </div>
+        </div>
+    </header>
 
-		<div class="container shadow-sm">
-			<div class="row big-title mb-3">
-				<h1 class="text-center fw-bold display-5 col align-self-center">常見問題</h1>
-			</div>
-			<div class="accordion" id="faqAccordion">
-				<div class="accordion-item">
-					<h2 class="accordion-header" id="heading1">
-						<button class="accordion-button" type="button"
-							data-bs-toggle="collapse" data-bs-target="#collapseOne"
-							aria-expanded="true" aria-controls="collapseOne">如何成為會員</button>
-					</h2>
-					<div id="collapseOne" class="accordion-collapse collapse show"
-						aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
-						<div class="accordion-body">
-							在首頁右上角點選[登入/註冊]點選註冊。或是您也可以使用Google帳戶做登錄，它會連結到與該帳戶相連的電子郵件後，您可能需要輸入密碼。
-						</div>
-					</div>
-				</div>
+    <main>
+        <div class="container shadow-sm">
+            <!-- 標題區 -->
+            <div class="row big-title mb-3">
+                <h1 class="text-center fw-bold display-5 col align-self-center">常見問題</h1>
+            </div>
 
-				<div class="accordion-item">
-					<h2 class="accordion-header" id="headingTwo">
-						<button class="accordion-button collapsed" type="button"
-							data-bs-toggle="collapse" data-bs-target="#collapseTwo"
-							aria-expanded="false" aria-controls="collapseTwo">
-							忘記密碼怎麼辦</button>
-					</h2>
-					<div id="collapseTwo" class="accordion-collapse collapse"
-						aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
-						<div class="accordion-body">您只需點選登入頁面的「忘記密碼？」連結，然後根據指示輸入您的
-							E-Mail ，稍後您就會收到一封驗證您帳號的郵件，點選後即可修該改密碼。</div>
-					</div>
-				</div>
-				<div class="accordion-item">
-					<h2 class="accordion-header" id="headingThree">
-						<button class="accordion-button collapsed" type="button"
-							data-bs-toggle="collapse" data-bs-target="#collapseThree"
-							aria-expanded="false" aria-controls="collapseTwo">如何變更密碼
-						</button>
-					</h2>
-					<div id="collapseThree" class="accordion-collapse collapse"
-						aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
-						<div class="accordion-body">登入後點選[基本資料管理]即可修改密碼</div>
-					</div>
-				</div>
-				<div class="accordion-item">
-					<h2 class="accordion-header" id="headingFour">
-						<button class="accordion-button collapsed" type="button"
-							data-bs-toggle="collapse" data-bs-target="#collapseFour"
-							aria-expanded="false" aria-controls="collapseTwo">如何查詢訂單
-						</button>
-					</h2>
-					<div id="collapseFour" class="accordion-collapse collapse"
-						aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
-						<div class="accordion-body">登入後頁面右上角點選[訂單查詢]</div>
-					</div>
-				</div>
-				<div class="accordion-item">
-					<h2 class="accordion-header" id="headingFive">
-						<button class="accordion-button collapsed" type="button"
-							data-bs-toggle="collapse" data-bs-target="#collapseFive"
-							aria-expanded="false" aria-controls="collapseTwo">付款方式</button>
-					</h2>
-					<div id="collapseFive" class="accordion-collapse collapse"
-						aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
-						<div class="accordion-body">目前僅提供信用卡方式付款</div>
-					</div>
-				</div>
-				<div class="accordion-item">
-					<h2 class="accordion-header" id="headingSix">
-						<button class="accordion-button collapsed" type="button"
-							data-bs-toggle="collapse" data-bs-target="#collapseSix"
-							aria-expanded="false" aria-controls="collapseThree">
-							165反詐騙宣導</button>
-					</h2>
-					<div id="collapseSix" class="accordion-collapse collapse"
-						aria-labelledby="headingSix" data-bs-parent="#faqAccordion">
-						<div class="accordion-body">
-							慎防詐騙請注意！倘若您接獲不明人士假冒客服電話，謊稱數量錯誤、訂單扣款錯誤、付款方式分期設定錯誤、退款通知，以上皆為網路慣用詐騙手法，請會員們提高警覺！並立即通知我們！**我們不會主動在非服務時間以電話、Line或其他非官方客服方式與您聯繫，或使用+886、+882及080開頭之電話號碼(080免費服務電話只可接受來電，並無外撥功能)，以上皆為高度詐騙風險來電，請切勿相信。**
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</main>
-	<footer>
-		<div class="row border-top">
-			<div class="container">
-				<ul class="nav justify-content-center">
-					<li class="nav-item"><a th:href="@{/user/}" class="nav-link px-2 text-body-secondary">首頁</a></li>
-					<li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
-					<li class="nav-item"><a th:href="@{/user/order}"
-							class="nav-link px-2 text-body-secondary">訂單管理</a></li>
-					<li class="nav-item"><a th:href="@{/user/faq}" class="nav-link px-2 text-body-secondary">常見問題</a>
-					</li>
-					<li class="nav-item"><a th:href="@{/user/contactUs}"
-							class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
-					<li class="nav-item"><a th:href="@{/login/}" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
-				</ul>
-				<div class="d-flex justify-content-center align-items-start mb-0">
-					<img th:src="@{/imgs/user/checKInOut_logo_light.png}" alt="checkinout" width="128">
-				</div>
-				<!-- <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p> -->
-			</div>
-		</div>
-	</footer>
-	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
-	<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
-    <script src="/js/user/loginCheck.js" defer></script>
+            <!-- 載入中提示 -->
+            <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">載入中...</span>
+                </div>
+                <p>載入中...</p>
+            </div>
 
+            <!-- 錯誤提示 -->
+            <div class="error-message alert alert-danger" role="alert">
+                載入失敗，請稍後再試
+            </div>
+
+            <!-- FAQ列表 -->
+            <div class="accordion" id="faqAccordion">
+                <!-- FAQ內容會動態插入這裡 -->
+            </div>
+
+            <!-- 管理員控制面板（預設隱藏） -->
+            <div class="admin-controls" style="display: none;">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#faqModal">
+                    新增FAQ
+                </button>
+            </div>
+        </div>
+
+        <!-- FAQ編輯Modal -->
+        <div class="modal fade" id="faqModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="faqModalLabel">新增/編輯 FAQ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="faqForm">
+                            <input type="hidden" id="faqId">
+                            <div class="mb-3">
+                                <label for="question" class="form-label">問題</label>
+                                <input type="text" class="form-control" id="question" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="answer" class="form-label">答案</label>
+                                <textarea class="form-control" id="answer" rows="3" required></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="saveFaqBtn">儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 頁尾 -->
+     <footer>
+        <div class="container">
+            <footer class="py-3 my-4">
+                <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">首頁</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">找房</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">常見問題</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+                </ul>
+                <p class="text-center text-body-secondary">2024 Check IN OUT</p>
+            </footer>
+        </div>
+    </footer>
+
+    <!-- JavaScript 依賴 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- FAQ功能實現 -->
+    <script>
+        $(document).ready(function() {
+            const API_BASE_URL = '/api/faqs';
+            let currentFaqId = null;
+            
+            // 載入所有FAQ
+            loadFaqs();
+            
+            // 儲存FAQ按鈕點擊事件
+            $('#saveFaqBtn').click(function() {
+                const faqData = {
+                    question: $('#question').val(),
+                    answer: $('#answer').val()
+                };
+                
+                if (currentFaqId) {
+                    updateFaq(currentFaqId, faqData);
+                } else {
+                    createFaq(faqData);
+                }
+            });
+
+            // FAQ Modal關閉時重置表單
+            $('#faqModal').on('hidden.bs.modal', function() {
+                $('#faqForm').trigger('reset');
+                currentFaqId = null;
+                $('#faqModalLabel').text('新增 FAQ');
+            });
+
+            function loadFaqs() {
+                $('.loading-spinner').show();
+                $('.error-message').hide();
+                $('#faqAccordion').hide();
+
+                $.ajax({
+                    url: API_BASE_URL,
+                    method: 'GET',
+                    success: function(faqs) {
+                        displayFaqs(faqs);
+                        $('.loading-spinner').hide();
+                        $('#faqAccordion').show();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('載入FAQ失敗:', error);
+                        $('.loading-spinner').hide();
+                        $('.error-message').show();
+                    }
+                });
+            }
+
+            function displayFaqs(faqs) {
+                const $accordion = $('#faqAccordion');
+                $accordion.empty();
+
+                faqs.forEach((faq, index) => {
+                    const isFirst = index === 0;
+                    const accordionItem = `
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading${faq.faqId}">
+                                <button class="accordion-button ${isFirst ? '' : 'collapsed'}" 
+                                        type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#collapse${faq.faqId}" 
+                                        aria-expanded="${isFirst}" 
+                                        aria-controls="collapse${faq.faqId}">
+                                    ${escapeHtml(faq.question)}
+                                </button>
+                            </h2>
+                            <div id="collapse${faq.faqId}" 
+                                 class="accordion-collapse collapse ${isFirst ? 'show' : ''}" 
+                                 aria-labelledby="heading${faq.faqId}" 
+                                 data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    ${escapeHtml(faq.answer)}
+                                    <div class="admin-controls mt-2" style="display: none;">
+                                        <button class="btn btn-sm btn-outline-primary edit-faq" 
+                                                data-faq-id="${faq.faqId}"
+                                                data-question="${escapeHtml(faq.question)}"
+                                                data-answer="${escapeHtml(faq.answer)}">
+                                            編輯
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger delete-faq" 
+                                                data-faq-id="${faq.faqId}">
+                                            刪除
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    $accordion.append(accordionItem);
+                });
+
+                // 綁定編輯和刪除按鈕事件
+                bindAdminControls();
+            }
+
+            function bindAdminControls() {
+                // 編輯FAQ
+                $('.edit-faq').click(function() {
+                    const $btn = $(this);
+                    currentFaqId = $btn.data('faq-id');
+                    $('#question').val($btn.data('question'));
+                    $('#answer').val($btn.data('answer'));
+                    $('#faqModalLabel').text('編輯 FAQ');
+                    $('#faqModal').modal('show');
+                });
+
+                // 刪除FAQ
+                $('.delete-faq').click(function() {
+                    const faqId = $(this).data('faq-id');
+                    if (confirm('確定要刪除這個常見問題嗎？')) {
+                        deleteFaq(faqId);
+                    }
+                });
+            }
+
+            function createFaq(faqData) {
+                $.ajax({
+                    url: API_BASE_URL,
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(faqData),
+                    success: function(response) {
+                        $('#faqModal').modal('hide');
+                        loadFaqs();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('創建FAQ失敗，請稍後再試');
+                        console.error('創建FAQ失敗:', error);
+                    }
+                });
+            }
+
+            function updateFaq(id, faqData) {
+                $.ajax({
+                    url: `${API_BASE_URL}/${id}`,
+                    method: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(faqData),
+                    success: function(response) {
+                        $('#faqModal').modal('hide');
+                        loadFaqs();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('更新FAQ失敗，請稍後再試');
+                        console.error('更新FAQ失敗:', error);
+                    }
+                });
+            }
+
+            function deleteFaq(id) {
+                $.ajax({
+                    url: `${API_BASE_URL}/${id}`,
+                    method: 'DELETE',
+                    success: function() {
+                        loadFaqs();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('刪除FAQ失敗，請稍後再試');
+                        console.error('刪除FAQ失敗:', error);
+                    }
+                });
+            }
+
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            // 檢查是否為管理員（這裡需要根據你的認證系統進行修改）
+            function checkAdmin() {
+                // 示例：檢查本地存儲中的用戶角色
+                const userRole = localStorage.getItem('userRole');
+                if (userRole === 'ADMIN') {
+                    $('.admin-controls').show();
+                }
+            }
+
+            // 頁面載入時檢查管理員權限
+            checkAdmin();
+        });
+    </script>
+     <script src="/js/user/loginCheck.js" defer></script>
 </body>
-
 </html>

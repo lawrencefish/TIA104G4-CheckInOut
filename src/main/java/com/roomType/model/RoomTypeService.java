@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -104,4 +106,37 @@ public class RoomTypeService {
     public List<RoomTypeVO> findAll() {
         return roomTypeRepository.findAll(); // 調用 JPA 提供的 findAll() 方法
     }
+
+    
+    // 房型審核用 -By Barry
+    public List<RoomTypeVO> findAllRooms() {
+        return roomTypeRepository.findAllWithHotel();
+    }
+
+    public List<RoomTypeVO> findByHotel(Integer hotelId) {
+        return roomTypeRepository.findByHotel(hotelId);
+    }
+
+    public List<RoomTypeVO> findByStatus(Byte status) {
+        return roomTypeRepository.findByStatus(status);
+    }
+
+    public Optional<RoomTypeVO> findById(Integer roomTypeId) {
+        return roomTypeRepository.findById(roomTypeId);
+    }
+
+    public RoomTypeVO saveRoom(RoomTypeVO roomType) {
+        return roomTypeRepository.save(roomType);
+    }
+
+    public RoomTypeVO updateStatus(Integer roomTypeId, Byte status) {
+        Optional<RoomTypeVO> optionalRoom = roomTypeRepository.findById(roomTypeId);
+        if (optionalRoom.isPresent()) {
+        	RoomTypeVO roomType = optionalRoom.get();
+        	roomType.setStatus(status);
+            return roomTypeRepository.save(roomType);
+        }
+        return null;
+    }
+    //-------------------------------------------
 }

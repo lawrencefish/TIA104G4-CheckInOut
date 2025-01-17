@@ -9,13 +9,12 @@ const state = {
 };
 
 // API 端點配置（暫時註解）
-/*
 const API_ENDPOINTS = {
-  BUSINESS_INFO: '/api/business',
-  REVIEWS: '/api/reviews',
-  IMAGES: '/api/images'
+  HOTEL_INFO: '/hotel/getHotelData'
+//  REVIEWS: '/api/reviews',
+//  IMAGES: '/api/images'
 };
-*/
+
 
 // 初始化函數
 async function initializeApp() {
@@ -51,39 +50,18 @@ async function initializeApp() {
 }
 
 // 載入業者數據
-async function loadBusinessData(businessId) {
+async function loadBusinessData(hotelId) {
   try {
-    console.log('開始載入業者資料，ID:', businessId);
+    console.log('開始載入業者資料，ID:', hotelId);
     
     // API 調用（暫時註解）
-    /*
-    const response = await fetch(`${API_ENDPOINTS.BUSINESS_INFO}/${businessId}`);
+    
+    const response = await fetch(`${/hotel/getHotelData}/${hotelId}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    state.businessData = await response.json();
-    */
+    state.hotelInfo = await response.json();
     
-    // 使用假資料
-    state.businessData = {
-      name: '好吃好睡飯店',
-      id: '12345678',
-      city: '台北市',
-      area: '大安區',
-      address: '台北市大安區光復南路123號',
-      phone: '1234-5678',
-      email: 'example@example.com',
-      images: {
-        idCardFront: './img/假身分證正面.png',
-        idCardBack: './img/假身分證正面.png',
-        businessLicense: './img/營業證樣本.png',
-        environment: [
-          './img/環境照片.webp',
-          './img/環境照片2.jpg',
-          './img/環境照片3.jpg'
-        ]
-      }
-    };
 
     console.log('業者資料載入成功:', state.businessData);
     await updateBusinessInfo();
@@ -127,13 +105,10 @@ async function updateBusinessInfo() {
 // 更新圖片
 async function updateImages() {
   try {
-    // API 調用（暫時註解）
-    /*
-    const response = await fetch(`${API_ENDPOINTS.IMAGES}/${state.businessData.id}`);
-    const images = await response.json();
-    */
-
-    const images = state.businessData.images;
+    // API 調用
+//    const response = await fetch(`${API_ENDPOINTS.IMAGES}/${state.businessData.id}`);
+//    const images = await response.json();
+//    const images = state.businessData.images;
 
     // 更新證件圖片
     document.getElementById('image1').src = images.idCardFront;
@@ -180,29 +155,10 @@ async function changeReview(type) {
     }
 
     // API 調用（暫時註解）
-    /*
+    
     const response = await fetch(`${API_ENDPOINTS.REVIEWS}/${type}`);
     state.allReviews = await response.json();
-    */
-
-    // 使用假評論資料
-    const mockReviews = {
-      member: [
-        { title: '會員評論 A', description: '這是會員評論 A 的詳細描述。' },
-        { title: '會員評論 B', description: '這是會員評論 B 的詳細描述。' },
-        { title: '會員評論 C', description: '這是會員評論 C 的詳細描述。' },
-        { title: '會員評論 D', description: '這是會員評論 D 的詳細描述。' },
-        { title: '會員評論 E', description: '這是會員評論 E 的詳細描述。' }
-      ],
-      user: [
-        { title: '來自會員的評論 A', description: '這是來自會員的評論 A 的詳細描述。' },
-        { title: '來自會員的評論 B', description: '這是來自會員的評論 B 的詳細描述。' },
-        { title: '來自會員的評論 C', description: '這是來自會員的評論 C 的詳細描述。' },
-        { title: '來自會員的評論 D', description: '這是來自會員的評論 D 的詳細描述。' },
-        { title: '來自會員的評論 D', description: '這是來自會員的評論 D 的詳細描述。' }
-      ]
-    };
-
+    
     state.allReviews = mockReviews[type] || [];
     state.currentReviewPage = 1;
     displayReviews();

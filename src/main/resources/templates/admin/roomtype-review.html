@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>房型審核</title>
-    <link rel="stylesheet" href="./css/roomtype-review.css">
-    <link rel="stylesheet" href="./css/headerfooter.css">
+    <link rel="stylesheet" th:href="@{/css/admin/roomtype-review.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
 </head>
 <body>
-  <!-- 動態導入header -->
-  <div id="header"></div>
+  <!-- Header -->
+    <div th:replace="~{admin/backend-header :: header}"></div>
+
 
     <div class="admin-banner">
         <h1>房型審核</h1>
@@ -19,37 +20,57 @@
         <div class="review-section">
             <div class="room-header">
                 <div class="hotel-info">
-                    <h2>豪華雙人房</h2>
-                    <span class="hotel-name">日月行館</span>
+                    <h2 th:text="${roomType.roomName}">房型名稱</h2>
+                    <span class="hotel-name" th:text="${roomType.hotel.name}">業者名稱</span>
                 </div>
-                <div class="status-badges">
-                    <span class="status-badge status-pending">待審核</span>
+                <div class="status-badges" th:classappend="'status-' + ${roomType.status == 0 ? 'pending' : (roomType.status == 1 ? 'approved' : 'rejected')}">
+                    <span class="status-badge status-pending" th:text="${roomType.status == 0 ? '待審核' : (roomType.status == 1 ? '已通過' : '已拒絕')}"></span>
                 </div>
             </div>
 
             <div class="room-info">
                 <div class="room-images">
-                    <img src="/api/placeholder/800/500" alt="主要房間圖片" class="main-image" id="mainImage">
+                    <!-- 主圖片 -->
+                    <img th:if="${not #lists.isEmpty(roomType.roomTypeImgs)}" 
+                         th:src="@{'/adminRoomType/image/' + ${roomType.roomTypeImgs[0].imgId}}"
+                         alt="主要房間圖片" class="main-image" id="mainImage">
+                    <img th:unless="${not #lists.isEmpty(roomType.roomTypeImgs)}"
+                         th:src="@{/images/default-room.jpg}" 
+                         alt="無圖片" class="main-image" id="mainImage">
+
+                    <!-- 縮圖容器 -->
                     <div class="thumbnail-container">
-                        <img src="/api/placeholder/80/80" alt="縮圖1" class="thumbnail">
-                        <img src="/api/placeholder/80/80" alt="縮圖2" class="thumbnail">
-                        <img src="/api/placeholder/80/80" alt="縮圖3" class="thumbnail">
-                        <img src="/api/placeholder/80/80" alt="縮圖4" class="thumbnail">
+                        <!-- 有圖片時顯示實際圖片 -->
+                        <th:block th:if="${not #lists.isEmpty(roomType.roomTypeImgs)}">
+                            <img th:each="img : ${roomType.roomTypeImgs}"
+                                 th:src="@{'/adminRoomType/image/' + ${img.imgId}}"
+                                 class="thumbnail"
+                                 th:alt="'房型圖片' + ${imgStat.index + 1}">
+                        </th:block>
+                        <!-- 無圖片時顯示預設圖片 -->
+                        <th:block th:unless="${not #lists.isEmpty(roomType.roomTypeImgs)}">
+                            <img th:each="i : ${#numbers.sequence(1, 4)}"
+                                 th:src="@{/images/default-thumbnail.jpg}"
+                                 class="thumbnail"
+                                 th:alt="'預設縮圖' + ${i}">
+                        </th:block>
                     </div>
                 </div>
 
                 <div class="room-details">
                     <div class="detail-item">
                         <div class="detail-label">房型資訊</div>
-                        <p>2-4人｜1大床｜35平方公尺｜附陽台</p>
+                        <span th:text="${roomType.maxPerson} + '人'"></span>
+                        <span th:if="${roomType.breakfast == 1}">｜附早餐</span>
+            			<span th:if="${roomType.breakfast == 0}">｜不附早餐</span>
                     </div>
-                    <div class="detail-item">
-                        <div class="detail-label">房間設施</div>
-                        <p>空調｜衛浴｜冰箱｜電視｜Wi-Fi｜吹風機</p>
-                    </div>
+                    <div class="detail-item" th:if="${roomType.roomTypeFacilities != null and not #lists.isEmpty(roomType.roomTypeFacilities)}">
+				        <div class="detail-label">房間設施</div>
+<!-- 				        <p th:text="${roomTypeFacilities.facilityId, '｜')}">設施列表</p> -->
+			   	 	</div>
                     <div class="detail-item">
                         <div class="detail-label">描述</div>
-                        <p>舒適寬敞的空間，配備高級家具及設施，提供賓客極致的住宿體驗。每間房都有獨立陽台，可以欣賞美麗的城市景觀。</p>
+                        <p th:text="${roomType.roomName}"></p>
                     </div>
                 </div>
             </div>
@@ -60,8 +81,8 @@
             </div>
 
             <div class="action-buttons">
-                <button class="btn btn-approve" onclick="approveRoom()">通過審核</button>
-                <button class="btn btn-reject" onclick="rejectRoom()">駁回申請</button>
+                <button class="btn btn-approve" onclick="approveRoom()" th:if="${roomType.status == 0}">通過審核</button>
+                <button class="btn btn-reject" onclick="rejectRoom()" th:if="${roomType.status == 0}">駁回申請</button>
             </div>
         </div>
 
@@ -76,10 +97,10 @@
     </div>
 
 
-    <!-- 動態導入footer -->
-    <div id="footer"></div>
-
-    <script src="./js/header.js"></script>
-    <script src="./js/roomtype-review.js"></script>
+    <!-- Footer -->
+    <div th:replace="~{admin/backend-footer :: footer}"></div>
+	
+    <script th:src="@{/js/admin/header.js}"></script>
+    <script th:src="@{/js/admin/roomtype-review.js}"></script>
 </body>
 </html>

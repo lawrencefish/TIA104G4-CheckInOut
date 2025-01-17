@@ -99,6 +99,14 @@ public class LoginController {
         // 驗證成功 -> 存入 Session
         request.getSession().setAttribute("hotel", hotel);
 
+
+        // 檢查是否有對應員工
+        boolean hasEmployees = employeeService.existsByHotelId(hotel.getHotelId());
+        if (!hasEmployees) {
+            // 如果沒有對應的員工，重定向到一個提示頁面
+            return "redirect:/signUp/signUp-3";
+        }
+
         // 導向員工登入頁
         return "redirect:/login/employee";
     }

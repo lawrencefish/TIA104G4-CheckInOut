@@ -7,6 +7,7 @@ import com.room.model.RoomVO;
 import com.roomType.model.RoomTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -47,5 +48,42 @@ public class CheckOutService {
         System.out.println("Room customer info cleared for Room ID: " + roomId);
     }
 
+    @Transactional
+    public void processCheckOut(CheckOutRequest checkOutRequest) {
+        // 1. 驗證訂單狀態是否為 "已報到" (1)
+        OrderVO order = orderRepository.findById(checkOutRequest.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Order not found for ID: " + checkOutRequest.getOrderId()));
+//        if (order.getStatus() != 1) {
+//            throw new RuntimeException("Order ID " + checkOutRequest.getOrderId() + " is not in a valid state for check-out.");
+//        }
+        if (order.getStatus() == 2) {
+            throw new RuntimeException("此訂單已被處理");
+        } else if (order.getStatus() != 1) {
+            throw new RuntimeException("Order ID " + checkOutRequest.getOrderId() + " is not in a valid state for check-out.");
+        }
 
+        // 2. 更新訂單狀態為 "已退房" (2)
+        order.setStatus((byte) 2);
+        orderRepository.save(order);
+
+        // 3. 處理每個房間的狀態更新和清空住客信息
+        for (Integer roomId : checkOutRequest.getRoomIds()) {
+            if (roomId == null) {
+                throw new RuntimeException("Room ID cannot be null.");
+            }
+
+            RoomVO room = roomRepository.findById(roomId)
+                    .orElseThrow(() -> new RuntimeException("Room not found for ID: " + roomId));
+
+            // 更新房間狀態為 "空房" (0)
+            room.setStatus((byte) 0);
+
+            // 清空住客信息
+            room.setCustomerName(null);
+            room.setCustomerPhoneNumber(null);
+            room.setOrderDetailId(null);
+
+            roomRepository.save(room);
+        }
+    }
 }

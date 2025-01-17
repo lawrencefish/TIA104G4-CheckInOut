@@ -91,4 +91,10 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventoryVO, 
     @Query(value = "SELECT date, COUNT(*) FROM room_inventory GROUP BY date", nativeQuery = true)
     List<Object[]> countRoomsByDate();
 
+	@Query("SELECT ri FROM RoomInventoryVO ri WHERE ri.date BETWEEN :startDate AND :endDate AND ri.roomType.hotel.hotelId = :hotelId")
+	List<RoomInventoryVO> findByDateRangeAndHotel(
+			@Param("startDate") LocalDate startDate,
+			@Param("endDate") LocalDate endDate,
+			@Param("hotelId") Integer hotelId);
+
 }

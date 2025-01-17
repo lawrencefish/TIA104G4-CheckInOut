@@ -1,280 +1,156 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
-
+<html lang="zh-tw">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>聯繫我們</title>
-<link rel="stylesheet"
-	th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
-<link rel="stylesheet" th:href="@{/vendors/bootstrap/css/headers.css}">
-<link rel="stylesheet" th:href="@{/css/template.css}">
-<link rel="stylesheet" th:href="@{/vendors/bootstrap/css/dropdowns.css}">
-<style>
-.big-title {
-	height: 100px;
-	background-color: #eeeae7;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聯繫我們 - Check in Out</title>
+    <link rel="stylesheet" href="/vendors/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/user/template.css">
+    <style>
+        .big-title {
+            height: 100px;
+            background-color: #eeeae7;
+        }
+        
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
 
-.header-left {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-}
-
-.header-right {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-}
-
-.preview {
-	display: flex;
-	justify-content: center;
-	margin-top: 10px;
-}
-
-.preview img {
-	max-width: 100%;
-	max-height: 200px;
-}
-</style>
+        .input-help {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+        }
+    </style>
 </head>
 
 <body>
-	<!-- 標題列 -->
-	<header class="p-3 mb-0 border-bottom shadow-sm">
-	</header>
-	<!-- 大標題 -->
-	<div class="container shadow-sm mb-3">
-		<div class="row big-title mb-3">
-			<h1 class="text-center fw-bold display-5 col align-self-center">聯繫我們</h1>
-		</div>
-		<form id="contactForm" class="p-4 border rounded shadow-sm">
-			<div class="mb-3">
-				<label for="firstName" class="form-label">姓名</label> <input
-					type="text" class="form-control" id="firstName" name="firstName"
-					required>
-			</div>
-			<div class="mb-3">
-				<label for="email" class="form-label">信箱</label> <input type="email"
-					class="form-control" id="email" name="email" required>
-			</div>
-			<!-- <div class="mb-3">
-				<label for="orderNumber" class="form-label">訂單編號</label> <input
-					type="text" class="form-control" id="orderNumber"
-					name="orderNumber">
-			</div>
-			<div class="mb-3">
-				<label for="hotelName" class="form-label">飯店名</label> <input
-					type="text" class="form-control" id="hotelName" name="hotelName">
-			</div>
-			<div class="mb-3">
-				<label for="checkInDate" class="form-label">入住日期</label> <input
-					type="date" class="form-control" id="checkInDate"
-					name="checkInDate">
-			</div> -->
-			<div class="mb-3">
-				<label for="message" class="form-label">請輸入內容</label>
-				<textarea class="form-control" id="message" name="message" rows="4"
-					required></textarea>
-			</div>
-			<!-- <div class="mb-3">
-				<label for="photo" class="form-label">上傳照片</label> <input
-					type="file" class="form-control" id="photo" name="photo"
-					accept="image/*">
-				<div class="preview mt-3" id="photoPreview"></div>
-			</div> -->
-			<button type="submit" class="btn btn-primary w-100">送出</button>
-		</form>
-	</div>
-	<footer>
-		<div class="row border-top">
-			<div class="container">
-				<ul class="nav justify-content-center">
-					<li class="nav-item"><a th:href="@{/user/}" class="nav-link px-2 text-body-secondary">首頁</a></li>
-					<li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
-					<li class="nav-item"><a th:href="@{/user/order}"
-							class="nav-link px-2 text-body-secondary">訂單管理</a></li>
-					<li class="nav-item"><a th:href="@{/user/faq}" class="nav-link px-2 text-body-secondary">常見問題</a>
-					</li>
-					<li class="nav-item"><a th:href="@{/user/contactUs}"
-							class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
-					<li class="nav-item"><a th:href="@{/login/}" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
-				</ul>
-				<div class="d-flex justify-content-center align-items-start mb-0">
-					<img th:src="@{/imgs/user/checKInOut_logo_light.png}" alt="checkinout" width="128">
-				</div>
-				<!-- <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p> -->
-			</div>
-		</div>
-	</footer>
+    <header class="p-1 border-bottom shadow-sm">
+    </header>
 
-	<!-- <script>
-        // 照片預覽功能
-        document.getElementById('photo').addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('photoPreview');
-            preview.innerHTML = ''; // 清空之前的預覽
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    preview.appendChild(img);
+    <main>
+        <div class="container shadow-sm">
+            <div class="row big-title mb-3">
+                <h1 class="text-center fw-bold display-5 col align-self-center">聯繫我們</h1>
+            </div>
+
+            <div class="form-container">
+                <form id="contactUsForm">
+                    <div class="mb-4">
+                        <label class="form-label">姓名</label>
+                        <input type="text" class="form-control" name="name" id="name" required placeholder="請輸入姓名">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">電子信箱</label>
+                        <input type="email" class="form-control" name="email" id="email" required placeholder="example@gmail.com">
+                        <div class="input-help">我們會透過此信箱回覆您的訊息</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">訊息內容</label>
+                        <textarea class="form-control" name="message" id="message" required placeholder="請描述您的問題或建議"></textarea>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <button type="submit" class="btn btn-dark px-4 me-2">
+                            <span class="normal-text">送出</span>
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
+                        <button type="reset" class="btn btn-outline-dark px-4">清除資料</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <footer class="py-3 my-4">
+                <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">首頁</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">找房</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">常見問題</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+                </ul>
+                <p class="text-center text-body-secondary">2024 Check IN OUT</p>
+            </footer>
+        </div>
+    </footer>
+
+    <script src="/vendors/jQuery/jquery-3.7.1.min.js"></script>
+    <script src="/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#contactUsForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const submitBtn = $(this).find('button[type="submit"]');
+                const spinner = submitBtn.find('.spinner-border');
+                const normalText = submitBtn.find('.normal-text');
+                
+                // 禁用按鈕並顯示loading
+                submitBtn.prop('disabled', true);
+                spinner.removeClass('d-none');
+                normalText.addClass('d-none');
+
+                const formData = {
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    message: $('#message').val()
                 };
-                reader.readAsDataURL(file);
-            }
-        });
 
-        // 表單提交驗證
-        document.getElementById('contactForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // 阻止預設提交行為
-            const form = event.target;
-            let isValid = true;
-
-            // 驗證每個必填欄位
-            form.querySelectorAll('[required]').forEach(input => {
-                if (!input.value.trim()) {
-                    isValid = false;
-                }
+                $.ajax({
+                    url: 'http://localhost:8080/api/submit',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        showAlert('success', '感謝您的來信，我們會盡快回覆！');
+                        $('#contactUsForm')[0].reset();
+                    },
+                    error: function() {
+                        showAlert('danger', '發送失敗，請稍後再試。');
+                    },
+                    complete: function() {
+                        // 啟用按鈕並隱藏loading
+                        submitBtn.prop('disabled', false);
+                        spinner.addClass('d-none');
+                        normalText.removeClass('d-none');
+                    }
+                });
             });
 
-            if (isValid) {
-                alert('表單成功送出！我們將在三到五個工作天回覆');
-                form.reset(); // 重置表單
-                document.getElementById('photoPreview').innerHTML = ''; // 清空照片預覽
-            } else {
-                alert('請填寫所有必填欄位！');
+            function showAlert(type, message) {
+                const alertHtml = `
+                    <div class="alert alert-${type} alert-dismissible fade show mb-4" role="alert">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                $('#contactUsForm').prepend(alertHtml);
+                
+                setTimeout(() => {
+                    $('.alert').alert('close');
+                }, 5000);
             }
         });
     </script>
-	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
-	<script src="/js/user/loginCheck.js" defer></script> -->
-	<script>
-    // 照片預覽功能
-    document.getElementById('photo').addEventListener('change', function (event) {
-        const file = event.target.files[0];
-        const preview = document.getElementById('photoPreview');
-        preview.innerHTML = ''; // 清空之前的預覽
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                preview.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // 表單提交事件處理
-    document.getElementById('contactForm').addEventListener('submit', async function (event) {
-        event.preventDefault();
-        
-        // 基本驗證
-        const form = event.target;
-        let isValid = true;
-        form.querySelectorAll('[required]').forEach(input => {
-            if (!input.value.trim()) {
-                isValid = false;
-            }
-        });
-
-        if (!isValid) {
-            alert('請填寫所有必填欄位！');
-            return;
-        }
-
-        try {
-            // 準備表單數據
-            const formData = new FormData();
-            formData.append('firstName', document.getElementById('firstName').value);
-            formData.append('email', document.getElementById('email').value);
-            formData.append('contactUsText', document.getElementById('message').value);
-            
-            // 選填欄位
-            const orderNumber = document.getElementById('orderNumber').value;
-            if (orderNumber) {
-                formData.append('orderId', orderNumber);
-            }
-
-            const hotelName = document.getElementById('hotelName').value;
-            if (hotelName) {
-                formData.append('hotelName', hotelName);
-            }
-
-            const checkInDate = document.getElementById('checkInDate').value;
-            if (checkInDate) {
-                formData.append('checkInDate', checkInDate);
-            }
-
-            // 處理照片
-            const photoFile = document.getElementById('photo').files[0];
-            if (photoFile) {
-                formData.append('complaintPic', photoFile);
-            }
-
-            // 發送 API 請求
-            const response = await fetch('/api/contact-us', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error('API request failed');
-            }
-
-            const result = await response.json();
-            
-            if (result.success) {
-                alert('表單成功送出！我們將在三到五個工作天回覆');
-                form.reset();
-                document.getElementById('photoPreview').innerHTML = '';
-            } else {
-                throw new Error(result.message || '提交失敗，請稍後再試');
-            }
-
-        } catch (error) {
-            console.error('Error:', error);
-            let errorMessage = '提交失敗，請稍後再試';
-            
-            // 處理特定錯誤訊息
-            if (error.message.includes('需要登入')) {
-                errorMessage = '需要登入才能關聯訂單或飯店';
-            }
-            
-            alert(errorMessage);
-        }
-    });
-
-    // 可選：添加即時驗證
-    function validateEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-    }
-
-    document.getElementById('email').addEventListener('blur', function(e) {
-        if (!validateEmail(e.target.value)) {
-            e.target.classList.add('is-invalid');
-            // 可以添加提示訊息
-            let feedback = this.nextElementSibling;
-            if (!feedback || !feedback.classList.contains('invalid-feedback')) {
-                feedback = document.createElement('div');
-                feedback.className = 'invalid-feedback';
-                this.parentNode.appendChild(feedback);
-            }
-            feedback.textContent = '請輸入有效的電子郵件地址';
-        } else {
-            e.target.classList.remove('is-invalid');
-            const feedback = this.nextElementSibling;
-            if (feedback && feedback.classList.contains('invalid-feedback')) {
-                feedback.remove();
-            }
-        }
-    });
-</script>
-
+    <script src="/js/user/loginCheck.js" defer></script>
+    
 </body>
-
 </html>

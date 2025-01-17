@@ -525,10 +525,6 @@
                 <input type="text" id="forgot-company-id" placeholder="請輸入統一編號">
             </div>
             <div class="form-group">
-                <label for="forgot-email">電子信箱</label>
-                <input type="email" id="forgot-email" placeholder="請輸入電子信箱">
-            </div>
-            <div class="form-group">
                 <button type="button" id="send-code-button">寄送驗證碼</button>
             </div>
             <div class="form-group">
@@ -543,9 +539,11 @@
     </div>
 
     <!-- 重設密碼彈窗 -->
+    <!-- 重設密碼彈窗 -->
     <div id="reset-password-modal" class="modal">
         <div class="modal-content">
             <h2>重設密碼</h2>
+            <input type="hidden" id="hidden-taxId">
             <div class="form-group">
                 <label for="new-password">新密碼</label>
                 <input type="password" id="new-password" placeholder="請輸入新密碼">
@@ -568,6 +566,7 @@
 </footer>
 
 <script>
+    const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
     // document.querySelector(".send_btn").addEventListener("click", function () {
     //     const emailInput = document.querySelector("#email");
     //     if (emailInput.value.trim() === "") {
@@ -612,53 +611,42 @@
         window.location.href = "login-2.html";
     })
 
-
-
     // 忘記密碼按鈕
     document.getElementById("forgot-password-link").addEventListener("click", () => {
         document.getElementById("forgot-password-modal").classList.add("show");
     });
 
-    // 寄送驗證碼
-    document.getElementById("send-code-button").addEventListener("click", () => {
-        const email = document.getElementById("forgot-email").value.trim();
-        if (!email) {
-            alert("請輸入電子信箱");
-            return;
-        }
-        alert("驗證碼已寄送至您的信箱");
-    });
 
     // 確認驗證碼並切換到重設密碼表單
-    document.getElementById("confirm-code").addEventListener("click", () => {
-        const verificationCode = document.getElementById("forgot-verification-code").value.trim();
-        if (!verificationCode) {
-            alert("請輸入驗證碼");
-            return;
-        }
-        alert("驗證成功");
-        document.getElementById("forgot-password-modal").classList.remove("show");
-        document.getElementById("reset-password-modal").classList.add("show");
-    });
+    // document.getElementById("confirm-code").addEventListener("click", () => {
+    //     const verificationCode = document.getElementById("forgot-verification-code").value.trim();
+    //     if (!verificationCode) {
+    //         alert("請輸入驗證碼");
+    //         return;
+    //     }
+    //     alert("驗證成功");
+    //     document.getElementById("forgot-password-modal").classList.remove("show");
+    //     document.getElementById("reset-password-modal").classList.add("show");
+    // });
 
-    // 重設密碼
-    document.getElementById("confirm-reset-password").addEventListener("click", () => {
-        const newPassword = document.getElementById("reset-new-password").value.trim();
-        const confirmNewPassword = document.getElementById("reset-confirm-new-password").value.trim();
-
-        if (!newPassword || !confirmNewPassword) {
-            alert("請輸入新密碼");
-            return;
-        }
-
-        if (newPassword !== confirmNewPassword) {
-            alert("兩次輸入的密碼不一致");
-            return;
-        }
-
-        alert("密碼已成功重設");
-        document.getElementById("reset-password-modal").classList.remove("show");
-    });
+    // // 重設密碼
+    // document.getElementById("confirm-reset-password").addEventListener("click", () => {
+    //     const newPassword = document.getElementById("reset-new-password").value.trim();
+    //     const confirmNewPassword = document.getElementById("reset-confirm-new-password").value.trim();
+    //
+    //     if (!newPassword || !confirmNewPassword) {
+    //         alert("請輸入新密碼");
+    //         return;
+    //     }
+    //
+    //     if (newPassword !== confirmNewPassword) {
+    //         alert("兩次輸入的密碼不一致");
+    //         return;
+    //     }
+    //
+    //     alert("密碼已成功重設");
+    //     document.getElementById("reset-password-modal").classList.remove("show");
+    // });
 
     // 關閉彈窗
     document.getElementById("cancel-forgot-password").addEventListener("click", () => {
@@ -668,10 +656,101 @@
         document.getElementById("reset-password-modal").classList.remove("show");
     });
 
-    document.querySelector("#confirm-reset-password").addEventListener("click",function(){
-        alert("變更成功！");
-        document.getElementById("reset-password-modal").classList.remove("show");
-    })
+    // document.querySelector("#confirm-reset-password").addEventListener("click",function(){
+    //     alert("變更成功！");
+    //     document.getElementById("reset-password-modal").classList.remove("show");
+    // })
+
+    //寄驗證碼
+    document.getElementById("send-code-button").addEventListener("click", function () {
+        const taxId = document.getElementById("forgot-company-id").value;
+        if (!taxId) {
+            alert("請輸入統一編號！");
+            return;
+        }
+        // 將 taxId 儲存在 sessionStorage
+        sessionStorage.setItem("taxId", taxId);
+
+        fetch(`${contextPath}/api/forgot-password/send-code`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ taxId: taxId }),
+        })
+            .then(response => response.text())
+            .then(data => alert(data))
+            .catch(error => console.error("Error:", error));
+    });
+
+    //驗證
+    document.getElementById("confirm-code").addEventListener("click", function () {
+        const taxId = document.getElementById("forgot-company-id").value;
+        const code = document.getElementById("forgot-verification-code").value;
+
+        if (!code) {
+            alert("請輸入驗證碼！");
+            return;
+        }
+
+        fetch(`${contextPath}/api/forgot-password/verify-code`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ taxId: taxId, code: code }),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    return response.text().then((errorMessage) => {
+                        alert(errorMessage); // 顯示錯誤訊息
+                        throw new Error(errorMessage);
+                    });
+                }
+                return response.text();
+            })
+            .then((data) => {
+                alert(data); // 驗證成功訊息
+                document.getElementById("forgot-password-modal").classList.remove("show");
+                document.getElementById("reset-password-modal").classList.add("show");
+            })
+            .catch((error) => console.error("Error:", error));
+    });
+
+    // 重設密碼按鈕的點擊事件
+    document.getElementById("confirm-reset-password").addEventListener("click", function () {
+        const taxId = sessionStorage.getItem("taxId"); // 從 sessionStorage 獲取 taxId
+        const newPassword = document.getElementById("new-password").value; // 新密碼
+        const confirmPassword = document.getElementById("confirm-new-password").value; // 確認新密碼
+
+        // 驗證密碼是否一致
+        if (!newPassword || !confirmPassword) {
+            alert("密碼欄位不能為空！");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            alert("兩次輸入的密碼不一致！");
+            return;
+        }
+
+        // 發送重設密碼的請求
+        fetch(`${contextPath}/api/forgot-password/reset-password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ taxId, newPassword }),
+        })
+            .then(response => {
+                if (response.ok) return response.text();
+                else throw new Error("密碼變更失敗！");
+            })
+            .then(data => {
+                alert("密碼變更成功！");
+                // 密碼變更成功後，可以選擇清空 sessionStorage 並重定向到登入頁
+                sessionStorage.removeItem("taxId");
+                window.location.href = "/login"; // 跳轉到登入頁
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("密碼變更失敗，請稍後再試！");
+            });
+    });
 </script>
 </body>
 

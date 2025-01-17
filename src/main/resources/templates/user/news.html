@@ -1,147 +1,331 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="zh-tw">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Check in Out</title>
-<link rel="stylesheet"
-	th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
-<link rel="stylesheet" th:href="@{/css/user/news.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最新消息 - Check in Out</title>
+    <link rel="stylesheet" href="/vendors/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/user/template.css">
+    <style>
+        .big-title {
+            height: 100px;
+            background-color: #eeeae7;
+        }
+        
+        .news-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
 
+        .news-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
 
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .news-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .news-date {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .pagination {
+            margin-top: 2rem;
+        }
+
+        .no-image-placeholder {
+            height: 300px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 
 <body>
+    <header class="p-1 border-bottom shadow-sm">
+    </header>
 
-	<!-- 標題列 -->
-	<header class="p-1 border-bottom shadow-sm">
-	</header>
+    <main>
+        <div class="container shadow-sm">
+            <div class="row big-title mb-3">
+                <h1 class="text-center fw-bold display-5 col align-self-center">最新消息</h1>
+            </div>
 
-	<!-- 主要內容 -->
-	<main>
-		<div class="container shadow-sm rounded-2">
-			<!-- 大標題 -->
-			<div class="row big-title mb-3 align-items-center ">
-				<h1 class="col text-center fw-bold display-5">最新消息</h1>
-			</div>
-			<div class="row news-list d-flex justify-content-center rounded-2">
-				<div class="card col-8 mb-3">
-					<div class="row d-flex  justify-content-center">
-						<div class="col-3">
-							<img src='/img/uno-hotel.jpg'
-								class="img-fluid rounded-start h-100">
-						</div>
-						<div class="col-9">
-							<div class="card-body m-0">
-								<h5 class="card-title">
-									<a href="news_detail.html" class="news-link">雙12大優惠</a>
-								</h5>
-								<p class="card-text">This is a wider card with supporting
-									text below as a natural lead-in to additional content. This
-									content is a little bit longer.</p>
-								<p class="card-text post-time">
-									<small class="text-muted">2024-12-01 12:00</small>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="card col-8 mb-3">
-					<div class="row d-flex  justify-content-center">
-						<div class="col-3">
-							<img src='/img/uno-hotel.jpg'
-								class="img-fluid rounded-start h-100">
-						</div>
-						<div class="col-9">
-							<div class="card-body m-0">
-								<h5 class="card-title">
-									<a href="news_detail.html" class="news-link">雙12大優惠</a>
-								</h5>
-								<p class="card-text">This is a wider card with supporting
-									text below as a natural lead-in to additional content. This
-									content is a little bit longer.</p>
-								<p class="card-text post-time">
-									<small class="text-muted">2024-12-01 12:00</small>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="card col-8 mb-3">
-					<div class="row d-flex  justify-content-center">
-						<div class="col-3">
-							<img src='/img/uno-hotel.jpg'
-								class="img-fluid rounded-start h-100">
-						</div>
-						<div class="col-9">
-							<div class="card-body m-0">
-								<h5 class="card-title">
-									<a href="news_detail.html" class="news-link">雙12大優惠</a>
-								</h5>
-								<p class="card-text">This is a wider card with supporting
-									text below as a natural lead-in to additional content. This
-									content is a little bit longer.</p>
-								<p class="card-text post-time">
-									<small class="text-muted">2024-12-01 12:00</small>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="card col-8 mb-3">
-					<div class="row d-flex  justify-content-center">
-						<div class="col-3">
-							<img src='/img/uno-hotel.jpg'
-								class="img-fluid rounded-start h-100">
-						</div>
-						<div class="col-9">
-							<div class="card-body m-0">
-								<h5 class="card-title">
-									<a href="news_detail.html" class="news-link">雙12大優惠</a>
-								</h5>
-								<p class="card-text">This is a wider card with supporting
-									text below as a natural lead-in to additional content. This
-									content is a little bit longer.</p>
-								<p class="card-text post-time">
-									<small class="text-muted">2024-12-01 12:00</small>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
+            <div class="news-container">
+                <div id="newsList"></div>
+                
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <li class="page-item">
+                            <button class="page-link" onclick="changePage('prev')" id="prevBtn">上一頁</button>
+                        </li>
+                        <li class="page-item">
+                            <button class="page-link" onclick="changePage('next')" id="nextBtn">下一頁</button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </main>
 
-			</div>
-		</div>
-	</main>
-	<!-- 底欄 -->
-	<footer>
-		<div class="row border-top">
-			<div class="container">
-				<ul class="nav justify-content-center">
-					<li class="nav-item"><a th:href="@{/user/}" class="nav-link px-2 text-body-secondary">首頁</a></li>
-					<li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
-					<li class="nav-item"><a th:href="@{/user/order}"
-							class="nav-link px-2 text-body-secondary">訂單管理</a></li>
-					<li class="nav-item"><a th:href="@{/user/faq}" class="nav-link px-2 text-body-secondary">常見問題</a>
-					</li>
-					<li class="nav-item"><a th:href="@{/user/contactUs}"
-							class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
-					<li class="nav-item"><a th:href="@{/login/}" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
-				</ul>
-				<div class="d-flex justify-content-center align-items-start mb-0">
-					<img th:src="@{/imgs/user/checKInOut_logo_light.png}" alt="checkinout" width="128">
-				</div>
-				<!-- <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p> -->
-			</div>
-		</div>
-	</footer>
+    <footer>
+        <div class="container">
+            <footer class="py-3 my-4">
+                <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">首頁</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">找房</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">常見問題</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+                </ul>
+                <p class="text-center text-body-secondary">2024 Check IN OUT</p>
+            </footer>
+        </div>
+    </footer>
 
-	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
-	<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
-	<script th:src="@{/js/user/news.js}"></script>
-	<script src="/js/user/loginCheck.js" defer></script>
+    <script src="/vendors/jQuery/jquery-3.7.1.min.js"></script>
+    <script src="/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let currentPage = 0;
+        const pageSize = 6;
+        let totalNews = [];
 
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+        function displayNews() {
+            const start = currentPage * pageSize;
+            const end = start + pageSize;
+            const pageNews = totalNews.slice(start, end);
+            
+            const newsListElement = document.getElementById('newsList');
+            newsListElement.innerHTML = '';
+            
+            pageNews.forEach(item => {
+                const hasImage = item.newsImg != null;
+                const imageContent = hasImage 
+                    ? `<img src="/api/news/${item.newsId}/image" class="news-image" alt="${item.newsTitle}">` 
+                    : `<div class="no-image-placeholder">無圖片</div>`;
+                
+                const newsCard = `
+                    <div class="news-card">
+                        ${imageContent}
+                        <div class="news-content">
+                            <h2 class="news-title">${item.newsTitle}</h2>
+                            <p class="news-description">${item.description}</p>
+                            <div class="news-date">${formatDate(item.postTime)}</div>
+                        </div>
+                    </div>
+                `;
+                newsListElement.innerHTML += newsCard;
+            });
+
+            // 更新分頁按鈕狀態
+            document.getElementById('prevBtn').parentElement.classList.toggle('disabled', currentPage === 0);
+            document.getElementById('nextBtn').parentElement.classList.toggle('disabled', (currentPage + 1) * pageSize >= totalNews.length);
+        }
+
+        function loadNewsList() {
+            $.get('/api/news', function(news) {
+                const newsListHtml = news.map(item => {
+                    const imageHtml = item.newsImg ? 
+                        `<img src="/api/news/${item.newsId}/image" class="news-image-preview" style="max-width: 100px;">` : 
+                        '無圖片';
+                    
+                    return `
+                        <tr>
+                            <td>${imageHtml}</td>
+                            <td>${item.newsTitle}</td>
+                            <td>${item.description}</td>
+                            <td>${new Date(item.postTime).toLocaleString()}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary mb-1" onclick="editNews(${item.newsId})">編輯</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteNews(${item.newsId})">刪除</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                $('#newsList').html(newsListHtml);
+            });
+        }
+       /*  function displayNews() {
+            const start = currentPage * pageSize;
+            const end = start + pageSize;
+            const pageNews = totalNews.slice(start, end);
+            
+            const newsListElement = document.getElementById('newsList');
+            newsListElement.innerHTML = '';
+            
+            pageNews.forEach(item => {
+                // 與 loadNewsList 使用相同的圖片處理方式
+                const imgData = item.newsImg ? new TextDecoder().decode(new Uint8Array(item.newsImg)) : null;
+                const imageContent = imgData ? 
+                    `<img src="${imgData}" class="news-image" alt="${item.newsTitle}">` : 
+                    `<div class="no-image-placeholder">無圖片</div>`;
+                
+                const newsCard = `
+                    <div class="news-card">
+                        ${imageContent}
+                        <div class="news-content">
+                            <h2 class="news-title">${item.newsTitle}</h2>
+                            <p class="news-description">${item.description}</p>
+                            <div class="news-date">${formatDate(item.postTime)}</div>
+                        </div>
+                    </div>
+                `;
+                newsListElement.innerHTML += newsCard;
+            }); */
+        /* function displayNews() {
+            const start = currentPage * pageSize;
+            const end = start + pageSize;
+            const pageNews = totalNews.slice(start, end);
+            
+            const newsListElement = document.getElementById('newsList');
+            newsListElement.innerHTML = '';
+            
+            pageNews.forEach(item => {
+                const hasImage = item.newsImg != null;
+                const imageContent = hasImage 
+                    ? `<img src="data:image/jpeg;base64,${item.newsImg}" class="news-image" alt="${item.newsTitle}">`
+                    : `<div class="no-image-placeholder">無圖片</div>`;
+                
+                const newsCard = `
+                    <div class="news-card">
+                        ${imageContent}
+                        <div class="news-content">
+                            <h2 class="news-title">${item.newsTitle}</h2>
+                            <p class="news-description">${item.description}</p>
+                            <div class="news-date">${formatDate(item.postTime)}</div>
+                        </div>
+                    </div>
+                `;
+                newsListElement.innerHTML += newsCard;
+            });  */
+            
+            /* function loadNewsList() {
+                $.get('/api/news', function(news) {
+                    const newsListHtml = news.map(item => {
+                        // 處理圖片顯示
+                        const imgData = item.newsImg ? new TextDecoder().decode(new Uint8Array(item.newsImg)) : null;
+                        const imageHtml = imgData ? 
+                            `<img src="${imgData}" class="news-image-preview" style="max-width: 100px;">` : 
+                            '無圖片';
+                        
+                        return `
+                            <tr>
+                                <td>${imageHtml}</td>
+                                <td>${item.newsTitle}</td>
+                                <td>${item.description}</td>
+                                <td>${new Date(item.postTime).toLocaleString()}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary mb-1" onclick="editNews(${item.newsId})">編輯</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteNews(${item.newsId})">刪除</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                    
+                    $('#newsList').html(newsListHtml);
+                }); */
+      
+
+        /* function displayNews() {
+            const start = currentPage * pageSize;
+            const end = start + pageSize;
+            const pageNews = totalNews.slice(start, end);
+            
+            const newsListElement = document.getElementById('newsList');
+            newsListElement.innerHTML = '';
+            
+            pageNews.forEach(item => {
+                const hasImage = item.newsImg != null;
+                const imageContent = hasImage 
+                    ? `<img src="/api/news/${item.newsId}/image" class="news-image" alt="${item.newsTitle}">`
+                    : `<div class="no-image-placeholder">無圖片</div>`;
+                
+                const newsCard = `
+                    <div class="news-card">
+                        ${imageContent}
+                        <div class="news-content">
+                            <h2 class="news-title">${item.newsTitle}</h2>
+                            <p class="news-description">${item.description}</p>
+                            <div class="news-date">${formatDate(item.postTime)}</div>
+                        </div>
+                    </div>
+                `;
+                newsListElement.innerHTML += newsCard;
+            }); */
+
+
+        function changePage(direction) {
+            if (direction === 'prev' && currentPage > 0) {
+                currentPage--;
+            } else if (direction === 'next' && (currentPage + 1) * pageSize < totalNews.length) {
+                currentPage++;
+            }
+            displayNews();
+        }
+
+        function loadNews() {
+            $.get('/api/news', function(news) {
+                totalNews = news.sort((a, b) => 
+                    new Date(b.postTime) - new Date(a.postTime)
+                );
+                displayNews();
+            }).fail(function(error) {
+                console.error('Error loading news:', error);
+            });
+        }
+
+        $(document).ready(function() {
+            loadNews();
+        });
+    </script>
+    <script src="/js/user/loginCheck.js" defer></script>
 </body>
-
 </html>

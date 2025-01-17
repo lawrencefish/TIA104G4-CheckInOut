@@ -11,7 +11,7 @@ public class AuthenticationFilter implements Filter {
 
     // 需要登入的頁面
     private static final List<String> PROTECTED_PATHS = Arrays.asList(
-            "/business", "/frontDesk", "/orders", "/report", "/account", "employee"
+            "/business", "/frontDesk", "/orders", "/report", "/account", "employee", "/comment", "/client"
     );
     
     // 管理員需要登入的頁面 -byBarry
