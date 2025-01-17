@@ -11,6 +11,8 @@ public class Run {
         RandomHotelPhotoUploader.run();
         RoomTypePhotoWrite.run();
 
+        //  更新庫存數量
+        UpdateRoomInventory.run();
 //        HotelFacilityUploader.run();
 //        RoomTypeFacilityUploader.run();
 //        RoomUploader.run();

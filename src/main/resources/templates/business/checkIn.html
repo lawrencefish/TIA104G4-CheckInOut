@@ -1177,7 +1177,7 @@
                             location.reload()
                             // 可在此刷新頁面或更新 UI
                         } else {
-                            response.text().then((text) => alert("Error: " + text));
+                            response.text().then((text) => alert(text));
                         }
                     })
                     .catch((error) => console.error("Error saving check-in details:", error));
