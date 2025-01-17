@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS checkinout;
 use checkinout;
 
+DROP TABLE IF EXISTS reports;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS room;
 DROP TABLE IF EXISTS contact_us;
@@ -2545,3 +2546,15 @@ INSERT INTO comments (hotel_id, member_id, comment_content) VALUES
 (18, 17, '客戶對於酒店的地理位置表示讚賞，並樂於分享旅遊經驗。'),
 (19, 18, '該客戶對於入住體驗非常滿意，並表達了再次光臨的意願。'),
 (20, 19, '客戶對酒店的設施以及服務人員的態度給予了高度肯定。');
+
+CREATE TABLE reports (
+    report_id INT AUTO_INCREMENT PRIMARY KEY,
+    hotel_id INT DEFAULT NULL,
+    member_id INT DEFAULT NULL,
+    order_id INT DEFAULT NULL,
+    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    report_content TEXT DEFAULT NULL,
+    picture MEDIUMBLOB
+);

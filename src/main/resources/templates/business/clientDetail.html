@@ -311,6 +311,16 @@
             flex-direction: column;
             gap: 1rem;
         }
+        
+        select {
+    		font-size: 1rem;
+    		padding: 0.5rem;
+    		border: 1px solid #ccc;
+    		border-radius: 4px;
+    		box-sizing: border-box;
+    		width: 100%; /* 確保寬度一致 */
+    		height: calc(2.25rem + 2px); /* 與 input 的高度保持一致 */
+		}
 
         .form-group {
             display: flex;
@@ -448,9 +458,13 @@
     <div class="container">
         <!-- 側邊欄 -->
         <aside class="sidebar">
-            <a href="5-3.html"><button class="sidebar-btn">檢舉客戶</button></a>
-            <a href="5-4.html"><button class="sidebar-btn">評論客戶</button></a>
-        </aside>
+    		<a th:href="@{/client/reportClient/{memberId}(memberId=${client.memberId})}">
+    		<button class="sidebar-btn">檢舉客戶</button></a>
+    		<a th:href="@{/client/commentClient/{memberId}(memberId=${client.memberId})}">
+        		<button class="sidebar-btn">評論客戶</button>
+    	    </a>
+		</aside>
+
 
         <!-- 主內容 -->
         <main class="main-content">
@@ -481,9 +495,10 @@
     <div class="form-row">
         <div class="form-group">
             <label for="gender">性別</label>
-        <input type="text" id="gender" name="gender" class="readonly" 
-               th:value="${client.gender == 'M' ? '男' : (client.gender == 'F' ? '女' : '未知')}" 
-               readonly>
+        <select id="gender" name="gender" class="readonly">
+            <option th:value="M" th:selected="${client.gender == 'M'}">男</option>
+            <option th:value="F" th:selected="${client.gender == 'F'}">女</option>
+        </select>
         </div>
         <div class="form-group">
             <label for="bday">生日</label>
@@ -564,8 +579,15 @@
         }
     });
 
+    document.addEventListener('DOMContentLoaded', () => {
         const editBtn = document.getElementById('edit-btn');
         const readonlyFields = document.querySelectorAll('.readonly');
+        const saveBtn = document.querySelector('.btn-save');
+        const cancelBtn = document.querySelector('.btn-cancel');
+        const form = document.querySelector('.customer-form');
+
+        // 保存表單的初始狀態
+        const originalFormData = new FormData(form);
 
         editBtn.addEventListener('click', () => {
             readonlyFields.forEach(field => {
@@ -575,22 +597,29 @@
             });
         });
 
-        const saveBtn = document.querySelector('.btn-save');
-        const cancelBtn = document.querySelector('.btn-cancel');
-
-        // 儲存時提交表單
+        // 儲存按鈕：提交表單
         saveBtn.addEventListener('click', () => {
-            document.querySelector('.customer-form').submit();
+            form.submit();
         });
 
-        // 取消時恢復為原始狀態
-        cancelBtn.addEventListener('click', () => {
+        // 取消按鈕：恢復初始狀態
+        cancelBtn.addEventListener('click', (event) => {
+            event.preventDefault(); // 阻止表單提交
             readonlyFields.forEach(field => {
                 field.classList.add('readonly');
                 field.setAttribute('readonly', 'readonly');
                 field.style.border = 'none';
             });
+
+            // 重置表單至初始值
+            for (const [key, value] of originalFormData.entries()) {
+                const input = form.querySelector(`[name="${key}"]`);
+                if (input) {
+                    input.value = value;
+                }
+            }
         });
+    });
     </script>
 </body>
 
