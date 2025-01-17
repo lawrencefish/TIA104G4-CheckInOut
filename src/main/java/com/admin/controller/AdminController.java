@@ -1,6 +1,9 @@
 package com.admin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,10 +11,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.admin.model.Admin;
+import com.hotel.model.HotelRepository;
+import com.hotel.model.HotelService;
+import com.hotel.model.HotelVO;
 import com.mysql.cj.protocol.x.Ok;
+import com.roomType.model.RoomTypeService;
+import com.roomType.model.RoomTypeVO;
 import com.admin.model.*;
 
+import java.awt.print.Pageable;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -22,6 +32,8 @@ public class AdminController {
     @Autowired
     private AdminService adminService; // 注入Service層
     
+    @Autowired
+    private HotelService hotelService;
     
     // 列出所有管理員
     @GetMapping("/list")  // 處理GET /admin/list 請求
@@ -31,6 +43,31 @@ public class AdminController {
     	List<Admin> admins = adminService.getAll(page);
         model.addAttribute("admins", admins);  // 把資料放入Model
         return "admin/list";  
+    }
+    
+    // 管理員狀態切換
+    @PostMapping("/updateStatus")
+    @ResponseBody
+    public ResponseEntity<?> updateStatus(@RequestBody Admin admin) {
+        adminService.update(admin);
+        return ResponseEntity.ok().build();
+    }
+    
+ // 獲取管理員列表的 API 端點
+    @GetMapping("/list/api")
+    @ResponseBody
+    public List<Admin> listApi(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(required = false) String keyword,
+        @RequestParam(required = false) Byte status,
+        @RequestParam(required = false) Byte permissions){
+    	
+    	// 搜尋功能
+    	if (keyword != null || status != null || permissions != null) {
+    		return adminService.searchAdmins(keyword, status, permissions);
+    	}
+    	return adminService.getAll(page);
     }
 
     // 顯示新增表單
@@ -63,6 +100,11 @@ public class AdminController {
     // 處理編輯請求 
     @PostMapping("/edit")  // 處理POST /admin/edit 請求
     public String edit(@ModelAttribute Admin admin) {
+    	// 從資料庫取得原本的管理員資料
+        Admin originalAdmin = adminService.getById(admin.getAdminId());
+        
+        // 確保使用原本的帳號
+        admin.setAdminAccount(originalAdmin.getAdminAccount());
         adminService.update(admin);
         return "redirect:/admin/list";  // 編輯完成後重導向到列表頁
     }
@@ -104,7 +146,19 @@ public class AdminController {
     }
     
     @GetMapping("/userBackend")
-    public String showUserBackend() {
+    public String showUserBackend(Model model) {
+    	// 獲取所有飯店資料
+        List<HotelVO> hotels = hotelService.findAll();
+        
+     // 添加到 model
+        model.addAttribute("hotels", hotels);
+        model.addAttribute("activeTab", "business");  // 預設顯示業者頁籤
+        
+        // 添加統計資料
+//        model.addAttribute("totalCount", hotelService.getTotalCount());
+//        model.addAttribute("businessCount", hotelService.getBusinessCount());
+//        model.addAttribute("memberCount", memberService.getMemberCount());
+        
     	return "admin/user-backend";
     }
     
@@ -137,10 +191,41 @@ public class AdminController {
     	}
     }
     
-//    @GetMapping("/test")
-//    public String test(Model model) {
-//        List<Admin> admins = adminService.getAll(1);
-//        model.addAttribute("admins", admins);
-//        return "admin/test";
-//    }
+    @GetMapping("/industryBackend")
+    public String showIndustryBackend(@RequestParam(required = false) Integer id,
+    	    Model model) {
+        if (id != null) {
+            Optional<HotelVO> hotelVO = hotelService.findById(id);
+            if (hotelVO.isPresent()) {
+            	HotelVO hotel = hotelVO.get();
+                model.addAttribute("name", hotel.getName());
+                model.addAttribute("taxId", hotel.getTaxId());
+                model.addAttribute("district", hotel.getDistrict());
+                model.addAttribute("city", hotel.getCity());
+                model.addAttribute("address", hotel.getAddress());
+                model.addAttribute("phoneNumber", hotel.getPhoneNumber());
+                model.addAttribute("email", hotel.getEmail());
+            }
+        }
+        return "admin/industry-backend";
+    }
+    
+    @GetMapping("/industryReview")
+    public String showIndustryReview(@RequestParam(required = false) Integer id,
+    	    Model model) {
+        if (id != null) {
+            Optional<HotelVO> hotelVO = hotelService.findById(id);
+            if (hotelVO.isPresent()) {
+            	HotelVO hotel = hotelVO.get();
+                model.addAttribute("name", hotel.getName());
+                model.addAttribute("taxId", hotel.getTaxId());
+                model.addAttribute("district", hotel.getDistrict());
+                model.addAttribute("city", hotel.getCity());
+                model.addAttribute("address", hotel.getAddress());
+                model.addAttribute("phoneNumber", hotel.getPhoneNumber());
+                model.addAttribute("email", hotel.getEmail());
+            }
+        }
+        return "admin/industry-review";
+    }
 }

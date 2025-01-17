@@ -32,6 +32,8 @@ public interface HotelRepository extends JpaRepository<HotelVO, Integer> {
     // 使用 @EntityGraph 加載 hotelImgs 集合
     @EntityGraph(attributePaths = "hotelImgs") // 明確加載 hotelImgs 集合
     Optional<HotelVO> findById(Integer hotelId);
-
     
+    // 管理員審核查詢用 -By Barry
+    List<HotelVO> findByStatus(Integer status);
+
 }
