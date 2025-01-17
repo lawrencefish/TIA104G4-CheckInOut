@@ -348,32 +348,25 @@
     <div class="container">
         <main class="main-content">
             <h1>評論客戶</h1>
-            <form class="report-form">
-                <div class="form-group">
-                    <label for="clientid">客戶編號</label>
-                    <div id="clientid">12345678</div>
-                </div>
-                <div class="form-group">
-                    <label for="clientemail">客戶電子信箱</label>
-                    <div id="clientid">faker@t1.com</div>
-                </div>
-                <div class="form-group">
-                    <label for="reason">評論</label>
-                    <textarea id="reason" rows="5"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="attachments">附加照片/檔案</label>
-                    <div class="file-upload">
-                        <input type="file" id="file1">
-                        <input type="file" id="file2">
-                    </div>
-                    <small>支援的檔案類型：.jpg, .png ...</small>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-submit">送出</button>
-                    <button type="button" class="btn btn-cancel">取消</button>
-                </div>
-            </form>
+           <form class="report-form" th:action="@{/client/comment}" method="post">
+    <div class="form-group">
+        <label for="clientid">客戶編號</label>
+        <span id="clientid" th:text="${client.memberId}"></span>
+    </div>
+    <div class="form-group">
+        <label for="clientemail">客戶電子信箱</label>
+        <span id="clientemail" th:text="${client.account}"></span>
+    </div>
+    <div class="form-group">
+        <label for="reason">評論</label>
+        <textarea id="reason" name="commentContent" rows="5"></textarea>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-submit">送出</button>
+        <button type="button" class="btn btn-cancel">取消</button>
+    </div>
+</form>
+
         </main>
     </div>
     <div class="popout-container">
