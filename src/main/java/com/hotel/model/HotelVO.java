@@ -11,6 +11,7 @@ import com.employee.model.EmployeeVO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hotelFacility.model.HotelFacilityVO;
 import com.hotelImg.model.HotelImgVO;
+import com.order.model.OrderVO;
 import com.roomType.model.RoomTypeVO;
 
 @Entity
@@ -151,11 +152,19 @@ public class HotelVO {
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RoomTypeVO> roomTypes;
 
-//    //Order (多） -> Hotel （一）
-//    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<OrderVO> order;
-    
-    
+    //Order (多） -> Hotel （一）
+    @JsonIgnore
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderVO> order;
+
+    public List<OrderVO> getOrder() {
+        return order;
+    }
+
+    public void setOrder(List<OrderVO> order) {
+        this.order = order;
+    }
+
     // (其他表格 like Orders, Favorite, 也可能參考 hotel_id ，可同樣使用一對多)
 
     // ----------------------------------

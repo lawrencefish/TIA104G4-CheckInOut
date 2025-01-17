@@ -419,15 +419,16 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
-            <a href="#">評論管理</a>
-            <a href="#">客戶管理</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
             <a th:href="@{/report}" class="active">報表分析</a>
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-            <span class="icon">💬</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>

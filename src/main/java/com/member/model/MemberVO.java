@@ -1,6 +1,6 @@
 package com.member.model;
 
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import javax.persistence.Table;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.Valid;
@@ -28,6 +30,7 @@ import javax.validation.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.creditcard.model.CreditcardVO;
+import com.membercoupon.model.MemberCouponVO;
 import com.order.model.OrderVO;
 import com.orderDetail.model.OrderDetailVO;
 
@@ -38,25 +41,26 @@ public class MemberVO implements java.io.Serializable {
 	@Id
 	@Column(name = "member_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer memberID;
+	private Integer memberId;
 
 	@Column(name = "account")
 	@NotBlank(message = "Email 不可為空")
 	@Email(message = "Email 格式不正確")
 	private String account;
 	@Column(name = "password")
-	@NotEmpty(message = "請輸入密碼")
-	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d!@#$%^&*+\\-=\\*]{6,12}$")
+	@NotEmpty(message = "請輸入密碼!")
+	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d!@#$%^&*+\\-=\\*]{8,12}$",message = "請輸入8到12字的密碼，必須包含英文數字")
 	private String password;
 	@Column(name = "last_name")
 	@NotEmpty(message = "請輸入姓")
-	@Pattern(regexp = "^[\\u4e00-\\u9FFFa-zA-Z]{1,20}$")
+	@Pattern(regexp = "^[\\u4e00-\\u9FFFa-zA-Z]{1,20}$",message = "姓名僅限中英文")
 	private String lastName;
 	@Column(name = "first_name")
 	@NotEmpty(message = "請輸入姓")
-	@Pattern(regexp = "^[\\u4e00-\\u9FFFa-zA-Z]{1,20}$")
+	@Pattern(regexp = "^[\\u4e00-\\u9FFFa-zA-Z]{1,20}$",message = "姓名僅限中英文")
 	private String firstName;
 	@Lob
+    @Size(max = 2 * 1024 * 1024, message = "圖片大小不能超過 2MB") // 限制圖片大小
 	@Column(name = "avatar")
 	private byte[] avatar;
 	@Column(name = "birthday")
@@ -81,16 +85,23 @@ public class MemberVO implements java.io.Serializable {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<OrderVO> order;
     
+    //會員優惠券
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<MemberCouponVO> membercoupon;
+    
+    
+
+    
 	public MemberVO() {
 
 	}
 
-	public Integer getMemberID() {
-		return memberID;
+	public Integer getMemberId() {
+		return memberId;
 	}
 
-	public void setMemberID(Integer memberID) {
-		this.memberID = memberID;
+	public void setMemberId(Integer memberId) {
+		this.memberId = memberId;
 	}
 
 	public String getAccount() {
@@ -175,12 +186,10 @@ public class MemberVO implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "MemberVO [memberID=" + memberID + ", account=" + account + ", password=" + password + ", lastName="
+		return "MemberVO [memberID=" + memberId + ", account=" + account + ", password=" + password + ", lastName="
 				+ lastName + ", firstName=" + firstName + ", avatar=" + Arrays.toString(avatar) + ", birthday="
 				+ birthday + ", phoneNumber=" + phoneNumber + ", gender=" + gender + ", status=" + status
 				+ ", createTime=" + createTime + "]";
 	}
-	
-	
 	
 }

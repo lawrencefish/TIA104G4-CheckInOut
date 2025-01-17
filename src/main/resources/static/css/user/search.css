@@ -47,7 +47,7 @@ ul .dropdown-menu .dropdown-item {
 } 
 
 .main-content{
-    height: 82vh;
+    height: 90vh;
 }
 
 #map {
@@ -55,3 +55,9 @@ ul .dropdown-menu .dropdown-item {
     height: 100%;
 }
   
+.pac-container{
+    border-radius:0.5rem;
+}
+.pac-item{
+    padding:5px;
+}

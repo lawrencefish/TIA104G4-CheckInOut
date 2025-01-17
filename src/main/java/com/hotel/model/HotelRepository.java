@@ -35,4 +35,5 @@ public interface HotelRepository extends JpaRepository<HotelVO, Integer> {
     
     // 管理員審核查詢用 -By Barry
     List<HotelVO> findByStatus(Integer status);
+
 }

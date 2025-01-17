@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            position: relative;
+        }
+
+        header .user .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hotel Button */
+        header .user .hotel-button {
+            background-color: #2c3e50;
+            /* 深藍色 */
+            color: #fff;
+            border: 1px solid #34495e;
+            /* 邊框顏色和背景稍微區分 */
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect */
+        header .user .hotel-button:hover {
+            background-color: #34495e;
+            /* 稍微變深的顏色 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            /* 更柔和的陰影 */
+        }
+
+        /* Active state */
+        header .user .hotel-button:active {
+            background-color: #1a252f;
+            /* 點擊時變得更深 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focused state (accessibility improvement) */
+        header .user .hotel-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            /* 聚焦時顯示藍色陰影 */
+        }
+
+
+        /* Dropdown menu */
+        header .user .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            overflow: hidden;
+        }
+
+        header .user .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        header .user .dropdown ul li {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        header .user .dropdown ul li:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user .dropdown ul li:last-child {
+            border-bottom: none;
+        }
+        
+		/* 登出的彈窗樣式 */
+        #logout-modal {
+            display: none;
+            /* 初始為隱藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 半透明背景 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #logout-modal.show {
+            display: flex;
+            /* 顯示彈窗 */
+        }
+
+        #logout-modal .logout-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        #logout-modal .logout-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        #logout-modal .logout-modal-content p {
+            margin: 10px 0;
+        }
+
+        #logout-modal .logout-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #logout-modal .logout-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-logout-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-switch-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+        /* x 按鈕 */
+        #logout-modal .logout-modal-content .logout-modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        #logout-modal .logout-modal-content .logout-modal-close-btn:hover {
+            color: #333;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        aside {
+            width: 300px;
+            /* aside寬度保持300px */
+            padding: 20px;
+        }
+
+        aside nav {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        aside nav a {
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1rem;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        aside nav a.active,
+        aside nav a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* main主內容 */
+        /* 主體樣式 */
+        main {
+            width: 1500px;
+            /* 修改為1500px */
+            background-color: #fff;
+            padding: 30px;
+            margin-left: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        main h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            /* 增加底部間距 */
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            /* 加入底部邊框 */
+            padding-bottom: 10px;
+            /* 調整與底部邊框的間距 */
+        }
+
+        #buttons-section {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #buttons-section button {
+            flex: 1;
+            max-width: 150px;
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+        }
+
+        #buttons-section button.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .content-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .content-section:not(.hidden) {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        table tbody tr:hover {
+            background-color: #f8f8f8;
+            cursor: pointer;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        .date-range {
+            top: 50px;
+            right: 50px;
+            padding: 10px;
+            text-align: right;
+            /* 保持文字和按鈕居中 */
+        }
+
+        .page-number {
+            text-align: right;
+            /* 保持文字和按鈕居中 */
+        }
+
+        /* 對所有 input 和 select 元素設置圓角 */
+        .search-name input,
+        .search-number input,
+        .search-mail input,
+        .search-phone input,
+        .search select {
+            border-radius: 10px;
+            /* 圓角半徑 */
+            border: 1px solid #ccc;
+            /* 邊框顏色 */
+            padding: 0.5rem;
+            /* 調整內邊距 */
+            font-size: 1rem;
+            /* 字體大小 */
+            width: 100%;
+            /* 確保佔滿父容器 */
+            box-sizing: border-box;
+            /* 包含 padding 在寬度內 */
+
+        }
+
+        /* 搜尋按鈕設置圓角 */
+        .search button {
+            border-radius: 10px;
+            /* 按鈕的圓角 */
+            background-color: #007bff;
+            /* 按鈕背景色 */
+            color: white;
+            /* 按鈕文字顏色 */
+            border: none;
+            /* 移除按鈕邊框 */
+            padding: 0.5rem 1rem;
+            /* 調整按鈕內邊距 */
+            cursor: pointer;
+            /* 鼠標懸浮時顯示手型 */
+        }
+
+        /* 按鈕懸浮效果 */
+        .search button:hover {
+            background-color: #0056b3;
+            /* 懸浮時的按鈕背景色 */
+        }
+
+        /* 可選，為所有欄位增加一點陰影效果 */
+        .search-name input,
+        .search-hotel input,
+        .search-room input,
+        .search select {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            /* 增加一點陰影效果 */
+        }
+
+        button {
+            border-radius: 10px;
+            /* 設定圓角半徑，值越大，圓角越明顯 */
+            padding: 5px 10px;
+            /* 調整按鈕內邊距 */
+            border: 1px solid #ccc;
+            /* 邊框樣式 */
+            background-color: #f0f0f0;
+            /* 按鈕背景色 */
+            cursor: pointer;
+            /* 指標變成手形 */
+            transition: background-color 0.3s;
+            /* 增加滑順效果 */
+        }
+
+        /* 鼠標懸停時的效果 */
+        button:hover {
+            background-color: #dcdcdc;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a th:href="@{/frontDesk}">
+                <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+        <nav>
+            <a th:href="@{/frontDesk}">櫃台系統</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
+            <a th:href="@{/orders}">訂單管理</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}" class="active">客戶管理</a>
+<!--            <a th:href="@{/report}">報表分析</a>-->
+        </nav>
+        <div class="user">
+            <span class="icon">🔔</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
+            <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
+            <div class="dropdown">
+                <ul>
+                    <li><a th:href="@{/account}">帳號設定</a></li>
+                    <li id="logout-option">登出</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+	<!-- 登出彈窗 -->
+    <div id="logout-modal" class="hidden">
+        <div class="logout-modal-content">
+            <span class="logout-modal-close-btn" id="logout-modal-close-btn">×</span>
+            <h2>登出選項</h2>
+            <p>您確定要登出或切換使用者嗎？</p>
+            <div class="logout-modal-actions">
+                <!-- 登出按鈕 -->
+                <form th:action="@{/logout}" method="POST" id="logout-form">
+                    <button type="submit" id="logout-modal-logout-button">登出</button>
+                </form>
+                <!-- 切換使用者按鈕 -->
+                <form th:action="@{/switch-user}" method="POST" id="switch-user-form">
+                    <button type="submit" id="logout-modal-switch-button">切換使用者</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主體內容 -->
+    <div class="container">
+        <!-- Aside -->
+        <aside class="sidebar" id="aside">
+         <form th:action="@{/client/search}" method="GET" id="searchForm">
+            <div class="search-number">
+                <input type="text" name="clientId" placeholder="依編號搜尋" th:value="${clientId}">
+            </div>
+            <div class="search-name">
+                <input type="text" name="clientName" placeholder="依姓名搜尋" th:value="${clientName}">
+            </div>
+            <div class="search-mail">
+                <input type="text" name="clientMail" placeholder="依信箱搜尋" th:value="${clientMail}">
+            </div>
+            <div class="search-phone">
+                <input type="text" name="clientPhone" placeholder="依電話搜尋" th:value="${clientPhone}">
+            </div>
+            <div class="search">
+                <button>搜尋</button>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main-content" id="main">
+            <section class="form-section">
+                <table>
+    <thead>
+        <tr>
+            <th>客戶編號</th>
+            <th>姓名</th>
+            <th>電子信箱</th>
+            <th>電話</th>            
+        </tr>
+    </thead>
+    <tbody>
+                        <!-- 使用 Thymeleaf 渲染數據 -->
+                       <tr th:each="client : ${clients}" th:onclick="|window.location.href='/client/clientDetail/${client.memberId}'|" style="cursor: pointer;">
+                            <td th:text="${client.memberId}"></td>
+                            <td th:text="${client.lastName} + ${client.firstName}"></td>
+                            <td th:text="${client.account}"></td>
+                            <td th:text="${client.phoneNumber}"></td>                          
+                        </tr>
+                    </tbody>
+</table>
+
+
+            </section>
+<!--             <section class="page-section"> -->
+<!--                 <div class="page-number"> -->
+<!--                     <span>1</span> -->
+<!--                     <span>2</span> -->
+<!--                     <span>3</span> -->
+<!--                     <span>...</span> -->
+<!--                     <button>Next</button> -->
+<!--                 </div> -->
+<!--             </section> -->
+        </main>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+    <script>
+  //飯店彈窗
+    document.querySelector('.hotel-button').addEventListener('click', () => {
+        const dropdown = document.querySelector('.dropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // 取得彈窗和按鈕
+    const logoutModal = document.getElementById("logout-modal");
+    const logoutModalCloseBtn = document.getElementById("logout-modal-close-btn");
+    const logoutModalLogoutButton = document.getElementById("logout-modal-logout-button");
+    const logoutModalSwitchButton = document.getElementById("logout-modal-switch-button");
+    const logoutOption = document.getElementById("logout-option"); // 假設觸發按鈕未修改 id
+
+    // 顯示彈窗
+    logoutOption.addEventListener("click", function () {
+        logoutModal.classList.add("show"); // 添加 class 顯示彈窗
+    });
+
+    // 關閉彈窗 (x 按鈕)
+    logoutModalCloseBtn.addEventListener("click", function () {
+        logoutModal.classList.remove("show"); // 移除 class 隱藏彈窗
+    });
+
+    // 登出按鈕功能
+    logoutModalLogoutButton.addEventListener("click", function () {
+        alert("您已登出！");
+        document.location.href = "login-1.html";
+    });
+
+    // 切換使用者按鈕功能
+    logoutModalSwitchButton.addEventListener("click", function () {
+        alert("切換使用者！");
+        document.location.href = "login-2.html";; // 隱藏彈窗
+    });
+
+    // 點擊彈窗外部關閉 (選擇性功能)
+    window.addEventListener("click", function (e) {
+        if (e.target === logoutModal) {
+            logoutModal.classList.remove("show"); // 隱藏彈窗
+        }
+    });
+        
+        
+    </script>
+</body>
+
+</html>

@@ -453,6 +453,7 @@
     </footer>
 
     <script>
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         document.addEventListener("DOMContentLoaded", function () {
         	const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
             const photoUpload = document.getElementById("photo-upload");

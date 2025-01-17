@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -40,6 +41,10 @@ public class EmployeeService {
 
     public EmployeeVO getEmployeeById(Integer employeeId) {
         return employeeRepository.findById(employeeId).orElse(null);
+    }
+    
+    public EmployeeVO getEmployeeByName(String employeeName) {
+        return employeeRepository.findByName(employeeName).orElse(null);
     }
 
     public void update(EmployeeVO employee) {
@@ -83,5 +88,52 @@ public class EmployeeService {
 
     public void save(EmployeeVO employee) {
         employeeRepository.save(employee);
+    }
+
+    public Optional<EmployeeVO> findByEmployeeNumber(String employeeNumber) {
+        return employeeRepository.findByEmployeeNumber(employeeNumber);
+    }
+
+    public boolean existsByHotelId(Integer hotelId) {
+        return employeeRepository.existsByHotel_HotelId(hotelId);
+    }
+
+
+    public Optional<EmployeeVO> findByEmployeeId(Integer employeeId) {
+        return employeeRepository.findByEmployeeId(employeeId);
+    }
+
+    // 定義職位等級映射，數字越小職位越大
+    private final Map<String, Integer> titleHierarchy = Map.of(
+            "負責人", 1,
+            "總經理", 2,
+            "經理", 3,
+            "襄理", 4,
+            "員工", 5
+    );
+
+    public void deleteEmployee(Integer employeeId, EmployeeVO currentEmployee) {
+        // 獲取被刪除的員工
+        EmployeeVO targetEmployee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("員工不存在，無法刪除"));
+
+        // 禁止刪除負責人
+        if (currentEmployee.getEmployeeId() == targetEmployee.getEmployeeId()) {
+            throw new RuntimeException("不好吧？");
+        }
+        if ("負責人".equals(targetEmployee.getTitle()) && !("負責人".equals(currentEmployee.getTitle()))) {
+            throw new RuntimeException("想造反阿？");
+        }
+
+        // 確保當前操作員工的職位高於被刪除員工
+        int currentEmployeeRank = titleHierarchy.getOrDefault(currentEmployee.getTitle(), Integer.MAX_VALUE);
+        int targetEmployeeRank = titleHierarchy.getOrDefault(targetEmployee.getTitle(), Integer.MAX_VALUE);
+
+        if (currentEmployeeRank >= targetEmployeeRank) {
+            throw new RuntimeException("等你比他大才可以開除他");
+        }
+
+        // 執行刪除
+        employeeRepository.deleteById(employeeId);
     }
 }

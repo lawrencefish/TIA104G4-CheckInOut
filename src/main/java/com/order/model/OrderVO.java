@@ -1,6 +1,6 @@
 package com.order.model;
 
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -24,54 +24,56 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Range;
 
 import com.creditcard.model.CreditcardVO;
+import com.hotel.model.HotelVO;
 import com.member.model.MemberVO;
+import com.membercoupon.model.MemberCouponVO;
 import com.orderDetail.model.OrderDetailVO;
 
 @Entity
 @Table(name = "orders")
 public class OrderVO implements java.io.Serializable {
-	
+
 	@Id
 	@Column(name = "order_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer orderId;
 	@Column(name = "create_time")
 	private Timestamp createTime;
-	@Column(name = "status")
+	@Column(name = "status") //  0,已預約 1, 已報到 2, 已退房(完成訂單) 3, 取消訂單
 	private byte status;
 	@Column(name = "check_in_date", nullable = false)
-	@Future
-	@NotBlank(message = "入住日期不可為空")
+//	@Future
+	@NotNull(message = "入住日期不可為空")
 	private Date checkInDate;
 	@Column(name = "check_out_date", nullable = false)
-	@Future
-	@NotBlank(message = "退房日期不可為空")
+//	@Future
+	@NotNull(message = "退房日期不可為空")
 	private Date checkOutDate;
-	
+
 	// 連接到飯店，多對一
-//	@NotBlank(message = "旅館不可為空")
-//  @ManyToOne
-//  @JoinColumn(name = "hotel_id", nullable = false)
-//	private HotelVO hotel;
-	
+	@NotNull(message = "旅館不可為空")
+	@ManyToOne
+	@JoinColumn(name = "hotel_id", nullable = false)
+	private HotelVO hotel;
+
 	// 連接到會員，多對一
-	@NotBlank(message = "會員不可為空")
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
+	@NotNull(message = "會員不可為空")
+	@ManyToOne
+	@JoinColumn(name = "member_id", nullable = false)
 	private MemberVO member;
-	
+
 	// 連接到creditcard，多對一
-    @NotNull(message ="必須配對一張信用卡")
-    @ManyToOne
-    @JoinColumn(name = "creditcard_id", nullable = false)
+	@NotNull(message ="必須配對一張信用卡")
+	@ManyToOne
+	@JoinColumn(name = "creditcard_id", nullable = false)
 	private CreditcardVO creditcard;
-	
-    //連接到會員優惠券，ㄧ對一
-//  @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+
+//    //連接到會員優惠券，ㄧ對一
+//    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
 //	private MemberCouponVO MemberCoupon;
-	
+
 	@Column(name = "total_amount", nullable = false)
-	@NotBlank(message = "價格不得為空")
+	@NotNull(message = "價格不得為空")
 	private Integer totalAmount;
 	@Column(name = "guest_last_name", nullable = false)
 	@Size(max = 20)
@@ -81,23 +83,23 @@ public class OrderVO implements java.io.Serializable {
 	@Column(name = "guest_first_name", nullable = false)
 	@Size(max = 20)
 	private String guestFirstName;
-	@Column(name = "memo")
+	@Column(name = "memo" , columnDefinition = "TEXT")
 	private String memo;
-	@NotBlank(message = "評分不得為空")
+
 	@Range(min = 1, max = 5)
 	@Column(name = "rating", nullable = false)
 	private Integer rating;
-	@Column(name = "comment_content")
+	@Column(name = "comment_content", columnDefinition = "TEXT")
 	private String commentContent;
-	@Column(name = "comment_reply")
+	@Column(name = "comment_reply", columnDefinition = "TEXT")
 	private String commentReply;
 	@Column(name = "comment_create_time")
-	private String commentCreateTime;
-	
+	private Date commentCreateTime;
+
 	// 連接到orderDetail
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<OrderDetailVO> orderDetail;
-     
+
 	public OrderVO() {
 	}
 
@@ -213,11 +215,11 @@ public class OrderVO implements java.io.Serializable {
 		this.commentReply = commentReply;
 	}
 
-	public String getCommentCreateTime() {
+	public Date getCommentCreateTime() {
 		return commentCreateTime;
 	}
 
-	public void setCommentCreateTime(String commentCreateTime) {
+	public void setCommentCreateTime(Date commentCreateTime) {
 		this.commentCreateTime = commentCreateTime;
 	}
 
@@ -227,6 +229,14 @@ public class OrderVO implements java.io.Serializable {
 
 	public void setOrderDetail(List<OrderDetailVO> orderDetail) {
 		this.orderDetail = orderDetail;
+	}
+
+	public HotelVO getHotel() {
+		return hotel;
+	}
+
+	public void setHotel(HotelVO hotel) {
+		this.hotel = hotel;
 	}
 
 	@Override

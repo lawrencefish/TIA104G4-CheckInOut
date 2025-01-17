@@ -463,6 +463,16 @@
                         <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="error-message"></span>
                     </div>
 
+                    <!-- 經緯度欄位 -->
+                    <div class="form-group">
+                        <label for="latitude">緯度</label>
+                        <input id="latitude" th:field="*{latitude}" placeholder="緯度" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude">經度</label>
+                        <input id="longitude" th:field="*{longitude}" placeholder="經度" readonly>
+                    </div>
+
                     <!-- 連絡電話 -->
                     <div class="form-group">
                         <label for="phoneNumber">連絡電話</label>
@@ -484,7 +494,7 @@
                             <input type="text" id="verificationCode" name="verificationCode" placeholder="請輸入驗證碼">
                             <button type="button" id="send-code">寄送驗證碼</button>
                         </div>
-                        <span th:if="${verificationCodeError != null}" th:text="${verificationCodeError}" class="error-message"></span>
+                        <span id="verificationStatus" class="status-message"></span> <!-- 用於顯示驗證狀態 -->
                     </div>
                 </div>
             </section>
@@ -559,6 +569,7 @@
 </footer>
 
 <script>
+    const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
     function previewImage(input, previewContainer) {
         const file = input.files[0];
 
@@ -639,6 +650,120 @@
         const confirmPassword = document.getElementById("confirmPassword").value;
         if (password !== confirmPassword) {
             alert("密碼不一致，請重新確認！");
+            event.preventDefault(); // 阻止表單提交
+        }
+    });
+
+    // 綁定寄送驗證碼按鈕的點擊事件
+    document.getElementById("send-code").addEventListener("click", function () {
+        const email = document.getElementById("email").value; // 假設有 email 輸入框
+
+        if (!email) {
+            alert("請先輸入電子郵件！");
+            return;
+        }
+
+        // 發送驗證碼的請求
+        fetch(`${contextPath}/api/verification/send`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({ email }),
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data); // 提示發送結果
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("發送驗證碼失敗，請稍後再試！");
+            });
+    });
+
+    // 綁定驗證碼輸入框的 change 事件
+    document.getElementById("verificationCode").addEventListener("change", function () {
+        const email = document.getElementById("email").value; // 假設有 email 輸入框
+        const code = this.value; // 獲取輸入的驗證碼
+        const statusElement = document.getElementById("verificationStatus");
+
+        if (!email) {
+            statusElement.innerText = "請先輸入電子郵件！";
+            statusElement.style.color = "red";
+            return;
+        }
+
+        if (!code) {
+            statusElement.innerText = "請輸入驗證碼！";
+            statusElement.style.color = "red";
+            return;
+        }
+
+        // 發送驗證碼驗證請求
+        fetch(`${contextPath}/api/verification/check?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`)
+            .then(response => response.json())
+            .then(isValid => {
+                if (isValid) {
+                    statusElement.innerText = "驗證碼正確";
+                    statusElement.style.color = "green";
+                } else {
+                    statusElement.innerText = "驗證碼錯誤";
+                    statusElement.style.color = "red";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                statusElement.innerText = "驗證失敗，請稍後再試！";
+                statusElement.style.color = "red";
+            });
+    });
+
+    // 綁定三個輸入框的事件
+    document.getElementById("city").addEventListener("change", checkAndFetchCoordinates);
+    document.getElementById("district").addEventListener("change", checkAndFetchCoordinates);
+    document.getElementById("address").addEventListener("blur", checkAndFetchCoordinates);
+
+    function checkAndFetchCoordinates() {
+        const city = document.getElementById("city").value;
+        const district = document.getElementById("district").value;
+        const address = document.getElementById("address").value;
+
+        if (!city || !district || !address) {
+            return; // 如果任何一個欄位為空，則不執行請求
+        }
+
+        const fullAddress = `${city}${district}${address}`;
+
+        // 發送 API 請求
+        fetch(`${contextPath}/api/address/geocode?address=${encodeURIComponent(fullAddress)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("API 請求失敗");
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.latitude && data.longitude) {
+                    // alert(`成功取得經緯度：緯度 ${data.latitude}, 經度 ${data.longitude}`);
+                    // 更新隱藏欄位
+                    document.getElementById("latitude").value = data.latitude;
+                    document.getElementById("longitude").value = data.longitude;
+                } else {
+                    // alert("無法取得經緯度，請確認地址是否正確！");
+                }
+            })
+            .catch(error => {
+                console.error("錯誤:", error);
+                // alert("取得經緯度時發生錯誤，請稍後再試！");
+            });
+    }
+
+    // 綁定表單提交事件
+    document.querySelector("form").addEventListener("submit", function (event) {
+        const verificationStatus = document.getElementById("verificationStatus").innerText;
+
+        if (verificationStatus !== "驗證碼正確") {
+            alert("驗證碼未輸入或不正確，請重新輸入！");
             event.preventDefault(); // 阻止表單提交
         }
     });

@@ -5,16 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>會員註冊 - Check in Out</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-    <link rel="stylesheet" href="/vendors/bootstrap/css/headers.css">
-    <link rel="stylesheet" href="/css/template.css">
+	<link rel="stylesheet" href="/vendors/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/user/template.css">
     <style>
-         /* .registration-banner {
-            height: 100px;
-            background-color: #eeeae7;
-            margin-bottom: 2rem; 
-        }   */
 
         .big-title {
             height: 100px;
@@ -75,44 +68,8 @@
 
 <body>
     <!-- 標題列 -->
-    <header class="p-3 mb-0 border-bottom shadow-sm">
-        <div class="container">
-            <div class="d-flex flex-wrap align-items-center justify-content-center">
-                <!-- 首頁logo -->
-                <a href="#" class="d-block">
-                    <img src="img/logo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-                </a>
-                <ul class="nav col justify-content-end login">
-                    <li><a href="#" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
-                    <li><a href="#" class="nav-link px-2 link-body-emphasis">購物車</a></li>
-                    <li>
-                        <div class="dropdown">
-                            <a href="#" class="d-block link-body-emphasis text-decoration-none px-2 py-2"
-                                data-bs-toggle="dropdown" aria-expanded="false">登入 / 註冊
-                            </a>
-                            <div class="dropdown-menu login dropdown-menu-end mt-3 px-3 border-0 shadow-sm">
-                                <form class="px-4 py-3">
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email/帳號</label>
-                                        <input type="email" class="form-control" id="email" placeholder="請輸入帳號">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">密碼</label>
-                                        <input type="password" class="form-control" id="password" placeholder="請輸入密碼">
-                                    </div>
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" type="button">Sign in</button>
-                                        <button class="btn btn-primary" type="button">Sign in with Google</button>
-                                        <button class="btn btn-primary" type="button">Sign in</button>
-
-                                    </div>
-
-                                </form>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-    </header>
+	<header class="p-1 border-bottom shadow-sm">
+	</header>
     
 
     <main>
@@ -135,6 +92,7 @@
                             <label for="imageUpload" class="btn btn-outline-dark">
                                 上傳大頭貼
                             </label>
+                            <button id="removePic" class="btn btn-outline-dark">清除照片</button>
                             <input type="file" id="imageUpload" name="avatar" class="d-none" accept="image/*">
                             
                         </div>
@@ -174,7 +132,7 @@
                         <div class="col-md-4">
                             <label class="form-label">性別</label>
                             <select class="form-select" name="gender" required>
-                                <option value="">請選擇</option>
+                                <option value="" selected>請選擇</option>
                                 <option value="M">男</option>
                                 <option value="F">女</option>
                             </select>
@@ -200,7 +158,7 @@
 
                     <div class="text-center mt-5">
                         <button type="submit" class="btn btn-dark px-4 me-2">送出</button>
-                        <button type="button" class="btn btn-outline-dark px-4">取消</button>
+                        <button type="button" class="btn btn-outline-dark px-4" id="clear">清除資料</button>
                     </div>
 
                     <input type="hidden" name="status" value="1">
@@ -224,7 +182,11 @@
                 <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p>
             </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+            <script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
+            <script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
+            <script src="/js/user/loginCheck.js" defer></script>
+            <script src="/js/user/register.js" defer></script>
+ 
     <script>
         document.getElementById('imageUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -238,24 +200,6 @@
                 }
                 reader.readAsDataURL(file);
             }
-        });
-
-        // 表單驗證
-        const form = document.getElementById('registrationForm');
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const password = form.querySelector('input[name="password"]').value;
-            const confirmPassword = form.querySelector('input[name="confirm_password"]').value;
-
-            if (password !== confirmPassword) {
-                alert('密碼與確認密碼不符');
-                return;
-            }
-
-            // 在這裡加入表單提交的邏輯
-            console.log('表單驗證通過，準備提交');
-            // form.submit();
         });
     </script>
 </body>

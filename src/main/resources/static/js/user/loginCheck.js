@@ -9,31 +9,9 @@ const notLoginNav =
         width="72" height="72">
     </a>
     <ul class="nav col justify-content-end login">
-        <li><a href="/user/orderedfinal" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
-        <li><a href="#" class="nav-link px-2 link-body-emphasis">購物車</a></li>
-        <li>
-            <div class="dropdown">
-                <a href="#" class="d-block link-body-emphasis text-decoration-none px-2 py-2"
-                    data-bs-toggle="dropdown" aria-expanded="false">登入 / 註冊
-                </a>
-                <div class="dropdown-menu dropdown-menu-end mt-3 px-3 border-0 shadow-sm">
-                    <form class="px-4 py-3" id="login_list" action="Post">
-                        <div class="mb-3">
-                            <label for="account" class="form-label">Email/帳號</label>
-                            <input type="email" class="form-control" id="account" name="account" placeholder="請輸入帳號" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">密碼</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="請輸入密碼" autocomplete="off" required>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary login" type="submit">Sign in</button>
-                            <button class="btn btn-primary" type="button">Sign in with Google</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </li>
+        <li><a href="/user/order" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
+        <li><a href="/user/cart" class="nav-link px-2 link-body-emphasis">購物車</a></li>
+        <li><a href="" class="d-block link-body-emphasis text-decoration-none px-2 py-2" id="navLoginBtn">登入 / 註冊</a></li>
     </ul>
 `
 
@@ -46,13 +24,13 @@ const loginNav = `
             </a>
             <!-- 登入後 -->
             <ul class="nav col justify-content-end login">
-                <li><a href="/user/orderedfinal" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
-                <li><a href="#" class="nav-link px-10 link-body-emphasis">購物車</a></li>
+                <li><a href="/user/order" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
+                <li><a href="/user/cart" class="nav-link px-10 link-body-emphasis">購物車</a></li>
                 <li>
                     <div class="dropdown text-end px-2 py-20">
                         <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
-                            data-bs-toggle="dropdown" aria-expanded="false"> <img src=""
-                                alt="mdo" width="32" height="32" class="rounded-circle">
+                            data-bs-toggle="dropdown" aria-expanded="false"> <img id="avatarImg" src=""
+                                alt="mdo" width="45" height="45" class="rounded-circle">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end text-center mt-3 border-0 shadow-sm"
                             data-bs-display="static">
@@ -72,122 +50,255 @@ const loginNav = `
         </div>
     </div>
 `;
-let loginMessage = "";
-const loginModal = `
+const loginModalDiv = `
 	<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered" style="max-width:25vw;">
+		<div class="modal-dialog modal-dialog-centered" style="max-width:40vw;">
 			<div class="modal-content text-center">
-				<div class="modal-body">
-					<!-- 登入結果訊息 -->
-					<p id="loginMessage" class="fs-5 mb-3"></p>
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">確定</button>
+				<div class="modal-body" id="login-modal-body">
 				</div>
 			</div>
 		</div>
 	</div>
 `
 
+let loginMessage = "";
+
+const loginMessageDiv =`
+<div id="loginMessage" class="fs-6 mb-3"></div>
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">確定</button>
+`
+
+const loginFormView =`
+    <form class="px-4 py-3" id="login_list" action="Post">
+        <div class="mb-3">
+            <label for="account" class="form-label">Email/帳號</label>
+            <input type="email" class="form-control" id="account" name="account" placeholder="請輸入帳號" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">密碼</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="請輸入密碼" autocomplete="off" required>
+        </div>
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary login" type="submit">登入</button>
+            <button class="btn btn-primary" type="button" data-bs-dismiss="modal">Sign in with Google</button>
+            <a class="btn btn-primary" id="register" type="button" href="/user/register">註冊</a>
+        </div>
+    </form>
+`;
+
+let footer = `
+		<div class="row border-top">
+			<div class="container">
+				<ul class="nav justify-content-center">
+					<li class="nav-item"><a href="/user/" class="nav-link px-2 text-body-secondary">首頁</a></li>
+					<li class="nav-item"><a	href="/user/cart" class="nav-link px-2 text-body-secondary">購物車</a></li>
+					<li class="nav-item"><a href="/user/news" class="nav-link px-2 text-body-secondary">最新消息</a></li>
+					<li class="nav-item"><a href="/user/order" class="nav-link px-2 text-body-secondary">訂單管理</a>
+					</li>
+					<li class="nav-item"><a href="/user/faq" class="nav-link px-2 text-body-secondary">常見問題</a>
+					</li>
+					<li class="nav-item"><a href="/user/contactUs"
+							class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+					<li class="nav-item"><a href="/login/" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+				</ul>
+				<div class="d-flex justify-content-center align-items-start mb-0">
+					<img src="/imgs/user/checKInOut_logo_light.png" alt="checkinout" width="128">
+				</div>
+				<p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p>
+			</div>
+		</div>
+`
+
+let redirectUrl ="";
+
 document.addEventListener('DOMContentLoaded', function () {
     showLoginView();
+    document.querySelector('footer').innerHTML = footer;
 });
 
+// 通用 API 請求函數
+function apiRequest(url, method = 'GET', data = null) {
+    const options = {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+    };
+
+    if (data) {
+        options.body = JSON.stringify(data);
+    }
+
+    return fetch(url, options)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error('API Request Error:', error);
+            throw error; // 向上拋出錯誤以便進一步處理
+        });
+}
+
+// 登入功能
 function login(e) {
     e.preventDefault();
     const account = document.getElementById('account').value;
     const password = document.getElementById('password').value;
 
-    fetch('/user/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ account, password }),
-        credentials: 'include',
-    })
-        .then(response => response.json())
+    apiRequest('/user/api/login', 'POST', { account, password })
         .then(data => {
-            console.log(data.message);
             if (data.status === 'success') {
-                showLoginModal(data.message+`\n${account}`);
                 showLoginView();
+                showModal(data.message);
+                if (redirectUrl){
+                    window.location.href = redirectUrl;
+                    redirectUrl = "";
+                }
             } else {
-                showLoginModal(data.message);
+                showModal(data.message);
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Login Error:', error);
         });
 }
 
+// 登入檢查功能
 function loginCheck() {
-    return fetch('/user/api/loginCheck', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
+    return apiRequest('/user/api/loginCheck', 'POST')
         .then(data => {
             if (data.memberId != null && data.account != null) {
+                if(window.location.pathname == '/user/register'){
+                    showModal("你已經是會員咯！");
+                    setTimeout(function() {
+                        window.location.href = "/user/";
+                    }, 2000);     
+                }
                 return data.account;
             } else {
+                if (data.url) {
+                    redirectUrl = data.url;
+                    showModal();
+                }
                 return null;
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Login Check Error:', error);
             return null;
         });
 }
 
+// 登出功能
 function logout(e) {
     e.preventDefault();
-    fetch('/user/api/logout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-    })
-        .then(response => response.json())
+    apiRequest('/user/api/logout', 'POST')
         .then(data => {
             if (data.status === 'success') {
-                console.log(data.status);
-                showLoginModal(data.message);
-                showLoginView();
+                showModal("登出成功，三秒後跳轉到首頁");
+                showLoginView();    
+                setTimeout(function() {
+                    window.location.href = "/user/";
+                }, 3000); 
             }
-            console.log(data.message);
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Logout Error:', error);
         });
 }
 
-function showLoginModal(Message) {
-    const LoginModal = document.querySelector('#loginModal');
-    if (!LoginModal) {
-        const newDiv = document.createElement('div');
-        newDiv.innerHTML = loginModal;
+function getAvatar(){
+    fetch('/user/api/avatar', {
+        method: 'GET',
+        credentials: 'include' 
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch avatar');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const imageUrl = URL.createObjectURL(blob); 
+            console.log(imageUrl);
+            document.getElementById('avatarImg').src = imageUrl; 
+        })
+        .catch(error => {
+            console.error('Error fetching avatar:', error);
+        });
+    
+}
+
+function showModal(Message) {
+    let loginModal = document.querySelector('#loginModal');
+
+    if (!loginModal) {
+        // 如果模態視窗不存在，才動態插入
+        let newDiv = document.createElement('div');
+        newDiv.innerHTML = loginModalDiv;
         document.querySelector('main').appendChild(newDiv);
     }
-    document.querySelector('#loginMessage').textContent = Message;
-    const modal = new bootstrap.Modal(document.querySelector('#loginModal'));
-    modal.show();
+
+    // 更新模態視窗內容
+    loginMessage = Message;
+    const modalBody = document.querySelector('#login-modal-body');
+    if (modalBody) {
+        modalBody.innerHTML = (loginMessage) ? loginMessageDiv : loginFormView;
+        if (loginMessage) {
+            document.querySelector('#loginMessage').innerHTML = loginMessage;
+        }
+    }
+
+    // 檢查是否已有實例存在
+    const existingModalInstance = bootstrap.Modal.getInstance(document.querySelector('#loginModal'));
+    if (existingModalInstance) {
+        existingModalInstance.dispose(); // 銷毀舊的實例
+    }
+
+    // 初始化並顯示新的模態視窗
+    const showModal = new bootstrap.Modal(document.querySelector('#loginModal'), {
+        keyboard: true      // 允許按 ESC 鍵關閉
+    });
+    showModal.show();
+
+    // 綁定登入表單事件
+    let loginForm = document.querySelector('#login_list');
+    if (loginForm) {
+        loginForm.removeEventListener('submit', login); // 避免重複綁定
+        loginForm.addEventListener('submit', login);
+    }
+
+    document.querySelector('#loginModal').addEventListener('hidden.bs.modal', function () {
+        redirectUrl ="";
+    });
+
 }
 
 function showLoginView() {
     loginCheck().then(account => {
         if (!account) {
             document.querySelector('header').innerHTML = notLoginNav;
-            document.querySelector('#login_list').addEventListener('submit', function (e) {
-                login(e);
-            });
+
+            let loginBtn = document.querySelector('#navLoginBtn');
+            if (loginBtn) {
+                loginBtn.removeEventListener('click', showModal); // 移除舊的事件
+                loginBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    showModal();
+                });
+            }
+
         } else {
             document.querySelector('header').innerHTML = loginNav;
             console.log(account);
-            document.querySelector('#logout').addEventListener('click', function (e) {
-                logout(e);
-            })
+            getAvatar();
+            let logoutButton = document.querySelector('#logout');
+            if (logoutButton) {
+                logoutButton.removeEventListener('click', logout);
+                logoutButton.addEventListener('click', logout);
+            }
         }
     });
 }

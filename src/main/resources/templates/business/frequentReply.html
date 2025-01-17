@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飯店管理系統</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header 樣式 */
+        header {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        /* Logo */
+        header .logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        header .logo a img {
+            width: 40px;
+            height: 40px;
+        }
+
+        header .logo a span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        header nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        header nav a {
+            font-size: 1rem;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            position: relative;
+        }
+
+        header .user .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hotel Button */
+        header .user .hotel-button {
+            background-color: #2c3e50;
+            /* 深藍色 */
+            color: #fff;
+            border: 1px solid #34495e;
+            /* 邊框顏色和背景稍微區分 */
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect */
+        header .user .hotel-button:hover {
+            background-color: #34495e;
+            /* 稍微變深的顏色 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            /* 更柔和的陰影 */
+        }
+
+        /* Active state */
+        header .user .hotel-button:active {
+            background-color: #1a252f;
+            /* 點擊時變得更深 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focused state (accessibility improvement) */
+        header .user .hotel-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            /* 聚焦時顯示藍色陰影 */
+        }
+
+
+        /* Dropdown menu */
+        header .user .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            overflow: hidden;
+        }
+
+        header .user .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        header .user .dropdown ul li {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        header .user .dropdown ul li:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        header .user .dropdown ul li:last-child {
+            border-bottom: none;
+        }
+
+		/* 登出的彈窗樣式 */
+        #logout-modal {
+            display: none;
+            /* 初始為隱藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 半透明背景 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #logout-modal.show {
+            display: flex;
+            /* 顯示彈窗 */
+        }
+
+        #logout-modal .logout-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        #logout-modal .logout-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        #logout-modal .logout-modal-content p {
+            margin: 10px 0;
+        }
+
+        #logout-modal .logout-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #logout-modal .logout-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-logout-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-switch-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+        /* x 按鈕 */
+        #logout-modal .logout-modal-content .logout-modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        #logout-modal .logout-modal-content .logout-modal-close-btn:hover {
+            color: #333;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        aside {
+            width: 300px;
+            /* aside寬度保持300px */
+            padding: 20px;
+        }
+
+        aside nav {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        aside nav a {
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1rem;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        aside nav a.active,
+        aside nav a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* main主內容 */
+        /* 主體樣式 */
+        main {
+            width: 1500px;
+            /* 修改為1500px */
+            background-color: #fff;
+            padding: 30px;
+            margin-left: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        main h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            /* 增加底部間距 */
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            /* 加入底部邊框 */
+            padding-bottom: 10px;
+            /* 調整與底部邊框的間距 */
+        }
+
+        .content-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .content-section:not(.hidden) {
+            display: block;
+        }
+
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            /* footer 改為深色 */
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        aside select {
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            /* Add some space below the dropdown */
+        }
+
+        /* Adjust aside label styling */
+        aside label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Button styling already exists, but ensure consistency */
+        aside .btn-add {
+            width: 100%;
+            margin-top: 5px;
+            border-radius: 7px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease;
+        }
+
+        aside .btn-add:hover {
+            background-color: #dcdcdc;
+        }
+
+        .review-section {
+            width: 100%;
+            padding: 10px;
+            border-radius: 7px;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        .review-section textarea {
+            width: 100%;
+            height: 40px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        .review-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .response-section {
+            margin-top: 20px;
+        }
+
+        .response-section h3 {
+            /* font-size: 1.5rem; */
+            margin-bottom: 10px;
+        }
+
+        .response-section textarea {
+            width: 100%;
+            height: 250px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        .response-section button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            border-radius: 7px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+
+        }
+
+        .response-section button:hover {
+            background-color: #dcdcdc;
+        }
+
+        .response-section .btn-add {
+            float: right;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;/* 區塊間距 */
+            border-radius: 8px;/* 圓角外框 */
+            padding: 1rem;/* 內部填充 */
+            box-sizing: border-box;/* 確保寬度包含 padding */
+        }
+
+        .form-label {
+            font-weight: bold;/* 字體加粗 */
+            display: block;/* 確保標籤獨占一行 */
+            margin-bottom: 0.5rem;/* 與輸入框的間距 */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a th:href="@{/frontDesk}">
+                <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
+                <span>飯店管理系統</span>
+            </a>
+        </div>
+        <nav>
+           <a th:href="@{/frontDesk}">櫃台系統</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
+            <a th:href="@{/orders}">訂單管理</a>
+            <a th:href="@{/comment}" class="active">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
+        </nav>
+        <div class="user">
+            <span class="icon">🔔</span>
+             <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
+            <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
+            <div class="dropdown">
+                <ul>
+                    <li><a th:href="@{/account}">帳號設定</a></li>
+                    <li id="logout-option">登出</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+	<!-- 登出彈窗 -->
+    <div id="logout-modal" class="hidden">
+        <div class="logout-modal-content">
+            <span class="logout-modal-close-btn" id="logout-modal-close-btn">×</span>
+            <h2>登出選項</h2>
+            <p>您確定要登出或切換使用者嗎？</p>
+            <div class="logout-modal-actions">
+                <!-- 登出按鈕 -->
+                <form th:action="@{/logout}" method="POST" id="logout-form">
+                    <button type="submit" id="logout-modal-logout-button">登出</button>
+                </form>
+                <!-- 切換使用者按鈕 -->
+                <form th:action="@{/switch-user}" method="POST" id="switch-user-form">
+                    <button type="submit" id="logout-modal-switch-button">切換使用者</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主體內容 -->
+    <div class="container">
+        <!-- Aside -->
+        <aside class="sidebar" id="aside">
+    <label for="common-replies">常用回覆</label>
+    <select id="common-replies" onchange="loadReply()">
+    <option th:each="reply : ${replies}"
+            th:value="${reply.replyId}" 
+            th:text="${reply.title}">
+    </option>
+</select>
+    <button class="btn-add" onclick="createNewReply()">新增</button>
+</aside>
+
+        <!-- Main -->
+        <main class="main-content" id="main">
+    <div class="review-section form-group">
+    <label for="title" class="form-label">常用回覆標題</label>
+    <textarea id="titleInput" class="form-textarea" placeholder="輸入標題" 
+              th:text="${replies[0].title}">
+    </textarea>
+</div>
+
+<div class="response-section form-group">
+    <label for="response" class="form-label">預設回覆</label>
+    <textarea id="responseInput" class="form-textarea" placeholder="輸入回覆內容" 
+              th:text="${replies[0].content}">
+    </textarea>
+</div>
+
+
+    <div class="response-section form-group">
+<!--     <label for="response" class="form-label">預設回覆</label> -->
+<!--     <textarea id="responseInput" class="form-textarea" placeholder="輸入回覆內容"></textarea> -->
+    <button class="btn-add" onclick="deleteReply()">刪除</button>
+    <button class="btn-add" onclick="saveReply()">儲存</button>
+</div>
+
+</main>
+
+
+    </div>
+
+    <footer>
+        &copy; 2024 Check in out. All rights reserved.
+    </footer>
+
+    <script>
+  //飯店彈窗
+    document.querySelector('.hotel-button').addEventListener('click', () => {
+        const dropdown = document.querySelector('.dropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // 取得彈窗和按鈕
+    const logoutModal = document.getElementById("logout-modal");
+    const logoutModalCloseBtn = document.getElementById("logout-modal-close-btn");
+    const logoutModalLogoutButton = document.getElementById("logout-modal-logout-button");
+    const logoutModalSwitchButton = document.getElementById("logout-modal-switch-button");
+    const logoutOption = document.getElementById("logout-option"); // 假設觸發按鈕未修改 id
+
+    // 顯示彈窗
+    logoutOption.addEventListener("click", function () {
+        logoutModal.classList.add("show"); // 添加 class 顯示彈窗
+    });
+
+    // 關閉彈窗 (x 按鈕)
+    logoutModalCloseBtn.addEventListener("click", function () {
+        logoutModal.classList.remove("show"); // 移除 class 隱藏彈窗
+    });
+
+    // 登出按鈕功能
+    logoutModalLogoutButton.addEventListener("click", function () {
+        alert("您已登出！");
+        document.location.href = "login-1.html";
+    });
+
+    // 切換使用者按鈕功能
+    logoutModalSwitchButton.addEventListener("click", function () {
+        alert("切換使用者！");
+        document.location.href = "login-2.html";; // 隱藏彈窗
+    });
+
+    // 點擊彈窗外部關閉 (選擇性功能)
+    window.addEventListener("click", function (e) {
+        if (e.target === logoutModal) {
+            logoutModal.classList.remove("show"); // 隱藏彈窗
+        }
+    });
+        
+        const replies = /*[[${replies}]]*/ [];
+        
+        function loadReply() {
+            const selectedId = document.getElementById('common-replies').value;
+
+            fetch(`/frequentReply/all/${selectedId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('無法載入回覆資料');
+                    }
+                    return response.json();
+                })
+                .then(reply => {
+                    document.getElementById('titleInput').value = reply.title || '';
+                    document.getElementById('responseInput').value = reply.content || '';
+                })
+                .catch(error => console.error('載入回覆出錯:', error));
+        }
+
+        function saveReply() {
+            const replyId = document.getElementById('common-replies').value;
+            const title = document.getElementById('titleInput').value;
+            const content = document.getElementById('responseInput').value;
+
+            fetch('/frequentReply/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ replyId, title, content }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('儲存失敗');
+                    }
+                    return response.text();
+                })
+                .then(message => {
+                    alert(message);
+                })
+                .catch(error => console.error('儲存出錯:', error));
+        }
+        
+        function createNewReply() {
+            // 清空標題和回覆內容
+            document.getElementById('titleInput').value = '';
+            document.getElementById('responseInput').value = '';
+
+            // 選單重設為空值
+            const dropdown = document.getElementById('common-replies');
+            dropdown.value = '';
+
+            // 強制刷新頁面
+            location.reload();
+        }
+
+        function deleteReply() {
+            const replyId = document.getElementById('common-replies').value;
+
+            if (!replyId) {
+                alert('請選擇要刪除的回覆');
+                return;
+            }
+
+            fetch(`/frequentReply/delete/${replyId}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('刪除成功');
+                    location.reload(); // 刷新頁面以更新資料
+                } else {
+                    alert('刪除失敗');
+                }
+            })
+            .catch(error => console.error('刪除出錯', error));
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

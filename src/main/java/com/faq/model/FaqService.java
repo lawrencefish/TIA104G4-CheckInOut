@@ -3,38 +3,42 @@ package com.faq.model;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class FaqService {
-	
-	
-    private FaqRepository faqRepository;
-
-    public List<FaqVO> getAllFaqs() {
-        return faqRepository.findAll();
-    }
-
-    public FaqVO getFaqById(int id) {
-        Optional<FaqVO> faq = faqRepository.findById(id);
-        return faq.orElseThrow(() -> new RuntimeException("找不到"));
-    }
-
-    public FaqVO createFaq(FaqVO faq) {
-        return faqRepository.save(faq);
-    }
-
-    public FaqVO updateFaq(int id, FaqVO updatedFaq) {
-        FaqVO existingFaq = getFaqById(id);
-        existingFaq.setQuestion(updatedFaq.getQuestion());
-        existingFaq.setAnswer(updatedFaq.getAnswer());
-        return faqRepository.save(existingFaq);
-    }
-
-    public void deleteFaq(int id) {
-        faqRepository.deleteById(id);
-    }
+ 
+ private final FaqRepository faqRepository;
+ 
+ @Autowired
+ public FaqService(FaqRepository faqRepository) {
+     this.faqRepository = faqRepository;
+ }
+ 
+ // 查詢所有FAQ
+ public List<FaqVO> getAllFaqs() {
+     return faqRepository.findAll();
+ }
+ 
+ // 根據ID查詢單個FAQ
+ public Optional<FaqVO> getFaqById(Integer id) {
+     return faqRepository.findById(id);
+ }
+ 
+ // 創建新FAQ
+ public FaqVO createFaq(FaqVO faq) {
+     return faqRepository.save(faq);
+ }
+ 
+ // 更新FAQ
+ public FaqVO updateFaq(FaqVO faq) {
+     return faqRepository.save(faq);
+ }
+ 
+ // 刪除FAQ
+ public void deleteFaq(Integer id) {
+     faqRepository.deleteById(id);
+ }
 }

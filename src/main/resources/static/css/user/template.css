@@ -13,7 +13,7 @@ header {
 }
 
 main {
-    margin-top:100px;
+    margin-top:10vh;
     background-color: white;
 }
 
@@ -37,4 +37,3 @@ ul .dropdown-menu .dropdown-item {
     height: 100px;
     background-color: #eeeae7;
 }
-/*  */

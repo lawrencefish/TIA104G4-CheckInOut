@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Entity
@@ -31,14 +30,8 @@ public class NewsVO {
     @Column(name = "post_time", nullable = false)
     private LocalDateTime postTime;
 
-    @Column(name = "create_time", nullable = false, updatable = false)
+    @Column(name = "create_time", insertable = false, updatable = false)
     private LocalDateTime createTime;
-
-    @PrePersist
-    protected void onCreate() {
-        createTime = LocalDateTime.now();
-    
-    }
 
 	public Integer getNewsId() {
 		return newsId;
@@ -87,4 +80,12 @@ public class NewsVO {
 	public void setCreateTime(LocalDateTime createTime) {
 		this.createTime = createTime;
 	}
+
+	public String getImgType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 }
+    

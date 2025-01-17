@@ -665,6 +665,30 @@
             text-align: center;
             margin: 5px auto;
         }
+
+        .employee-modal-actions button {
+            padding: 10px 25px; /* 增加內邊距 */
+            font-size: 1rem;   /* 調整字體大小 */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .employee-modal-actions button:hover {
+            background-color: #0056b3; /* 增加懸停效果 */
+        }
+
+        #employee-delete-button {
+            background-color: red;
+            color: white;
+        }
+
+        #employee-delete-button:hover {
+            background-color: darkred;
+        }
     </style>
 </head>
 
@@ -679,15 +703,16 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
-            <a href="#">評論管理</a>
-            <a href="#">客戶管理</a>
-            <a th:href="@{/report}">報表分析</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
+<!--            <a th:href="@{/report}">報表分析</a>-->
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-            <span class="icon">💬</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
@@ -794,8 +819,8 @@
                     </div>
                     <div class="form-group">
                         <label for="employee-modal-title">職稱</label>
-                        <select id="employee-modal-title" name="title">
-                            <option value="負責人">負責人</option>
+                        <select id="employee-modal-title" name="title" >
+                            <option value="負責人" disabled>負責人</option>
                             <option value="總經理">總經理</option>
                             <option value="經理">經理</option>
                             <option value="襄理">襄理</option>
@@ -813,6 +838,7 @@
                     <div class="employee-modal-actions">
                         <button id="reset-password-button" type="button">重設密碼</button>
                         <button id="employee-save-button" type="submit">儲存設定</button>
+                        <button id="employee-delete-button" type="button" style="background-color: red; color: white;">刪除員工</button>
                         <button id="employee-close-button" type="button">關閉表單</button>
                     </div>
                 </form>
@@ -1096,6 +1122,32 @@
             updateHotelPasswordModal.classList.remove('show');
         });
 
+        // 刪除員工
+        // 刪除員工按鈕
+        const deleteEmployeeButton = document.getElementById('employee-delete-button');
+
+        deleteEmployeeButton.addEventListener('click', () => {
+            const employeeId = document.getElementById('employee-modal-id').value;
+
+            // 發送刪除請求到後端
+            fetch(`${contextPath}/employee/delete/${employeeId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+            })
+                .then((response) => response.json()) // 解析 JSON 響應
+                .then((data) => {
+                    if (data.error) {
+                        alert(`${data.error}`);
+                    } else {
+                        alert(data.message || "再見掰掰！");
+                        location.reload(); // 刷新頁面
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error deleting employee:", error);
+                    alert("刪除失敗，請稍後重試！");
+                });
+        });
     </script>
 </body>
 

@@ -481,15 +481,16 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}" class="active">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}" class="active">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
-            <a href="#">評論管理</a>
-            <a href="#">客戶管理</a>
-            <a th:href="@{/report}">報表分析</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
+<!--            <a th:href="@{/report}">報表分析</a>-->
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-            <span class="icon">💬</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
@@ -877,6 +878,7 @@
                     alert('特殊價格已成功設置！');
                     document.getElementById('special-price-form').reset();
                     document.getElementById('special-inputs').style.display = 'none';
+                    location.reload()
                 })
                 .catch(error => console.error('Error submitting special price:', error));
         });

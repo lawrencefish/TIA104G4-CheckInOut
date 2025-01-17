@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/account")
@@ -28,7 +29,26 @@ public class AccountController {
     }
 
     @GetMapping("/personalAccount")
-    public String showPersonalAccount() {
+    public String showPersonalAccount(HttpServletRequest request) {
+        // 從 Session 中獲取當前員工
+        EmployeeVO employee = (EmployeeVO) request.getSession().getAttribute("employee");
+        if (employee != null) {
+            // 使用 Optional 安全地查找員工資料
+            Optional<EmployeeVO> updatedEmployee = employeeService.findByEmployeeId(employee.getEmployeeId());
+            // 如果查詢到資料，更新 Session，否則記錄錯誤或設置默認值
+            if (updatedEmployee.isPresent()) {
+                request.getSession().setAttribute("employee", updatedEmployee.get());
+            } else {
+                // 如果查無資料，可選擇設置默認值或記錄警告
+                System.err.println("No employee found with ID: " + employee.getEmployeeId());
+            }
+        } else {
+            // 如果 Session 中沒有員工對象，處理異常情況
+            System.err.println("No employee found in session.");
+            // 可能需要重定向到登錄頁面或顯示錯誤訊息
+            return "redirect:/login";
+        }
+        // 返回頁面
         return "business/personalAccount";
     }
 

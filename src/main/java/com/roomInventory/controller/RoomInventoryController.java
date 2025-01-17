@@ -64,9 +64,19 @@ public class RoomInventoryController {
                 record.put("roomName", roomType.getRoomName());
                 record.put("roomNum", roomType.getRoomNum()); // 添加固定房間數量
                 RoomInventoryVO inventory = inventoryMap.getOrDefault(date, new HashMap<>()).get(roomType.getRoomTypeId());
-                record.put("inventoryId", inventory.getInventoryId()); // 添加 inventoryId
-                record.put("deleteQuantity", inventory.getDeleteQuantity());
-                record.put("availableQuantity", inventory != null ? inventory.getAvailableQuantity() : null); // 如果沒有數據，返回 null
+//                record.put("inventoryId", inventory.getInventoryId()); // 添加 inventoryId
+//                record.put("deleteQuantity", inventory.getDeleteQuantity());
+//                record.put("availableQuantity", inventory != null ? inventory.getAvailableQuantity() : null); // 如果沒有數據，返回 null
+                if (inventory != null) {
+                    record.put("inventoryId", inventory.getInventoryId());
+                    record.put("deleteQuantity", inventory.getDeleteQuantity());
+                    record.put("availableQuantity", inventory.getAvailableQuantity());
+                } else {
+                    // 如果 inventory 為 null，設置默認值
+                    record.put("inventoryId", null);
+                    record.put("deleteQuantity", 0);
+                    record.put("availableQuantity", null);
+                }
                 result.add(record);
             }
         }
@@ -103,5 +113,31 @@ public class RoomInventoryController {
         }
 
         return ResponseEntity.ok(updatedInventories); // 返回更新後的完整數據
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createInventory(@RequestBody Map<String, String> request, HttpSession session) {
+        String dateStr = request.get("date");
+        if (dateStr == null || dateStr.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "日期不可為空！"));
+        }
+
+        try {
+            // 解析用戶輸入的日期
+            LocalDate endDate = LocalDate.parse(dateStr);
+
+            // 調用 Service 方法進行庫存新增
+            roomInventoryService.updateRoomInventoryForHotel(endDate, session);
+
+            // 返回成功結果
+            return ResponseEntity.ok(Map.of("message", "成功建立從今天到 " + dateStr + " 的庫存！"));
+        } catch (RuntimeException e) {
+            // 捕獲業務異常並返回
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            // 捕獲系統異常並返回
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "系統錯誤：" + e.getMessage()));
+        }
     }
 }

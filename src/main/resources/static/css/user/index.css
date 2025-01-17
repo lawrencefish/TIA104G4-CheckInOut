@@ -52,3 +52,9 @@ ul .dropdown-menu .dropdown-item {
     height: 89vh;
 }
 
+.pac-container{
+    border-radius:0.5rem;
+}
+.pac-item{
+    padding:5px;
+}

@@ -1,3 +1,5 @@
+const apikey = "AIzaSyAQ4SS_rzxn4J8dPktZjUiVMAkjGA_dCuo";
+
 // 初始化 Google Maps JavaScript API
 (g => {
     var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window;
@@ -19,56 +21,141 @@
         }));
     d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n));
 })
-    ({ key: "AIzaSyAQ4SS_rzxn4J8dPktZjUiVMAkjGA_dCuo", v: "weekly" });
+    ({ key: apikey, v: "weekly", libraries: "places" });
 
 // 定義地圖和其他全域變數
 let map; // 儲存地圖物件
 let currentCenter; // 儲存目前地圖的中心位置
 let markers = []; // 儲存地圖上的標記
+let currentData; // 全域變數，儲存最新的搜尋資料
+
+$(document).ready(function () {
+    getSearchResult()
+        .then(function (data) {
+            console.log(data);
+            currentData = data; // 儲存初始取得的資料
+            sortByDistance(data, data.myLat, data.myLnt);
+            initMap(data);
+        })
+        .catch(function (error) {
+            console.error(error);
+            console.log(error.error);
+
+        });
+});
 
 // 初始化地圖的主函式
-async function initMap() {
+async function initMap(data) {
     const { Map } = await google.maps.importLibrary("maps"); // 載入地圖庫
-    const myLatlng = { lat: 25.03298, lng: 121.5654 }; // 設定初始的地圖中心點（台北市）
+    const myLatlng = { lat: data.myLat, lng: data.myLnt }; // 設定初始的地圖中心點
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker"); // 載入標記庫
 
+    findRoomWithLowestTotalPrice(data);
     // 初始化地圖並設定相關屬性
     map = new Map(document.getElementById("map"), {
-        zoom: 15, // 設定地圖縮放層級
-        center: myLatlng, // 設定地圖的中心點
-        mapId: "dd77e8c7f72def60", // 自訂的地圖 ID
+        zoom: 14,
+        center: myLatlng,
+        mapId: "220d1160cfba5a2e",
         disableDefaultUI: true,
     });
 
-    currentCenter = myLatlng; // 設定目前的地圖中心點
-    hotelLoading(currentCenter, map); // 初始載入飯店資訊
+    currentCenter = myLatlng;
+    hotelLoading(data, map);
+
+    // 搜尋列設定
+    const input = document.getElementById("pac-input");
+    const options = {
+        componentRestrictions: { country: "tw" }  // 限制在台灣
+    };
+
+    // 使用 Autocomplete 而非 SearchBox
+    const autocomplete = new google.maps.places.Autocomplete(input, options);
+
+    // 將 Autocomplete 綁定至地圖範圍
+    autocomplete.bindTo('bounds', map);
+
+    // 將輸入框加入地圖控制項
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(input);
+
+    // 監聽 Autocomplete 的地點變更事件
+    autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry) {
+            console.log("找不到該地點的詳細資料");
+            return;
+        }
+
+        // 如果有 viewport，使用它來調整地圖範圍；否則使用地點位置
+        if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+        } else {
+            map.setCenter(place.geometry.location);
+            map.setZoom(14); // 根據需要設定適當的縮放層級
+        }
+    });
 
     // 當地圖閒置（idle）時，重新載入飯店資訊
-    map.addListener("idle", () => {
-        const newCenter = map.getCenter(); // 取得當前地圖的中心位置
+    map.addListener("idle", async () => {
+        const newCenter = map.getCenter();
         const centerLatLng = {
             lat: newCenter.lat(),
             lng: newCenter.lng(),
         };
-
-        // 如果地圖中心點改變，就重新載入資料
         if (
-            !currentCenter || // 如果是第一次載入
-            currentCenter.lat !== centerLatLng.lat || // 檢查緯度是否改變
-            currentCenter.lng !== centerLatLng.lng // 檢查經度是否改變
+            !currentCenter ||
+            currentCenter.lat !== centerLatLng.lat ||
+            currentCenter.lng !== centerLatLng.lng
         ) {
-            currentCenter = centerLatLng; // 更新目前的中心點
-            clearMarkers(); // 清除舊的標記
-            hotelLoading(centerLatLng, map); // 載入新的飯店資訊
+            currentCenter = centerLatLng;
+
+            try {
+                await updateSearchResult(currentCenter);
+                const searchData = await getSearchResult();
+                currentData = searchData; // 更新全域變數為最新資料
+                findRoomWithLowestTotalPrice(searchData);
+                sortByDistance(currentData, currentData.myLat, currentData.myLnt);
+                clearMarkers();
+                hotelLoading(searchData, map);
+                document.querySelector('.card-scroll').scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                  });                  
+            } catch (error) {
+                console.error("獲取資料時發生錯誤:", error);
+            }
+        }
+    });
+
+    // 事件監聽器使用全域 currentData
+    $('#lowPriceFirst').on('click', (e) => {
+        e.preventDefault();
+        if (currentData) {
+            sortByPrice(currentData, 'asc');
+            hotelLoading(currentData, map);
+        }
+    });
+    $('#highPriceFirst').on('click', (e) => {
+        e.preventDefault();
+        if (currentData) {
+            sortByPrice(currentData, 'desc');
+            hotelLoading(currentData, map);
+        }
+    });
+    $('#nearestFirst').on('click', (e) => {
+        e.preventDefault();
+        if (currentData) {
+            sortByDistance(currentData, currentData.myLat, currentData.myLnt);
+            hotelLoading(currentData, map);
         }
     });
 }
+
 
 function addCardClickEvent(hotelID, position) {
     const targetCard = document.getElementById(`card-${hotelID}`);
     if (targetCard) {
         targetCard.addEventListener("click", () => {
-            map.setZoom(16); // 設定地圖縮放層級
+            map.setZoom(14); // 設定地圖縮放層級
             map.panTo(position); // 將地圖移動到指定位置
         });
     }
@@ -77,65 +164,55 @@ function addCardClickEvent(hotelID, position) {
 
 // 載入飯店資訊並顯示在地圖上
 // 修改後的 hotelLoading 函式，加入氣泡點擊事件
-function hotelLoading(center, map) {
-    let ListURL = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`;
-    let keyword = `?keyword=飯店`; // 搜尋關鍵字
-    let location = `${center.lat}%2C${center.lng}`; // 中心點座標
-    let radius = `1000`; // 搜尋範圍（半徑 1000 公尺）
-    let type = `hotel`; // 搜尋類型：飯店
-    let key = `AIzaSyAQ4SS_rzxn4J8dPktZjUiVMAkjGA_dCuo`;
-
+function hotelLoading(data, map) {
     // 呼叫 Google Maps Places API 並處理回應資料
-    fetch(ListURL + `${keyword}&location=${location}&radius=${radius}&type=${type}&key=${key}`)
-        .then((res) => {
-            if (res.ok) return res.json(); // 如果回應成功，解析成 JSON
-        })
-        .then((data) => {
-            console.log(`Hotels reloaded:`);
-            $(".card-scroll").empty(); // 清空舊的飯店清單
-
-            // 處理每個飯店的資料
-            data.results.forEach((ele) => {
-                let hotelName = ele.name;
-                let hotelReview = ele.rating;
-                let hotelReviewConut = ele.user_ratings_total;
-                let hotelCity = ele.vicinity;
-                let hotelPrice = 100; // 預設價格
-                let hotelID = ele.place_id; // 飯店 ID
-                let hotelIMG = `https://maps.googleapis.com/maps/api/place/photo?maxheight=100&photoreference=${ele.photos[0].photo_reference}&key=${key}`;
-                let position = ele.geometry.location; // 標記的位置
-
-                // 建立飯店卡片
-                let hotelCard = `
-                        <div class="col ${hotelID}">
-                            <div class="card h-100 my-3" id="card-${hotelID}">
-                                <div class="row g-0">
-                                    <div class="col-4" style="height:200px; overflow: hidden;">
-                                        <img src="${hotelIMG}" style="width:100%; height:100%; object-fit:cover;" alt="${hotelName}">
-                                    </div>
-                                    <div class="col-8">
-                                        <div class="card-body">
-                                            <h5 class="card-title mb-1">${hotelName}</h5>
-                                            <div class="card-text mb-4">
-                                                <span class="badge bg-primary"><span>${hotelReview}</span>分 </span>
-                                                <span class="badge bg-secondary"><span>${hotelReviewConut}</span>則評論</span>
-                                                <span class="badge bg-success">${hotelCity}</span>
-                                            </div>
-                                            <div class="card-footer bg-body border-0 p-0">
-                                                <p class="hotel-price h4">NT$<span class="price">${hotelPrice}</span></p>
-                                                <button class="btn btn-primary">立刻訂房</button>
-                                            </div>
+    console.log(`Hotels reloaded:`);
+    $(".card-scroll").empty(); // 清空舊的飯店清單
+    // 處理每個飯店的資料
+    data.hotels.forEach((d) => {
+        let hotelName = d.hotel;
+        let hotelReview =  Math.round(d.ratings*10)/10;
+        let hotelReviewConut = d.comments ;
+        let hotelCity = d.city + d.district;
+        let hotelPrice = d.lowestTotalPrice; // 預設價格
+        let hotelID = d.hotelID; // 飯店 ID
+        let hotelIMG = "/search/api/image/hotel/" + d.hotelID+"/0";
+        let position = { lat: d.lat, lng: d.lng }; // 標記的位置
+        // 建立飯店卡片
+        let hotelCard = `
+                    <div class="col ${hotelID}">
+                        <div class="card h-100 my-3 position-relative" id="card-${hotelID}">
+                            <!-- 愛心按鈕 -->
+                            <button class="btn btn-light heart-button position-absolute top-0 end-0 m-2">
+                                ♥
+                            </button>
+                            <div class="row g-0">
+                                <div class="col-4" style="height:200px; overflow: hidden;">
+                                    <img src="${hotelIMG}" style="width:100%; height:100%; object-fit:cover;" alt="${hotelName}">
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-1">${hotelName}</h5>
+                                        <div class="card-text mb-4">
+                                            <span class="badge bg-success">${hotelCity}</span>
+                                            <span class="badge bg-primary ${hotelReview == null || hotelReview == 0 ? "d-none" : ""}"><span>平均${hotelReview}</span>分</span>
+                                            <span class="badge bg-secondary ${hotelReviewConut == null || hotelReviewConut == 0 ? "d-none" : ""}"><span>${hotelReviewConut}</span>則評論</span>
+                                        </div>
+                                        <div class="card-footer bg-body border-0 p-0">
+                                            <p class="hotel-price h4">NT$<span class="price">${hotelPrice}</span>元起</p>
+                                            <a class="btn btn-primary" href="/user/hotel_detail/${hotelID}">立刻訂房</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     `;
-                $('.card-scroll').append(hotelCard);
+        $('.card-scroll').append(hotelCard);
 
-                // 創建氣泡內容
-                const markerContent = document.createElement("div");
-                markerContent.innerHTML = `
+        // 創建氣泡內容
+        const markerContent = document.createElement("div");
+        markerContent.innerHTML = `
                   <div class="bubble ${hotelID}">
                     <div class="bubble-content">
                       ${hotelName}
@@ -144,9 +221,9 @@ function hotelLoading(center, map) {
                   </div>
                 `;
 
-                // 標記的樣式
-                const bubbleStyle = document.createElement("style");
-                bubbleStyle.textContent = `
+        // 標記的樣式
+        const bubbleStyle = document.createElement("style");
+        bubbleStyle.textContent = `
                   .bubble {
                     z-index: 999;
                     position: relative;
@@ -177,31 +254,57 @@ function hotelLoading(center, map) {
                     max-width: 150px; /* 限制氣泡寬度 */
                   }
                 `;
-                document.head.appendChild(bubbleStyle);
+        document.head.appendChild(bubbleStyle);
 
-                // 創建地圖上的標記
-                const marker = new google.maps.marker.AdvancedMarkerElement({
-                    map,
-                    position: ele.geometry.location,
-                    content: markerContent,
-                    gmpClickable: true,
-                });
-
-                // 添加點擊氣泡的事件，跳轉到對應的卡片
-                markerContent.parentElement?.parentElement?.addEventListener("click", (e) => {
-                    const targetCard = document.getElementById(`card-${hotelID}`);
-                    if (targetCard) {
-                        // 滾動到對應卡片
-                        targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
-                        map.setZoom(16); // 設定地圖縮放層級
-                        map.panTo(position); // 將地圖移動到指定位置            
-                    }
-                });
-                addCardClickEvent(hotelID, position);
-                markers.push(marker); // 儲存標記
-            });
+        // 創建地圖上的標記
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            map,
+            position: position,
+            content: markerContent,
+            gmpClickable: true,
         });
+
+        // 添加點擊氣泡的事件，跳轉到對應的卡片
+        markerContent.parentElement?.parentElement?.addEventListener("click", (e) => {
+            const targetCard = document.getElementById(`card-${hotelID}`);
+            if (targetCard) {
+                // 滾動到對應卡片
+                targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
+                map.setZoom(16); // 設定地圖縮放層級
+                map.panTo(position); // 將地圖移動到指定位置            
+            }
+        });
+        addCardClickEvent(hotelID, position);
+        markers.push(marker); // 儲存標記
+    });
+};
+
+function findRoomWithLowestTotalPrice(data) {
+    // 遍歷每一家飯店
+    data.hotels.forEach(hotel => {
+        let minPriceSum = Infinity;
+        let cheapestRoom = null;
+
+        // 對該飯店的每個房型進行計算
+        hotel.rooms.forEach(room => {
+            // 計算該房型所有日期的總價格
+            console.log(room);
+            const totalPrice = room.total_price;
+            // 更新最小價格與最便宜房型
+            if (totalPrice < minPriceSum) {
+                minPriceSum = totalPrice;
+                cheapestRoom = room;
+            }
+        });
+
+        // 將最便宜房型及價格存入飯店物件中
+        hotel.cheapestRoom = cheapestRoom;
+        hotel.lowestTotalPrice = minPriceSum;
+    });
+
+    // 此函式不需要回傳值，因為它直接修改了 data 物件中的資料
 }
+
 
 // 清除地圖上的標記
 function clearMarkers() {
@@ -209,19 +312,63 @@ function clearMarkers() {
     markers = []; // 清空標記陣列
 }
 
-// 初始化地圖
-initMap();
+//取得搜尋結果
+function getSearchResult() {
+    return $.ajax({
+        url: '/search/api/search_result',
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+    });
+}
+//取得新地點
+function updateSearchResult(currentCenter) {
+    return $.ajax({
+        url: '/search/api/map_search',
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({
+            lat: currentCenter.lat,
+            lnt: currentCenter.lng
+        }), success: function (data) {
+            console.log('成功')
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error('AJAX 請求發生錯誤:', textStatus, errorThrown);
+            console.log('響應文本:', jqXHR.responseText);
+        }
+    });
+}
 
-// // 監聽點擊事件，用來偵測使用者點擊的元素
-// document.querySelector('html').addEventListener('click', function (e) {
-//     e.stopPropagation(); // 停止事件冒泡
+function haversineDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371; // 地球半徑，單位：公里
+    const toRad = angle => angle * Math.PI / 180;
 
-//     // 檢查是否點擊到了目標範圍
-//     if (e.target) {
-//         console.log('點擊的元素是：', e.target);
-//         console.log('元素的類名：', e.target.className);
-//         console.log('元素的標籤名稱：', e.target.tagName);
-//     } else {
-//         console.warn('點擊的元素不存在');
-//     }
-// });
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLng / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+function sortByDistance(data, centerLat, centerLng) {
+    data.hotels.sort((a, b) => {
+        const distanceA = haversineDistance(centerLat, centerLng, a.lat, a.lng);
+        const distanceB = haversineDistance(centerLat, centerLng, b.lat, b.lng);
+        return distanceA - distanceB;
+    });
+}
+
+function sortByPrice(data, order = 'asc') {
+    data.hotels.sort((a, b) => {
+        if (order === 'asc') {
+            return a.lowestTotalPrice - b.lowestTotalPrice;
+        } else {
+            return b.lowestTotalPrice - a.lowestTotalPrice;
+        }
+    });
+}
+
