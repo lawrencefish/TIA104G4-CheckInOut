@@ -137,8 +137,144 @@
             const minutes = String(date.getMinutes()).padStart(2, '0');
             return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
-
         function displayNews() {
+            const start = currentPage * pageSize;
+            const end = start + pageSize;
+            const pageNews = totalNews.slice(start, end);
+            
+            const newsListElement = document.getElementById('newsList');
+            newsListElement.innerHTML = '';
+            
+            pageNews.forEach(item => {
+                const hasImage = item.newsImg != null;
+                const imageContent = hasImage 
+                    ? `<img src="/api/news/${item.newsId}/image" class="news-image" alt="${item.newsTitle}">` 
+                    : `<div class="no-image-placeholder">無圖片</div>`;
+                
+                const newsCard = `
+                    <div class="news-card">
+                        ${imageContent}
+                        <div class="news-content">
+                            <h2 class="news-title">${item.newsTitle}</h2>
+                            <p class="news-description">${item.description}</p>
+                            <div class="news-date">${formatDate(item.postTime)}</div>
+                        </div>
+                    </div>
+                `;
+                newsListElement.innerHTML += newsCard;
+            });
+
+            // 更新分頁按鈕狀態
+            document.getElementById('prevBtn').parentElement.classList.toggle('disabled', currentPage === 0);
+            document.getElementById('nextBtn').parentElement.classList.toggle('disabled', (currentPage + 1) * pageSize >= totalNews.length);
+        }
+
+        function loadNewsList() {
+            $.get('/api/news', function(news) {
+                const newsListHtml = news.map(item => {
+                    const imageHtml = item.newsImg ? 
+                        `<img src="/api/news/${item.newsId}/image" class="news-image-preview" style="max-width: 100px;">` : 
+                        '無圖片';
+                    
+                    return `
+                        <tr>
+                            <td>${imageHtml}</td>
+                            <td>${item.newsTitle}</td>
+                            <td>${item.description}</td>
+                            <td>${new Date(item.postTime).toLocaleString()}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary mb-1" onclick="editNews(${item.newsId})">編輯</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteNews(${item.newsId})">刪除</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                $('#newsList').html(newsListHtml);
+            });
+        }
+       /*  function displayNews() {
+            const start = currentPage * pageSize;
+            const end = start + pageSize;
+            const pageNews = totalNews.slice(start, end);
+            
+            const newsListElement = document.getElementById('newsList');
+            newsListElement.innerHTML = '';
+            
+            pageNews.forEach(item => {
+                // 與 loadNewsList 使用相同的圖片處理方式
+                const imgData = item.newsImg ? new TextDecoder().decode(new Uint8Array(item.newsImg)) : null;
+                const imageContent = imgData ? 
+                    `<img src="${imgData}" class="news-image" alt="${item.newsTitle}">` : 
+                    `<div class="no-image-placeholder">無圖片</div>`;
+                
+                const newsCard = `
+                    <div class="news-card">
+                        ${imageContent}
+                        <div class="news-content">
+                            <h2 class="news-title">${item.newsTitle}</h2>
+                            <p class="news-description">${item.description}</p>
+                            <div class="news-date">${formatDate(item.postTime)}</div>
+                        </div>
+                    </div>
+                `;
+                newsListElement.innerHTML += newsCard;
+            }); */
+        /* function displayNews() {
+            const start = currentPage * pageSize;
+            const end = start + pageSize;
+            const pageNews = totalNews.slice(start, end);
+            
+            const newsListElement = document.getElementById('newsList');
+            newsListElement.innerHTML = '';
+            
+            pageNews.forEach(item => {
+                const hasImage = item.newsImg != null;
+                const imageContent = hasImage 
+                    ? `<img src="data:image/jpeg;base64,${item.newsImg}" class="news-image" alt="${item.newsTitle}">`
+                    : `<div class="no-image-placeholder">無圖片</div>`;
+                
+                const newsCard = `
+                    <div class="news-card">
+                        ${imageContent}
+                        <div class="news-content">
+                            <h2 class="news-title">${item.newsTitle}</h2>
+                            <p class="news-description">${item.description}</p>
+                            <div class="news-date">${formatDate(item.postTime)}</div>
+                        </div>
+                    </div>
+                `;
+                newsListElement.innerHTML += newsCard;
+            });  */
+            
+            /* function loadNewsList() {
+                $.get('/api/news', function(news) {
+                    const newsListHtml = news.map(item => {
+                        // 處理圖片顯示
+                        const imgData = item.newsImg ? new TextDecoder().decode(new Uint8Array(item.newsImg)) : null;
+                        const imageHtml = imgData ? 
+                            `<img src="${imgData}" class="news-image-preview" style="max-width: 100px;">` : 
+                            '無圖片';
+                        
+                        return `
+                            <tr>
+                                <td>${imageHtml}</td>
+                                <td>${item.newsTitle}</td>
+                                <td>${item.description}</td>
+                                <td>${new Date(item.postTime).toLocaleString()}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary mb-1" onclick="editNews(${item.newsId})">編輯</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteNews(${item.newsId})">刪除</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                    
+                    $('#newsList').html(newsListHtml);
+                }); */
+      
+
+        /* function displayNews() {
             const start = currentPage * pageSize;
             const end = start + pageSize;
             const pageNews = totalNews.slice(start, end);
@@ -163,12 +299,8 @@
                     </div>
                 `;
                 newsListElement.innerHTML += newsCard;
-            });
+            }); */
 
-            // 更新分頁按鈕狀態
-            document.getElementById('prevBtn').parentElement.classList.toggle('disabled', currentPage === 0);
-            document.getElementById('nextBtn').parentElement.classList.toggle('disabled', (currentPage + 1) * pageSize >= totalNews.length);
-        }
 
         function changePage(direction) {
             if (direction === 'prev' && currentPage > 0) {

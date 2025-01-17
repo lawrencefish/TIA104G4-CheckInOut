@@ -2,6 +2,7 @@ package com.news.controller;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +27,66 @@ public class NewsController {
 
     @Autowired
     private NewsService newsService;
-
+    
     @GetMapping
-    public ResponseEntity<List<NewsVO>> getAllNews() {
+    public List<NewsVO> getAllNews() {
         List<NewsVO> newsList = newsService.getAllNews();
-        return ResponseEntity.ok(newsList);
+        // 轉換每個新聞項目中的圖片為 Base64
+        newsList.forEach(news -> {
+            if (news.getNewsImg() != null) {
+                String base64Image = Base64.getEncoder().encodeToString(news.getNewsImg());
+                // 加入 data URL 前綴
+                String imageData = "data:image/jpeg;base64," + base64Image;
+                news.setNewsImg(imageData.getBytes());
+            }
+        });
+        return newsList;
     }
+
+//    @GetMapping
+//    public ResponseEntity<List<NewsVO>> getAllNews() {
+//        List<NewsVO> newsList = newsService.getAllNews();
+//        return ResponseEntity.ok(newsList);
+//    }
+    
+//    @GetMapping
+//    public List<NewsVO> getAllNews() {
+//        List<NewsVO> newsList = newsService.getAllNews();
+//        // 將所有圖片轉換為 Base64
+//        for (NewsVO news : newsList) {
+//            if (news.getNewsImg() != null) {
+//                String base64Image = Base64.getEncoder().encodeToString(news.getNewsImg());
+//                news.setNewsImg(base64Image.getBytes());
+//            }
+//        }
+//        return newsList;
+//    }
     
     //單一消息
+//    @GetMapping("/{id}")
+//    public ResponseEntity<NewsVO> getNewsById(@PathVariable Integer id) {
+//        try {
+//            NewsVO news = newsService.getNewsById(id);
+//            if (news != null) {
+//                return ResponseEntity.ok(news);
+//            } else {
+//                return ResponseEntity.notFound().build();
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<NewsVO> getNewsById(@PathVariable Integer id) {
         try {
             NewsVO news = newsService.getNewsById(id);
             if (news != null) {
+                // 如果有圖片，轉換為 Base64
+                if (news.getNewsImg() != null) {
+                    String base64Image = Base64.getEncoder().encodeToString(news.getNewsImg());
+                    news.setNewsImg(base64Image.getBytes());
+                }
                 return ResponseEntity.ok(news);
             } else {
                 return ResponseEntity.notFound().build();
@@ -122,7 +170,7 @@ public class NewsController {
             NewsVO newsVO = newsService.getNewsById(id);
             if (newsVO != null && newsVO.getNewsImg() != null) {
                 return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)
+                		.header("Content-Type", newsVO.getImgType()) // 如果有儲存圖片類型的話
                         .body(newsVO.getNewsImg());
             }
             return ResponseEntity.notFound().build();
@@ -131,5 +179,3 @@ public class NewsController {
         }
     }
 }
-
-

@@ -80,5 +80,12 @@ public class NewsVO {
 	public void setCreateTime(LocalDateTime createTime) {
 		this.createTime = createTime;
 	}
+
+	public String getImgType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 }
     
