@@ -539,6 +539,37 @@
             transition: 0s; /* 點擊時觸發瞬間效果 */
         }
 
+        .calendar-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px; /* 與日曆保持間距 */
+            gap: 20px; /* 控制輸入框與按鈕的間距 */
+        }
+
+        .calendar-controls input[type="date"] {
+            padding: 10px 15px; /* 增加內邊距 */
+            font-size: 1.2rem; /* 放大字體 */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 250px; /* 增加寬度 */
+            text-align: center;
+        }
+
+        .calendar-controls button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px; /* 增加內邊距 */
+            font-size: 1.2rem; /* 放大字體 */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .calendar-controls button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 
@@ -609,6 +640,11 @@
         <!-- Main -->
         <main>
             <h1>房間管理</h1>
+            <!-- 新增日期輸入和按鈕 -->
+            <div class="calendar-controls">
+                <input type="date" id="date-input" />
+                <button id="inventory-create-button">建立庫存</button>
+            </div>
             <div class="calendar">
                 <div class="calendar-header">
                     <button onclick="changeMonth(-1)">上一月</button>
@@ -939,6 +975,36 @@
                 .catch(error => console.error('Error updating inventory:', error));
         });
 
+        // 建立庫存
+        document.getElementById('inventory-create-button').addEventListener('click', () => {
+            const dateInput = document.getElementById('date-input').value;
+
+            if (!dateInput) {
+                alert('請選擇一個日期！');
+                return;
+            }
+
+            // 發送建立庫存的請求到後端
+            fetch(`${contextPath}/api/roomInventory/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ date: dateInput }), // 傳遞選擇的日期
+            })
+                .then((response) => response.json()) // 解析後端返回的 JSON 響應
+                .then((data) => {
+                    if (data.error) {
+                        alert(`建立庫存失敗：${data.error}`);
+                    } else {
+                        alert(`庫存建立成功：${data.message || '成功建立該日期的庫存！'}`);
+                    }
+                })
+                .catch((error) => {
+                    console.error('建立庫存時發生錯誤：', error);
+                    alert('建立庫存失敗，請稍後重試！');
+                });
+        });
     </script>
 </body>
 

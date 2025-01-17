@@ -77,40 +77,12 @@ public class CheckInController {
     @PostMapping("/saveCheckInDetails")
     public ResponseEntity<?> saveCheckInDetails(@RequestBody List<CheckInRequest> requests) {
         try {
-//            System.out.println("Received requests: " + requests);
-
-            for (CheckInRequest request : requests) {
-                System.out.println("Processing request for Order ID: " + request.getOrderId() +
-                        ", Room ID: " + request.getAssignedRoomId() +
-                        ", Customer Name: " + request.getCustomerName() +
-                        ", Customer Phone: " + request.getCustomerPhoneNumber());
-
-                // 更新訂單狀態為 "已報到"
-//                System.out.println("Updating order status for Order ID: " + request.getOrderId());
-                checkInService.updateOrderStatus(request.getOrderId(), (byte) 1);
-
-                // 更新房間狀態為 "已占用"
-//                System.out.println("Updating room status for Room ID: " + request.getAssignedRoomId());
-                checkInService.updateRoomStatus(request.getAssignedRoomId(), (byte) 1);
-
-                // 更新住客信息到 room 表
-//                System.out.println("Updating room customer info for Room ID: " + request.getAssignedRoomId());
-                // 更新房間的住客信息並寫入 OrderDetailId
-                checkInService.updateRoomCustomerInfo(
-                        request.getAssignedRoomId(),
-                        request.getCustomerName(),
-                        request.getCustomerPhoneNumber(),
-                        request.getOrderDetailId() // 新增此參數
-                );
-            }
-
-//            System.out.println("All requests processed successfully.");
+            checkInService.processCheckIn(requests);
             return ResponseEntity.ok("Check-in details saved successfully.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            System.out.println("Error occurred while saving check-in details: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error saving check-in details: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving check-in details: " + e.getMessage());
         }
     }
 

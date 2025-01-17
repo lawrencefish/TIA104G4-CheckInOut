@@ -114,4 +114,30 @@ public class RoomInventoryController {
 
         return ResponseEntity.ok(updatedInventories); // 返回更新後的完整數據
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createInventory(@RequestBody Map<String, String> request, HttpSession session) {
+        String dateStr = request.get("date");
+        if (dateStr == null || dateStr.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "日期不可為空！"));
+        }
+
+        try {
+            // 解析用戶輸入的日期
+            LocalDate endDate = LocalDate.parse(dateStr);
+
+            // 調用 Service 方法進行庫存新增
+            roomInventoryService.updateRoomInventoryForHotel(endDate, session);
+
+            // 返回成功結果
+            return ResponseEntity.ok(Map.of("message", "成功建立從今天到 " + dateStr + " 的庫存！"));
+        } catch (RuntimeException e) {
+            // 捕獲業務異常並返回
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            // 捕獲系統異常並返回
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "系統錯誤：" + e.getMessage()));
+        }
+    }
 }

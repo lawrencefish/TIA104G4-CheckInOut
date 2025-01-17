@@ -84,7 +84,7 @@ public class OrderControllerByTom {
             Integer orderHotelId = ((HotelVO) orderDetails.get("hotel")).getHotelId();
 //            System.out.println(orderHotelId);
             if (!orderHotelId.equals(hotelId)) {
-                System.out.println("123");
+//                System.out.println("123");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "無權查詢其他飯店的訂單"));
             }
 
