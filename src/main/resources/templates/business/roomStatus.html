@@ -870,7 +870,7 @@
                         roomDynamicSections.appendChild(card);
 
                         // Fetch 該房型的所有房間資料
-                        fetch(`${contextPath}/pi/room/byRoomType/${roomType.roomTypeId}`)
+                        fetch(`${contextPath}/api/room/byRoomType/${roomType.roomTypeId}`)
                             .then(response => response.json()) // 將回應轉換成 JSON 格式
                             .then(rooms => {
                                 const buttonContainer = document.getElementById(`room-buttons-${roomType.roomTypeId}`); // 房型卡片內的按鈕容器
