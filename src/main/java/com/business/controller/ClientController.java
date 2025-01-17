@@ -71,4 +71,11 @@ public class ClientController {
         return "redirect:/client/clientDetail/" + updatedClient.getMemberId(); // 重定向到詳細頁
     }
     
+    @GetMapping("/commentClient")
+    public String commentClient(@PathVariable Integer memberId, Model model) {
+    	MemberVO client = orderService.getMemberId(memberId);
+        model.addAttribute("client", client);
+        return "business/commentClient";
+    }
+    
 }
