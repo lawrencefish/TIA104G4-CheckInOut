@@ -507,7 +507,8 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}" class="active">訂單管理</a>
            <a th:href="@{/comment}">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
@@ -585,13 +586,13 @@
             </section>
 
             <div class="pagination">
-                <button class="pagination-btn first-page">回到第一页</button>
-                <button class="pagination-btn prev-page">上一页</button>
+                <button class="pagination-btn first-page">第一頁</button>
+                <button class="pagination-btn prev-page">上一頁</button>
                 <div id="page-numbers" class="page-numbers">
                     <!-- 页码动态生成 -->
                 </div>
-                <button class="pagination-btn next-page">下一页</button>
-                <button class="pagination-btn last-page">跳到最后一页</button>
+                <button class="pagination-btn next-page">下一頁</button>
+                <button class="pagination-btn last-page">最後一頁</button>
             </div>
 
 
@@ -672,14 +673,14 @@
                     if (!response.ok) throw new Error('API 錯誤，無法獲取數據');
                     orders = await response.json();
 
-                    // 初始排序
+                    // 初始化排序並渲染
                     sortOrders();
-
                     renderTable(currentPage);
                     renderPagination();
                 } catch (error) {
                     console.error('數據加載失敗:', error);
-                    alert('無法加載數據，請稍後重試！');
+                    orders = []; // 確保為空列表以便顯示「無訂單資訊」
+                    renderTable(currentPage);
                 }
             }
 
@@ -696,6 +697,21 @@
             function renderTable(page) {
                 if (!orderTableBody) {
                     console.error("Table body element not found.");
+                    return;
+                }
+
+                orderTableBody.innerHTML = ''; // 清空表格
+
+                if (orders.length === 0) {
+                    // 如果沒有訂單，顯示「無訂單資訊」
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.colSpan = 7; // 表格的總欄數
+                    cell.textContent = '無訂單資訊';
+                    cell.style.textAlign = 'center';
+                    cell.style.color = '#999';
+                    row.appendChild(cell);
+                    orderTableBody.appendChild(row);
                     return;
                 }
 
@@ -811,7 +827,7 @@
                 // 添加 "回到第一页" 按钮
                 if (currentPage > 1) {
                     const firstButton = document.createElement('button');
-                    firstButton.textContent = '回到第一頁';
+                    firstButton.textContent = '第一頁';
                     firstButton.classList.add('page-button', 'first-page');
                     firstButton.addEventListener('click', () => {
                         currentPage = 1;
@@ -864,7 +880,7 @@
                 // 添加 "跳到最后一页" 按钮
                 if (currentPage < totalPages) {
                     const lastButton = document.createElement('button');
-                    lastButton.textContent = '跳到最後一頁';
+                    lastButton.textContent = '最後一頁';
                     lastButton.classList.add('page-button', 'last-page');
                     lastButton.addEventListener('click', () => {
                         currentPage = totalPages;
@@ -929,6 +945,12 @@
             const dateInput = document.getElementById("filter-date");
             const keywordInput = document.getElementById("filter-name");
             const tableBody = document.getElementById("orders-table-body");
+
+            keywordInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    searchButton.click();
+                }
+            });
 
             // 搜尋功能
             // 複合查詢功能

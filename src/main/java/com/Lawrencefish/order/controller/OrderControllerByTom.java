@@ -67,9 +67,28 @@ public class OrderControllerByTom {
     }
 
     @GetMapping("/details/{orderId}")
-    public ResponseEntity<?> getOrderDetails(@PathVariable Integer orderId) {
+    public ResponseEntity<?> getOrderDetails(@PathVariable Integer orderId, HttpSession session) {
         try {
+            // 從 Session 中取得 hotelId
+//            System.out.println("有進來");
+            HotelVO hotelVO = (HotelVO) session.getAttribute("hotel");
+//            if (hotelVO == null) {
+//                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "未授權存取"));
+//            }
+            Integer hotelId = hotelVO.getHotelId();
+//            System.out.println(hotelId);
+            // 獲取訂單詳情
             Map<String, Object> orderDetails = orderService.getOrderDetails(orderId);
+
+            // 檢查訂單是否屬於當前飯店
+            Integer orderHotelId = ((HotelVO) orderDetails.get("hotel")).getHotelId();
+//            System.out.println(orderHotelId);
+            if (!orderHotelId.equals(hotelId)) {
+//                System.out.println("123");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "無權查詢其他飯店的訂單"));
+            }
+
+//            System.out.println("ok");
             return ResponseEntity.ok(orderDetails);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

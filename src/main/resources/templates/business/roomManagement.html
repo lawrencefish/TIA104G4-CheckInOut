@@ -437,6 +437,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
+
         /* 關閉按鈕 */
         .close-btn {
             position: absolute;
@@ -497,6 +498,78 @@
         .modal-btn:hover {
             background-color: #218838; /* 懸停時更深的綠色 */
         }
+
+        /* 點擊日期的效果 */
+        .calendar-day {
+            position: relative;
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .calendar-day:active {
+            transform: scale(0.95);
+            background-color: #cce5ff; /* 點擊時背景變成淡藍色 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 提升點擊時的陰影效果 */
+        }
+
+        .calendar-day:hover {
+            background-color: #f0f8ff; /* 懸停時更改背景色 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* 提供柔和的懸停效果 */
+        }
+
+        /*!* 添加點擊後的波紋動畫效果 *!*/
+        /*.calendar-day::after {*/
+        /*    content: "";*/
+        /*    position: absolute;*/
+        /*    top: 50%;*/
+        /*    left: 50%;*/
+        /*    width: 0;*/
+        /*    height: 0;*/
+        /*    background: rgba(0, 123, 255, 0.3); !* 藍色波紋 *!*/
+        /*    border-radius: 50%;*/
+        /*    transform: translate(-50%, -50%);*/
+        /*    transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;*/
+        /*    opacity: 0;*/
+        /*}*/
+
+        .calendar-day:active::after {
+            width: 150%;
+            height: 150%;
+            opacity: 1;
+            transition: 0s; /* 點擊時觸發瞬間效果 */
+        }
+
+        .calendar-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px; /* 與日曆保持間距 */
+            gap: 20px; /* 控制輸入框與按鈕的間距 */
+        }
+
+        .calendar-controls input[type="date"] {
+            padding: 10px 15px; /* 增加內邊距 */
+            font-size: 1.2rem; /* 放大字體 */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 250px; /* 增加寬度 */
+            text-align: center;
+        }
+
+        .calendar-controls button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px; /* 增加內邊距 */
+            font-size: 1.2rem; /* 放大字體 */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .calendar-controls button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 
@@ -511,7 +584,8 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}" class="active">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}" class="active">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
             <a th:href="@{/comment}">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
@@ -566,6 +640,11 @@
         <!-- Main -->
         <main>
             <h1>房間管理</h1>
+            <!-- 新增日期輸入和按鈕 -->
+            <div class="calendar-controls">
+                <input type="date" id="date-input" />
+                <button id="inventory-create-button">建立庫存</button>
+            </div>
             <div class="calendar">
                 <div class="calendar-header">
                     <button onclick="changeMonth(-1)">上一月</button>
@@ -896,6 +975,36 @@
                 .catch(error => console.error('Error updating inventory:', error));
         });
 
+        // 建立庫存
+        document.getElementById('inventory-create-button').addEventListener('click', () => {
+            const dateInput = document.getElementById('date-input').value;
+
+            if (!dateInput) {
+                alert('請選擇一個日期！');
+                return;
+            }
+
+            // 發送建立庫存的請求到後端
+            fetch(`${contextPath}/api/roomInventory/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ date: dateInput }), // 傳遞選擇的日期
+            })
+                .then((response) => response.json()) // 解析後端返回的 JSON 響應
+                .then((data) => {
+                    if (data.error) {
+                        alert(`建立庫存失敗：${data.error}`);
+                    } else {
+                        alert(`庫存建立成功：${data.message || '成功建立該日期的庫存！'}`);
+                    }
+                })
+                .catch((error) => {
+                    console.error('建立庫存時發生錯誤：', error);
+                    alert('建立庫存失敗，請稍後重試！');
+                });
+        });
     </script>
 </body>
 

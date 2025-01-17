@@ -2,11 +2,14 @@ package com.user.controller;
 
 import java.net.http.HttpHeaders;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -20,21 +23,30 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.facility.model.FacilityVO;
 import com.googleAPI.GeocodingService;
+import com.hotel.model.HotelService;
+import com.hotel.model.HotelVO;
+import com.hotelFacility.model.HotelFacilityService;
+import com.hotelFacility.model.HotelFacilityVO;
 import com.hotelImg.model.HotelImgService;
 import com.hotelImg.model.HotelImgVO;
 import com.order.model.OrderService;
+import com.order.model.OrderVO;
 import com.price.model.PriceRepository;
 import com.price.model.PriceService;
 import com.price.model.PriceVO;
+import com.roomInventory.model.HotelRoomInventoryDTO;
 import com.roomInventory.model.RoomInventoryDTO;
 import com.roomInventory.model.RoomInventoryRepository;
 import com.roomInventory.model.RoomInventoryService;
 import com.roomInventory.model.RoomInventoryVO;
+import com.roomTypeFacility.model.RoomTypeFacilityService;
 import com.roomTypeImg.model.RoomTypeImgService;
 import com.roomTypeImg.model.RoomTypeImgVO;
 
@@ -43,11 +55,7 @@ import com.roomTypeImg.model.RoomTypeImgVO;
 public class UserBookingController {
 
 	@Autowired
-	RoomInventoryRepository RIrepository;
-	@Autowired
 	RoomInventoryService RIservice;
-	@Autowired
-	PriceRepository Prepository;
 	@Autowired
 	PriceService Pservice;
 	@Autowired
@@ -57,212 +65,324 @@ public class UserBookingController {
 	@Autowired
 	HotelImgService hotelImgService;
 	@Autowired
+	HotelService hotelService;
+	@Autowired
 	OrderService orderService;
+	@Autowired
+	HotelFacilityService HFService;
+	@Autowired
+	RoomTypeFacilityService RTFService;
 
-	@PostMapping("/all_inventory")
-	public List<Map<String, Object>> getRoomCountsByDate() {
-		return RIservice.getRoomCountsByDate();
+	@GetMapping("/image/room/{roomId}/{num}")
+	public ResponseEntity<byte[]> getRoomImage(@PathVariable Integer roomId, @PathVariable Integer num) {
+		List<RoomTypeImgVO> roomTypeImg = roomTypeImgService.findImagesByRoomTypeId(roomId);
+		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG) // 假設圖片為 JPEG 格式
+				.body(roomTypeImg.get(num).getPicture());
 	}
 
-	@PostMapping("/search")
-	public Map<String, String> search(@RequestBody Map<String, String> searchCondition, HttpServletRequest req,
+	@GetMapping("/image/hotel/{hoteId}/{num}")
+	public ResponseEntity<byte[]> getHotelImage(@PathVariable Integer hoteId, @PathVariable Integer num) {
+		List<HotelImgVO> hotelImg = hotelImgService.getImagesByHotelId(hoteId);
+		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(hotelImg.get(num).getPicture());
+	}
+
+	// 存入購物車訂單明細
+	@PostMapping("/addCart")
+	public ResponseEntity<Map<String, String>> addCart(@RequestBody Map<String, String> orderDetail,
 			HttpSession session) {
-		String serverName = req.getServerName();
-		int serverPort = req.getServerPort();
-		Integer guestNum = Integer.valueOf(searchCondition.get("guestNum"));
-		Integer roomNum = Integer.valueOf(searchCondition.get("roomNum"));
-		LocalDate checkInDate = LocalDate.parse(searchCondition.get("checkInDate"));
-		LocalDate checkOutDate = LocalDate.parse(searchCondition.get("checkOutDate"));
-		String place = searchCondition.get("place");
-		Double lat = 0.0;
-		Double lnt = 0.0;
-		if (place == null || place.trim().isBlank()) {
-			lat = Double.valueOf(searchCondition.get("lat"));
-			lnt = Double.valueOf(searchCondition.get("lnt"));
-		} else {
-			Double[] latLnt = gService.getCoordinatesFromPlace(place);
-			lat = latLnt[0];
-			lnt = latLnt[1];
+		// 先嘗試從 session 取出 cartList，若為 null 則初始化
+		List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
+		if (cartList == null) {
+			cartList = new ArrayList<>();
 		}
 
-		session.setAttribute("guestNum", guestNum);
-		session.setAttribute("roomNum", roomNum);
-		session.setAttribute("checkInDate", checkInDate);
-		session.setAttribute("checkOutDate", checkOutDate);
-		session.setAttribute("lat", lat);
-		session.setAttribute("lnt", lnt);
-		System.out.println("set OK");
+		Map<String, Object> cart = new HashMap<>();
+		List<Map<String, Object>> cartDetailList = new ArrayList<>();
+		Map<String, Object> cartDetail = new HashMap<>();
 
-		Map<String, String> response = new HashMap<String, String>();
-		response.put("url", "/user/search");
+		Integer hotelId = Integer.valueOf(orderDetail.get("hotelId"));
+		String hotelName = orderDetail.get("hotelName");
+		Double review = Double.valueOf(orderDetail.get("review"));
+		cart.put("hotelId", hotelId);
+		cart.put("hotelName", hotelName);
+		cart.put("review", review);
+
+		// 解析 LocalDate
+		LocalDate checkInDate = LocalDate.parse(orderDetail.get("checkInDate"));
+		LocalDate checkOutDate = LocalDate.parse(orderDetail.get("checkOutDate"));
+
+		// 解析 Integer
+		Integer roomTypeId = Integer.valueOf(orderDetail.get("roomTypeId"));
+		String roomTypeName = orderDetail.get("roomTypeName");
+		Integer guestNum = Integer.valueOf(orderDetail.get("guestNum"));
+		Integer roomNum = Integer.valueOf(orderDetail.get("roomNum"));
+		Integer price = Integer.valueOf(orderDetail.get("price"));
+		Integer breakfast = Integer.valueOf(orderDetail.get("breakfast"));
+
+		// 存入 cartDetail
+		cartDetail.put("checkInDate", checkInDate);
+		cartDetail.put("checkOutDate", checkOutDate);
+		cartDetail.put("roomTypeName", roomTypeName);
+		cartDetail.put("roomTypeId", roomTypeId);
+		cartDetail.put("guestNum", guestNum);
+		cartDetail.put("roomNum", roomNum);
+		cartDetail.put("price", price);
+		cartDetail.put("breakfast", breakfast);
+		cartDetailList.add(cartDetail);
+
+		cart.put("cartDetail", cartDetailList);
+
+		// **檢查相同 hotelId 是否已存在於 cartList**
+		boolean found = false;
+		for (Map<String, Object> existingCart : cartList) {
+			if (existingCart.get("hotelId").equals(hotelId)) {
+				List<Map<String, Object>> existingCartDetailList = (List<Map<String, Object>>) existingCart
+						.get("cartDetail");
+				existingCartDetailList.add(cartDetail);
+				found = true;
+				break;
+			}
+		}
+
+		// 如果 hotelId **尚未存在**，新增整個 cart
+		if (!found) {
+			cartList.add(cart);
+		}
+
+		// 更新 session
+		session.setAttribute("cartList", cartList);
+
+		// 回傳成功訊息
+		Map<String, String> response = new HashMap<>();
+		response.put("message", "ok");
+
+		// Debug 輸出
+		System.out.println("目前購物車：" + session.getAttribute("cartList"));
+
+		return ResponseEntity.ok(response);
+	}
+
+	// 取得飯店資訊
+	@PostMapping("/hotel_detail")
+	public Map<String, Object> getHotelInfo(@RequestBody Map<String, String> parsedHotelId) {
+		Integer hotelId = Integer.valueOf(parsedHotelId.get("id"));
+		HotelVO hotel = hotelService.findById(hotelId).orElse(null);
+		List<OrderVO> orders = orderService.findByHotelId(hotelId);
+		Double ratings = orderService.getAvgRatingAndCommentCounts(hotelId).getAvgRating();
+		List<HotelFacilityVO> hotelFList = HFService.findFacilityVOIdsByHotelId(hotelId);
+		Map<String, Object> response = new HashMap<String, Object>();
+
+		response.put("name", hotel.getName());
+		response.put("info", hotel.getInfoText());
+		response.put("city", hotel.getCity());
+		response.put("district", hotel.getDistrict());
+		response.put("address", hotel.getAddress());
+		response.put("lat", String.valueOf(hotel.getLatitude()));
+		response.put("lng", String.valueOf(hotel.getLongitude()));
+		response.put("avgRatings", String.valueOf(ratings));
+		response.put("imgNum", String.valueOf(hotelImgService.countByHotelId(hotelId)));
+
+		List<FacilityVO> facility = new ArrayList<FacilityVO>();
+		for (HotelFacilityVO hf : hotelFList) {
+			facility.add(hf.getFacility());
+		}
+		response.put("facility", facility);
+		List<Map<String, String>> comments = new ArrayList<Map<String, String>>();
+		for (OrderVO order : orders) {
+			Map<String, String> comment = new HashMap<String, String>();
+			comment.put("orderId", String.valueOf(order.getOrderId()));
+			comment.put("guest", order.getGuestLastName());
+			comment.put("rating", String.valueOf(order.getRating()));
+			comment.put("comment", order.getCommentContent());
+			comment.put("time", String.valueOf(order.getCommentCreateTime()));
+			comments.add(comment);
+		}
+		response.put("comments", comments);
+
 		return response;
 	}
 
-    @GetMapping("/image/room/{imageId}")
-    public ResponseEntity<byte[]> getRoomImage(@PathVariable Integer imageId) {
-        RoomTypeImgVO roomTypeImg = roomTypeImgService.findById(imageId);
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG) // 假設圖片為 JPEG 格式
-                .body(roomTypeImg.getPicture());
-    }
-    
-    // 返回具體圖片數據
-    @GetMapping("/image/hotel/{imageId}")
-    public ResponseEntity<byte[]> getHotelImage(@PathVariable Integer imageId) {
-        HotelImgVO hotelImg = hotelImgService.getImageById(imageId);
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(hotelImg.getPicture());
-    }
-
-
-	@PostMapping("/map_search")
-	public Map<String, String> mapSearch(@RequestBody Map<String, String> searchCondition, HttpSession session) {
-		Double lat = Double.valueOf(searchCondition.get("lat"));
-		Double lnt = Double.valueOf(searchCondition.get("lnt"));
-		session.setAttribute("lat", lat);
-		session.setAttribute("lnt", lnt);
-		Map<String, String> response = new HashMap<String, String>();
-		response.put("message", "成功");
+	@PostMapping("/update")
+	public Map<String, String> updateRoomInventory(@RequestBody Map<String, String> info, HttpSession session) {
+		Map<String, String> response = new HashMap<>();
+		try {
+			LocalDate checkInDate = LocalDate.parse(info.get("startDate"));
+			LocalDate checkOutDate = LocalDate.parse(info.get("endDate"));
+			Integer guestNum = Integer.valueOf(info.get("guestNum"));
+			Integer roomNum = Integer.valueOf(info.get("roomNum"));
+			session.setAttribute("guestNum", guestNum);
+			session.setAttribute("roomNum", roomNum);
+			session.setAttribute("checkInDate", checkInDate);
+			session.setAttribute("checkOutDate", checkOutDate);
+			response.put("message", "OK");
+		} catch (Exception e) {
+			response.put("message", e.getMessage());
+		}
 		return response;
-
 	}
 
-	@PostMapping("/search_result")
-	public Map<String, Object> searchResult(HttpSession session) {
-		// 1. 解析前端傳進來的參數
+	// 取得每天旅館庫存
+	@PostMapping("/calendar/inventory")
+	public ResponseEntity<Map<String, Object>> getCalendarRoomInventory(@RequestBody Map<String, String> parsedHotel,
+			HttpSession session) {
+		Integer hotelId = Integer.valueOf(parsedHotel.get("id"));
+		Integer guestNum = Integer.valueOf(parsedHotel.get("guestNum"));
+		Integer roomNum = Integer.valueOf(parsedHotel.get("roomNum"));
+
+		Map<String, Object> hotelResponse = new HashMap<>();
+		List<HotelRoomInventoryDTO> hotels = RIservice.findAvailableRoomsFromHotel(hotelId);
+		List<Map<String, String>> dailyInventory = new ArrayList<>();
+		for (HotelRoomInventoryDTO room : hotels) {
+			Map<String, String> daydto = new HashMap<>();
+			Integer roomTypeId = room.getRoomTypeId();
+			Integer totalPrice = 0;
+			LocalDate date = room.getDate();
+			if (guestNum != 0 && roomNum != 0) {
+				int maxPerson = (int) room.getMaxPerson();
+				int needRooms = (guestNum + maxPerson - 1) / maxPerson;
+
+				if (needRooms > roomNum || room.getAvailableQuantity() < roomNum) {
+					continue;
+
+				}
+				PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, date);
+				totalPrice = (room.getBreakfast() == 1) ? todayPrice.getPrice() + todayPrice.getBreakfastPrice()
+						: todayPrice.getPrice();
+				daydto.put("price", String.valueOf(totalPrice));
+			}
+			daydto.put("date", String.valueOf(date));
+			dailyInventory.add(daydto);
+		}
+		hotelResponse.put("date", dailyInventory);
+		return ResponseEntity.ok(hotelResponse);
+	}
+
+	// 取得旅館庫存
+	@PostMapping("/hotel_detail/inventory")
+	public ResponseEntity<Map<String, Object>> getHotelRoomInventory(@RequestBody Map<String, String> parsedHotelId,
+			HttpSession session) {
+		Integer hotelId = Integer.valueOf(parsedHotelId.get("id"));
+		Map<String, Object> hotelResponse = new HashMap<>();
+		// 從 Session 取得屬性
 		Integer guestNum = (Integer) session.getAttribute("guestNum");
 		Integer roomNum = (Integer) session.getAttribute("roomNum");
 		LocalDate checkInDate = (LocalDate) session.getAttribute("checkInDate");
 		LocalDate checkOutDate = (LocalDate) session.getAttribute("checkOutDate");
-		LocalDate checkOutDateMOne = checkOutDate.minusDays(1);
-		Double lat = (Double) session.getAttribute("lat");
-		Double lnt = (Double) session.getAttribute("lnt");
-		
-		// 2. 準備最終回傳結構
-		Map<String, Object> resList = new LinkedHashMap<>();
-		resList.put("myLat", lat);
-		resList.put("myLnt", lnt);
-		resList.put("guestNum", guestNum);
-		resList.put("roomNum", roomNum);
-		resList.put("checkInDate", checkInDate);
-		resList.put("checkOutDate", checkOutDate);
 
-		// 新增用於存放所有飯店資訊的 ArrayList
-		List<Map<String, Object>> hotels = new ArrayList<>();
+		// 判斷是否缺少必要的 Session 資訊
+		boolean sessionMissing = (guestNum == null || roomNum == null || checkInDate == null || checkOutDate == null);
+
+		List<HotelRoomInventoryDTO> dtoList = RIservice.findAvailableRoomsFromHotel(hotelId);
+		if (dtoList == null || dtoList.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		hotelResponse.put("hotelId", hotelId);
+
+		// 初始化分組用的地圖結構
+		Map<Integer, Map<LocalDate, HotelRoomInventoryDTO>> roomTypeDateMap = new LinkedHashMap<>();
+		Map<Integer, Map<String, Object>> roomTypeInfoMap = new LinkedHashMap<>();
 
 		try {
-			// 3. 一次撈取符合搜尋條件的所有房型
-			List<RoomInventoryDTO> allRoomData = RIservice.findAvailableRooms(checkInDate, checkOutDateMOne, lat, lnt,
-					0.05);
-
-			// 4. 將資料分組
-			Map<Integer, Map<Integer, List<RoomInventoryDTO>>> groupedData = new LinkedHashMap<>();
-			for (RoomInventoryDTO dto : allRoomData) {
-				Integer hotelId = dto.getHotelId();
+			// 分組房型資訊，若 Session 缺失則不加入庫存相關資料
+			for (HotelRoomInventoryDTO dto : dtoList) {
 				Integer roomTypeId = dto.getRoomTypeId();
+				LocalDate date = dto.getDate();
+				roomTypeInfoMap.computeIfAbsent(roomTypeId, k -> {
+					Map<String, Object> info = new HashMap<>();
+					List<FacilityVO> roomFacility = RTFService.getFacilitiesOrServicesByRoomType(roomTypeId, 0);
+					List<FacilityVO> roomService = RTFService.getFacilitiesOrServicesByRoomType(roomTypeId, 1);
 
-				groupedData.computeIfAbsent(hotelId, k -> new LinkedHashMap<>())
-						.computeIfAbsent(roomTypeId, k -> new ArrayList<>()).add(dto);
+					info.put("roomNum", roomNum);
+					info.put("guestNum", guestNum);
+					info.put("roomTypeId", dto.getRoomTypeId());
+					info.put("roomName", dto.getRoomName());
+					info.put("maxPerson", dto.getMaxPerson());
+					info.put("breakfast", dto.getBreakfast());
+					info.put("roomFacility", roomFacility);
+					info.put("roomService", roomService);
+					info.put("imgNum", roomTypeImgService.countByRoomTypeId(roomTypeId));
+
+					// 只有在 Session 完整時才初始化 inventories 列表
+					if (!sessionMissing) {
+						info.put("inventories", new ArrayList<Map<String, Object>>());
+					}
+					return info;
+				});
+
+				// 只有在 Session 完整時才將日期與 DTO 分組
+				if (!sessionMissing) {
+					roomTypeDateMap.computeIfAbsent(roomTypeId, k -> new LinkedHashMap<>()).put(date, dto);
+				}
 			}
 
-			// 5. 依各飯店處理資料
-			for (Map.Entry<Integer, Map<Integer, List<RoomInventoryDTO>>> hotelEntry : groupedData.entrySet()) {
-				Integer hotelId = hotelEntry.getKey();
-				Map<Integer, List<RoomInventoryDTO>> roomMap = hotelEntry.getValue();
+			// 如果 Session 資料完整，則進行庫存與價格計算
+			if (!sessionMissing) {
+				LocalDate checkOutDateMOne = checkOutDate.minusDays(1);
+				for (Map.Entry<Integer, Map<LocalDate, HotelRoomInventoryDTO>> entry : roomTypeDateMap.entrySet()) {
+					Integer totalPrice = 0;
+					Integer roomTypeId = entry.getKey();
+					Map<LocalDate, HotelRoomInventoryDTO> dateToDto = entry.getValue();
 
-				// 準備飯店的資料結構
-				Map<String, Object> hotelData = new LinkedHashMap<>();
-				RoomInventoryDTO anyDtoInHotel = roomMap.entrySet().iterator().next().getValue().get(0);
-				Double ratings = orderService.getAvgRatingAndCommentCounts(hotelId).getAvgRating();
-				long comments = orderService.getAvgRatingAndCommentCounts(hotelId).getCommentCount();
+					Map<String, Object> roomType = roomTypeInfoMap.get(roomTypeId);
+					@SuppressWarnings("unchecked")
+					List<Map<String, Object>> inventories = (List<Map<String, Object>>) roomType.get("inventories");
 
-				hotelData.put("hotelID", hotelId);
-				hotelData.put("hotel", anyDtoInHotel.getName());
-				hotelData.put("city", anyDtoInHotel.getCity());
-				hotelData.put("district", anyDtoInHotel.getDistrict());
-				hotelData.put("address", anyDtoInHotel.getAddress());
-				hotelData.put("lat", anyDtoInHotel.getLatitude());
-				hotelData.put("lng", anyDtoInHotel.getLongitude());
-				hotelData.put("ratings", ratings);
-				hotelData.put("comments", comments);
-
-				// 處理飯店底下的各房型
-				List<Map<String, Object>> rooms = new ArrayList<>();
-				for (Map.Entry<Integer, List<RoomInventoryDTO>> roomTypeEntry : roomMap.entrySet()) {
-					Integer roomTypeId = roomTypeEntry.getKey();
-					List<RoomInventoryDTO> dailyList = roomTypeEntry.getValue();
-
-					// 建立每日房型的可用資訊
-					Map<LocalDate, RoomInventoryDTO> dateMap = new HashMap<>();
-					for (RoomInventoryDTO d : dailyList) {
-						dateMap.put(d.getDate(), d);
-					}
-
-					RoomInventoryDTO sample = dailyList.get(0);
-					int maxPerson = sample.getMaxPerson();
+					int maxPerson = (int) roomType.get("maxPerson");
 					int needRooms = (guestNum + maxPerson - 1) / maxPerson;
 
 					if (needRooms > roomNum) {
+						roomTypeInfoMap.remove(roomTypeId); // 移除不符合需求的房型
 						continue;
 					}
 
 					boolean isRoomAvailableEveryDay = true;
-					Map<LocalDate, Integer> dailyAvailableRooms = new LinkedHashMap<>();
 					LocalDate currentDate = checkInDate;
 					while (!currentDate.isAfter(checkOutDateMOne)) {
-						RoomInventoryDTO dayDto = dateMap.get(currentDate);
+						HotelRoomInventoryDTO dayDto = dateToDto.get(currentDate);
 						if (dayDto == null || dayDto.getAvailableQuantity() < needRooms) {
 							isRoomAvailableEveryDay = false;
 							break;
 						}
-						dailyAvailableRooms.put(currentDate, dayDto.getAvailableQuantity());
+
+						Map<String, Object> inventory = new HashMap<>();
+						PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, dayDto.getDate());
+						inventory.put("inventoryId", dayDto.getInventoryId());
+						inventory.put("date", dayDto.getDate());
+						inventory.put("price", todayPrice.getPrice());
+						inventory.put("breakfastPrice", todayPrice.getBreakfastPrice());
+						inventory.put("availableQuantity", dayDto.getAvailableQuantity());
+						inventories.add(inventory);
+						totalPrice += todayPrice.getPrice();
+						if (dayDto.getBreakfast() == 1) {
+							totalPrice += todayPrice.getBreakfastPrice();
+						}
 						currentDate = currentDate.plusDays(1);
 					}
 
 					if (!isRoomAvailableEveryDay) {
-						continue;
+						roomTypeInfoMap.remove(roomTypeId);
 					}
 
-					// 整理房型資訊
-					Map<String, Object> roomDetails = new LinkedHashMap<>();
-					roomDetails.put("roomTypeID", roomTypeId);
-					roomDetails.put("roomType", sample.getRoomName());
-					roomDetails.put("maxPerson", maxPerson);
-					roomDetails.put("breakfast", sample.getBreakfast());
-
-					// 整理每日資訊
-					List<Map<String, Object>> availableDates = new ArrayList<>();
-					LocalDate dateForPrice = checkInDate;
-					while (!dateForPrice.isAfter(checkOutDateMOne)) {
-						Map<String, Object> dailyDetails = new LinkedHashMap<>();
-						dailyDetails.put("date", dateForPrice.toString());
-						dailyDetails.put("roomNumAvailable", dailyAvailableRooms.get(dateForPrice));
-
-						PriceVO dailyPrice = Pservice.getPriceOfDay(roomTypeId, dateForPrice);
-						dailyDetails.put("priceType", dailyPrice != null ? dailyPrice.getPriceType() : null);
-						dailyDetails.put("price", dailyPrice != null ? dailyPrice.getPrice() : null);
-						dailyDetails.put("breakfastPrice", dailyPrice != null ? dailyPrice.getBreakfastPrice() : null);
-
-						availableDates.add(dailyDetails);
-						dateForPrice = dateForPrice.plusDays(1);
-					}
-					roomDetails.put("dates", availableDates);
-					rooms.add(roomDetails);
+					roomType.put("totalPrice", String.valueOf(totalPrice));
 				}
-				hotelData.put("rooms", rooms);
-				hotels.add(hotelData);
 			}
 
-			// 將飯店清單加入回傳結構
-			resList.put("hotels", hotels);
+			List<Map<String, Object>> rooms = new ArrayList<>(roomTypeInfoMap.values());
+			hotelResponse.put("rooms", rooms);
+
+			// 當 Session 缺失時，添加提示訊息
+			if (sessionMissing) {
+				hotelResponse.put("message", "缺少部分查詢條件，因此未返回庫存與價格資訊。");
+				hotelResponse.put("nosession", "true");
+			}
 
 		} catch (Exception e) {
-			resList.put("error", e.getMessage());
-			resList.put("message", "搜尋有誤，請確認地點、日期、房間等資料是否正確輸入");
+			hotelResponse.put("error", "發生未知錯誤：" + e.getMessage());
+			return ResponseEntity.status(500).body(hotelResponse);
 		}
 
-		return resList;
+		return ResponseEntity.ok(hotelResponse);
 	}
 
 }

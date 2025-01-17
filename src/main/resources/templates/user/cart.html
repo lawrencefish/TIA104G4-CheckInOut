@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>購物車 - Check in Out</title>
-	<link rel="stylesheet" href="/vendors/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet" href="/css/user/template.css">
+    <link rel="stylesheet" href="/vendors/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/user/template.css">
     <style>
         .hotel-image {
             background-size: cover;
@@ -62,80 +62,84 @@
     </header>
 
     <!-- 主要內容 -->
-    <main>
-        <div class="container">
-            <div class="row mt-4">
-                <!-- 購物車項目 -->
-                <div class="col-lg-8">
-                    <h2 class="mb-3">訂房項目</h2>
-
-                    <!-- 單一旅館 -->
-                    <div class="mb-4 hotel-selection" id="hotel-cart">
-                        <div class="border rounded p-3">
-                            <div class="d-flex mb-3">
-                                <div class="hotel-image bg-light rounded me-3"
-                                    style="width: 100px; height: 100px; background-image: url('/imgs/hotel1.jpg');">
-                                </div>
-                                <div>
-                                    <h5 class="mb-1 hotel-name">台中林酒店</h5>
-                                </div>
+    <main class="container">
+        <div class="row">
+            <!-- 購物車區域 -->
+            <div class="col-md-8">
+                <h3 class="mb-3">您的購物車</h3>
+    
+                <!-- 購物車列表 -->
+                <div id="cart-container">
+                    <!-- 旅館 1 -->
+                    <div class="hotel-selection border rounded p-3 mb-3 position-relative" data-hotel-id="1">
+                        <input type="radio" name="selected-hotel" class="hotel-radio position-absolute top-0 end-0 m-3" value="1">
+                        <div class="d-flex align-items-center">
+                            <img src="https://via.placeholder.com/150" alt="台中林酒店" class="rounded hotel-image me-3">
+                            <div class="flex-grow-1">
+                                <h5 class="hotel-name mb-1">台中林酒店</h5>
+                                <p class="hotel-rating text-warning mb-0"><i class="bi bi-star-fill"></i> 4.5 / 5</p>
                             </div>
-                            <div>
-                                <!-- 房型 1 -->
-                                <div class="room-item" data-room-id="1">
-                                    <div class="room-image bg-light"
-                                        style="background-image: url('/imgs/room1.jpg');">
-                                    </div>
-                                    <div class="room-details">
-                                        <p class="mb-1"><strong>雙人房</strong></p>
-                                        <p>入住日期：2024/11/04 - 2024/11/05</p>
-                                        <p>$<span class="hotel-price">32000</span></p>
-                                        <p class="small mb-0">含早餐<br>最優惠價格！</p>
-                                        <label for="quantity-1" class="mt-2">數量：</label>
-                                        <select id="quantity-1" class="form-select quantity-select" aria-label="房型數量">
-                                            <option value="1" selected>1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn btn-danger btn-sm remove-button">移除房型</button>
+                            <button class="btn btn-outline-danger btn-sm remove-hotel">移除旅館</button>
+                        </div>
+                        <!-- 房型列表 -->
+                        <div class="hotel-rooms mt-3">
+                            <div class="room-item border rounded p-3 mb-2 d-flex align-items-center" data-room-id="1">
+                                <img src="https://via.placeholder.com/100" alt="雙人房" class="rounded room-image me-3">
+                                <div class="room-details flex-grow-1">
+                                    <h6 class="room-type-name mb-1"><strong>雙人房</strong></h6>
+                                    <p class="stay-info mb-0"><i class="bi bi-calendar-check"></i> 入住日期：2024/11/04 - 2024/11/05</p>
+                                    <p class="guest-info"><i class="bi bi-people"></i> 入住人數：2 人</p>
+                                    <p class="nights"><i class="bi bi-moon-stars"></i> 住宿天數：1 晚</p>
+                                    <p class="room-count"><strong>房間數：</strong> 1 間</p>
+                                    <p class="price"><strong>價格：</strong> NTD$ <span class="hotel-price">32,000</span></p>
                                 </div>
-                                <!-- 房型 2 -->
-                                <div class="room-item" data-room-id="2">
-                                    <div class="room-image bg-light"
-                                        style="background-image: url('/imgs/room2.jpg');">
-                                    </div>
-                                    <div class="room-details">
-                                        <p class="mb-1"><strong>豪華房</strong></p>
-                                        <p>入住日期：2024/11/05 - 2024/11/06</p>
-                                        <p>$<span class="hotel-price">28000</span></p>
-                                        <p class="small mb-0">含早餐<br>特價優惠！</p>
-                                        <label for="quantity-2" class="mt-2">數量：</label>
-                                        <select id="quantity-2" class="form-select quantity-select" aria-label="房型數量">
-                                            <option value="1" selected>1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn btn-danger btn-sm remove-button">移除房型</button>
+                                <button class="btn btn-danger btn-sm remove-room"><i class="bi bi-trash"></i> 移除房型</button>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- 旅館 2 -->
+                    <div class="hotel-selection border rounded p-3 mb-3 position-relative" data-hotel-id="2">
+                        <input type="radio" name="selected-hotel" class="hotel-radio position-absolute top-0 end-0 m-3" value="2">
+                        <div class="d-flex align-items-center">
+                            <img src="https://via.placeholder.com/150" alt="台北文華東方酒店" class="rounded hotel-image me-3">
+                            <div class="flex-grow-1">
+                                <h5 class="hotel-name mb-1">台北文華東方酒店</h5>
+                                <p class="hotel-rating text-warning mb-0"><i class="bi bi-star-fill"></i> 4.7 / 5</p>
+                            </div>
+                            <button class="btn btn-outline-danger btn-sm remove-hotel">移除旅館</button>
+                        </div>
+                        <!-- 房型列表 -->
+                        <div class="hotel-rooms mt-3">
+                            <div class="room-item border rounded p-3 mb-2 d-flex align-items-center" data-room-id="2">
+                                <img src="https://via.placeholder.com/100" alt="豪華房" class="rounded room-image me-3">
+                                <div class="room-details flex-grow-1">
+                                    <h6 class="room-type-name mb-1"><strong>豪華房</strong></h6>
+                                    <p class="stay-info mb-0"><i class="bi bi-calendar-check"></i> 入住日期：2024/11/05 - 2024/11/06</p>
+                                    <p class="guest-info"><i class="bi bi-people"></i> 入住人數：3 人</p>
+                                    <p class="nights"><i class="bi bi-moon-stars"></i> 住宿天數：1 晚</p>
+                                    <p class="room-count"><strong>房間數：</strong> 1 間</p>
+                                    <p class="price"><strong>價格：</strong> NTD$ <span class="hotel-price">28,000</span></p>
                                 </div>
+                                <button class="btn btn-danger btn-sm remove-room"><i class="bi bi-trash"></i> 移除房型</button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- 購物車摘要 -->
-                <div class="col-lg-4">
-                    <h2 class="mb-3">總計</h2>
-                    <div class="border rounded p-3">
-                        <p>總價格：<span class="fs-4" id="total-price">$60000</span></p>
-                        <button class="btn btn-success w-100 mt-2">結帳</button>
-                    </div>
+            </div>
+    
+            <!-- 總價計算區 (置於右側) -->
+            <div class="col-md-4">
+                <div class="border rounded p-3 bg-light w-100">
+                    <h4 class="mb-3">總計</h4>
+                    <p><strong>房間總數：</strong> <span id="total-rooms">0</span> 間</p>
+                    <p><strong>總金額：</strong> NTD$ <span id="total-price">0</span></p>
+                    <button class="btn btn-success w-100" id="checkout-button">確認預訂</button>
                 </div>
             </div>
         </div>
     </main>
-
+                        
 
     <!-- 底欄 -->
     <footer>
@@ -144,10 +148,12 @@
                 <ul class="nav justify-content-center">
                     <li class="nav-item"><a th:href="@{/user/}" class="nav-link px-2 text-body-secondary">首頁</a></li>
                     <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
-                    <li class="nav-item"><a th:href="@{/user/order}" class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+                    <li class="nav-item"><a th:href="@{/user/order}" class="nav-link px-2 text-body-secondary">訂單管理</a>
+                    </li>
                     <li class="nav-item"><a th:href="@{/user/faq}" class="nav-link px-2 text-body-secondary">常見問題</a>
                     </li>
-                    <li class="nav-item"><a th:href="@{/user/contactUs}" class="nav-link px-2 text-body-secondary">聯繫我們</a>
+                    <li class="nav-item"><a th:href="@{/user/contactUs}"
+                            class="nav-link px-2 text-body-secondary">聯繫我們</a>
                     </li>
                     <li class="nav-item"><a th:href="@{/login/}" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
                 </ul>
@@ -159,9 +165,11 @@
     </footer>
 
     <!-- 必要JS -->
-	<script src="/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
-	<script src="/vendors/jQuery/jquery-3.7.1.min.js"></script>
-	<script src="/js/user/loginCheck.js" defer></script>
+    <script src="/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendors/jQuery/jquery-3.7.1.min.js"></script>
+    <script src="/js/user/loginCheck.js" defer></script>
+    <script src="/js/user/cart.js"></script>
+
     <script>
         // 動態計算總價
         function calculateTotal() {

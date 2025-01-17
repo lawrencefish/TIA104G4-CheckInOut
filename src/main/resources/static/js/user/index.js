@@ -92,11 +92,11 @@ async function initMap() {
       polygonPath[index] = new google.maps.Polygon({
         paths: arr,
         strokeColor: '#000',
-        strokeOpacity: .7,
+        strokeOpacity: 0.2,
         strokeWeight: 1,
         strokePosition: google.maps.StrokePosition.CENTER,
         fillColor: '#fff',
-        fillOpacity: 0.35,
+        fillOpacity: 0.3,
         map: map
       });
 
@@ -145,7 +145,7 @@ async function initMap() {
     markerContent.textContent = location.name; // 標記內容為縣市名稱
     markerContent.classList.add("landmark"); // 標記內容為縣市名稱
     markerContent.style.fontSize = "12px";
-    markerContent.style.color = "black";
+    markerContent.style.color = "rgba(0,0,0,0.7)";
     markerContent.style.padding = "1px";
 
     // 創建 AdvancedMarkerElement
@@ -246,7 +246,7 @@ $(document).ready(function () {
 
 function fetchBooking() {
   $.ajax({
-    url: '/booking/api/search',
+    url: '/search/api/search',
     type: 'POST',
     data: JSON.stringify({
       guestNum: $('#guestNum').val(),

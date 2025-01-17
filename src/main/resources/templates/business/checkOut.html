@@ -383,6 +383,8 @@
             padding: 20px;
             border-radius: 8px;
             width: 400px;
+            max-height: 80vh; /* 設置最大高度為視窗高度的80% */
+            overflow-y: auto; /* 啟用垂直滾動 */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: left;
         }
@@ -563,7 +565,8 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}" class="active">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
             <a th:href="@{/comment}">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
@@ -615,7 +618,7 @@
 
         <!-- Main -->
         <main>
-            <h1>Check Out</h1>
+            <h1>Check out</h1>
 
             <section id="buttons-section">
                 <button id="btn-not-checked-out" class="active">未退房</button>
@@ -1017,21 +1020,21 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ orderId: parseInt(orderId), roomIds }),
                 })
-                    .then((response) => {
-                        if (!response.ok) {
-                            return response.text().then((text) => {
-                                console.error("Error response from API:", text);
-                                throw new Error(text);
-                            });
-                        }
-                        return response.json(); // 確保解析 JSON 響應
-                    })
+                    .then((response) => response.json())
                     .then((data) => {
-                        console.log("Check-out successful:", data);
-                        alert(data.message || "Check-out details saved successfully.");
-                        location.reload(); // 刷新頁面
+                        if (data.error) {
+                            // 顯示錯誤訊息
+                            alert(`退房失敗：${data.error}`);
+                        } else {
+                            // 顯示成功訊息
+                            alert(data.message || "退房成功！");
+                            location.reload(); // 刷新頁面
+                        }
                     })
-                    .catch((error) => console.error("Error saving check-out details:", error));
+                    .catch((error) => {
+                        console.error("Check-out error:", error);
+                        alert("退房請求失敗，請稍後重試！");
+                    });
             });
 
 

@@ -527,7 +527,8 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}" class="active">訂單管理</a>
             <a th:href="@{/comment}">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
@@ -719,10 +720,14 @@
             // 綁定搜尋按鈕的事件
             const searchButton = document.getElementById('search-button');
             const orderSearchInput = document.getElementById('order-search');
+            if (orderSearchInput) {
+                orderSearchInput.focus();
+            }
             searchButton.addEventListener('click', () => {
                 const orderIdInput = document.getElementById('order-search').value.trim();
                 if (orderIdInput) {
-                    fetchOrderDetails(orderIdInput);
+                    // fetchOrderDetails(orderIdInput);
+                    window.location.href = `${contextPath}/orders/orderDetail?orderId=${orderIdInput}`;
                 } else {
                     alert('請輸入有效的訂單編號');
                 }
@@ -802,10 +807,15 @@
         function fetchOrderDetails(orderId) {
             fetch(`${contextPath}/order/details/${orderId}`)
                 .then(response => {
+                    if (response.status === 403) {
+                        alert('查無訂單');
+                        throw new Error('無權查看該訂單'); // 結束鏈式調用
+                    }
                     if (!response.ok) {
+                        alert('查無訂單');
                         throw new Error(`Failed to fetch order details: HTTP ${response.status}`);
                     }
-                    return response.json();
+                    return response.json(); // 確保只在成功時解析 JSON
                 })
                 .then(order => {
                     // 填充訂單基本資訊
@@ -906,8 +916,14 @@
                     });
                 })
                 .catch(error => {
-                    console.error('Error fetching order details:', error);
-                    alert('無法載入訂單詳情，請稍後再試！');
+                    // console.error('Error fetching order details:', error);
+                    // alert('無法載入訂單詳情-，請稍後再試！');
+                    // console.error('Error fetching order details:', error);
+                    // if (!error.message.includes('403')) {
+                    //     alert('查無訂單');
+                    // } else {
+                    //     alert('無法載入訂單詳情，請稍後再試！');
+                    // }
                 });
         }
 

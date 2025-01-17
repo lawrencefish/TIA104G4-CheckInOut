@@ -13,6 +13,7 @@ $(document).ready(function () {
         .then(function (data) {
             const today = new Date();
             dateArray = data;
+            console.log(dateArray);
             // 等資料加載完後再生成日曆
             generateCalendar('#calendar-wrapper', today.getFullYear(), today.getMonth());
         })
@@ -183,7 +184,6 @@ function handleDateSelection(dateString) {
         if (daysDiff < 1) {
             showModal('請選擇至少2日的範圍！');
             clearSelectedDates();
-
             return;
         }
         if (daysDiff > 15) {
@@ -273,7 +273,7 @@ function formatDate(date) {
 //取得庫存值
 function getAllInventory() {
     return $.ajax({
-        url: '/booking/api/all_inventory',
+        url: '/search/api/all_inventory',
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',

@@ -27,6 +27,12 @@ public class HotelFacilityService {
      * @param hotelId 飯店 ID
      * @return 設施 ID 列表
      */
+    
+    public List<HotelFacilityVO> findFacilityVOIdsByHotelId(Integer hotelId) {
+        return hotelFacilityRepository.findFacilityByHotelHotelId(hotelId);
+    }
+
+    
     public List<Integer> findFacilityIdsByHotelId(Integer hotelId) {
         return hotelFacilityRepository.findFacilityIdsByHotelId(hotelId);
     }

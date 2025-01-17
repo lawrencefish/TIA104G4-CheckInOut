@@ -17,9 +17,7 @@ public class RoomInventoryDTO {
     private Double longitude;
     //roomType物件
     private Integer roomTypeId;
-    private String roomName;
     private Integer maxPerson;
-    private Byte breakfast;
     
     public RoomInventoryDTO(
             Integer inventoryId,
@@ -33,9 +31,7 @@ public class RoomInventoryDTO {
             Double latitude,
             Double longitude,
             Integer roomTypeId,
-            String roomName,
-            Integer maxPerson,
-            Byte breakfast) {
+            Integer maxPerson) {
         this.inventoryId = inventoryId;
         this.date = date;
         this.availableQuantity = availableQuantity;
@@ -47,9 +43,7 @@ public class RoomInventoryDTO {
         this.latitude = latitude;
         this.longitude = longitude;
         this.roomTypeId = roomTypeId;
-        this.roomName = roomName;
         this.maxPerson = maxPerson;
-        this.breakfast = breakfast;
     }
     
 	public Integer getInventoryId() {
@@ -85,14 +79,8 @@ public class RoomInventoryDTO {
 	public Integer getRoomTypeId() {
 		return roomTypeId;
 	}
-	public String getRoomName() {
-		return roomName;
-	}
 	public Integer getMaxPerson() {
 		return maxPerson;
-	}
-	public Byte getBreakfast() {
-		return breakfast;
 	}
 	public void setInventoryId(Integer inventoryId) {
 		this.inventoryId = inventoryId;
@@ -127,23 +115,7 @@ public class RoomInventoryDTO {
 	public void setRoomTypeId(Integer roomTypeId) {
 		this.roomTypeId = roomTypeId;
 	}
-	public void setRoomName(String roomName) {
-		this.roomName = roomName;
-	}
 	public void setMaxPerson(Integer maxPerson) {
 		this.maxPerson = maxPerson;
-	}
-	public void setBreakfast(Byte breakfast) {
-		this.breakfast = breakfast;
-	}
-	
-	@Override
-	public String toString() {
-		return "RoomInventoryDTO [inventoryId=" + inventoryId + ", date=" + date + ", availableQuantity="
-				+ availableQuantity + ", hotelId=" + hotelId + ", name=" + name + ", city=" + city + ", district="
-				+ district + ", address=" + address + ", latitude=" + latitude + ", longitude=" + longitude
-				+ ", roomTypeId=" + roomTypeId + ", roomName=" + roomName + ", maxPerson=" + maxPerson + ", breakfast="
-				+ breakfast + "]";
-	}
-	
+	}	
 }

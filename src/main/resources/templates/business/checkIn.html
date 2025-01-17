@@ -384,6 +384,8 @@
             padding: 20px;
             border-radius: 8px;
             width: 400px;
+            max-height: 80vh; /* 設置最大高度為視窗高度的80% */
+            overflow-y: auto; /* 啟用垂直滾動 */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: left;
         }
@@ -667,7 +669,8 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}" class="active">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
             <a th:href="@{/comment}">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
@@ -1127,6 +1130,7 @@
                 const assignments = [];
                 const roomTypeContainer = document.getElementById("not-arrived-room-type");
                 const orderId = document.getElementById("not-arrived-order-id").textContent;
+                const assignedRooms = new Set(); // 用來檢查是否重複分配
 
                 // 遍歷所有房型區塊，收集數據
                 [...roomTypeContainer.children].forEach((detailDiv) => {
@@ -1139,6 +1143,15 @@
                     //     alert("所有字段均為必填項，請完成後再提交！");
                     //     return;
                     // }
+
+                    // 檢查是否有重複分配
+                    if (assignedRooms.has(assignedRoomId)) {
+                        alert(`房號重複，請選擇其他房號！`);
+                        throw new Error("重複分配房號");
+                    }
+
+                    // 將分配的房號加入已使用集合
+                    assignedRooms.add(assignedRoomId);
 
                     assignments.push({
                         orderId: parseInt(orderId),

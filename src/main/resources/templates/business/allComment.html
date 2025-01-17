@@ -165,7 +165,84 @@
         header .user .dropdown ul li:last-child {
             border-bottom: none;
         }
+		
+		/* 登出的彈窗樣式 */
+        #logout-modal {
+            display: none;
+            /* 初始為隱藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 半透明背景 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
 
+        #logout-modal.show {
+            display: flex;
+            /* 顯示彈窗 */
+        }
+
+        #logout-modal .logout-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        #logout-modal .logout-modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        #logout-modal .logout-modal-content p {
+            margin: 10px 0;
+        }
+
+        #logout-modal .logout-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #logout-modal .logout-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-logout-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #logout-modal .logout-modal-actions #logout-modal-switch-button {
+            background-color: #ccc;
+            color: black;
+        }
+
+        /* x 按鈕 */
+        #logout-modal .logout-modal-content .logout-modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        #logout-modal .logout-modal-content .logout-modal-close-btn:hover {
+            color: #333;
+        }
 
         /* Layout */
         .container {
@@ -372,27 +449,38 @@
             background-color: #dcdcdc;
         }
         
-        .pagination button {
-    		margin: 0 5px;
-   			padding: 5px 10px;
-    		border: 1px solid #ddd;
-    		background-color: #f9f9f9;
-    		cursor: pointer;
-    		transition: background-color 0.3s;
-		}
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
 
-		.pagination button.active {
-    		background-color: #007bff;
-    		color: white;
-    		border-color: #007bff;
-    		font-weight: bold;
-		}
+        .page-button {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
 
-		.pagination button:disabled {
-    		background-color: #eee;
-    		color: #aaa;
-    		cursor: not-allowed;
-		}
+        .page-button.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .page-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .page-button:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
         
     </style>
 </head>
@@ -408,7 +496,8 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
             <a th:href="@{/comment}" class="active">評論管理</a>
             <a th:href="@{/client}">客戶管理</a>
@@ -420,13 +509,32 @@
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
-                    <li>帳號設定</li>
-                    <li>登出</li>
+                   <li><a th:href="@{/account}">帳號設定</a></li>
+                    <li id="logout-option">登出</li>
                 </ul>
             </div>
         </div>
     </header>
 
+	<!-- 登出彈窗 -->
+    <div id="logout-modal" class="hidden">
+        <div class="logout-modal-content">
+            <span class="logout-modal-close-btn" id="logout-modal-close-btn">×</span>
+            <h2>登出選項</h2>
+            <p>您確定要登出或切換使用者嗎？</p>
+            <div class="logout-modal-actions">
+                <!-- 登出按鈕 -->
+                <form th:action="@{/logout}" method="POST" id="logout-form">
+                    <button type="submit" id="logout-modal-logout-button">登出</button>
+                </form>
+                <!-- 切換使用者按鈕 -->
+                <form th:action="@{/switch-user}" method="POST" id="switch-user-form">
+                    <button type="submit" id="logout-modal-switch-button">切換使用者</button>
+                </form>
+            </div>
+        </div>
+    </div>
+	
 
     <!-- 主體內容 -->
     <div class="container">
@@ -451,11 +559,11 @@
         <!-- Main -->
         <main class="main-content" id="main">
             <section class="form-section">
-                <div class="date-range">
-                    <input type="date" value="2025-01-01">
-                    <span>~</span>
-                    <input type="date" value="2025-01-31">
-                </div>
+<!--                 <div class="date-range"> -->
+<!--                     <input type="date" value="2025-01-01"> -->
+<!--                     <span>~</span> -->
+<!--                     <input type="date" value="2025-01-31"> -->
+<!--                 </div> -->
 
                 <table>
                     <thead>
@@ -478,34 +586,16 @@
         </tr>
                     </tbody>
                 </table>
-
-            </section>
-            <section class="page-section">
-    <div class="pagination">
-    <button th:disabled="${currentPage == 0}"
-            th:href="@{/orders/allComments(page=${currentPage - 1}, size=50, clientName=${clientName ?: ''}, hotelName=${hotelName ?: ''})}">
-        Previous
-    </button>
-
-    <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-        <a th:classappend="${i == currentPage} ? 'active' : ''"
-           th:href="@{/orders/allComments(page=${i}, size=50, clientName=${clientName ?: ''}, hotelName=${hotelName ?: ''})}">
-            <span th:text="${i + 1}"></span>
-        </a>
-    </span>
-
-    <button th:disabled="${currentPage + 1 == totalPages}"
-            th:href="@{/orders/allComments(page=${currentPage + 1}, size=50, clientName=${clientName ?: ''}, hotelName=${hotelName ?: ''})}">
-        Next
-    </button>
-</div>
-
-
-</section>
-
-
-
-        </main>
+            
+     <div class="pagination">
+                <button class="pagination-btn first-page">回到第一頁</button>
+                <button class="pagination-btn prev-page">上一頁</button>
+                <div id="page-numbers" class="page-numbers"> </div>
+                <button class="pagination-btn next-page">下一頁</button>
+                <button class="pagination-btn last-page">跳到最後一頁</button>
+            </div>
+	
+</main>
 
     </div>
 
@@ -513,28 +603,152 @@
     <footer>
         &copy; 2024 Check in out. All rights reserved.
     </footer>
-    <script>
+    <script>        
+      //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         });
-        
-        document.querySelectorAll('button[data-href]').forEach(button => {
-            button.addEventListener('click', function () {
-                if (!this.disabled) {
-                    window.location.href = this.getAttribute('data-href');
-                }
-            });
-        });
-        
-        document.querySelectorAll('.pagination a, .pagination button').forEach(button => {
-            button.addEventListener('click', function (event) {
-                if (button.href && !button.disabled) {
-                    window.location.href = button.href;
-                }
-            });
+
+        // 取得彈窗和按鈕
+        const logoutModal = document.getElementById("logout-modal");
+        const logoutModalCloseBtn = document.getElementById("logout-modal-close-btn");
+        const logoutModalLogoutButton = document.getElementById("logout-modal-logout-button");
+        const logoutModalSwitchButton = document.getElementById("logout-modal-switch-button");
+        const logoutOption = document.getElementById("logout-option"); // 假設觸發按鈕未修改 id
+
+        // 顯示彈窗
+        logoutOption.addEventListener("click", function () {
+            logoutModal.classList.add("show"); // 添加 class 顯示彈窗
         });
 
+        // 關閉彈窗 (x 按鈕)
+        logoutModalCloseBtn.addEventListener("click", function () {
+            logoutModal.classList.remove("show"); // 移除 class 隱藏彈窗
+        });
+
+        // 登出按鈕功能
+        logoutModalLogoutButton.addEventListener("click", function () {
+            alert("您已登出！");
+            document.location.href = "login-1.html";
+        });
+
+        // 切換使用者按鈕功能
+        logoutModalSwitchButton.addEventListener("click", function () {
+            alert("切換使用者！");
+            document.location.href = "login-2.html";; // 隱藏彈窗
+        });
+
+        // 點擊彈窗外部關閉 (選擇性功能)
+        window.addEventListener("click", function (e) {
+            if (e.target === logoutModal) {
+                logoutModal.classList.remove("show"); // 隱藏彈窗
+            }
+        });
+
+     // 修改分頁功能相關代碼
+        const comments = []; // 初始化評論數據數組
+        const rowsPerPage = 50; // 每頁顯示數量
+        let currentPage = 1;
+
+        // 從後端 API 獲取數據
+        async function fetchComments() {
+            try {
+                const response = await fetch('/business/allComment');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json(); // 將響應解析為 JSON
+                comments.push(...data); // 將獲取到的數據添加到 comments 中
+                initPagination(); // 初始化分頁
+            } catch (error) {
+                console.error('Failed to fetch comments:', error);
+            }
+        }
+
+        // 渲染表格數據
+        function renderTable(page) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const tableBody = document.querySelector("table tbody");
+            tableBody.innerHTML = "";
+
+            comments.slice(start, end).forEach(comment => {
+                const row = `
+                    <tr>
+                        <td>${comment.orderId}</td>
+                        <td>${comment.clientName}</td>
+                        <td>${comment.hotelName}</td>
+                        <td>${comment.commentTime}</td>
+                        <td>${comment.rating}⭐</td>
+                    </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // 渲染分頁按鈕
+        function renderPagination() {
+            const totalPages = Math.ceil(comments.length / rowsPerPage);
+            const paginationContainer = document.querySelector(".pagination");
+            paginationContainer.innerHTML = ""; // 清空分頁容器
+
+            // "回到第一頁" 按鈕
+            const firstButton = document.createElement("button");
+            firstButton.textContent = "回到第一頁";
+            firstButton.disabled = currentPage === 1;
+            firstButton.addEventListener("click", () => changePage(1));
+            paginationContainer.appendChild(firstButton);
+
+            // "上一頁" 按鈕
+            const prevButton = document.createElement("button");
+            prevButton.textContent = "上一頁";
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener("click", () => changePage(currentPage - 1));
+            paginationContainer.appendChild(prevButton);
+
+            // 頁碼按鈕
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement("button");
+                pageButton.textContent = i;
+                pageButton.classList.add("page-button");
+                if (i === currentPage) {
+                    pageButton.classList.add("active");
+                }
+                pageButton.addEventListener("click", () => changePage(i));
+                paginationContainer.appendChild(pageButton);
+            }
+
+            // "下一頁" 按鈕
+            const nextButton = document.createElement("button");
+            nextButton.textContent = "下一頁";
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener("click", () => changePage(currentPage + 1));
+            paginationContainer.appendChild(nextButton);
+
+            // "跳到最後一頁" 按鈕
+            const lastButton = document.createElement("button");
+            lastButton.textContent = "跳到最後一頁";
+            lastButton.disabled = currentPage === totalPages;
+            lastButton.addEventListener("click", () => changePage(totalPages));
+            paginationContainer.appendChild(lastButton);
+        }
+
+        // 更改頁面
+        function changePage(page) {
+            currentPage = page;
+            renderTable(currentPage);
+            renderPagination();
+        }
+
+        // 初始化分頁
+        function initPagination() {
+            renderTable(currentPage);
+            renderPagination();
+        }
+
+        // 在 DOM 加載後調用 fetchComments()
+        document.addEventListener("DOMContentLoaded", fetchComments);
+      
     </script>
 
 </body>

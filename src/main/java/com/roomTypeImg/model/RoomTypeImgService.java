@@ -65,4 +65,9 @@ public class RoomTypeImgService {
             roomTypeImgRepository.deleteById(imageId); // 刪除圖片
         }
     }
+    
+    public Integer countByRoomTypeId(Integer roomTypeId){
+    	return roomTypeImgRepository.countByRoomTypeRoomTypeId(roomTypeId);
+    }
+    
 }

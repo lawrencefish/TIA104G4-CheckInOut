@@ -332,7 +332,8 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
             <a th:href="@{/comment}">評論管理</a>
             <a th:href="@{/client}" class="active">客戶管理</a>
@@ -356,15 +357,15 @@
             <form class="report-form">
                 <div class="form-group">
                     <label for="clientid">客戶編號</label>
-                    <div id="clientid">12345678</div>
+                    <span id="clientid" th:text="${client.memberId}"></span>
                 </div>
                 <div class="form-group">
                     <label for="clientemail">客戶電子信箱</label>
-                    <div id="clientid">faker@t1.com</div>
+                    <span id="clientemail" th:text="${client.account}"></span>
                 </div>
                 <div class="form-group">
                     <label for="orderid">欲檢舉之訂單編號(非必填)</label>
-                    <input type="text" id="orderid" value="12345678">
+                    <input type="text" id="orderid">
                 </div>
                 <div class="form-group">
                     <label for="reason">檢舉事由</label>

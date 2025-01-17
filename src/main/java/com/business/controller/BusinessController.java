@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -37,9 +38,29 @@ public class BusinessController {
     }
 
     @GetMapping("/hotelInfo")
-    public String showHotelInfo() {
+    public String showHotelInfo(HttpServletRequest request) {
+        // 從 Session 中獲取當前的 hotel 對象
+        HotelVO hotel = (HotelVO) request.getSession().getAttribute("hotel");
+        if (hotel != null) {
+            // 查詢最新的 hotel 資料
+            Optional<HotelVO> updatedHotel = hotelService.findById(hotel.getHotelId());
+            // 如果查到最新資料，更新 session 中的 hotel
+            if (updatedHotel.isPresent()) {
+                request.getSession().setAttribute("hotel", updatedHotel.get());
+            } else {
+                // 如果找不到資料，記錄警告或移除 session 中的 hotel 資料
+                System.err.println("No hotel found with ID: " + hotel.getHotelId());
+                request.getSession().removeAttribute("hotel");
+            }
+        } else {
+            // 如果 session 中沒有 hotel 對象，處理異常情況
+            System.err.println("No hotel found in session.");
+            return "redirect:/errorPage"; // 重定向到錯誤頁面或登錄頁面
+        }
+        // 返回 hotelInfo 頁面
         return "business/hotelInfo";
     }
+
 
     @PostMapping("/hotelInfo")
     public String updateHotelInfo(
