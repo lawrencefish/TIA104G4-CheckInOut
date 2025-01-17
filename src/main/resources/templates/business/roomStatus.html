@@ -733,10 +733,10 @@
         <main>
             <h1>房間動態</h1>
             <!-- 加載圖片 -->
-            <div id="loading" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 500px;">
-                <img th:src="@{/imgs/loading.gif}" alt="Loading..." style="max-width: 300px; max-height: 300px;">
-                <p style="margin-top: 20px; font-size: 1.2rem; color: #555;">loading......</p>
-            </div>
+<!--            <div id="loading" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 500px;">-->
+<!--                <img th:src="@{/imgs/loading.gif}" alt="Loading..." style="max-width: 300px; max-height: 300px;">-->
+<!--                <p style="margin-top: 20px; font-size: 1.2rem; color: #555;">loading......</p>-->
+<!--            </div>-->
             <!-- 房型動態區域 -->
             <div id="room-dynamic-sections"></div>
         </main>
@@ -842,8 +842,8 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             // 顯示加載圖片
-            loadingElement.style.display = "flex";
-            roomDynamicSections.style.display = "none";
+            // loadingElement.style.display = "flex";
+            // roomDynamicSections.style.display = "none";
             // Fetch 所有房型資料
             fetch(`${contextPath}/api/roomType/roomTypes`)
                 .then(response => response.json()) // 將回應轉換成 JSON 格式
@@ -918,7 +918,7 @@
                 })
                 .catch(error => console.error("Error fetching room types:", error)) // 處理房型資料的錯誤
                 .finally(() => {
-                    closeimg(); // 確保無論請求成功或失敗都隱藏加載圖片
+                    // closeimg(); // 確保無論請求成功或失敗都隱藏加載圖片
                 });
         });
 
