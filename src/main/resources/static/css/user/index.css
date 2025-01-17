@@ -40,16 +40,13 @@ ul .dropdown-menu .dropdown-item {
 /*  */
 
 /* index */
-.banner {
-    background-image: url("/imgs/user/banner.jpg");
-    background-repeat: no-repeat;
-    background-position: 100% 10%;
-    background-size: cover;
-}
-
-#map {
+#map{
     width: 100%;
     height: 89vh;
+}
+
+.search-area{
+    height: 95%;
 }
 
 .pac-container{

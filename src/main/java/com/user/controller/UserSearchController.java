@@ -195,9 +195,10 @@ public class UserSearchController {
 					}
 
 					RoomInventoryDTO sample = dailyList.get(0);
+					byte breakfast = sample.getBreakfast();
 					int maxPerson = sample.getMaxPerson();
 					int needRooms = (guestNum + maxPerson - 1) / maxPerson;
-
+					
 					if (needRooms > roomNum) {
 						continue;
 					}
@@ -221,6 +222,7 @@ public class UserSearchController {
 
 					// 整理房型資訊
 					Map<String, Object> roomDetails = new LinkedHashMap<>();
+					
 					roomDetails.put("roomTypeID", roomTypeId);
 					roomDetails.put("maxPerson", maxPerson);
 
@@ -229,6 +231,9 @@ public class UserSearchController {
 					Integer priceSum = 0;
 					while (!dateForPrice.isAfter(checkOutDateMOne)) {
 						PriceVO dailyPrice = Pservice.getPriceOfDay(roomTypeId, dateForPrice);
+						if (breakfast == 1 ) {
+							priceSum += (dailyPrice.getBreakfastPrice()*guestNum);
+						}
 						priceSum += dailyPrice.getPrice();
 						dateForPrice = dateForPrice.plusDays(1);
 					}

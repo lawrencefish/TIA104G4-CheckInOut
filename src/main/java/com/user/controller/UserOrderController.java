@@ -3,7 +3,9 @@ package com.user.controller;
 import java.net.http.HttpHeaders;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -73,53 +75,124 @@ public class UserOrderController {
 	@Autowired
 	RoomTypeFacilityService RTFService;
 
-	// 存入購物車訂單明細
-	@PostMapping("/getCart")
-	public ResponseEntity<Map<String,Object>> getCart(HttpSession session){
-		List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
-		Map<String, Object> response = new HashMap<>();
-		response.put("cartList", cartList);
-		return ResponseEntity.ok(response);
+	// 取得購物車訂單明細
+	@PostMapping("/cart/get")
+	public ResponseEntity<List<Map<String, Object>>> getCart(HttpSession session) {
+	    List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
+	    
+	    if (cartList == null || cartList.isEmpty()) {
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("message", "購物車是空的");
+	        response.put("empty", "true");
+	        return ResponseEntity.ok(Collections.singletonList(response));
+	    }
+	    List<Map<String, Object>> updatedCartList = new ArrayList<>();
+	    for (Map<String, Object> cart : cartList) {
+	        List<Map<String, Object>> cartDetailList = (List<Map<String, Object>>) cart.get("cartDetailList");
+	        List<Map<String, Object>> updatedCartDetailList = new ArrayList<>();
+
+	        for (Map<String, Object> cartDetail : cartDetailList) {
+	            try {
+	                Integer roomTypeId = (Integer) cartDetail.get("roomTypeId");
+	                LocalDate checkInDate = (LocalDate) cartDetail.get("checkInDate");
+	                LocalDate checkOutDate = (LocalDate) cartDetail.get("checkOutDate");
+	                LocalDate checkOutDateMOne = checkOutDate.minusDays(1);
+
+	                List<HotelRoomInventoryDTO> cartDetailInfoList = 
+	                    RIservice.findRoomsFromDateAndRoomTypeId(checkInDate, checkOutDateMOne, roomTypeId);
+
+	                int daysBetween = (int) ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+
+	                if (cartDetailInfoList == null || cartDetailInfoList.size() != daysBetween) {
+	                    continue;
+	                }
+
+	                int totalPrice = 0;
+	                int totalbreakPrice = 0;
+
+	                for (HotelRoomInventoryDTO cartDetailInfo : cartDetailInfoList) {
+	                    PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, cartDetailInfo.getDate());
+	                    cartDetail.put("roomName", cartDetailInfo.getRoomName());
+		                cartDetail.put("breakfast", cartDetailInfo.getBreakfast());
+	                    totalPrice += todayPrice.getPrice();
+
+	                    if (cartDetailInfo.getBreakfast() == 1) {
+	                        totalbreakPrice += todayPrice.getBreakfastPrice();
+	                        totalPrice += todayPrice.getBreakfastPrice();
+	                    }
+	                }
+	                cartDetail.put("totalPrice", totalPrice);
+	                cartDetail.put("totalbreakPrice", totalbreakPrice);
+	                
+	                updatedCartDetailList.add(cartDetail);
+	            } catch (Exception e) {
+	                System.out.println("Error processing cartDetail: " + e.getMessage());
+	                e.printStackTrace();
+	            }
+	        }
+
+	        if (!updatedCartDetailList.isEmpty()) {
+	            cart.put("cartDetailList", updatedCartDetailList);
+	            updatedCartList.add(cart);
+	        }
+	    }
+	    return ResponseEntity.ok(updatedCartList);
 	}
+	
+	
+	// 刪除飯店資訊
+	@PostMapping("/cart/delete")
+	public ResponseEntity<Map<String, Object>> deleteCart(@RequestParam String roomTypeId, HttpSession session) {
+	    List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
 
-	// 取得飯店資訊
-	@PostMapping("/hotel_detail")
-	public Map<String, Object> getHotelInfo(@RequestBody Map<String, String> parsedHotelId) {
-		Integer hotelId = Integer.valueOf(parsedHotelId.get("id"));
-		HotelVO hotel = hotelService.findById(hotelId).orElse(null);
-		List<OrderVO> orders = orderService.findByHotelId(hotelId);
-		Double ratings = orderService.getAvgRatingAndCommentCounts(hotelId).getAvgRating();
-		List<HotelFacilityVO> hotelFList = HFService.findFacilityVOIdsByHotelId(hotelId);
-		Map<String, Object> response = new HashMap<String, Object>();
+	    // 如果購物車是空的，直接回傳
+	    if (cartList == null || cartList.isEmpty()) {
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("message", "購物車是空的");
+	        response.put("empty", "true");
+	        return ResponseEntity.ok(response);
+	    }
 
-		response.put("name", hotel.getName());
-		response.put("info", hotel.getInfoText());
-		response.put("city", hotel.getCity());
-		response.put("district", hotel.getDistrict());
-		response.put("address", hotel.getAddress());
-		response.put("lat", String.valueOf(hotel.getLatitude()));
-		response.put("lng", String.valueOf(hotel.getLongitude()));
-		response.put("avgRatings", String.valueOf(ratings));
-		response.put("imgNum", String.valueOf(hotelImgService.countByHotelId(hotelId)));
+	    boolean itemRemoved = false;
+	    Iterator<Map<String, Object>> cartIterator = cartList.iterator();
 
-		List<FacilityVO> facility = new ArrayList<FacilityVO>();
-		for (HotelFacilityVO hf : hotelFList) {
-			facility.add(hf.getFacility());
-		}
-		response.put("facility", facility);
-		List<Map<String, String>> comments = new ArrayList<Map<String, String>>();
-		for (OrderVO order : orders) {
-			Map<String, String> comment = new HashMap<String, String>();
-			comment.put("orderId", String.valueOf(order.getOrderId()));
-			comment.put("guest", order.getGuestLastName());
-			comment.put("rating", String.valueOf(order.getRating()));
-			comment.put("comment", order.getCommentContent());
-			comment.put("time", String.valueOf(order.getCommentCreateTime()));
-			comments.add(comment);
-		}
-		response.put("comments", comments);
+	    while (cartIterator.hasNext()) {
+	        Map<String, Object> cart = cartIterator.next();
 
-		return response;
+	        if (cart.containsKey("cartDetailList")) {
+	            List<Map<String, Object>> cartDetailList = (List<Map<String, Object>>) cart.get("cartDetailList");
+
+	            // 使用 Iterator 移除符合 roomTypeId 的項目
+	            cartDetailList.removeIf(item -> 
+	                item.containsKey("roomTypeId") && 
+	                String.valueOf(item.get("roomTypeId")).equals(roomTypeId)
+	            );
+
+	            // 如果 cartDetailList 清空了，才移除 cart
+	            if (cartDetailList.isEmpty()) {
+	                cartIterator.remove();
+	            } else {
+	                // 更新 cartDetailList
+	                cart.put("cartDetailList", cartDetailList);
+	            }
+
+	            itemRemoved = true;
+	        }
+	    }
+
+	    // 更新 session
+	    session.setAttribute("cartList", cartList);
+
+	    // 準備回應
+	    Map<String, Object> response = new HashMap<>();
+	    if (itemRemoved) {
+	        response.put("removed", "true");
+	        response.put("message", "成功移除");
+	    } else {
+	        response.put("message", "移除失敗，請稍後再試");
+	    }
+
+	    return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/update")

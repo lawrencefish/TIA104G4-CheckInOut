@@ -1,21 +1,15 @@
 package com.user.controller;
 
-import java.net.http.HttpHeaders;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.view.RedirectView;
 
 import com.facility.model.FacilityVO;
 import com.googleAPI.GeocodingService;
@@ -38,14 +29,11 @@ import com.hotelImg.model.HotelImgService;
 import com.hotelImg.model.HotelImgVO;
 import com.order.model.OrderService;
 import com.order.model.OrderVO;
-import com.price.model.PriceRepository;
 import com.price.model.PriceService;
 import com.price.model.PriceVO;
 import com.roomInventory.model.HotelRoomInventoryDTO;
-import com.roomInventory.model.RoomInventoryDTO;
-import com.roomInventory.model.RoomInventoryRepository;
 import com.roomInventory.model.RoomInventoryService;
-import com.roomInventory.model.RoomInventoryVO;
+import com.roomType.model.RoomTypeService;
 import com.roomTypeFacility.model.RoomTypeFacilityService;
 import com.roomTypeImg.model.RoomTypeImgService;
 import com.roomTypeImg.model.RoomTypeImgVO;
@@ -72,6 +60,8 @@ public class UserBookingController {
 	HotelFacilityService HFService;
 	@Autowired
 	RoomTypeFacilityService RTFService;
+	@Autowired
+	RoomTypeService RTService;
 
 	@GetMapping("/image/room/{roomId}/{num}")
 	public ResponseEntity<byte[]> getRoomImage(@PathVariable Integer roomId, @PathVariable Integer num) {
@@ -88,78 +78,99 @@ public class UserBookingController {
 
 	// 存入購物車訂單明細
 	@PostMapping("/addCart")
-	public ResponseEntity<Map<String, String>> addCart(@RequestBody Map<String, String> orderDetail,
-			HttpSession session) {
-		// 先嘗試從 session 取出 cartList，若為 null 則初始化
-		List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
-		if (cartList == null) {
-			cartList = new ArrayList<>();
-		}
+	public ResponseEntity<Map<String, String>> addCart(@RequestBody Map<String, String> orderDetail, HttpSession session) {
+	    // 從 session 取得購物車 cartList，如果 session 為空則初始化
+	    List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
+	    if (cartList == null) {
+	        cartList = new ArrayList<>();
+	    }
 
-		Map<String, Object> cart = new HashMap<>();
-		List<Map<String, Object>> cartDetailList = new ArrayList<>();
-		Map<String, Object> cartDetail = new HashMap<>();
+	    // 解析傳入的訂單資訊
+	    Integer hotelId = Integer.valueOf(orderDetail.get("hotelId"));
+	    String hotelName = orderDetail.get("hotelName");
+	    Double review = Double.valueOf(orderDetail.get("review"));
 
-		Integer hotelId = Integer.valueOf(orderDetail.get("hotelId"));
-		String hotelName = orderDetail.get("hotelName");
-		Double review = Double.valueOf(orderDetail.get("review"));
-		cart.put("hotelId", hotelId);
-		cart.put("hotelName", hotelName);
-		cart.put("review", review);
+	    LocalDate checkInDate = LocalDate.parse(orderDetail.get("checkInDate"));
+	    LocalDate checkOutDate = LocalDate.parse(orderDetail.get("checkOutDate"));
 
-		// 解析 LocalDate
-		LocalDate checkInDate = LocalDate.parse(orderDetail.get("checkInDate"));
-		LocalDate checkOutDate = LocalDate.parse(orderDetail.get("checkOutDate"));
+	    Integer roomTypeId = Integer.valueOf(orderDetail.get("roomTypeId"));
+	    Integer guestNum = Integer.valueOf(orderDetail.get("guestNum"));
+	    Integer roomNum = Integer.valueOf(orderDetail.get("roomNum"));
 
-		// 解析 Integer
-		Integer roomTypeId = Integer.valueOf(orderDetail.get("roomTypeId"));
-		String roomTypeName = orderDetail.get("roomTypeName");
-		Integer guestNum = Integer.valueOf(orderDetail.get("guestNum"));
-		Integer roomNum = Integer.valueOf(orderDetail.get("roomNum"));
-		Integer price = Integer.valueOf(orderDetail.get("price"));
-		Integer breakfast = Integer.valueOf(orderDetail.get("breakfast"));
+	    // 建立 cartDetail（單筆房型資訊）
+	    Map<String, Object> cartDetail = new HashMap<>();
+	    cartDetail.put("checkInDate", checkInDate);
+	    cartDetail.put("checkOutDate", checkOutDate);
+	    cartDetail.put("roomTypeId", roomTypeId);
+	    cartDetail.put("guestNum", guestNum);
+	    cartDetail.put("roomNum", roomNum);
 
-		// 存入 cartDetail
-		cartDetail.put("checkInDate", checkInDate);
-		cartDetail.put("checkOutDate", checkOutDate);
-		cartDetail.put("roomTypeName", roomTypeName);
-		cartDetail.put("roomTypeId", roomTypeId);
-		cartDetail.put("guestNum", guestNum);
-		cartDetail.put("roomNum", roomNum);
-		cartDetail.put("price", price);
-		cartDetail.put("breakfast", breakfast);
-		cartDetailList.add(cartDetail);
+	    boolean foundHotel = false; // 是否找到相同的 hotelId
 
-		cart.put("cartDetail", cartDetailList);
+	    for (Map<String, Object> existingCart : cartList) {
+	        if (existingCart.get("hotelId").equals(hotelId)) {
+	            foundHotel = true;
+	            List<Map<String, Object>> cartDetailList = (List<Map<String, Object>>) existingCart.get("cartDetailList");
 
-		// **檢查相同 hotelId 是否已存在於 cartList**
-		boolean found = false;
-		for (Map<String, Object> existingCart : cartList) {
-			if (existingCart.get("hotelId").equals(hotelId)) {
-				List<Map<String, Object>> existingCartDetailList = (List<Map<String, Object>>) existingCart
-						.get("cartDetail");
-				existingCartDetailList.add(cartDetail);
-				found = true;
-				break;
-			}
-		}
+	            if (cartDetailList == null) {
+	                cartDetailList = new ArrayList<>();
+	                existingCart.put("cartDetailList", cartDetailList);
+	            }
 
-		// 如果 hotelId **尚未存在**，新增整個 cart
-		if (!found) {
-			cartList.add(cart);
-		}
+	            // **檢查是否有相同房型 (`roomTypeId`) 且日期重疊**
+	            for (Map<String, Object> existingDetail : cartDetailList) {
+	                Integer existingRoomTypeId = (Integer) existingDetail.get("roomTypeId");
+	                LocalDate existingCheckInDate = (LocalDate) existingDetail.get("checkInDate");
+	                LocalDate existingCheckOutDate = (LocalDate) existingDetail.get("checkOutDate");
 
-		// 更新 session
-		session.setAttribute("cartList", cartList);
+	                // **判斷日期是否重疊**
+	                if (existingRoomTypeId.equals(roomTypeId) &&
+	                        ((checkInDate.isBefore(existingCheckOutDate) && checkOutDate.isAfter(existingCheckInDate)) ||
+	                         (checkInDate.isEqual(existingCheckInDate) || checkInDate.isBefore(existingCheckInDate)) && checkOutDate.isAfter(existingCheckOutDate))) {
+	                    // **如果日期重疊，回傳錯誤訊息**
+	                    Map<String, String> errorResponse = new HashMap<>();
+	                    errorResponse.put("message", "房型與日期重疊，無法加入購物車");
+	                    errorResponse.put("overlapDate", "true");
+	                    return ResponseEntity.badRequest().body(errorResponse);
+	                }
+	            }
 
-		// 回傳成功訊息
-		Map<String, String> response = new HashMap<>();
-		response.put("message", "ok");
+	            // **只更新 `cartDetailList`，不額外添加 `cartDetail`**
+	            cartDetailList.add(cartDetail);
+	            break;
+	        }
+	    }
 
-		// Debug 輸出
-		System.out.println("目前購物車：" + session.getAttribute("cartList"));
+	    // 如果 `hotelId` 尚未存在於 `cartList`，則新增 `cart`
+	    if (!foundHotel) {
+	        Map<String, Object> cart = new HashMap<>();
+	        cart.put("hotelId", hotelId);
+	        cart.put("hotelName", hotelName);
+	        cart.put("review", review);
 
-		return ResponseEntity.ok(response);
+	        List<Map<String, Object>> cartDetailList = new ArrayList<>();
+	        cartDetailList.add(cartDetail);
+	        cart.put("cartDetailList", cartDetailList);
+
+	        cartList.add(cart);
+	    }
+
+	    // **確保不再存入 `cartDetail` 這個 key**
+	    for (Map<String, Object> cart : cartList) {
+	        cart.remove("cartDetail"); // 確保 `cartDetail` 不存在
+	    }
+
+	    // 更新 session，確保購物車內容被保存
+	    session.setAttribute("cartList", cartList);
+
+	    // 回傳成功訊息
+	    Map<String, String> response = new HashMap<>();
+	    response.put("message", "ok");
+
+	    // Debug 輸出
+	    System.out.println("目前購物車：" + session.getAttribute("cartList"));
+
+	    return ResponseEntity.ok(response);
 	}
 
 	// 取得飯店資訊
@@ -205,11 +216,12 @@ public class UserBookingController {
 	@PostMapping("/update")
 	public Map<String, String> updateRoomInventory(@RequestBody Map<String, String> info, HttpSession session) {
 		Map<String, String> response = new HashMap<>();
+
 		try {
-			LocalDate checkInDate = LocalDate.parse(info.get("startDate"));
-			LocalDate checkOutDate = LocalDate.parse(info.get("endDate"));
 			Integer guestNum = Integer.valueOf(info.get("guestNum"));
 			Integer roomNum = Integer.valueOf(info.get("roomNum"));
+			LocalDate checkInDate = LocalDate.parse(info.get("startDate"));
+			LocalDate checkOutDate = LocalDate.parse(info.get("endDate"));
 			session.setAttribute("guestNum", guestNum);
 			session.setAttribute("roomNum", roomNum);
 			session.setAttribute("checkInDate", checkInDate);
@@ -224,37 +236,47 @@ public class UserBookingController {
 	// 取得每天旅館庫存
 	@PostMapping("/calendar/inventory")
 	public ResponseEntity<Map<String, Object>> getCalendarRoomInventory(@RequestBody Map<String, String> parsedHotel,
-			HttpSession session) {
-		Integer hotelId = Integer.valueOf(parsedHotel.get("id"));
-		Integer guestNum = Integer.valueOf(parsedHotel.get("guestNum"));
-		Integer roomNum = Integer.valueOf(parsedHotel.get("roomNum"));
+	        HttpSession session) {
+	    Integer hotelId = Integer.valueOf(parsedHotel.get("id"));
+	    Integer guestNum = Integer.valueOf(parsedHotel.get("guestNum"));
+	    Integer roomNum = Integer.valueOf(parsedHotel.get("roomNum"));
 
-		Map<String, Object> hotelResponse = new HashMap<>();
-		List<HotelRoomInventoryDTO> hotels = RIservice.findAvailableRoomsFromHotel(hotelId);
-		List<Map<String, String>> dailyInventory = new ArrayList<>();
-		for (HotelRoomInventoryDTO room : hotels) {
-			Map<String, String> daydto = new HashMap<>();
-			Integer roomTypeId = room.getRoomTypeId();
-			Integer totalPrice = 0;
-			LocalDate date = room.getDate();
-			if (guestNum != 0 && roomNum != 0) {
-				int maxPerson = (int) room.getMaxPerson();
-				int needRooms = (guestNum + maxPerson - 1) / maxPerson;
+	    Map<String, Object> hotelResponse = new HashMap<>();
+	    List<HotelRoomInventoryDTO> hotels = RIservice.findAvailableRoomsFromHotel(hotelId);
+	    Map<LocalDate, Map<String, String>> dailyInventory = new HashMap<>();
 
-				if (needRooms > roomNum || room.getAvailableQuantity() < roomNum) {
-					continue;
+	    for (HotelRoomInventoryDTO room : hotels) {
+	        Integer roomTypeId = room.getRoomTypeId();
+	        LocalDate date = room.getDate();
 
-				}
-				PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, date);
-				totalPrice = (room.getBreakfast() == 1) ? todayPrice.getPrice() + todayPrice.getBreakfastPrice()
-						: todayPrice.getPrice();
-				daydto.put("price", String.valueOf(totalPrice));
-			}
-			daydto.put("date", String.valueOf(date));
-			dailyInventory.add(daydto);
-		}
-		hotelResponse.put("date", dailyInventory);
-		return ResponseEntity.ok(hotelResponse);
+	        if (guestNum != 0 && roomNum != 0) {
+	            int maxPerson = room.getMaxPerson();
+	            int needRooms = (guestNum + maxPerson - 1) / maxPerson;
+
+	            if (needRooms > roomNum || room.getAvailableQuantity() < roomNum) {
+	                continue;
+	            }
+
+	            // 取得當天房價
+	            PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, date);
+	            Integer totalPrice = (room.getBreakfast() == 1) ? todayPrice.getPrice()*roomNum + todayPrice.getBreakfastPrice()*guestNum
+	                    : todayPrice.getPrice()*roomNum;
+
+	            // 如果當天還沒有記錄最便宜的房價，或者新房價更低，則更新
+	            if (!dailyInventory.containsKey(date) || totalPrice < Integer.valueOf(dailyInventory.get(date).get("price"))) {
+	                Map<String, String> daydto = new HashMap<>();
+	                daydto.put("date", String.valueOf(date));
+	                daydto.put("price", String.valueOf(totalPrice));
+	                daydto.put("roomTypeId", String.valueOf(roomTypeId));
+	                dailyInventory.put(date, daydto);
+	            }
+
+	            System.out.println(roomTypeId + ":" + date + ":" + totalPrice);
+	        }
+	    }
+
+	    hotelResponse.put("date", new ArrayList<>(dailyInventory.values()));
+	    return ResponseEntity.ok(hotelResponse);
 	}
 
 	// 取得旅館庫存
