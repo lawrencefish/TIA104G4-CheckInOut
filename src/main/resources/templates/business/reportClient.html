@@ -372,7 +372,7 @@
                     <textarea id="reason" rows="5"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="attachments">附加照片/檔案</label>
+                    <label for="attachments">附加照片</label>
                     <div class="file-upload">
                         <input type="file" id="file1" accept=".jpg,.jpeg,.png">
                     </div>
@@ -380,7 +380,7 @@
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-submit">送出</button>
-                    <button type="button" class="btn btn-cancel">取消</button>
+                    <button type="button" class="btn btn-cancel" id="cancelButton">取消</button>
                 </div>
             </form>
         </main>
@@ -497,6 +497,10 @@
             failureMessage.textContent = message; // 更新彈窗中的訊息
             failurePopout.classList.add('show');
         }
+
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            window.history.back(); // 返回上一頁
+        });
     </script>
 </body>
 

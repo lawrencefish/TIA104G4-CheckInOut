@@ -1,4 +1,4 @@
-package com.report;
+package com.report.controller;
 
 import com.hotel.model.HotelVO;
 import com.report.pojo.AddReportRequest;
