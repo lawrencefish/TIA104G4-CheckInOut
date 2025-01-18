@@ -74,12 +74,13 @@ public class CheckOutService {
         );
         NotificationWebSocketHandler.broadcast(orderMessage);
 
-        // 3. 處理每個房間的狀態更新和清空住客信息
-        for (Integer roomId : checkOutRequest.getRoomIds()) {
-            if (roomId == null) {
-                throw new RuntimeException("Room ID cannot be null.");
-            }
+        // 處理每個房間的狀態更新和清空住客信息
+        List<Integer> roomIds = checkOutRequest.getRoomIds();
+        if (roomIds == null || roomIds.isEmpty()) {
+            throw new RuntimeException("Room IDs cannot be null or empty.");
+        }
 
+        for (Integer roomId : roomIds) {
             RoomVO room = roomRepository.findById(roomId)
                     .orElseThrow(() -> new RuntimeException("Room not found for ID: " + roomId));
 
