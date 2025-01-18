@@ -921,6 +921,7 @@
         });
 
         // 1/10新增內容
+        let allOrders = []; // 保存所有訂單數據
         document.addEventListener("DOMContentLoaded", function () {
             const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
             const tableBodies = {
@@ -941,7 +942,6 @@
                 all: document.getElementById("all-orders-section"),
             };
 
-            let allOrders = []; // 保存所有訂單數據
 
             // 1. Fetch 今日訂單
             fetch(`${contextPath}/order/today/checkin?hotelId=${hotelId}`)
@@ -976,12 +976,13 @@
                     // 如果有資料，渲染表格內容
                     orders.forEach((order) => {
                         const row = document.createElement("tr");
+                        row.setAttribute("data-order-id", order.orderId); // 設置 data-order-id
                         row.innerHTML = `
-                <td>${order.orderId}</td>
-                <td>${order.memberId || "未提供"}</td>
-                <td>${formatMemberName(order.memberName) || "未提供"}</td>
-                <td style="color: ${getStatusColor(order.status)};">${getStatusText(order.status)}</td>
-            `;
+                            <td>${order.orderId}</td>
+                            <td>${order.memberId || "未提供"}</td>
+                            <td>${formatMemberName(order.memberName) || "未提供"}</td>
+                            <td class="status-cell" style="color: ${getStatusColor(order.status)};">${getStatusText(order.status)}</td>
+                        `;
 
                         // 點擊事件：顯示對應彈窗
                         row.addEventListener("click", () => {
@@ -1089,8 +1090,10 @@
                         details.orderDetails.forEach((detail) => {
                             const detailDiv = document.createElement("div");
                             // 動態生成 HTML，新增早餐資訊
+                            // 備份
+                            // <p><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
                             detailDiv.innerHTML = `
-                    <p><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
+                    <p><strong>房型：</strong>${detail.roomTypeName}</p>
                     <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
                     <label for="room-assignment-${detail.orderDetailId}">分配房號：</label>
                     <select id="room-assignment-${detail.orderDetailId}">
@@ -1225,9 +1228,11 @@
                             const detailDiv = document.createElement("div");
                             detailDiv.classList.add("room-detail");
 
+                            // 備份
+                            // <p><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
                             // 動態生成 HTML，顯示已分配的房間和住客信息
                             detailDiv.innerHTML = `
-                    <p><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
+                    <p><strong>房型：</strong>${detail.roomTypeName}</p>
                     <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
                     <p><strong>分配房號：</strong>${detail.assignedRoomNumber || "未分配"}</p>
                     <p><strong>住客姓名：</strong>${detail.customerName || "未提供"}</p>
@@ -1289,10 +1294,107 @@
                 });
             }
         });
+        function getStatusText(status) {
+            switch (status) {
+                case 0:
+                    return "未報到";
+                case 1:
+                    return "已報到";
+                case 2:
+                    return "已退房";
+                case 3:
+                    return "取消訂單";
+                default:
+                    return "未知狀態";
+            }
+        }
+
+        // 訂單狀態顏色轉換函數
+        function getStatusColor(status) {
+            switch (status) {
+                case 0:
+                    return "red";
+                case 1:
+                    return "green";
+                case 2:
+                    return "blue";
+                case 3:
+                    return "gray";
+                default:
+                    return "black";
+            }
+        }
 
 
-        // 分配房間
-        // 新增：監聽未報到表格的點擊事件
+        // web socket
+        const socket = new WebSocket(`${contextPath}/ws`);
+
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            // console.log("收到推播消息：", message);
+
+            if (message.type === "checkIn") {
+                // 修正查找邏輯：確保鍵名和類型一致
+                const orderIndex = allOrders.findIndex((order) => order.orderId === Number(message.orderId));
+
+                if (orderIndex !== -1) {
+                    // 如果找到訂單，更新狀態
+                    // console.log(`找到訂單 ${message.orderId}，更新狀態`);
+                    allOrders[orderIndex].status = message.status;
+                    updateCheckInTable(message.orderId, message.status);
+                } else {
+                    // console.warn(`未找到訂單 ID ${message.orderId}，請檢查主數據`);
+                }
+            }
+        };
+
+
+        function updateCheckInTable(orderId, status) {
+            const row = document.querySelector(`[data-order-id="${orderId}"]`);
+            // console.log(`更新表格行，訂單 ID：${orderId}, 狀態：${status}`);
+
+            if (!row) {
+                // console.warn(`找不到訂單 ID 為 ${orderId} 的表格行`);
+                return;
+            }
+
+            // 更新狀態單元格
+            const statusCell = row.querySelector(".status-cell");
+            if (statusCell) {
+                // console.log(`找到狀態單元格，更新內容`);
+                statusCell.textContent = status === 1 ? "已報到" : "未報到";
+                statusCell.style.color = status === 1 ? "green" : "red";
+            } else {
+                // console.error(`找不到訂單 ID 為 ${orderId} 的狀態單元格`);
+            }
+            // 同步更新 "全部訂單" 的表格
+            const allOrderRow = document.querySelector(`#all-orders-table-body [data-order-id="${orderId}"]`);
+            if (allOrderRow) {
+                const allOrderStatusCell = allOrderRow.querySelector(".status-cell");
+                if (allOrderStatusCell) {
+                    allOrderStatusCell.textContent = getStatusText(status);
+                    allOrderStatusCell.style.color = getStatusColor(status);
+                }
+            }
+            // 移動行到正確的區塊
+            const targetTableBody =
+                status === 1
+                    ? document.getElementById("arrived-table-body") // 已報到區
+                    : document.getElementById("not-arrived-table-body"); // 未報到區
+
+            if (!targetTableBody.contains(row)) {
+                // console.log(`移動訂單 ID ${orderId} 到正確的區塊`);
+                targetTableBody.appendChild(row);
+            }
+            // 更新點擊事件
+            row.onclick = () => {
+                if (status === 0) {
+                    showOrderDetails(allOrders.find((order) => order.orderId === orderId));
+                } else if (status === 1) {
+                    showArrivedOrderDetails(allOrders.find((order) => order.orderId === orderId));
+                }
+            };
+        }
 
     </script>
 </body>
