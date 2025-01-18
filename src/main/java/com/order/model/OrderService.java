@@ -34,12 +34,6 @@ public class OrderService {
 		repository.save(orderVO);
 	}
 
-	@Transactional
-	public void updateOrder(OrderVO orderVO) {
-		repository.save(orderVO);
-	}
-
-
 	public OrderVO queryOrder(Integer orderId) {
 		Optional<OrderVO> optional = repository.findById(orderId);
 		return optional.orElse(null);

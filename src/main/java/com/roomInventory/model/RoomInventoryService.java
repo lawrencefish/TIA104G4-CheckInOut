@@ -47,6 +47,14 @@ public class RoomInventoryService {
 	}
 
 	@Transactional
+	public void roomTransaction(RoomInventoryVO inventory) {
+		if(inventory.getAvailableQuantity() >= 0) {		
+		roomInventoryRepository.save(inventory);
+		}
+	}
+
+	
+	@Transactional
 	public RoomInventoryVO updateRoomInventory(RoomInventoryVO inventory) {
 		RoomInventoryVO existingInventory = roomInventoryRepository.findById(inventory.getInventoryId())
 				.orElseThrow(() -> new IllegalArgumentException("房型庫存ID=" + inventory.getInventoryId() + " 不存在"));

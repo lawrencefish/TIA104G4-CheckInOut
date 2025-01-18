@@ -98,4 +98,13 @@ public class CreditcardVO {
 		this.member = member;
 	}
     
+	public void setCreditcardInfo(String creditcardName, String creditcardNum, String creditcardSecurity,
+			String expiryDate, MemberVO member) {
+		this.creditcardName = creditcardName;
+		this.creditcardNum = creditcardNum;
+		this.creditcardSecurity = creditcardSecurity;
+		this.expiryDate = expiryDate;
+		this.member = member;
+	}
+
 }

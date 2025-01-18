@@ -2,6 +2,7 @@
 package com.membercoupon.model;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,8 @@ public interface MemberCouponRepository extends JpaRepository <MemberCouponVO, I
 	List<MemberCouponVO> findByMemberMemberIdAndCouponStatus(Integer memberId, Byte status);
 	
 	List<MemberCouponVO> findByMemberMemberId(Integer memberId);
-
+	
+	MemberCouponVO getById(Integer memberCouponId);
 
 	// 查詢會員優惠券
     List<MemberCouponVO> findByMember(MemberVO member);

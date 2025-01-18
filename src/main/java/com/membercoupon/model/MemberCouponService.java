@@ -9,13 +9,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.coupon.model.CouponRepository;
 import com.member.model.MemberRepository;
+import com.member.model.MemberVO;
 
 @Service
-@Transactional
 public class MemberCouponService {
     
-//    @Autowired
-//    private MemberCouponRepository memberCouponRepository;
+    @Autowired
+    private MemberCouponRepository memberCouponRepository;
+    
+    public List<MemberCouponVO> findByMemberAndCouponStatus(MemberVO member, Byte status) {
+    	return memberCouponRepository.findByMemberAndCouponStatus(member ,status);
+    }
+    
+    public MemberCouponVO getById(Integer coupon) {
+    	return memberCouponRepository.getById(coupon);
+    }
+
+    public MemberCouponVO save(MemberCouponVO coupon) {
+    	return memberCouponRepository.save(coupon);
+    }
+
+    
+}
 //    
 //    @Autowired
 //    private MemberRepository memberRepository;
@@ -69,4 +84,4 @@ public class MemberCouponService {
 //    public List<MemberCouponVO> getMemberUnusedCoupons(Long memberId) {
 //        return memberCouponRepository.findByMemberIdAndUsed(memberId, false);
 //    }
-}
+//}

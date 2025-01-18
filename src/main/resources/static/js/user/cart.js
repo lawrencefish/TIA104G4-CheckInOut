@@ -12,21 +12,46 @@ $(document).ready(function () {
         $(this).addClass("border-primary bg-light shadow-lg");
         // 確保 radio 也被選中
         $(this).find("input[type='radio']").prop("checked", true);
-        let roomNum = $(this).find('.hotel-rooms').find('.room-item').length;
-        let price = 0;
-        $(this).find('.room-item').each(function (index, ele) {
-            price += parseInt($(this).find('.hotel-price').text());
-        })
-        $('#total-price').text(price);
-        $('#total-rooms').text(roomNum);
+        calcPrice();
     });
 
     $('#checkout-button').on('click', (e) => {
         e.preventDefault();
-        checkLogin();
+        if ($('input[name="selectedHotel"]:checked').length != 0) {
+            checkOutCart();
+        } else {
+            showModal("請選取要結帳的旅館");
+        }
+    })
+
+    $('#clearBtn').on('click', (e) => {
+        e.preventDefault();
+        $("input[name='selectedHotel']").prop("checked", false);
+        $(".hotel-selection").removeClass("border-primary bg-light shadow-lg");
+        calcPrice();
     })
 
 });
+
+function checkOutCart() {
+    checkLogin().then(isLoggedIn => {
+        if (isLoggedIn) {
+            let hoteldSelected = $('input[name="selectedHotel"]:checked').val();
+            if (hoteldSelected) {
+                $.post("/order/api/cart/addOrder",
+                    { hotelId: hoteldSelected },
+                    function (response) {
+                        if (response.message == "ok") {
+                            window.location.href = '/user/checkout';
+                        } else {
+                            showModal("發生了錯誤，請稍後再嘗試");
+                        }
+                    }
+                );
+            }
+        }
+    });
+}
 
 function loadCart() {
     return $.ajax({
@@ -51,20 +76,36 @@ function deletCart(id) {
         console.log(response);
         showModal(response.message);
         loadCart();
+        setTimeout(calcPrice, 100);
     });
 }
 
 function checkLogin() {
-    $.post("/user/api/loginCheck", function (response) {
-        if (response.message == "not login") {
-            showModal("登入後才能進行結帳！");
-            showModal();
-        } else {
-            window.location.href = '/user/checkout';
-        }
+    return new Promise(resolve => {
+        $.post("/user/api/loginCheck", function (response) {
+            if (response.message == "not login") {
+                showModal("登入後才能進行結帳！");
+                resolve(false); // 未登入，返回 false
+            } else {
+                resolve(true); // 已登入，返回 true
+            }
+        });
     });
 }
 
+function calcPrice() {
+    let hotel = $('input[name="selectedHotel"]:checked').closest('div');
+    let rooms = $('input[name="selectedHotel"]:checked').closest('div').find('.hotel-rooms');
+    let roomNum = rooms.find('.room-item').length;
+    let price = 0;
+    console.log(rooms);
+    rooms.find('.room-item').each(function (index, ele) {
+        price += parseInt($(this).find('.hotel-price').text());
+    })
+    $('#total-price').text(price);
+    $('#total-rooms').text(roomNum);
+    $('#select-hotel').text(hotel.find('.hotel-name').text())
+}
 
 
 function updateCart(dataArray) {
@@ -117,37 +158,47 @@ function updateCart(dataArray) {
                 let checkIn = new Date(checkInDate);
                 let checkOut = new Date(checkOutDate);
                 let timeDiff = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
-                let breakfast = cartDetail.breakfast ;
+                let breakfast = cartDetail.breakfast;
                 let totalPrice = cartDetail.totalPrice * roomNum;
-                let totalBreakfastPrice = cartDetail.totalbreakPrice ? cartDetail.totalbreakPrice*guestNum : 0;
+                let totalBreakfastPrice = cartDetail.totalbreakPrice ? cartDetail.totalbreakPrice * guestNum : 0;
                 let html =`
 <div class="card room-item border rounded p-3 mb-2" data-room-id="${roomId}">
     <div class="card-body">
         <h4 class="card-title fw-bold text-truncate">${roomName}</h4>
-        
+
         <!-- 使用 Bootstrap row，確保不超過 12 格 -->
         <div class="row align-items-center">
-            
+
             <!-- 圖片區塊：桌機 3 格，手機滿版 -->
             <div class="col-md-3 col-12 text-center mb-2 mb-md-0">
                 <img src="/booking/api/image/room/${roomId}/0" 
-                     class="rounded img-fluid" 
+                     class="rounded img-fluid room-image" 
                      style="max-width: 100%; height: auto; object-fit: cover;">
             </div>
 
             <!-- 房間資訊區塊：桌機 6 格，手機滿版 -->
             <div class="col-md-6 col-12">
-                <p class="mb-1"><strong>入住日期：</strong> ${checkInDate} - ${checkOutDate}</p>
-                <p class="mb-1"><strong>入住人數：</strong> ${guestNum} 人</p>
-                <p class="mb-1"><strong>住宿天數：</strong> ${timeDiff} 晚</p>
-                <p class="mb-1"><strong>房間數：</strong> ${roomNum} 間</p>
-                <p class="mb-1 fw-bold"><strong>價格：</strong> NTD$ <span class="hotel-price">${totalPrice}</span></p>
-                <p class="mb-1 text-muted ${breakfast == 0 ? 'd-none' : ''}"> <strong>已含早餐價格：</strong> NTD$ <span class="breakfast-price">${totalBreakfastPrice}</span> </p>
+                <p class="mb-1 room-info"><strong>入住日期：</strong> ${checkInDate} - ${checkOutDate}</p>
+                <p class="mb-1 room-info"><strong>入住人數：</strong> ${guestNum} 人</p>
+                <p class="mb-1 room-info"><strong>住宿天數：</strong> ${timeDiff} 晚</p>
+                <p class="mb-1 room-info"><strong>房間數：</strong> ${roomNum} 間</p>
+
+                <!-- 總價 -->
+                <p class="fw-bold total-price"><strong>總價：</strong> NTD$ <span class="hotel-price">${totalPrice}</span></p>
+
+                <!-- 早餐資訊（分兩行顯示） -->
+                <p class="mb-1 text-muted small ${breakfast == 0 ? 'd-none' : ''}">
+                    <strong>已含早餐價格：</strong>
+                </p>
+                <p class="mb-1 text-muted small ${breakfast == 0 ? 'd-none' : ''}">
+                    每人每晚 NTD$ <span class="breakfast-price">${Math.floor(totalBreakfastPrice / guestNum / timeDiff)}</span>
+                    ・ 總價 NTD$ <span class="breakfast-total-price">${totalBreakfastPrice}</span>
+                </p>
             </div>
 
             <!-- 按鈕區塊：桌機 3 格，手機滿版 -->
             <div class="col-md-3 col-12 text-end d-flex flex-column align-items-md-end align-items-center">
-                <button class="btn btn-danger btn-sm remove-room w-100 mt-2" data-delete-btn="${roomId}">移除</button>
+                <button class="btn btn-danger btn-sm remove-room w-50 mt-2" data-delete-btn="${roomId}">移除</button>
             </div>
 
         </div>
@@ -171,7 +222,7 @@ function updateCart(dataArray) {
                             <!-- 按鈕區塊 -->
                             <a href="/user/" class="btn btn-secondary px-4 py-2 mt-3">返回首頁</a>
                         </div>
-                </div >
+                </div>
                     `
             $('#cart-container').append(html);
         }

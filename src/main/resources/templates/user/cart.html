@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>購物車 - Check in Out</title>
     <link rel="stylesheet" href="/vendors/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet" th:href="@{/css/user/templete.css}">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/user/template.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
 </head>
 
@@ -19,29 +19,34 @@
     </header>
 
     <!-- 主要內容 -->
-    <main class="container mt-3">
+    <main class="container">
         <div class="row">
             <!-- 購物車區域 -->
             <div class="col-md-8">
-                <h3 class="mb-3">購物車</h3>
-    
-                <!-- 購物車列表 -->
-                <div id="cart-container">
+                <!-- 使用 d-flex 讓標題與按鈕在同一行，justify-content-between 讓按鈕靠右 -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">購物車區域</h3>
+                    <button class="btn btn-outline-danger" id="clearBtn">清除所選擇的旅館</button>
                 </div>
+            
+                <!-- 購物車列表 -->
+                <div id="cart-container"></div>
             </div>
-    
+
             <!-- 總價計算區 (置於右側) -->
             <div class="col-md-4">
                 <div class="border rounded p-3 bg-light w-100">
                     <h4 class="mb-3">總計</h4>
-                    <p><strong>房間總數：</strong> <span id="total-rooms">0</span> 間</p>
+                    <p><strong>您要結帳的是：</strong></p>
+                    <p><span class="fs-4" id="select-hotel"></p>
+                    <p><strong>房型總數：</strong> <span id="total-rooms">0</span> 種</p>
                     <p><strong>總金額：</strong> NTD$ <span id="total-price">0</span></p>
                     <button class="btn btn-success w-100" id="checkout-button">確認預訂</button>
                 </div>
             </div>
         </div>
     </main>
-                        
+
 
     <!-- 底欄 -->
     <footer>

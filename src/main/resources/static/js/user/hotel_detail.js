@@ -68,9 +68,8 @@ function addCart() {
             console.error('AJAX 請求發生錯誤:', textStatus, errorThrown);
             console.log('響應文本:', jqXHR.responseText);
             console.log(jqXHR.responseJSON.overlapDate);
-            if (jqXHR.responseJSON.overlapDate) {
-                showModal("加入購物車失敗，已存在相同房型且日期重複" +
-                    "<br>請刪除該房型再重新加入");
+            if (jqXHR.responseJSON.dateMismatch) {
+                showModal(jqXHR.responseJSON.message);
             }
         }
     });
@@ -341,7 +340,7 @@ function updateRoom(Array) {
                                     <small>
                                         <strong>
                                             已含早餐價格<br>
-                                            每人：NTD$ ${Math.floor(totalBreakfastPrice / guestNum / stayNight)}<br>
+                                            每人每晚：NTD$ ${Math.floor(totalBreakfastPrice / guestNum / stayNight)}<br>
                                             總價：NTD$ ${totalBreakfastPrice}
                                         </strong>
                                     </small>

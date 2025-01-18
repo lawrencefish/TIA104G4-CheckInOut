@@ -25,7 +25,7 @@ public class MemberCouponVO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@NotBlank(message = "不可為空")
-	@Column(name= "membercoupon_id")
+	@Column(name= "member_coupon_id")
 	private int memberCouponId;
 	
 	@ManyToOne
