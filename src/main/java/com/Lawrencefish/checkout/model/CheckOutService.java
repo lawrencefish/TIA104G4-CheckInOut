@@ -1,6 +1,7 @@
 package com.Lawrencefish.checkout.model;
 
 import com.Lawrencefish.order.model.OrderRepositoryByTom;
+import com.Lawrencefish.websocket.NotificationWebSocketHandler;
 import com.order.model.OrderVO;
 import com.room.model.RoomRepository;
 import com.room.model.RoomVO;
@@ -65,6 +66,13 @@ public class CheckOutService {
         // 2. 更新訂單狀態為 "已退房" (2)
         order.setStatus((byte) 2);
         orderRepository.save(order);
+        // 推播訂單狀態更新
+        String orderMessage = String.format(
+                "{\"type\": \"checkout\", \"orderId\": %d, \"status\": %d}",
+                order.getOrderId(),
+                order.getStatus()
+        );
+        NotificationWebSocketHandler.broadcast(orderMessage);
 
         // 3. 處理每個房間的狀態更新和清空住客信息
         for (Integer roomId : checkOutRequest.getRoomIds()) {
@@ -84,6 +92,14 @@ public class CheckOutService {
             room.setOrderDetailId(null);
 
             roomRepository.save(room);
+
+            // 推播房間狀態更新
+            String roomMessage = String.format(
+                    "{\"type\": \"roomStatus\", \"roomId\": %d, \"status\": %d}",
+                    room.getRoomId(),
+                    room.getStatus()
+            );
+            NotificationWebSocketHandler.broadcast(roomMessage);
         }
     }
 }

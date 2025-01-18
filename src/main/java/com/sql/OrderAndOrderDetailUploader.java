@@ -148,7 +148,7 @@ public class OrderAndOrderDetailUploader {
 				status = possibleStatus[rand.nextInt(possibleStatus.length)];
 
 			} else if (checkIn.isAfter(LocalDate.of(2025, 1, 10))) {
-				int[] possibleStatus = { 0, 1 };
+				int[] possibleStatus = { 0 };
 				status = possibleStatus[rand.nextInt(possibleStatus.length)];
 			} else {
 				status = 0;
@@ -248,7 +248,7 @@ public class OrderAndOrderDetailUploader {
 				int guestNum = rand.nextInt(4) + 1;
 
 				// room_num => 0或1
-				int roomNum = rand.nextInt(2);
+				int roomNum = 1;
 
 				// breakfast => 0或1
 				int breakfast = rand.nextInt(2);

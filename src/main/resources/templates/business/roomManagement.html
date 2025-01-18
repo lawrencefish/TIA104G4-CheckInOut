@@ -998,6 +998,7 @@
                         alert(`建立庫存失敗：${data.error}`);
                     } else {
                         alert(`庫存建立成功：${data.message || '成功建立該日期的庫存！'}`);
+                        location.reload();
                     }
                 })
                 .catch((error) => {

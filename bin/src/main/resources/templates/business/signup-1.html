@@ -398,10 +398,14 @@
     <!-- Main -->
     <main>
         <h1>設定基本資料</h1>
-        <form th:action="@{/signUp/signUp-1}" th:object="${hotelVO}" method="post" enctype="multipart/form-data">
-
+        <form th:action="@{/signUp/signUp-1}" th:object="${hotelVO}" method="post" enctype="multipart/form-data" autocomplete="off">
             <section>
                 <h2>基本資料</h2>
+
+                <!-- 全局錯誤訊息 -->
+                <span th:if="${#httpServletRequest.getAttribute('duplicateError') != null}"
+                      th:text="${#httpServletRequest.getAttribute('duplicateError')}"
+                      class="error-message"></span>
                 <!-- 上方基本資料 -->
                 <div class="basic-info">
                     <!-- 統一編號 -->
@@ -421,9 +425,8 @@
                     <!-- 密碼 -->
                     <div class="form-group">
                         <label for="password">密碼</label>
-                        <input type="password" id="password" th:field="*{password}" placeholder="請輸入密碼">
-                        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-                              class="error-message"></span>
+                        <input type="password" id="password" th:field="*{password}" placeholder="請輸入密碼" autocomplete="new-password">
+                        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></span>
                     </div>
 
                     <!-- 再次輸入密碼 -->
@@ -450,30 +453,37 @@
                             <option value="">請選擇地區</option>
                             <!-- 動態選項 -->
                         </select>
-                        <span th:if="${#fields.hasErrors('district')}" th:errors="*{district}"
-                              class="error-message"></span>
+                        <span th:if="${#fields.hasErrors('district')}" th:errors="*{district}" class="error-message"></span>
                     </div>
 
                     <!-- 地址 -->
                     <div class="form-group full-width">
                         <label for="address">地址</label>
                         <input type="text" id="address" th:field="*{address}" placeholder="請輸入地址">
-                        <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}"
-                              class="error-message"></span>
+                        <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="error-message"></span>
+                    </div>
+
+                    <!-- 經緯度欄位 -->
+                    <div class="form-group">
+                        <label for="latitude">緯度</label>
+                        <input id="latitude" th:field="*{latitude}" placeholder="緯度" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude">經度</label>
+                        <input id="longitude" th:field="*{longitude}" placeholder="經度" readonly>
                     </div>
 
                     <!-- 連絡電話 -->
                     <div class="form-group">
                         <label for="phoneNumber">連絡電話</label>
                         <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="請輸入連絡電話">
-                        <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"
-                              class="error-message"></span>
+                        <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error-message"></span>
                     </div>
 
                     <!-- 電子信箱 -->
                     <div class="form-group">
                         <label for="email">電子信箱</label>
-                        <input type="email" id="email" th:field="*{email}" placeholder="請輸入電子信箱">
+                        <input type="email" id="email" th:field="*{email}" placeholder="請輸入電子信箱" autocomplete="off">
                         <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
                     </div>
 
@@ -484,14 +494,12 @@
                             <input type="text" id="verificationCode" name="verificationCode" placeholder="請輸入驗證碼">
                             <button type="button" id="send-code">寄送驗證碼</button>
                         </div>
-                        <span th:if="${verificationCodeError != null}" th:text="${verificationCodeError}"
-                              class="error-message"></span>
+                        <span id="verificationStatus" class="status-message"></span> <!-- 用於顯示驗證狀態 -->
                     </div>
                 </div>
             </section>
 
             <section>
-
                 <!-- 環境介紹 -->
                 <div>
                     <h2>旅館介紹</h2>
@@ -512,45 +520,46 @@
 
                     <!-- 上傳照片 -->
                     <div class="upload-group">
+                        <!-- 身份證正面 -->
                         <div>
                             <label for="idFront">公司負責人身份證正面</label>
-                            <div class="upload-preview" onclick="document.getElementById('idFront').click()">
+                            <div class="upload-preview" id="idFrontPreview" th:data-src="${idFront}">
                                 <span>選擇檔案後會顯示預覽</span>
                             </div>
                             <input type="file" id="idFront" name="idFront" accept=".jpg, .jpeg, .png"
-                                   onchange="previewImage(this, this.previousElementSibling)">
-                            <span th:if="${idFrontError != null}" th:text="${idFrontError}"
-                                  class="error-message"></span>
+                                   onchange="previewImage(this, document.getElementById('idFrontPreview'))">
+                            <span th:if="${idFrontError != null}" th:text="${idFrontError}" class="error-message"></span>
                         </div>
 
+                        <!-- 身份證反面 -->
                         <div>
                             <label for="idBack">公司負責人身份證反面</label>
-                            <div class="upload-preview" onclick="document.getElementById('idBack').click()">
+                            <div class="upload-preview" id="idBackPreview" th:data-src="${idBack}">
                                 <span>選擇檔案後會顯示預覽</span>
                             </div>
                             <input type="file" id="idBack" name="idBack" accept=".jpg, .jpeg, .png"
-                                   onchange="previewImage(this, this.previousElementSibling)">
+                                   onchange="previewImage(this, document.getElementById('idBackPreview'))">
                             <span th:if="${idBackError != null}" th:text="${idBackError}" class="error-message"></span>
                         </div>
 
+                        <!-- 登記證 -->
                         <div>
                             <label for="license">旅館業登記證 / 民宿登記證</label>
-                            <div class="upload-preview" onclick="document.getElementById('license').click()">
+                            <div class="upload-preview" id="licensePreview" th:data-src="${license}">
                                 <span>選擇檔案後會顯示預覽</span>
                             </div>
                             <input type="file" id="license" name="license" accept=".jpg, .jpeg, .png"
-                                   onchange="previewImage(this, this.previousElementSibling)">
-                            <span th:if="${licenseError != null}" th:text="${licenseError}"
-                                  class="error-message"></span>
+                                   onchange="previewImage(this, document.getElementById('licensePreview'))">
+                            <span th:if="${licenseError != null}" th:text="${licenseError}" class="error-message"></span>
                         </div>
                     </div>
                 </div>
-
 
                 <!-- 提交按鈕 -->
                 <button class="submit-btn" type="submit">下一步</button>
             </section>
         </form>
+
     </main>
 </div>
 
@@ -560,29 +569,39 @@
 </footer>
 
 <script>
-    // 預覽上傳的圖片
-    function previewImage(input) {
+    const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
+    function previewImage(input, previewContainer) {
         const file = input.files[0];
-        const previewContainer = input.previousElementSibling; // 找到緊鄰的預覽區域
 
         if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                // 創建圖片元素
                 const img = document.createElement("img");
                 img.src = e.target.result;
                 img.alt = "預覽圖片";
+                img.style.maxWidth = "100%";
+                img.style.maxHeight = "200px";
+                img.style.borderRadius = "5px";
 
-                // 清空並加入新圖片
+                // 清空並插入新圖片
                 previewContainer.innerHTML = "";
                 previewContainer.appendChild(img);
             };
             reader.readAsDataURL(file);
         } else {
-            // 清空預覽容器並恢復默認文字
+            // 若未選擇檔案，顯示提示文字
             previewContainer.innerHTML = "<span>選擇檔案後會顯示預覽</span>";
         }
     }
+
+
+    // document.querySelector("form").addEventListener("submit", function (event) {
+    //     const idFrontFile = document.getElementById("idFront").files[0];
+    //     if (!idFrontFile) {
+    //         alert("請上傳公司負責人身份證正面！");
+    //         event.preventDefault(); // 阻止表單提交
+    //     }
+    // });
 
     //  縣市api
     document.addEventListener("DOMContentLoaded", function () {
@@ -607,7 +626,7 @@
             const selectedCity = this.value;
 
             // 清空並禁用地區選項
-//             districtSelect.innerHTML = '<option value="">請先選擇縣市</option>';
+            districtSelect.innerHTML = '<option value="">選擇地區</option>';
             districtSelect.disabled = !selectedCity;
 
             if (selectedCity) {
@@ -626,15 +645,126 @@
         });
     });
 
-    document.getElementById("confirmPassword").addEventListener("change", function () {
+    document.querySelector("form").addEventListener("submit", function (event) {
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
-        const confirmPasswordError = document.getElementById("confirmPasswordError");
-
         if (password !== confirmPassword) {
-            confirmPasswordError.textContent = "密碼不一致";
-        } else {
-            confirmPasswordError.textContent = ""; // 清空錯誤訊息
+            alert("密碼不一致，請重新確認！");
+            event.preventDefault(); // 阻止表單提交
+        }
+    });
+
+    // 綁定寄送驗證碼按鈕的點擊事件
+    document.getElementById("send-code").addEventListener("click", function () {
+        const email = document.getElementById("email").value; // 假設有 email 輸入框
+
+        if (!email) {
+            alert("請先輸入電子郵件！");
+            return;
+        }
+
+        // 發送驗證碼的請求
+        fetch(`${contextPath}/api/verification/send`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({ email }),
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data); // 提示發送結果
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("發送驗證碼失敗，請稍後再試！");
+            });
+    });
+
+    // 綁定驗證碼輸入框的 change 事件
+    document.getElementById("verificationCode").addEventListener("change", function () {
+        const email = document.getElementById("email").value; // 假設有 email 輸入框
+        const code = this.value; // 獲取輸入的驗證碼
+        const statusElement = document.getElementById("verificationStatus");
+
+        if (!email) {
+            statusElement.innerText = "請先輸入電子郵件！";
+            statusElement.style.color = "red";
+            return;
+        }
+
+        if (!code) {
+            statusElement.innerText = "請輸入驗證碼！";
+            statusElement.style.color = "red";
+            return;
+        }
+
+        // 發送驗證碼驗證請求
+        fetch(`${contextPath}/api/verification/check?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`)
+            .then(response => response.json())
+            .then(isValid => {
+                if (isValid) {
+                    statusElement.innerText = "驗證碼正確";
+                    statusElement.style.color = "green";
+                } else {
+                    statusElement.innerText = "驗證碼錯誤";
+                    statusElement.style.color = "red";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                statusElement.innerText = "驗證失敗，請稍後再試！";
+                statusElement.style.color = "red";
+            });
+    });
+
+    // 綁定三個輸入框的事件
+    document.getElementById("city").addEventListener("change", checkAndFetchCoordinates);
+    document.getElementById("district").addEventListener("change", checkAndFetchCoordinates);
+    document.getElementById("address").addEventListener("blur", checkAndFetchCoordinates);
+
+    function checkAndFetchCoordinates() {
+        const city = document.getElementById("city").value;
+        const district = document.getElementById("district").value;
+        const address = document.getElementById("address").value;
+
+        if (!city || !district || !address) {
+            return; // 如果任何一個欄位為空，則不執行請求
+        }
+
+        const fullAddress = `${city}${district}${address}`;
+
+        // 發送 API 請求
+        fetch(`${contextPath}/api/address/geocode?address=${encodeURIComponent(fullAddress)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("API 請求失敗");
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.latitude && data.longitude) {
+                    // alert(`成功取得經緯度：緯度 ${data.latitude}, 經度 ${data.longitude}`);
+                    // 更新隱藏欄位
+                    document.getElementById("latitude").value = data.latitude;
+                    document.getElementById("longitude").value = data.longitude;
+                } else {
+                    // alert("無法取得經緯度，請確認地址是否正確！");
+                }
+            })
+            .catch(error => {
+                console.error("錯誤:", error);
+                // alert("取得經緯度時發生錯誤，請稍後再試！");
+            });
+    }
+
+    // 綁定表單提交事件
+    document.querySelector("form").addEventListener("submit", function (event) {
+        const verificationStatus = document.getElementById("verificationStatus").innerText;
+
+        if (verificationStatus !== "驗證碼正確") {
+            alert("驗證碼未輸入或不正確，請重新輸入！");
+            event.preventDefault(); // 阻止表單提交
         }
     });
 </script>

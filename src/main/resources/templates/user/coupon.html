@@ -1,333 +1,141 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="zh-tw">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>優惠券</title>
-<link rel="stylesheet"
-	th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
-<link rel="stylesheet" th:href="@{/vendors/bootstrap/css/headers.css}">
-<link rel="stylesheet" th:href="@{/css/user/template.css}">
-<style>
-.big-title {
-	height: 100px;
-	background-color: #eeeae7;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的優惠券 - Check in Out</title>
+    <link rel="stylesheet" href="/vendors/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/user/template.css">
+    <style>
+        .big-title {
+            height: 100px;
+            background-color: #eeeae7;
+        }
+        
+        .coupon-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
 
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-	font-family: Arial, sans-serif;
-}
+        .coupon {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            padding: 1rem;
+        }
 
-h1 {
-	color: #333;
-	margin-bottom: 20px;
-	text-align: center;
-}
-
-.tabs {
-	display: flex;
-	margin-bottom: 20px;
-	border-bottom: 2px solid #eee;
-}
-
-.tab {
-	padding: 10px 20px;
-	cursor: pointer;
-	background: none;
-	border: none;
-	font-size: 16px;
-	color: #666;
-	position: relative;
-}
-
-.tab.active {
-	color: #2196F3;
-}
-
-.tab.active::after {
-	content: '';
-	position: absolute;
-	bottom: -2px;
-	left: 0;
-	width: 100%;
-	height: 2px;
-	background-color: #2196F3;
-}
-
-.tab-content {
-	display: none;
-}
-
-.tab-content.active {
-	display: block;
-}
-
-.coupon-card {
-	background: white;
-	border: 1px solid #eee;
-	border-radius: 8px;
-	padding: 15px;
-	margin-bottom: 15px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	transition: box-shadow 0.3s ease;
-}
-
-.coupon-card:hover {
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.coupon-info {
-	flex-grow: 1;
-}
-
-.coupon-title {
-	color: #2196F3;
-	font-weight: bold;
-	font-size: 1.2em;
-	margin-bottom: 5px;
-}
-
-.coupon-description {
-	color: #666;
-	font-size: 14px;
-	margin-top: 5px;
-}
-
-.use-btn {
-	padding: 8px 16px;
-	background-color: #2196F3;
-	color: white;
-	border: none;
-	border-radius: 4px;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
-	min-width: 100px;
-}
-
-.use-btn:hover {
-	background-color: #1976D2;
-}
-
-.expired-label {
-	padding: 8px 16px;
-	background-color: #666;
-	color: white;
-	border: none;
-	border-radius: 4px;
-	min-width: 100px;
-	text-align: center;
-}
-
-.used-label {
-	padding: 8px 16px;
-	background-color: #4CAF50;
-	color: white;
-	border: none;
-	border-radius: 4px;
-	min-width: 100px;
-	text-align: center;
-}
-
-.success-alert {
-	display: none;
-	background-color: #4CAF50;
-	color: white;
-	padding: 15px;
-	border-radius: 4px;
-	margin-bottom: 20px;
-	text-align: center;
-}
-
-/* Modal styles */
-.modal {
-	display: none;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-	position: relative;
-	background-color: white;
-	margin: 15% auto;
-	padding: 20px;
-	width: 90%;
-	max-width: 500px;
-	border-radius: 8px;
-}
-
-.close {
-	position: absolute;
-	right: 20px;
-	top: 10px;
-	font-size: 24px;
-	cursor: pointer;
-	color: #666;
-}
-
-.modal-buttons {
-	text-align: right;
-	margin-top: 20px;
-}
-
-.modal-buttons button {
-	margin-left: 10px;
-}
-</style>
+        .coupon-status {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+    </style>
 </head>
+
 <body>
-	<!-- 標題列 -->
-	<header class="p-3 mb-0 border-bottom shadow-sm">
-	</header>
-	<main>
-		<div class="container shadow-sm">
-			<div class="row big-title mb-3">
-				<h1 class="text-center fw-bold display-5 col align-self-center">優惠券</h1>
-			</div>
+    <header class="p-1 border-bottom shadow-sm">
+        <!-- 這裡可以加入您的網站header內容 -->
+    </header>
 
-			<div id="successAlert" class="success-alert">優惠券已套用</div>
-
-			<div class="tabs">
-				<button class="tab active" onclick="showTab('available')">可使用</button>
-				<!-- <button class="tab" onclick="showTab('used')">已使用</button> -->
-				<button class="tab" onclick="showTab('expired')">已失效</button>
-			</div>
-
-			<!-- 可使用優惠券 -->
-			<div id="available" class="tab-content active">
-				<div class="coupon-card">
-					<div class="coupon-info">
-						<div class="coupon-title">Check in out三個城市</div>
-						<div class="coupon-description">訂房滿 NT$ 2000 折抵 NT$ 150</div>
-						<div class="coupon-description">有效期限: 2024-12-31</div>
-					</div>
-					<!-- <button class="use-btn" onclick="showUseConfirm('summer-discount')">使用優惠券</button> -->
-				</div>
-				<div class="coupon-card">
-					<div class="coupon-info">
-						<div class="coupon-title">新會員優惠</div>
-						<div class="coupon-description">新會員首次訂房折抵 NT$ 100</div>
-						<div class="coupon-description">有效期限: 2024-12-31</div>
-					</div>
-					<!-- <button class="use-btn" onclick="showUseConfirm('new-member')">使用優惠券</button> -->
-				</div>
-			</div>
-
-			<!-- 已使用優惠券
-        <div id="used" class="tab-content">
-            <div class="coupon-card">
-                <div class="coupon-info">
-                    <div class="coupon-title">春季優惠</div>
-                    <div class="coupon-description">訂房滿 NT$ 5,000 折抵 NT$ 500</div>
-                    <div class="coupon-description">使用日期: 2024-03-15</div>
-                </div>
-                <span class="used-label">已使用</span>
+    <main>
+        <div class="container shadow-sm">
+            <div class="row big-title mb-3">
+                <h1 class="text-center fw-bold display-5 col align-self-center">我的優惠券</h1>
             </div>
-        </div> -->
 
-			<!-- 已過期優惠券 -->
-			<div id="expired" class="tab-content">
-				<div class="coupon-card">
-					<div class="coupon-info">
-						<div class="coupon-title">冬季優惠</div>
-						<div class="coupon-description">訂房滿 NT$ 2,000 折抵 NT$ 200</div>
-						<div class="coupon-description">過期日期: 2023-12-31</div>
-					</div>
-					<span class="expired-label">已失效</span>
-				</div>
-			</div>
-
-			<!-- 使用確認彈窗 -->
-			<!-- <div id="useConfirmModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('useConfirmModal')">&times;</span>
-                <h2>確認使用優惠券</h2>
-                <p style="margin: 20px 0;">確定要使用此優惠券嗎？</p>
-                <div class="modal-buttons">
-                    <button class="use-btn" onclick="confirmUse()">確認使用</button>
-                    <button onclick="closeModal('useConfirmModal')" style="padding: 8px 16px;">返回</button>
-                </div>
+            <div class="coupon-container" id="couponList">
+                <!-- 優惠券會在這裡動態生成 -->
             </div>
         </div>
-    </div> -->
-		</div>
-	</main>
-	<footer>
-		<div class="row border-top">
-			<div class="container">
-				<ul class="nav justify-content-center">
-					<li class="nav-item"><a th:href="@{/user/}" class="nav-link px-2 text-body-secondary">首頁</a></li>
-					<li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
-					<li class="nav-item"><a th:href="@{/user/order}"
-							class="nav-link px-2 text-body-secondary">訂單管理</a></li>
-					<li class="nav-item"><a th:href="@{/user/faq}" class="nav-link px-2 text-body-secondary">常見問題</a>
-					</li>
-					<li class="nav-item"><a th:href="@{/user/contactUs}"
-							class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
-					<li class="nav-item"><a th:href="@{/login/}" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
-				</ul>
-				<div class="d-flex justify-content-center align-items-start mb-0">
-					<img th:src="@{/imgs/user/checKInOut_logo_light.png}" alt="checkinout" width="128">
-				</div>
-				<!-- <p class="text-center text-body-secondary">&copy; 2024 Check IN OUT</p> -->
-			</div>
-		</div>
-	</footer>
-	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
-	<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
-    <script src="/js/user/loginCheck.js" defer></script>
+    </main>
 
-	<script>
-        let currentCouponId = '';
+    <footer>
+        <div class="container">
+            <footer class="py-3 my-4">
+                <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">首頁</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">找房</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">購物車</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">訂單管理</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">常見問題</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">聯繫我們</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">夥伴專區</a></li>
+                </ul>
+                <p class="text-center text-body-secondary">2024 Check IN OUT</p>
+            </footer>
+        </div>
+    </footer>
 
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
-        }
+    <script src="/vendors/jQuery/jquery-3.7.1.min.js"></script>
+    <script src="/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            const memberId = 1; // 這裡應該是登入會員的ID
 
-        function showUseConfirm(couponId) {
-            currentCouponId = couponId;
-            document.getElementById('useConfirmModal').style.display = 'block';
-        }
+            function loadCoupons() {
+                $.ajax({
+                    url: `/api/coupons/test/member-coupons/${memberId}`,
+                    method: 'GET',
+                    success: function(response) {
+                        const couponList = $('#couponList');
+                        couponList.empty();
+                        if (response.length > 0) {
+                            response.forEach(function(coupon) {
+                                const couponElement = $(`
+                                    <div class="coupon">
+                                        <h3>${coupon.coupon.couponName}</h3>
+                                        <p>折扣金額: ${coupon.coupon.discountAmount} 元</p>
+                                        <p>最低消費: ${coupon.coupon.minSpend} 元</p>
+                                        <p>有效期至: ${new Date(coupon.coupon.expiryDate).toLocaleDateString()}</p>
+                                        <p class="coupon-status">狀態: ${coupon.couponStatus === 1 ? '<span class="text-success">可使用</span>' : '<span class="text-danger">已失效</span>'}</p>
+                                        ${coupon.couponStatus === 1 ? '<button class="btn btn-dark use-coupon">使用優惠券</button>' : ''}
+                                    </div>
+                                `);
+                                couponList.append(couponElement);
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        function confirmUse() {
-            closeModal('useConfirmModal');
-            
-            const successAlert = document.getElementById('successAlert');
-            successAlert.style.display = 'block';
-            
-            setTimeout(() => {
-                successAlert.style.display = 'none';
-            }, 3000);
-        }
-
-        // 點擊彈窗外部時關閉彈窗
-        window.onclick = function(event) {
-            if (event.target.className === 'modal') {
-                event.target.style.display = 'none';
+                                if (coupon.couponStatus === 1) {
+                                    couponElement.find('.use-coupon').click(function() {
+                                        useCoupon(coupon.memberCouponId);
+                                    });
+                                }
+                            });
+                        } else {
+                            couponList.html('<p class="text-center">您目前沒有可用的優惠券</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showAlert('danger', '獲取優惠券失敗: ' + xhr.responseText);
+                    }
+                });
             }
-        }
+
+            function useCoupon(memberCouponId) {
+                // 這裡應該發送請求到後端來標記優惠券為已使用
+                // 目前只是模擬這個過程
+                showAlert('success', `優惠券 ${memberCouponId} 已使用`);
+                loadCoupons(); // 重新加載優惠券列表
+            }
+
+            function showAlert(type, message) {
+                const alertHtml = `
+                    <div class="alert alert-${type} alert-dismissible fade show mb-4" role="alert">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                $('.coupon-container').prepend(alertHtml);
+                
+                setTimeout(() => {
+                    $('.alert').alert('close');
+                }, 5000);
+            }
+
+            loadCoupons(); // 初次加載優惠券
+        });
     </script>
+    <script src="/js/user/loginCheck.js" defer></script>
 </body>
 </html>
