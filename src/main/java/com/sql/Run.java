@@ -7,9 +7,9 @@ public class Run {
         // 開始計時
         long startTime = System.currentTimeMillis();
 
-//        HotelLicensePhotoWrite.run();
-//        RandomHotelPhotoUploader.run();
-//        RoomTypePhotoWrite.run();
+        HotelLicensePhotoWrite.run();
+        RandomHotelPhotoUploader.run();
+        RoomTypePhotoWrite.run();
 
         //  更新庫存數量
         UpdateRoomInventory.run();
