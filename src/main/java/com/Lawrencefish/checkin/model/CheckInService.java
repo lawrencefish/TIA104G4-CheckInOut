@@ -1,6 +1,7 @@
 package com.Lawrencefish.checkin.model;
 
 import com.Lawrencefish.order.model.OrderRepositoryByTom;
+import com.Lawrencefish.websocket.NotificationWebSocketHandler;
 import com.order.model.OrderVO;
 import com.room.model.RoomRepository;
 import com.room.model.RoomVO;
@@ -106,6 +107,14 @@ public class CheckInService {
                 updateOrderStatus(request.getOrderId(), (byte) 1);
                 // 將訂單 ID 記錄為已處理
                 processedOrders.add(request.getOrderId());
+
+                // 推播 Check-In 訂單狀態更新
+                String checkInMessage = String.format(
+                        "{\"type\": \"checkIn\", \"orderId\": %d, \"status\": %d}",
+                        request.getOrderId(),
+                        1
+                );
+                NotificationWebSocketHandler.broadcast(checkInMessage); // 推播給其他用戶
             }
             // 更新房間狀態為 "已占用"
             updateRoomStatus(request.getAssignedRoomId(), (byte) 1);
@@ -116,6 +125,14 @@ public class CheckInService {
                     request.getCustomerPhoneNumber(),
                     request.getOrderDetailId()
             );
+
+            // 推播房間狀態更新
+            String roomMessage = String.format(
+                    "{\"type\": \"roomStatus\", \"roomId\": %d, \"status\": %d}",
+                    request.getAssignedRoomId(),
+                    1
+            );
+            NotificationWebSocketHandler.broadcast(roomMessage); // 推播給其他用戶
         }
     }
 }

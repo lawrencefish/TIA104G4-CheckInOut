@@ -739,7 +739,7 @@
     <script>
         const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
-
+        let allOrders = []; // 保存所有訂單數據
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
@@ -822,7 +822,6 @@
                 }
             });
 
-            let allOrders = []; // 保存所有訂單數據
 
             // Fetch 今日訂單並初始化區塊顯示
             fetch(`/order/today/checkout?hotelId=${hotelId}`)
@@ -864,11 +863,12 @@
                 } else {
                     orders.forEach((order) => {
                         const row = document.createElement("tr");
+                        row.setAttribute("data-order-id", order.orderId); // 設置 data-order-id
                         row.innerHTML = `
                 <td>${order.orderId}</td>
                 <td>${order.memberId || "未提供"}</td>
                 <td>${formatMemberName(order.memberName) || "未提供"}</td>
-                <td style="color: ${getStatusColor(order.status)};">${getStatusText(order.status)}</td>
+                <td class="status-cell" style="color: ${getStatusColor(order.status)};">${getStatusText(order.status)}</td>
             `;
 
                         row.addEventListener("click", () => {
@@ -1138,6 +1138,201 @@
                 });
             }
         });
+        function showCheckedOutOrderDetails(order) {
+            // 填充基本資訊
+            document.getElementById("checked-out-order-id").textContent = order.orderId;
+            const formattedName = formatMemberName(order.memberName);
+            document.getElementById("checked-out-customer-name").textContent = formattedName;
+
+            // 清空並填充訂單明細容器
+            const roomTypeContainer = document.getElementById("checked-out-room-type");
+            roomTypeContainer.innerHTML = "載入中...";
+
+            // 調用 API 獲取訂單明細
+            fetch(`${contextPath}/checkIn/getCheckedOutDetails?orderId=${order.orderId}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch order details: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((details) => {
+                    // 清空訂單明細容器
+                    roomTypeContainer.innerHTML = "";
+
+                    // 遍歷並填充訂單明細
+                    details.orderDetails.forEach((detail) => {
+                        const detailDiv = document.createElement("div");
+                        detailDiv.classList.add("room-detail");
+                        detailDiv.innerHTML = `
+                    <p><strong>房型：</strong>${detail.roomTypeName}</p>
+                    <p><strong>入住人數：</strong>${detail.guestNum || "未提供"}</p>
+                    <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
+                `;
+                        roomTypeContainer.appendChild(detailDiv);
+                    });
+
+                    // 顯示訂單明細完成狀態
+                    document.getElementById("checked-out-status").textContent = "訂單已完成";
+                })
+                .catch((error) => {
+                    console.error("Error fetching checked-out details:", error);
+                    alert("無法載入已退房的訂單明細，請稍後重試！");
+                })
+                .finally(() => {
+                    // 顯示彈窗
+                    document.getElementById("checked-out-modal").classList.remove("hidden");
+                });
+        }
+        function showNotCheckedOutDetails(order) {
+            // 填充彈窗的基本信息
+            document.getElementById("not-checked-out-order-id").textContent = order.orderId;
+
+            const formattedName = formatMemberName(order.memberName);
+            document.getElementById("not-checked-out-customer-name").textContent = formattedName;
+
+            // 使用訂單編號獲取詳細資料
+            fetch(`${contextPath}/checkIn/getArrivedDetails?orderId=${order.orderId}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch checkout order details: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((details) => {
+                    // 填充客戶備註
+                    const customerNoteElement = document.getElementById("not-checked-out-customer-note");
+                    if (customerNoteElement) {
+                        customerNoteElement.textContent = details.memo || "無備註";
+                    }
+
+                    // 清空並填充房型明細
+                    const roomTypeContainer = document.getElementById("not-checked-out-room-type");
+                    roomTypeContainer.innerHTML = ""; // 清空內容
+
+                    // 遍歷訂單明細並顯示房型資訊
+                    details.orderDetails.forEach((detail) => {
+                        const detailDiv = document.createElement("div");
+                        detailDiv.classList.add("room-detail");
+                        detailDiv.innerHTML = `
+                                        <p data-room-id="${detail.roomId}"><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
+                                        <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
+                                        <p><strong>分配房號：</strong>${detail.assignedRoomNumber || "未分配"}</p>
+                                        <p><strong>住客姓名：</strong>${detail.customerName || "未提供"}</p>
+                                        <p><strong>住客電話：</strong>${detail.customerPhoneNumber || "未提供"}</p>
+                                    `;
+                        roomTypeContainer.appendChild(detailDiv);
+                    });
+
+
+                    // 顯示彈窗
+                    document.getElementById("not-checked-out-modal").classList.remove("hidden");
+                })
+                .catch((error) => {
+                    console.error("Error fetching checkout details:", error);
+                    alert("無法載入退房訂單詳情，請稍後重試！");
+                });
+        }
+        // 訂單狀態文字轉換函數
+        function getStatusText(status) {
+            switch (status) {
+                case 0:
+                    return "逾時未報到";
+                case 1:
+                    return "未退房";
+                case 2:
+                    return "已退房";
+                case 3:
+                    return "取消訂單";
+                default:
+                    return "未知狀態";
+            }
+        }
+        // 訂單狀態顏色轉換函數
+        function getStatusColor(status) {
+            switch (status) {
+                case 0:
+                    return "red";
+                case 1:
+                    return "red";
+                case 2:
+                    return "green";
+                case 3:
+                    return "black";
+                default:
+                    return "black";
+            }
+        }
+
+
+        const socket = new WebSocket(`${contextPath}/ws`);
+
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            // console.log("接收到推播消息:", message);
+
+            if (message.type === "checkout") {
+                const orderIndex = allOrders.findIndex((order) => order.orderId === Number(message.orderId));
+
+                if (orderIndex !== -1) {
+                    // 如果找到訂單，更新狀態
+                    // console.log(`找到訂單 ${message.orderId}，更新狀態為 ${message.status}`);
+                    allOrders[orderIndex].status = message.status;
+                    updateOrderStatusOnPage(message.orderId, message.status);
+                } else {
+                    // console.warn(`未找到訂單 ID ${message.orderId}，請檢查主數據`);
+                }
+            } else {
+                // console.warn("未知的推播消息格式:", message);
+            }
+        };
+
+        function updateOrderStatusOnPage(orderId, status) {
+            const orderRow = document.querySelector(`[data-order-id="${orderId}"]`);
+            if (!orderRow) {
+                // console.warn(`找不到訂單 ID ${orderId} 的行`);
+                return;
+            }
+
+            // 更新狀態單元格
+            const statusCell = orderRow.querySelector(".status-cell");
+            if (statusCell) {
+                // console.log(`找到狀態單元格，更新內容`);
+                // console.log(`更新訂單 ID ${orderId} 的狀態為: ${status}`);
+                statusCell.textContent = status === 2 ? "已退房" : "未退房";
+                statusCell.style.color = status === 2 ? "green" : "red";
+            } else {
+                // console.error(`找不到訂單 ID 為 ${orderId} 的狀態單元格`);
+            }
+            // 同步更新 "全部訂單" 的表格
+            const allOrderRow = document.querySelector(`#all-orders-table-body [data-order-id="${orderId}"]`);
+            if (allOrderRow) {
+                const allOrderStatusCell = allOrderRow.querySelector(".status-cell");
+                if (allOrderStatusCell) {
+                    allOrderStatusCell.textContent = getStatusText(status);
+                    allOrderStatusCell.style.color = getStatusColor(status);
+                }
+            }
+
+            // 根據狀態移動到正確的區塊
+            const targetTableBody =
+                status === 2
+                    ? document.getElementById("checked-out-table-body") // 已退房
+                    : document.getElementById("not-checked-out-table-body"); // 未退房
+
+            if (!targetTableBody.contains(orderRow)) {
+                targetTableBody.appendChild(orderRow);
+            }
+
+            // 更新點擊行為
+            orderRow.onclick = () => {
+                if (status === 1) {
+                    showNotCheckedOutDetails(allOrders.find((order) => order.orderId === orderId));
+                } else if (status === 2) {
+                    showCheckedOutOrderDetails(allOrders.find((order) => order.orderId === orderId));
+                }
+            };
+        }
     </script>
 </body>
 

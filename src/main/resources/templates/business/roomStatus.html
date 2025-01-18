@@ -879,6 +879,7 @@
                                 rooms.forEach(room => {
                                     const button = document.createElement("button");
                                     button.textContent = `房間 ${room.number}`; // 按鈕顯示房間號碼
+                                    button.setAttribute("data-room-id", room.roomId); // 新增房間 ID
 
                                     // 根據房間狀態設置按鈕的樣式
                                     if (room.status === 0) {
@@ -1012,7 +1013,7 @@
                     .then(result => {
                         alert("房間狀態更新成功！");
                         modal.classList.add("hidden");
-                        location.reload(); // 重新載入頁面
+                        // location.reload(); // 重新載入頁面
                     })
                     .catch(error => {
                         console.error("Error updating room status:", error);
@@ -1034,6 +1035,61 @@
             const modal = document.getElementById(modalId);
             modal.classList.remove("hidden");
             modal.classList.add("active");
+        }
+
+
+        // web socket
+        // 建立 WebSocket 連線
+        const socket = new WebSocket(`${contextPath}/ws`);
+        const roomDataCache = {}; // 用於緩存房間的 Check-In 數據
+        socket.onopen = () => {
+            // console.log("WebSocket 連線已建立");
+        };
+
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            // console.log("接收到推播消息:", message);
+
+            if (message.type === "roomStatus") {
+                // 房間狀態更新
+                updateRoomStatusOnPage(message.roomId, message.status);
+                // 根據狀態綁定按鈕行為
+                const roomButton = document.querySelector(`[data-room-id="${message.roomId}"]`);
+                if (roomButton) {
+                    // 移除之前的事件處理器
+                    roomButton.replaceWith(roomButton.cloneNode(true));
+                    // 重新查找按鈕，並綁定新的點擊事件
+                    const newRoomButton = document.querySelector(`[data-room-id="${message.roomId}"]`);
+                    newRoomButton.addEventListener("click", () => handleRoomButtonClick({
+                        roomId: message.roomId,
+                        status: message.status,
+                    }));
+                }
+            } else {
+                // console.warn("未知的推播消息格式:", message);
+            }
+        };
+
+        socket.onclose = () => {
+            // console.log("WebSocket 連線已關閉");
+        };
+
+        // 更新頁面上的房間狀態
+        function updateRoomStatusOnPage(roomId, status) {
+            const roomButton = document.querySelector(`[data-room-id="${roomId}"]`);
+            if (roomButton) {
+                // 清除舊的狀態
+                roomButton.className = "";
+
+                // 根據新狀態更新按鈕樣式
+                if (status === 0) {
+                    roomButton.classList.add("available"); // 綠色: 可用
+                } else if (status === 1) {
+                    roomButton.classList.add("occupied"); // 紅色: 已預訂
+                } else if (status === 2) {
+                    roomButton.classList.add("unavailable"); // 灰色: 維修中
+                }
+            }
         }
     </script>
 </body>

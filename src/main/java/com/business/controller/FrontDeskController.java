@@ -46,9 +46,15 @@ public class FrontDeskController {
         List<RoomTypeVO> roomTypes = roomTypeService.findByHotelId(hotel.getHotelId());
 
         // 每個房型包含房間數量
+//        Map<String, Long> roomCounts = roomTypes.stream()
+//                .collect(Collectors.toMap(RoomTypeVO::getRoomName,
+//                        roomType -> roomType.getRooms().stream().count()));
         Map<String, Long> roomCounts = roomTypes.stream()
-                .collect(Collectors.toMap(RoomTypeVO::getRoomName,
-                        roomType -> roomType.getRooms().stream().count()));
+                .collect(Collectors.toMap(
+                        roomType -> roomType.getRoomTypeId() + "-" + roomType.getRoomName(), // 鍵：roomType_id + roomName
+                        roomType -> roomType.getRooms().stream().count(), // 值：房間數量
+                        Long::sum // 合併策略：累加房間數量（如果有重複的鍵）
+                ));
 
         model.addAttribute("roomCounts", roomCounts);
         model.addAttribute("roomTypes", roomTypes);
