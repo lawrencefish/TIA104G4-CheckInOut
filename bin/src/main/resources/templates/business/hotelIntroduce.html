@@ -379,17 +379,34 @@
 
         /* 已上傳圖片顯示 */
         .uploaded-photos {
-            display: flex;
-            flex-wrap: wrap; /* 改為允許換行 */
-            gap: 15px; /* 圖片之間的間距 */
-            padding: 10px 0; /* 上下留空 */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px; /* 圖片間距 */
+            justify-items: center; /* 水平居中對齊 */
         }
 
         .uploaded-photos img {
-            width: 150px; /* 固定每張圖片的寬度 */
-            height: auto; /* 自動調整高度以保持比例 */
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 150px; /* 固定寬度 */
+            height: 150px; /* 固定高度 */
+            object-fit: cover; /* 確保圖片保持比例，不變形 */
+            border-radius: 8px; /* 圓角 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加陰影 */
+        }
+
+        .uploaded-photos button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .uploaded-photos::-webkit-scrollbar {
@@ -609,15 +626,16 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}" class="active">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}" class="active">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
-            <a href="#">評論管理</a>
-            <a href="#">客戶管理</a>
-            <a th:href="@{/report}">報表分析</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
+<!--            <a th:href="@{/report}">報表分析</a>-->
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-            <span class="icon">💬</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
