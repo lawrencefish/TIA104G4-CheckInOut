@@ -248,7 +248,7 @@ public class OrderAndOrderDetailUploader {
 				int guestNum = rand.nextInt(4) + 1;
 
 				// room_num => 0或1
-				int roomNum = rand.nextInt(2);
+				int roomNum = 1;
 
 				// breakfast => 0或1
 				int breakfast = rand.nextInt(2);

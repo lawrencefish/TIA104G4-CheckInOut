@@ -81,4 +81,6 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventoryVO, 
 			@Param("endDate") LocalDate endDate,
 			@Param("hotelId") Integer hotelId);
 
+	@Query("SELECT r FROM RoomInventoryVO r WHERE r.roomType.id = :roomTypeId AND r.date = :date")
+	RoomInventoryVO findByRoomTypeIdAndDate(@Param("roomTypeId") Integer roomTypeId, @Param("date") LocalDate date);
 }

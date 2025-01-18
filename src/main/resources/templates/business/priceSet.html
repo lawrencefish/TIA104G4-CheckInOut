@@ -853,6 +853,12 @@
             const breakfastPrice = parseFloat(document.getElementById('special-breakfast-price').value);
             const remarks = document.getElementById('remarks').value;
 
+            // 新增日期驗證
+            if (new Date(startDate) >= new Date(endDate)) {
+                alert('「特殊日期結束」必須大於「特殊日期起始」');
+                return;
+            }
+
             if (!roomTypeId || !startDate || !endDate || isNaN(price) || price <= 0 || isNaN(breakfastPrice) || breakfastPrice < 0) {
                 alert('請填寫完整有效的信息！');
                 return;
@@ -889,7 +895,7 @@
             fetch(`${contextPath}/api/price/specials`, { method: 'GET', credentials: 'include' })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('加载特殊价格失败');
+                        throw new Error('加載特殊價格失敗');
                     }
                     return response.json();
                 })
@@ -925,7 +931,7 @@
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const priceId = this.dataset.id;
-                    if (confirm('确定要删除这条记录吗？')) {
+                    if (confirm('確定要刪除這條紀錄嗎？')) {
                         deleteSpecialPrice(priceId);
                     }
                 });
@@ -937,9 +943,9 @@
             fetch(`${contextPath}/api/price/special/${priceId}`, { method: 'DELETE', credentials: 'include' })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('删除失败');
+                        throw new Error('刪除失敗');
                     }
-                    alert('删除成功');
+                    alert('刪除成功');
                     loadSpecialPrices(); // 重新加载数据
                 })
                 .catch(error => console.error('Error deleting special price:', error));
@@ -952,7 +958,7 @@
             fetch(`${contextPath}/api/price/specials`, { method: 'GET', credentials: 'include' })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('加载特殊价格失败');
+                        throw new Error('加載特殊價格失敗');
                     }
                     return response.json();
                 })
