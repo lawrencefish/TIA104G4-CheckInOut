@@ -8,6 +8,79 @@
 	<link rel="stylesheet" th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
 	<link rel="stylesheet" th:href="@{/css/user/hotel_detail.css}">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+	<style>
+		/* 浮動聊天按鈕 */
+		#chatButton {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			z-index: 9999;
+			border-radius: 50%;
+			width: 60px;
+			height: 60px;
+		}
+
+		/* 聊天彈窗樣式 */
+		#chatPopup {
+			display: none; /* 初始隱藏 */
+			position: fixed;
+			bottom: 90px;
+			right: 20px;
+			width: 400px;
+			height: 500px;
+			border: 1px solid #ccc;
+			background: #fff;
+			z-index: 9998;
+			box-shadow: 0 0 10px rgba(0,0,0,0.2);
+			flex-direction: column;
+		}
+
+		#chatHeader {
+			background: #007bff;
+			color: #fff;
+			padding: 10px;
+			font-weight: bold;
+			cursor: move;
+		}
+
+		#chatMessages {
+			flex: 1;
+			overflow-y: auto;
+			padding: 10px;
+			background: #f8f9fa;
+		}
+
+		.hidden {
+			display: none !important;
+		}
+
+		/* 訊息對齊樣式 */
+		.chat-message {
+			margin-bottom: 10px;
+			max-width: 80%;
+			word-wrap: break-word;
+		}
+		.chat-hotel {
+			text-align: left;
+			align-self: flex-start;
+			background: #f8d7da;
+			padding: 8px;
+			border-radius: 8px;
+		}
+		.chat-user {
+			text-align: right;
+			align-self: flex-end;
+			background: #d1ecf1;
+			padding: 8px;
+			border-radius: 8px;
+			margin-left: auto; /* 強制靠右對齊 */
+		}
+
+		#chatInputArea {
+			border-top: 1px solid #ccc;
+		}
+	</style>
+
 </head>
 
 <body>
@@ -111,11 +184,28 @@
 			<!-- 房型選擇 -->
 			<div class="col-12">
 				<div class="room-container container my-4">
-					
+
 
 
 				</div>
 			</div>
+
+			<!-- 浮動聊天按鈕 -->
+			<button id="chatButton" class="btn btn-primary">聊天</button>
+
+			<!-- 聊天彈窗 -->
+			<div id="chatPopup" class="d-flex hidden">
+				<div id="chatHeader">
+					聊天視窗
+					<span id="closeChat" style="float:right; cursor:pointer;">✖</span>
+				</div>
+				<div id="chatMessages"></div>
+				<div id="chatInputArea" class="input-group p-2">
+					<input type="text" id="chatInput" class="form-control" placeholder="輸入訊息...">
+					<button id="sendMessage" class="btn btn-primary">送出</button>
+				</div>
+			</div>
+
 	</main>
 
 
@@ -146,7 +236,136 @@
 	<script th:src="@{/js/user/hotel_calendar.js}"></script>
 	<script th:src="@{/js/user/hotel_detail.js}"></script>
 	<script src="/js/user/loginCheck.js" defer></script>
+	<!-- 引入必要的 JS 庫 -->
+	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
+	<script>
+		window.addEventListener('DOMContentLoaded', function() {
+			// 建立 WebSocket 連線
+			const socketUrl = 'ws://localhost:8080/ws/chat';
+			const chatSocket = new WebSocket(socketUrl);
 
+			chatSocket.onmessage = function(event) {
+				try {
+					const data = JSON.parse(event.data);
+					console.log('收到訊息:', data);
+					const chatMessages = document.getElementById('chatMessages');
+
+					// 如果回應包含 result 陣列，表示是完整歷史記錄
+					if (data.result && Array.isArray(data.result)) {
+						// 清空現有訊息
+						chatMessages.innerHTML = '';
+
+						// 遍歷歷史訊息，動態生成 DOM 元素
+						data.result.forEach(msg => {
+							const messageDiv = document.createElement('div');
+							messageDiv.classList.add('chat-message');
+
+							// 根據 sender 欄位選擇樣式
+							if (msg.sender === 'M') {
+								messageDiv.classList.add('chat-user');
+							} else {
+								messageDiv.classList.add('chat-hotel');
+							}
+
+							// 將時間戳轉換為本地可讀格式
+							let timeString = '';
+							if (msg.sendTime) {
+								timeString = formatTimestamp(msg.sendTime);
+							}
+
+							// 設置訊息內容和時間
+							messageDiv.innerHTML = `<div>${msg.message}</div><small>${timeString}</small>`;
+							chatMessages.appendChild(messageDiv);
+						});
+
+						// 滾動到最新訊息
+						chatMessages.scrollTop = chatMessages.scrollHeight;
+					} else {
+						// 處理非歷史記錄的單一訊息（若需要）
+					}
+				} catch (e) {
+					console.error('解析訊息錯誤:', e);
+				}
+			};
+
+			chatSocket.onopen = function() {
+				console.log('WebSocket 連線已建立');
+
+				// 連線成功後主動發送請求歷史資料的訊息
+				const historyRequestPayload = {
+					action: 'history',
+					message: {
+						memberId: 1,   // 根據實際情況動態設定
+						hotelId: 21      // 根據實際情況動態設定
+					}
+				};
+				chatSocket.send(JSON.stringify(historyRequestPayload));
+			};
+
+			chatSocket.onerror = function(error) {
+				console.error('WebSocket 發生錯誤:', error);
+			};
+
+			chatSocket.onclose = function() {
+				console.log('WebSocket 連線已關閉');
+			};
+
+			// 發送訊息
+			const memberId = "[[${#httpSession.getAttribute('memberId')}]]";
+			const url = new URL(window.location.href);
+			const pathParts = url.pathname.split('/');
+			const hotelId = pathParts[pathParts.indexOf('hotel_detail') + 1]; // 提取 'hotel_detail' 後的部分
+
+			document.getElementById('sendMessage').addEventListener('click', function() {
+				const input = document.getElementById('chatInput');
+				const userMessage = input.value.trim();
+				if (userMessage !== '' && chatSocket.readyState === WebSocket.OPEN) {
+					const payload = {
+						action: 'message',
+						message: {
+							memberId: memberId,
+							hotelId: hotelId,
+							sender: 'M',
+							message: userMessage
+						}
+					};
+					chatSocket.send(JSON.stringify(payload));
+					input.value = '';
+				}
+			});
+
+			document.getElementById('chatInput').addEventListener('keypress', function(e) {
+				if (e.key === 'Enter') {
+					document.getElementById('sendMessage').click();
+				}
+			});
+
+			document.getElementById('chatButton').addEventListener('click', function() {
+				const chatPopup = document.getElementById('chatPopup');
+				chatPopup.classList.remove('hidden');  // 移除 hidden 類別
+				chatPopup.style.display = 'flex';      // 設定顯示樣式
+			});
+
+
+			document.getElementById('closeChat').addEventListener('click', function() {
+				console.log('關閉按鈕被點擊');  // 調試輸出
+				document.getElementById('chatPopup').classList.add('hidden');
+			});
+
+		});
+
+		function formatTimestamp(ts) {
+			const date = new Date(ts);
+			const YYYY = date.getFullYear();
+			const MM = String(date.getMonth() + 1).padStart(2, '0');
+			const DD = String(date.getDate()).padStart(2, '0');
+			const HH = String(date.getHours()).padStart(2, '0');
+			const mm = String(date.getMinutes()).padStart(2, '0');
+			const ss = String(date.getSeconds()).padStart(2, '0');
+			return `${YYYY}/${MM}/${DD} ${HH}:${mm}:${ss}`;
+		}
+
+	</script>
 </body>
-
 </html>
