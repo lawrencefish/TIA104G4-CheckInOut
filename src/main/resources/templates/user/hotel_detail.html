@@ -196,7 +196,7 @@
 			<!-- 聊天彈窗 -->
 			<div id="chatPopup" class="d-flex hidden">
 				<div id="chatHeader">
-					聊天視窗
+					小幫手
 					<span id="closeChat" style="float:right; cursor:pointer;">✖</span>
 				</div>
 				<div id="chatMessages"></div>
@@ -289,6 +289,11 @@
 				}
 			};
 
+			const memberId = "[[${#httpSession.getAttribute('memberId')}]]";
+			const url = new URL(window.location.href);
+			const pathParts = url.pathname.split('/');
+			const hotelId = pathParts[pathParts.indexOf('hotel_detail') + 1]; // 提取 'hotel_detail' 後的部分
+
 			chatSocket.onopen = function() {
 				console.log('WebSocket 連線已建立');
 
@@ -296,8 +301,8 @@
 				const historyRequestPayload = {
 					action: 'history',
 					message: {
-						memberId: 1,   // 根據實際情況動態設定
-						hotelId: 21      // 根據實際情況動態設定
+						memberId: memberId,
+						hotelId: hotelId,
 					}
 				};
 				chatSocket.send(JSON.stringify(historyRequestPayload));
@@ -312,11 +317,6 @@
 			};
 
 			// 發送訊息
-			const memberId = "[[${#httpSession.getAttribute('memberId')}]]";
-			const url = new URL(window.location.href);
-			const pathParts = url.pathname.split('/');
-			const hotelId = pathParts[pathParts.indexOf('hotel_detail') + 1]; // 提取 'hotel_detail' 後的部分
-
 			document.getElementById('sendMessage').addEventListener('click', function() {
 				const input = document.getElementById('chatInput');
 				const userMessage = input.value.trim();
