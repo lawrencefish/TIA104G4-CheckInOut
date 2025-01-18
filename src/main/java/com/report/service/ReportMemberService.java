@@ -26,8 +26,8 @@ public class ReportMemberService {
     public ResponseEntity<Map<String, Object>> reportMember(Integer memberId, Integer hotelId, AddReportRequest request) throws IOException {
         Integer orderId = request.getOrderId();
         if (orderId != null) {
-            Optional<OrderVO> optional = orderRepository.findById(orderId);
-            if(optional.isEmpty()) {
+            long count = orderRepository.countByOrderIdAndMemberId(orderId, memberId);
+            if(count < 1) {
                 Map<String, Object> result = new HashMap<>();
                 result.put("message", "訂單編號不存在");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
