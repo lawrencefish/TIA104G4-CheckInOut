@@ -384,6 +384,8 @@
             padding: 20px;
             border-radius: 8px;
             width: 400px;
+            max-height: 80vh; /* 設置最大高度為視窗高度的80% */
+            overflow-y: auto; /* 啟用垂直滾動 */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: left;
         }
@@ -444,6 +446,215 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        #not-arrived-modal .modal-content h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        /* 訂單基本信息 */
+        #not-arrived-modal .order-basic-info {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+        }
+
+        #not-arrived-modal .order-basic-info p {
+            margin: 5px 0;
+            font-size: 1rem;
+            color: #444;
+        }
+
+        /* 房型明細區塊 */
+        #not-arrived-modal #not-arrived-room-type {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        #not-arrived-modal #not-arrived-room-type > div {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        /* 房型明細標籤與輸入框 */
+        #not-arrived-modal #not-arrived-room-type label {
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        #not-arrived-modal #not-arrived-room-type input,
+        #not-arrived-modal #not-arrived-room-type select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* 確認分配區域 */
+        #not-arrived-modal .confirmation-section {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        #not-arrived-modal .confirmation-section label {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        #not-arrived-modal .confirmation-section input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* 新增備註區域 */
+        #not-arrived-modal .additional-note {
+            margin-top: 20px;
+        }
+
+        #not-arrived-modal .additional-note textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 0.9rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        /* 按鈕區域 */
+        #not-arrived-modal .modal-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #not-arrived-modal .modal-actions button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #not-arrived-modal .modal-actions .button-save {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        #not-arrived-modal .modal-actions .button-close {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #not-arrived-modal .modal-actions button:hover {
+            opacity: 0.9;
+        }
+
+        /* 儲存按鈕初始狀態 */
+        #not-arrived-save-button {
+            background-color: #4caf50; /* 綠色 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #not-arrived-save-button.disabled {
+            background-color: #ccc; /* 灰色 */
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        #arrived-modal .modal-content h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        /* 訂單基本信息 */
+        #arrived-modal .order-basic-info {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+        }
+
+        #arrived-modal .order-basic-info p {
+            margin: 5px 0;
+            font-size: 1rem;
+            color: #444;
+        }
+
+        /* 房型明細區塊 */
+        #arrived-modal #arrived-room-type {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        #arrived-modal #arrived-room-type > div {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        /* 房型明細標籤 */
+        #arrived-modal #arrived-room-type label {
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        /* 房型明細文字樣式 */
+        #arrived-modal #arrived-room-type p {
+            margin: 5px 0;
+            font-size: 1rem;
+            color: #444;
+        }
+
+        /* 按鈕區域 */
+        #arrived-modal .modal-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #arrived-modal .modal-actions button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #arrived-modal .modal-actions .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #arrived-modal .modal-actions button:hover {
+            opacity: 0.9;
+        }
+
     </style>
 </head>
 
@@ -458,15 +669,16 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}" class="active">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
-            <a href="#">評論管理</a>
-            <a href="#">客戶管理</a>
-            <a th:href="@{/report}">報表分析</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
+<!--            <a th:href="@{/report}" >報表分析</a>-->
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-            <span class="icon">💬</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
@@ -526,94 +738,47 @@
                             <th>訂單編號</th>
                             <th>客戶編號</th>
                             <th>客戶姓名</th>
-                            <th>房數</th>
-                            <th>人數</th>
                             <th>訂單狀態</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr data-id="00048763" data-customer-id="00001" data-name="Zeus" data-room="1" data-people="2"
-                            data-status="尚未報到">
-                            <td>00048763</td>
-                            <td>00001</td>
-                            <td>Zeus</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>尚未報到</td>
-                        </tr>
+                    <tbody id="not-arrived-table-body">
+                    <!-- 未報到資料 -->
                     </tbody>
                 </table>
             </section>
+
             <!-- 已報到區 -->
             <section id="arrived-section" class="content-section hidden">
                 <h2>已報到</h2>
                 <table>
                     <thead>
-                        <tr>
-                            <th>訂單編號</th>
-                            <th>客戶編號</th>
-                            <th>客戶姓名</th>
-                            <th>房數</th>
-                            <th>人數</th>
-                            <th>訂單狀態</th>
-                        </tr>
+                    <tr>
+                        <th>訂單編號</th>
+                        <th>客戶編號</th>
+                        <th>客戶姓名</th>
+                        <th>訂單狀態</th>
+                    </tr>
                     </thead>
-                    <tbody>
-                        <tr data-id="00048763" data-customer-id="00001" data-name="Zeus" data-room="1" data-people="2"
-                            data-status="尚未報到" data-type="豪華雙人房">
-                            <td>00048763</td>
-                            <td>00001</td>
-                            <td>Zeus</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>尚未報到</td>
-                        </tr>
-                        <tr data-id="00048765" data-customer-id="00002" data-name="Faker" data-room="1" data-people="1"
-                            data-status="已報到" data-type="標準雙人房">
-                            <td>00048765</td>
-                            <td>00002</td>
-                            <td>Faker</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>已報到</td>
-                        </tr>
+                    <tbody id="arrived-table-body">
+                    <!-- 已報到資料 -->
                     </tbody>
-
                 </table>
             </section>
+
             <!-- 全部訂單區 -->
             <section id="all-orders-section" class="content-section hidden">
                 <h2>全部訂單</h2>
                 <table>
                     <thead>
-                        <tr>
-                            <th>訂單編號</th>
-                            <th>客戶編號</th>
-                            <th>客戶姓名</th>
-                            <th>房數</th>
-                            <th>人數</th>
-                            <th>訂單狀態</th>
-                        </tr>
+                    <tr>
+                        <th>訂單編號</th>
+                        <th>客戶編號</th>
+                        <th>客戶姓名</th>
+                        <th>訂單狀態</th>
+                    </tr>
                     </thead>
-                    <tbody>
-                        <tr data-id="00048763" data-customer-id="00001" data-name="Zeus" data-room="1" data-people="2"
-                            data-status="尚未報到">
-                            <td>00048763</td>
-                            <td>00001</td>
-                            <td>Zeus</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>尚未報到</td>
-                        </tr>
-                        <tr data-id="00048765" data-customer-id="00002" data-name="Faker" data-room="1" data-people="1"
-                            data-status="已報到">
-                            <td>00048765</td>
-                            <td>00002</td>
-                            <td>Faker</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>已報到</td>
-                        </tr>
+                    <tbody id="all-orders-table-body">
+                    <!-- 全部訂單資料 -->
                     </tbody>
                 </table>
             </section>
@@ -623,26 +788,52 @@
             <div id="not-arrived-modal" class="modal hidden">
                 <div class="modal-content">
                     <h2>未報到訂單詳情</h2>
-                    <p><strong>訂單編號：</strong><span id="not-arrived-order-id"></span></p>
-                    <p><strong>客戶姓名：</strong><span id="not-arrived-customer-name"></span></p>
-                    <p><strong>預定房型：</strong><span id="not-arrived-room-type"></span></p>
-                    <p><strong>客戶備註：</strong><span id="not-arrived-customer-note"></span></p>
-                    <label for="room-assignment">分配房號：</label>
-                    <select id="room-assignment">
-                        <option value="" disabled selected>選擇房號</option>
-                        <option value="101">101</option>
-                        <option value="102">102</option>
-                        <option value="103">103</option>
-                        <option value="104">104</option>
-                    </select>
-                    <label>
-                        <input type="checkbox" id="check-in-success"> 報到成功
+
+                    <!-- 訂單基本信息 -->
+                    <div class="order-basic-info">
+                        <p><strong>訂單編號：</strong><span id="not-arrived-order-id"></span></p>
+                        <p><strong>客戶姓名：</strong><span id="not-arrived-customer-name"></span></p>
+                        <p><strong>客戶備註：</strong><span id="not-arrived-customer-note"></span></p>
+                    </div>
+
+                    <!-- 房型明細容器 -->
+                    <div id="not-arrived-room-type">
+                        <!-- 動態生成房型明細 -->
+                    </div>
+
+<!--                    &lt;!&ndash; 訂單明細表格 &ndash;&gt;-->
+<!--                    <div class="order-details">-->
+<!--                        <table id="order-details-table">-->
+<!--                            <thead>-->
+<!--                            <tr>-->
+<!--                                <th>房型名稱</th>-->
+<!--                                <th>訂購數量</th>-->
+<!--                                <th>可用房號</th>-->
+<!--                                <th>分配房號</th>-->
+<!--                            </tr>-->
+<!--                            </thead>-->
+<!--                            <tbody id="order-details-body">-->
+<!--                            &lt;!&ndash; 動態生成內容 &ndash;&gt;-->
+<!--                            </tbody>-->
+<!--                        </table>-->
+<!--                    </div>-->
+
+                    <!-- 確認分配房間 -->
+                    <label for="confirm-assignment">
+                        <input type="checkbox" id="confirm-assignment">
+                        確認分配房間
                     </label>
-                    <label for="not-arrived-additional-note">新增備註：</label>
-                    <textarea id="not-arrived-additional-note" rows="4" placeholder="新增客戶備註..."></textarea>
+
+<!--                    &lt;!&ndash; 備註與操作 &ndash;&gt;-->
+<!--                    <div class="additional-info">-->
+<!--                        <label for="not-arrived-additional-note">新增備註：</label>-->
+<!--                        <textarea id="not-arrived-additional-note" rows="4" placeholder="新增客戶備註..."></textarea>-->
+<!--                    </div>-->
+
+                    <!-- 操作按鈕 -->
                     <div class="modal-actions">
-                        <button id="not-arrived-save-button">儲存</button>
-                        <button id="not-arrived-close-button">關閉</button>
+                        <button id="not-arrived-save-button" class="button-save">儲存</button>
+                        <button id="not-arrived-close-button" class="button-close">關閉</button>
                     </div>
                 </div>
             </div>
@@ -652,16 +843,24 @@
             <div id="arrived-modal" class="modal hidden">
                 <div class="modal-content">
                     <h2>已報到訂單詳情</h2>
+
+                    <!-- 訂單基本信息 -->
                     <p><strong>訂單編號：</strong><span id="arrived-order-id"></span></p>
                     <p><strong>客戶姓名：</strong><span id="arrived-customer-name"></span></p>
-                    <p><strong>預定房型：</strong><span id="arrived-room-type"></span></p>
-                    <p><strong>分配房號：</strong><span id="arrived-room"></span></p>
-                    <p><strong>客戶備註：</strong><span id="arrived-note">浴缸</span></p>
+                    <p><strong>客戶備註：</strong><span id="arrived-customer-note"></span></p>
+
+                    <!-- 房型明細容器 -->
+                    <div id="arrived-room-type">
+                        <!-- 動態生成房型明細 -->
+                    </div>
+
+                    <!-- 操作按鈕 -->
                     <div class="modal-actions">
-                        <button id="arrived-close-button">關閉</button>
+                        <button id="arrived-close-button" class="btn btn-danger">關閉</button>
                     </div>
                 </div>
             </div>
+
 
 
 
@@ -675,284 +874,13 @@
     </footer>
 
     <script>
-        //假資料
-        const orders = [
-            {
-                id: "00048763",
-                customerId: "00001",
-                name: "Zeus",
-                roomType: "豪華雙人房",
-                room: null,
-                people: 2,
-                status: "尚未報到"
-            },
-            {
-                id: "00048764",
-                customerId: "00002",
-                name: "Oner",
-                roomType: "標準雙人房",
-                room: null,
-                people: 1,
-                status: "尚未報到"
-            },
-            {
-                id: "00048765",
-                customerId: "00003",
-                name: "Faker",
-                roomType: "標準雙人房",
-                room: "101",
-                people: 1,
-                status: "已報到"
-            },
-            {
-                id: "00048766",
-                customerId: "00004",
-                name: "Gumayusi",
-                roomType: "豪華雙人房",
-                room: "102",
-                people: 2,
-                status: "已報到"
-            },
-            {
-                id: "00048767",
-                customerId: "00005",
-                name: "Keria",
-                roomType: "家庭房",
-                room: "103",
-                people: 4,
-                status: "已報到"
-            },
-        ];
-
-
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
+        const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
 
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const buttons = document.querySelectorAll("#buttons-section button");
-            const sections = {
-                "未報到": document.getElementById("not-arrived-section"),
-                "已報到": document.getElementById("arrived-section"),
-                "全部訂單": document.getElementById("all-orders-section"),
-            };
-
-            const notArrivedModal = document.getElementById("not-arrived-modal");
-            const arrivedModal = document.getElementById("arrived-modal");
-
-            // 未報到彈窗元素
-            const notArrivedOrderId = document.getElementById("not-arrived-order-id");
-            const notArrivedCustomerName = document.getElementById("not-arrived-customer-name");
-            const notArrivedRoomType = document.getElementById("not-arrived-room-type");
-            const notArrivedCustomerNote = document.getElementById("not-arrived-customer-note");
-            const roomAssignmentSelect = document.getElementById("room-assignment");
-            const checkInCheckbox = document.getElementById("check-in-success");
-            const notArrivedAdditionalNote = document.getElementById("not-arrived-additional-note");
-
-            // 已報到彈窗元素
-            const arrivedOrderId = document.getElementById("arrived-order-id");
-            const arrivedCustomerName = document.getElementById("arrived-customer-name");
-            const arrivedRoomType = document.getElementById("arrived-room-type");
-            const arrivedRoom = document.getElementById("arrived-room");
-            const arrivedNote = document.getElementById("arrived-note");
-
-            let currentOrder = null; // 儲存當前操作的訂單
-
-            // 假資料
-            const orders = [
-                {
-                    id: "00048763",
-                    customerId: "00001",
-                    name: "Zeus",
-                    roomType: "豪華雙人房",
-                    room: null,
-                    people: 2,
-                    status: "尚未報到",
-                    note: "需要浴缸",
-                },
-                {
-                    id: "00048764",
-                    customerId: "00002",
-                    name: "Oner",
-                    roomType: "標準雙人房",
-                    room: null,
-                    people: 1,
-                    status: "尚未報到",
-                    note: "靠近窗戶",
-                },
-                {
-                    id: "00048765",
-                    customerId: "00003",
-                    name: "Faker",
-                    roomType: "標準雙人房",
-                    room: "101",
-                    people: 1,
-                    status: "已報到",
-                    note: "高樓層優先",
-                },
-                {
-                    id: "00048766",
-                    customerId: "00004",
-                    name: "Gumayusi",
-                    roomType: "豪華雙人房",
-                    room: "102",
-                    people: 2,
-                    status: "已報到",
-                    note: "加床",
-                },
-                {
-                    id: "00048767",
-                    customerId: "00005",
-                    name: "Keria",
-                    roomType: "家庭房",
-                    room: "103",
-                    people: 4,
-                    status: "已報到",
-                    note: "加床",
-                },
-            ];
-
-            // 初始化表格內容
-            function renderTables() {
-                Object.keys(sections).forEach((key) => {
-                    const tbody = sections[key].querySelector("tbody");
-                    tbody.innerHTML = ""; // 清空表格
-                    orders
-                        .filter((order) =>
-                            key === "全部訂單" ? true : order.status === (key === "未報到" ? "尚未報到" : "已報到")
-                        )
-                        .forEach((order) => {
-                            const row = document.createElement("tr");
-                            row.dataset.id = order.id;
-                            row.dataset.name = order.name;
-                            row.dataset.roomType = order.roomType;
-                            row.dataset.room = order.room || "";
-                            row.dataset.note = order.note || "";
-                            row.dataset.status = order.status;
-                            row.innerHTML = `
-                        <td>${order.id}</td>
-                        <td>${order.customerId}</td>
-                        <td>${order.name}</td>
-                        <td>${order.room || "未分配"}</td>
-                        <td>${order.people}</td>
-                        <td>${order.status}</td>
-                    `;
-                            tbody.appendChild(row);
-                        });
-                });
-                bindTableEvents();
-            }
-
-            // 綁定表格行點擊事件
-            function bindTableEvents() {
-                document.querySelectorAll("table tbody tr").forEach((row) => {
-                    row.addEventListener("click", function () {
-                        const {id, name, roomType, room, note, status} = this.dataset;
-                        currentOrder = orders.find((order) => order.id === id);
-
-                        if (status === "尚未報到") {
-                            // 未報到彈窗
-                            notArrivedOrderId.textContent = id;
-                            notArrivedCustomerName.textContent = name;
-                            notArrivedRoomType.textContent = roomType;
-                            notArrivedCustomerNote.textContent = note || "無";
-                            roomAssignmentSelect.value = ""; // 重置房號
-                            checkInCheckbox.checked = false;
-                            notArrivedAdditionalNote.value = ""; // 清空新增備註
-                            notArrivedModal.classList.remove("hidden");
-                        } else {
-                            // 已報到彈窗
-                            arrivedOrderId.textContent = id;
-                            arrivedCustomerName.textContent = name;
-                            arrivedRoomType.textContent = roomType;
-                            arrivedRoom.textContent = room || "未分配";
-                            arrivedNote.textContent = note || "無";
-                            arrivedModal.classList.remove("hidden");
-                        }
-                    });
-                });
-            }
-
-            // 儲存未報到訂單
-            document.getElementById("not-arrived-save-button").addEventListener("click", function () {
-                if (!currentOrder) return;
-
-                const selectedRoom = roomAssignmentSelect.value;
-                const additionalNote = notArrivedAdditionalNote.value;
-                const isCheckedIn = checkInCheckbox.checked;
-
-                if (!selectedRoom) {
-                    alert("請選擇房號！");
-                    return;
-                }
-
-                currentOrder.room = selectedRoom;
-                currentOrder.status = isCheckedIn ? "已報到" : "尚未報到";
-
-                alert(
-                    `訂單已更新！\n房號分配：${selectedRoom}\n新增備註：${additionalNote}\n報到狀態：${currentOrder.status}`
-                );
-
-                notArrivedModal.classList.add("hidden");
-                renderTables(); // 重新渲染表格
-            });
-
-            // 切換區塊顯示
-            buttons.forEach((button) => {
-                button.addEventListener("click", function () {
-                    buttons.forEach((btn) => btn.classList.remove("active"));
-                    this.classList.add("active");
-
-                    const sectionName = this.textContent;
-                    Object.keys(sections).forEach((key) => {
-                        if (key === sectionName) {
-                            sections[key].classList.remove("hidden");
-                        } else {
-                            sections[key].classList.add("hidden");
-                        }
-                    });
-                });
-            });
-
-            // 關閉彈窗
-            document.getElementById("not-arrived-close-button").addEventListener("click", function () {
-                notArrivedModal.classList.add("hidden");
-            });
-
-            document.getElementById("arrived-close-button").addEventListener("click", function () {
-                arrivedModal.classList.add("hidden");
-            });
-
-            // 初始化表格
-            renderTables();
         });
 
         // 取得彈窗和按鈕
@@ -991,6 +919,482 @@
                 logoutModal.classList.remove("show"); // 隱藏彈窗
             }
         });
+
+        // 1/10新增內容
+        let allOrders = []; // 保存所有訂單數據
+        document.addEventListener("DOMContentLoaded", function () {
+            const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
+            const tableBodies = {
+                notArrived: document.getElementById("not-arrived-table-body"),
+                arrived: document.getElementById("arrived-table-body"),
+                all: document.getElementById("all-orders-table-body"),
+            };
+
+            const buttons = {
+                notArrived: document.getElementById("btn-not-arrived"),
+                arrived: document.getElementById("btn-arrived"),
+                all: document.getElementById("btn-all-orders"),
+            };
+
+            const sections = {
+                notArrived: document.getElementById("not-arrived-section"),
+                arrived: document.getElementById("arrived-section"),
+                all: document.getElementById("all-orders-section"),
+            };
+
+
+            // 1. Fetch 今日訂單
+            fetch(`${contextPath}/order/today/checkin?hotelId=${hotelId}`)
+                .then((response) => response.json())
+                .then((orders) => {
+                    allOrders = orders;
+                    // 預設顯示未報到區域並渲染
+                    renderTable(allOrders.filter((order) => order.status === 0), tableBodies.notArrived);
+                    switchSection("notArrived");
+                })
+                .catch((error) => console.error("Error fetching orders:", error));
+
+            // 2. 渲染表格函數
+            function renderTable(orders, tableBody) {
+                if (!tableBody) {
+                    console.error("找不到表格的 tbody 元素。");
+                    return;
+                }
+
+                tableBody.innerHTML = ""; // 清空表格內容
+
+                if (orders.length === 0) {
+                    // 如果沒有資料，顯示提示文字
+                    const row = document.createElement("tr");
+                    const cell = document.createElement("td");
+                    cell.colSpan = 4; // 設置 colspan 為表格的欄位數量
+                    cell.textContent = "沒有相關訂單";
+                    cell.style.textAlign = "center"; // 文字置中
+                    row.appendChild(cell);
+                    tableBody.appendChild(row);
+                } else {
+                    // 如果有資料，渲染表格內容
+                    orders.forEach((order) => {
+                        const row = document.createElement("tr");
+                        row.setAttribute("data-order-id", order.orderId); // 設置 data-order-id
+                        row.innerHTML = `
+                            <td>${order.orderId}</td>
+                            <td>${order.memberId || "未提供"}</td>
+                            <td>${formatMemberName(order.memberName) || "未提供"}</td>
+                            <td class="status-cell" style="color: ${getStatusColor(order.status)};">${getStatusText(order.status)}</td>
+                        `;
+
+                        // 點擊事件：顯示對應彈窗
+                        row.addEventListener("click", () => {
+                            if (order.status === 0) { // 0 表示未報到
+                                showOrderDetails(order); // 顯示未報到彈窗
+                            } else if (order.status === 1) { // 1 表示已報到
+                                showArrivedOrderDetails(order); // 顯示已報到彈窗
+                            }
+                        });
+
+
+                        tableBody.appendChild(row);
+                    });
+                }
+            }
+
+            // 名字格式轉換函數
+            function formatMemberName(name) {
+                if (!name) return name;
+                const parts = name.split(" ");
+                if (parts.length === 2) {
+                    return parts[1] + parts[0]; // 將 "詩婷 柯" 轉換為 "柯詩婷"
+                }
+                return name; // 如果格式不符，返回原始名字
+            }
+
+            // 訂單狀態文字轉換函數
+            function getStatusText(status) {
+                switch (status) {
+                    case 0:
+                        return "未報到";
+                    case 1:
+                        return "已報到";
+                    case 2:
+                        return "已退房";
+                    case 3:
+                        return "取消訂單";
+                    default:
+                        return "未知狀態";
+                }
+            }
+
+            // 訂單狀態顏色轉換函數
+            function getStatusColor(status) {
+                switch (status) {
+                    case 0:
+                        return "red";
+                    case 1:
+                        return "green";
+                    case 2:
+                        return "blue";
+                    case 3:
+                        return "gray";
+                    default:
+                        return "black";
+                }
+            }
+
+            // 獲取確認分配房間的 checkbox 和儲存按鈕
+            const confirmCheckbox = document.getElementById("confirm-assignment");
+            const saveButton = document.getElementById("not-arrived-save-button");
+            // 初始化按鈕狀態為禁用
+            saveButton.disabled = true;
+            saveButton.classList.add("disabled");
+            // 監聽 checkbox 的變化，動態啟用或禁用按鈕
+            confirmCheckbox.addEventListener("change", function () {
+                if (confirmCheckbox.checked) {
+                    saveButton.disabled = false;
+                    saveButton.classList.remove("disabled");
+                } else {
+                    saveButton.disabled = true;
+                    saveButton.classList.add("disabled");
+                }
+            });
+            // 顯示訂單詳情的彈窗
+            function showOrderDetails(order) {
+                // 填充彈窗的基本信息
+                document.getElementById("not-arrived-order-id").textContent = order.orderId;
+                // 格式化客戶姓名
+                const formattedName = formatMemberName(order.memberName);
+                document.getElementById("not-arrived-customer-name").textContent = formattedName;
+
+                // 使用訂單編號獲取詳細資料
+                fetch(`${contextPath}/checkIn/orderDetails?orderId=${order.orderId}`)
+                    .then((response) => response.json())
+                    .then((details) => {
+                        // 填充客戶備註 (memo)
+                        const customerNoteElement = document.getElementById("not-arrived-customer-note");
+                        if (customerNoteElement) {
+                            customerNoteElement.textContent = details.memo || "無備註";
+                        } else {
+                            console.error("Element with ID 'not-arrived-customer-note' not found.");
+                        }
+
+                        // 清空並填充房型明細
+                        const roomTypeContainer = document.getElementById("not-arrived-room-type");
+                        if (!roomTypeContainer) {
+                            console.error("Element with ID 'not-arrived-room-type' not found.");
+                            return;
+                        }
+
+                        roomTypeContainer.innerHTML = ""; // 清空內容
+
+                        // 遍歷訂單明細並填充內容
+                        details.orderDetails.forEach((detail) => {
+                            const detailDiv = document.createElement("div");
+                            // 動態生成 HTML，新增早餐資訊
+                            // 備份
+                            // <p><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
+                            detailDiv.innerHTML = `
+                    <p><strong>房型：</strong>${detail.roomTypeName}</p>
+                    <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
+                    <label for="room-assignment-${detail.orderDetailId}">分配房號：</label>
+                    <select id="room-assignment-${detail.orderDetailId}">
+            ${detail.availableRooms
+                                .map(
+                                    (room) => `<option value="${room.roomId}">${room.roomNumber}</option>`
+                                )
+                                .join("")}
+        </select>
+                    <div class="guest-info">
+                        <label for="guest-name-${detail.orderDetailId}">住客姓名：</label>
+                        <input type="text" id="guest-name-${detail.orderDetailId}" placeholder="輸入住客姓名">
+                        <label for="guest-phone-${detail.orderDetailId}">住客電話：</label>
+                        <input type="tel" id="guest-phone-${detail.orderDetailId}" placeholder="輸入住客電話">
+                    </div>
+                `;
+                            roomTypeContainer.appendChild(detailDiv);
+                        });
+
+                        // 重置 checkbox 和儲存按鈕狀態
+                        confirmCheckbox.checked = false;
+                        saveButton.disabled = true;
+
+                        // 顯示彈窗
+                        document.getElementById("not-arrived-modal").classList.remove("hidden");
+                    })
+                    .catch((error) => console.error("Error fetching order details:", error));
+            }
+
+            // 關閉彈窗
+            document.getElementById("not-arrived-close-button").addEventListener("click", () => {
+                document.getElementById("not-arrived-modal").classList.add("hidden");
+            });
+
+            //分配房間
+            document.getElementById("not-arrived-save-button").addEventListener("click", function () {
+                const assignments = [];
+                const roomTypeContainer = document.getElementById("not-arrived-room-type");
+                const orderId = document.getElementById("not-arrived-order-id").textContent;
+                const assignedRooms = new Set(); // 用來檢查是否重複分配
+
+                // 遍歷所有房型區塊，收集數據
+                [...roomTypeContainer.children].forEach((detailDiv) => {
+                    const orderDetailId = detailDiv.querySelector("select").id.split("-")[2];
+                    const assignedRoomId = detailDiv.querySelector("select").value;
+                    const customerName = detailDiv.querySelector(`#guest-name-${orderDetailId}`).value.trim();
+                    const customerPhoneNumber = detailDiv.querySelector(`#guest-phone-${orderDetailId}`).value.trim();
+
+                    // if (!assignedRoomId || !customerName || !customerPhoneNumber) {
+                    //     alert("所有字段均為必填項，請完成後再提交！");
+                    //     return;
+                    // }
+
+                    // 檢查是否有重複分配
+                    if (assignedRooms.has(assignedRoomId)) {
+                        alert(`房號重複，請選擇其他房號！`);
+                        throw new Error("重複分配房號");
+                    }
+
+                    // 將分配的房號加入已使用集合
+                    assignedRooms.add(assignedRoomId);
+
+                    assignments.push({
+                        orderId: parseInt(orderId),
+                        orderDetailId: parseInt(orderDetailId),
+                        assignedRoomId: parseInt(assignedRoomId),
+                        customerName,
+                        customerPhoneNumber,
+                    });
+                });
+
+                // 發送數據到後端
+                fetch(`${contextPath}/checkIn/saveCheckInDetails`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(assignments)
+                })
+                    .then((response) => {
+                        if (response.ok) {
+                            alert("Check-in details saved successfully.");
+                            document.getElementById("not-arrived-modal").classList.add("hidden");
+                            location.reload()
+                            // 可在此刷新頁面或更新 UI
+                        } else {
+                            response.text().then((text) => alert(text));
+                        }
+                    })
+                    .catch((error) => console.error("Error saving check-in details:", error));
+            });
+
+            // 已報到彈窗
+            const arrivedModal = document.getElementById("arrived-modal");
+
+            // 顯示已報到彈窗
+            // 顯示已報到訂單的彈窗
+            function showArrivedOrderDetails(order) {
+                // 填充彈窗的基本信息
+                document.getElementById("arrived-order-id").textContent = order.orderId;
+
+                // 格式化客戶姓名
+                const formattedName = formatMemberName(order.memberName);
+                document.getElementById("arrived-customer-name").textContent = formattedName;
+
+                // 使用訂單編號獲取已報到的詳細資料
+                fetch(`${contextPath}/checkIn/getArrivedDetails?orderId=${order.orderId}`)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch arrived order details: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((details) => {
+                        // 填充客戶備註 (memo)
+                        const customerNoteElement = document.getElementById("arrived-customer-note");
+                        if (customerNoteElement) {
+                            customerNoteElement.textContent = details.memo || "無備註";
+                        }
+
+                        // 清空並填充房型明細
+                        const roomTypeContainer = document.getElementById("arrived-room-type");
+                        if (!roomTypeContainer) {
+                            console.error("Element with ID 'arrived-room-type' not found.");
+                            return;
+                        }
+
+                        roomTypeContainer.innerHTML = ""; // 清空內容
+
+                        // 遍歷訂單明細並填充已分配的房間資訊
+                        details.orderDetails.forEach((detail) => {
+                            const detailDiv = document.createElement("div");
+                            detailDiv.classList.add("room-detail");
+
+                            // 備份
+                            // <p><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
+                            // 動態生成 HTML，顯示已分配的房間和住客信息
+                            detailDiv.innerHTML = `
+                    <p><strong>房型：</strong>${detail.roomTypeName}</p>
+                    <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
+                    <p><strong>分配房號：</strong>${detail.assignedRoomNumber || "未分配"}</p>
+                    <p><strong>住客姓名：</strong>${detail.customerName || "未提供"}</p>
+                    <p><strong>住客電話：</strong>${detail.customerPhoneNumber || "未提供"}</p>
+                `;
+                            roomTypeContainer.appendChild(detailDiv);
+                        });
+
+                        // 顯示彈窗
+                        document.getElementById("arrived-modal").classList.remove("hidden");
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching arrived details:", error);
+                        alert("無法載入已報到的訂單詳情，請稍後重試！");
+                    });
+            }
+
+
+
+            // 關閉已報到彈窗
+            document.getElementById("arrived-close-button").addEventListener("click", function () {
+                arrivedModal.classList.add("hidden");
+            });
+
+
+            // 3. 按鈕篩選功能
+            buttons.notArrived.addEventListener("click", () => {
+                renderTable(allOrders.filter((order) => order.status === 0), tableBodies.notArrived);
+                switchSection("notArrived");
+            });
+
+            buttons.arrived.addEventListener("click", () => {
+                renderTable(allOrders.filter((order) => order.status === 1), tableBodies.arrived);
+                switchSection("arrived");
+            });
+
+            buttons.all.addEventListener("click", () => {
+                renderTable(allOrders, tableBodies.all); // 顯示全部訂單
+                switchSection("all");
+            });
+
+            // 4. 切換區域顯示
+            function switchSection(activeSection) {
+                Object.keys(sections).forEach((key) => {
+                    if (key === activeSection) {
+                        sections[key].classList.remove("hidden");
+                    } else {
+                        sections[key].classList.add("hidden");
+                    }
+                });
+
+                // 更新按鈕樣式
+                Object.keys(buttons).forEach((key) => {
+                    if (key === activeSection) {
+                        buttons[key].classList.add("active");
+                    } else {
+                        buttons[key].classList.remove("active");
+                    }
+                });
+            }
+        });
+        function getStatusText(status) {
+            switch (status) {
+                case 0:
+                    return "未報到";
+                case 1:
+                    return "已報到";
+                case 2:
+                    return "已退房";
+                case 3:
+                    return "取消訂單";
+                default:
+                    return "未知狀態";
+            }
+        }
+
+        // 訂單狀態顏色轉換函數
+        function getStatusColor(status) {
+            switch (status) {
+                case 0:
+                    return "red";
+                case 1:
+                    return "green";
+                case 2:
+                    return "blue";
+                case 3:
+                    return "gray";
+                default:
+                    return "black";
+            }
+        }
+
+
+        // web socket
+        const socket = new WebSocket(`${contextPath}/ws`);
+
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            // console.log("收到推播消息：", message);
+
+            if (message.type === "checkIn") {
+                // 修正查找邏輯：確保鍵名和類型一致
+                const orderIndex = allOrders.findIndex((order) => order.orderId === Number(message.orderId));
+
+                if (orderIndex !== -1) {
+                    // 如果找到訂單，更新狀態
+                    // console.log(`找到訂單 ${message.orderId}，更新狀態`);
+                    allOrders[orderIndex].status = message.status;
+                    updateCheckInTable(message.orderId, message.status);
+                } else {
+                    // console.warn(`未找到訂單 ID ${message.orderId}，請檢查主數據`);
+                }
+            }
+        };
+
+
+        function updateCheckInTable(orderId, status) {
+            const row = document.querySelector(`[data-order-id="${orderId}"]`);
+            // console.log(`更新表格行，訂單 ID：${orderId}, 狀態：${status}`);
+
+            if (!row) {
+                // console.warn(`找不到訂單 ID 為 ${orderId} 的表格行`);
+                return;
+            }
+
+            // 更新狀態單元格
+            const statusCell = row.querySelector(".status-cell");
+            if (statusCell) {
+                // console.log(`找到狀態單元格，更新內容`);
+                statusCell.textContent = status === 1 ? "已報到" : "未報到";
+                statusCell.style.color = status === 1 ? "green" : "red";
+            } else {
+                // console.error(`找不到訂單 ID 為 ${orderId} 的狀態單元格`);
+            }
+            // 同步更新 "全部訂單" 的表格
+            const allOrderRow = document.querySelector(`#all-orders-table-body [data-order-id="${orderId}"]`);
+            if (allOrderRow) {
+                const allOrderStatusCell = allOrderRow.querySelector(".status-cell");
+                if (allOrderStatusCell) {
+                    allOrderStatusCell.textContent = getStatusText(status);
+                    allOrderStatusCell.style.color = getStatusColor(status);
+                }
+            }
+            // 移動行到正確的區塊
+            const targetTableBody =
+                status === 1
+                    ? document.getElementById("arrived-table-body") // 已報到區
+                    : document.getElementById("not-arrived-table-body"); // 未報到區
+
+            if (!targetTableBody.contains(row)) {
+                // console.log(`移動訂單 ID ${orderId} 到正確的區塊`);
+                targetTableBody.appendChild(row);
+            }
+            // 更新點擊事件
+            row.onclick = () => {
+                if (status === 0) {
+                    showOrderDetails(allOrders.find((order) => order.orderId === orderId));
+                } else if (status === 1) {
+                    showArrivedOrderDetails(allOrders.find((order) => order.orderId === orderId));
+                }
+            };
+        }
 
     </script>
 </body>

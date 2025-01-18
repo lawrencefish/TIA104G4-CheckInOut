@@ -1,553 +1,570 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>飯店管理系統</title>
-    <style>
-        /* 全局樣式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>飯店管理系統</title>
+        <style>
+            /* 全局樣式 */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: Arial, sans-serif;
+                color: #333;
+                line-height: 1.5;
+                background-color: #f9f9f9;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            /* Header 樣式 */
+            header {
+                background-color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 15px 30px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                font-size: 18px;
+            }
+            /* Logo */
+            header .logo a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-decoration: none;
+            }
+            header .logo a img {
+                width: 40px;
+                height: 40px;
+            }
+            header .logo a span {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #007bff;
+            }
+            header nav {
+                display: flex;
+                gap: 25px;
+            }
+            header nav a {
+                font-size: 1rem;
+                color: #333;
+                padding: 5px 10px;
+                border-radius: 4px;
+                transition: background-color 0.3s ease, color 0.3s ease;
+            }
+            header nav a:hover,
+            header nav a.active {
+                background-color: #007bff;
+                color: #fff;
+            }
+            header .user {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                color: #333;
+                position: relative;
+            }
+            header .user .icon {
+                font-size: 1.2rem;
+                cursor: pointer;
+            }
+            /* Hotel Button */
+            header .user .hotel-button {
+                background-color: #2c3e50;
+                color: #fff;
+                border: 1px solid #34495e;
+                padding: 10px 20px;
+                font-size: 1rem;
+                font-weight: 600;
+                border-radius: 25px;
+                cursor: pointer;
+                position: relative;
+                transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            /* Hover effect */
+            header .user .hotel-button:hover {
+                background-color: #34495e;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            }
+            /* Active state */
+            header .user .hotel-button:active {
+                background-color: #1a252f;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            }
+            /* Focused state (accessibility improvement) */
+            header .user .hotel-button:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
+            }
+            /* Dropdown menu */
+            header .user .dropdown {
+                display: none;
+                position: absolute;
+                top: 40px;
+                right: 0;
+                background-color: #fff;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                border-radius: 4px;
+                width: 150px;
+                overflow: hidden;
+            }
+            header .user .dropdown ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            header .user .dropdown ul li {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+                cursor: pointer;
+                border-bottom: 1px solid #eee;
+                transition: background-color 0.3s ease;
+            }
+            header .user .dropdown ul li:hover {
+                background-color: #007bff;
+                color: #fff;
+            }
+            header .user .dropdown ul li:last-child {
+                border-bottom: none;
+            }
+            /* Footer 樣式 */
+            footer {
+                background-color: #333;
+                padding: 10px 30px;
+                text-align: center;
+                font-size: 0.9rem;
+                color: #fff;
+                border-top: 1px solid #ddd;
+                margin-top: auto;
+            }
+            /* 導覽列 */
+            .navbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background-color: #333;
+                color: white;
+                padding: 10px 20px;
+            }
+            .navbar .logo {
+                font-size: 18px;
+                font-weight: bold;
+            }
+            .navbar nav ul {
+                list-style: none;
+                display: flex;
+                gap: 20px;
+            }
+            .navbar nav ul li a {
+                color: white;
+                text-decoration: none;
+            }
+            .container {
+                flex: 1;
+                display: flex;
+                overflow: hidden;
+            }
+            aside {
+                width: 30%;
+                background-color: #ffffff;
+                border-right: 1px solid #ddd;
+                overflow-y: auto;
+            }
+            .user-list {
+                list-style: none;
+                padding: 10px;
+            }
+            .user-item {
+                padding: 15px;
+                border-bottom: 1px solid #ddd;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            .user-item:hover {
+                background-color: #f1f1f1;
+            }
+            .user-item.active {
+                background-color: #e9f5ff;
+            }
+            .user-name {
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+            .last-message {
+                font-size: 0.9rem;
+                color: #555;
+            }
+            .timestamp {
+                font-size: 0.8rem;
+                color: #999;
+            }
+            main {
+                flex: 1;
+                background-color: #fff;
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+            }
+            .chat-header {
+                font-size: 1.2rem;
+                font-weight: bold;
+                padding: 10px 0;
+                border-bottom: 1px solid #ddd;
+                margin-bottom: 10px;
+            }
+            .chat-messages {
+                flex: 1;
+                overflow-y: auto;
+                padding: 10px 0;
+            }
+            .chat-message {
+                margin-bottom: 15px;
+            }
 
-        body {
-            font-family: Arial, sans-serif;
-            color: #333;
-            line-height: 1.5;
-            background-color: #f9f9f9;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+            .clearfix {
+                clear: both;
+            }
+            .chat-input {
+                display: flex;
+                margin-top: 10px;
+                border-top: 1px solid #ddd;
+                padding: 10px 0;
+            }
+            .chat-input textarea {
+                flex: 1;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                resize: none;
+                height: 50px;
+            }
+            .chat-input button {
+                padding: 10px 20px;
+                margin-left: 10px;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            .chat-input button:hover {
+                background-color: #0056b3;
+            }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
+            .chat-message .message-wrapper {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                max-width: 70%;
+                padding: 10px;
+                border-radius: 10px;
+                margin: 5px 0;
+            }
 
-        /* Header 樣式 */
-        header {
-            background-color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            font-size: 18px;
-        }
+            .chat-message.user .message-wrapper {
+                text-align: left;
+                align-self: flex-end;
+                background: #fdecec;
+                padding: 8px;
+                border-radius: 8px;
+                margin-right: auto; /* 強制靠右對齊 */
+            }
 
-        /* Logo */
-        header .logo a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
+            .chat-message.hotel .message-wrapper {
+                text-align: right;
+                background: #d1ecf1;
+                padding: 8px;
+                border-radius: 8px;
+                margin-left: auto; /* 強制靠右對齊 */
+            }
 
-        header .logo a img {
-            width: 40px;
-            height: 40px;
-        }
+            .chat-message .message-content {
+                font-size: 1rem;
+            }
 
-        header .logo a span {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #007bff;
-        }
+            .chat-message .message-time {
+                font-size: 0.8rem;
+                color: #999;
+            }
 
-        header nav {
-            display: flex;
-            gap: 25px;
-        }
+        </style>
+    </head>
 
-        header nav a {
-            font-size: 1rem;
-            color: #333;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        header nav a:hover,
-        header nav a.active {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        header .user {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: #333;
-            position: relative;
-        }
-
-        header .user .icon {
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        /* Hotel Button */
-        header .user .hotel-button {
-            background-color: #2c3e50;
-            color: #fff;
-            border: 1px solid #34495e;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 25px;
-            cursor: pointer;
-            position: relative;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Hover effect */
-        header .user .hotel-button:hover {
-            background-color: #34495e;
-            /* 稍微變深的顏色 */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-            /* 更柔和的陰影 */
-        }
-
-        /* Active state */
-        header .user .hotel-button:active {
-            background-color: #1a252f;
-            /* 點擊時變得更深 */
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Focused state (accessibility improvement) */
-        header .user .hotel-button:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.5);
-            /* 聚焦時顯示藍色陰影 */
-        }
-
-
-        /* Dropdown menu */
-        header .user .dropdown {
-            display: none;
-            position: absolute;
-            top: 40px;
-            right: 0;
-            background-color: #fff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-            width: 150px;
-            overflow: hidden;
-        }
-
-        header .user .dropdown ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        header .user .dropdown ul li {
-            padding: 10px 15px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.3s ease;
-        }
-
-        header .user .dropdown ul li:hover {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        header .user .dropdown ul li:last-child {
-            border-bottom: none;
-        }
-
-        /* Footer 樣式 */
-        footer {
-            background-color: #333;
-            /* footer 改為深色 */
-            padding: 10px 30px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #fff;
-            border-top: 1px solid #ddd;
-            margin-top: auto;
-        }
-
-        /* 導覽列 */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-        }
-
-        .navbar .logo {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .navbar nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-
-        .navbar nav ul li a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* 主容器 */
-        .container {
-            display: flex;
-            margin: 20px;
-        }
-
-        /* 側邊欄 */
-        aside {
-            width: 300px;
-            padding: 20px;
-        }
-
-        aside nav {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        aside nav a {
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 1rem;
-            color: #333;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        aside nav a.active,
-        aside nav a:hover {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        aside select {
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            padding: 0.5rem;
-            font-size: 1rem;
-            width: 100%;
-            box-sizing: border-box;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 10px;
-            /* Add some space below the dropdown */
-        }
-
-        /* Adjust aside label styling */
-        aside label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        aside .btn-add {
-            width: 100%;
-            margin-top: 5px;
-            border-radius: 7px;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            background-color: #f5f5f5;
-            /* 預設背景色 */
-            transition: background-color 0.3s ease;
-            /* 增加過渡效果 */
-        }
-
-        aside .btn-add:hover {
-            background-color: #dcdcdc;
-        }
-
-        .client-names {
-            border-radius: 10px;
-            /* border: 1px solid #ccc; */
-            padding: 0.5rem;
-            font-size: 1rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* 主要聊天區 */
-        .chat-area {
-            flex: 1;
-            margin-left: 20px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .chat .customer,
-        .chat .response {
-            margin-bottom: 20px;
-        }
-
-        .chat h4 {
-            margin-bottom: 5px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .message {
-            background-color: #f1f1f1;
-            padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
-        }
-
-        .reply {
-    		margin-top: 20px;
-    		display: flex;
-    		align-items: center;
-    		justify-content: space-between;
-		}
-
-		.reply textarea {
-    		width: 80%;
-   			height: 50px;
-   			padding: 10px;
-    		border: 1px solid #ccc;
-    		border-radius: 5px;
-    		resize: none; /* 禁止調整大小 */
-		}
-
-		.reply button {
-    		margin-left: 10px;
-    		padding: 10px 20px;
-    		background-color: #007bff;
-    		color: white;
-    		border: none;
-    		border-radius: 5px;
-    		cursor: pointer;
-    		height: 50px; /* 確保與輸入框對齊 */
-		}
-
-        .reply button:hover {
-            background-color: #0056b3;
-        }
-
-        /* 顯示其他使用者的訊息在左側 */
-		.chat .message {
-    		margin: 10px 0;
-    		padding: 10px;
-    		border-radius: 8px;
-    		display: inline-block;
-    		max-width: 70%;
-   			 word-wrap: break-word;
-		}
-
-		/* 顯示自己的訊息在右側 */
-		.chat .my-message {
-    		margin: 10px 0;
-    		padding: 10px;
-    		border-radius: 8px;
-    		display: inline-block;
-    		max-width: 70%;
-    		word-wrap: break-word;
-    		background-color: #e0f7fa; /* 淡藍色背景 */
-    		float: right;
-    		clear: both;
-    		text-align: right;
-		}
-
-		/* 清除浮動 */
-		.chat .clearfix {
-    		clear: both;
-		}
-
-        .response-group {
-            text-align: right;
-            margin-bottom: 10px; /* 每次新增訊息分組換行 */
-        }
-
-        .response-group .message {
-            background-color: #e0f7fa; /* 淡藍色背景 */
-            padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
-            float: right;
-            clear: both;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <a th:href="@{/frontDesk}">
-                <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
-                <span>飯店管理系統</span>
-            </a>
-        </div>
-        <nav>
-            <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
-          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
-            <a th:href="@{/orders}">訂單管理</a>
-            <a th:href="@{/comment}">評論管理</a>
-            <a th:href="@{/client}">客戶管理</a>
-<!--            <a th:href="@{/report}">報表分析</a>-->
-        </nav>
-        <div class="user">
-            <span class="icon">🔔</span>
-            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
-            <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
-            <div class="dropdown">
-                <ul>
-                    <li>帳號設定</li>
-                    <li>登出</li>
-                </ul>
+    <body>
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <a th:href="@{/frontDesk}">
+                    <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
+                    <span>飯店管理系統</span>
+                </a>
             </div>
-        </div>
-    </header>
-
-    <!-- 側邊欄與主要內容 -->
-    <div class="container">
-        <aside class="sidebar" id="aside">
-            <h3>所有客戶</h3>
-            <label for="client-names"></label>
-            <select id="client-names">
-                <option>李相赫</option>
-                <option>崔祐齊</option>
-                <option>文炫竣</option>
-                <option>李珉炯</option>
-                <option>柳岷析</option>
-            </select>
-            <label for="common-replies">常用回覆</label>
-            <select id="common-replies">
-                <option>Hello World</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-                <option>Option 4</option>
-                <option>Option 5</option>
-            </select>
-            <a href="4-3.html"><button class="btn-add">新增</button></a>
-        </aside>
-
-        <main class="chat-area">
-            <div class="chat" id="chatArea">
-                <div class="customer">
-                    
+            <nav>
+                <a th:href="@{/frontDesk}">櫃台系統</a>
+                <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
+                <a th:href="@{/orders}">訂單管理</a>
+                <a th:href="@{/comment}">評論管理</a>
+                <a th:href="@{/client}">客戶管理</a>
+            </nav>
+            <div class="user">
+                <span class="icon">🔔</span>
+                <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
+                <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
+                <div class="dropdown">
+                    <ul>
+                        <li>帳號設定</li>
+                        <li>登出</li>
+                    </ul>
                 </div>
             </div>
-    
-            <div class="reply">
-                <textarea id="replyInput" placeholder="輸入文字...."></textarea>
-                <button id="sendButton">送出</button>
-            </div>
-        </main>
-    
-       <script>
-    	// 獲取飯店名稱作為使用者名稱
-    	const hotelButton = document.querySelector('.hotel-button');
-    	const username = hotelButton ? hotelButton.textContent.trim() : 'Unknown'; // 確保取得飯店名稱
+        </header>
 
-    	if (!username || username === 'Unknown') {
-        console.error('飯店名稱未正確加載，無法建立 WebSocket 連接。');
-   		 } else {
-        // 建立 WebSocket 連接
-        const ws = new WebSocket(`ws://localhost:8080/chat/${username}`);
+        <div class="container">
+            <aside>
+                <ul class="user-list" id="userList"></ul>
+            </aside>
+            <main>
+                <div class="chat-header" id="chatHeader">請選擇一位使用者開始聊天</div>
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input">
+                    <textarea id="messageInput" placeholder="輸入訊息..." disabled></textarea>
+                    <button id="sendButton" disabled>送出</button>
+                </div>
+            </main>
+        </div>
 
-        const chatArea = document.getElementById('chatArea');
-        const replyInput = document.getElementById('replyInput');
-        const sendButton = document.getElementById('sendButton');
+        <script>
+            const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
+            const API_URL = `http://localhost:8080/api/chat/members?hotelId=${hotelId}`;
 
-        ws.onopen = () => {
-            console.log("WebSocket connection established.");
-        };
+            // DOM 元素
+            const userList = document.getElementById("userList");
+            const chatHeader = document.getElementById("chatHeader");
+            const chatMessages = document.getElementById("chatMessages");
+            const messageInput = document.getElementById("messageInput");
+            const sendButton = document.getElementById("sendButton");
 
-        ws.onmessage = (event) => {
-            const message = event.data;
+            let users = [];
+            let activeUserId = null;
+            let chatSocket;
 
-            try {
-                const parsedMessage = JSON.parse(message);
-
-                // 創建訊息的 DOM 元素
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message');
-
-                // 判斷訊息是否是自己發送的
-                if (parsedMessage.sender === username) {
-                    messageDiv.classList.add('my-message');
-                } else {
-                    messageDiv.classList.add('other-message');
-                }
-
-                messageDiv.textContent = `${parsedMessage.sender}: ${parsedMessage.content}`;
-                chatArea.appendChild(messageDiv);
-
-                // 清除浮動（確保訊息不會重疊）
-                const clearDiv = document.createElement('div');
-                clearDiv.classList.add('clearfix');
-                chatArea.appendChild(clearDiv);
-
-                // 自動滾動到底部
-                chatArea.scrollTop = chatArea.scrollHeight;
-            } catch (e) {
-                console.error("無法解析收到的訊息為 JSON：", message);
-            }
-        };
-
-        const sendMessage = () => {
-            const messageContent = replyInput.value.trim();
-            if (messageContent) {
-                // 即時顯示自己的訊息
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message', 'my-message');
-                messageDiv.textContent = `${messageContent}`;
-                chatArea.appendChild(messageDiv);
-
-                // 清除浮動（確保訊息不會重疊）
-                const clearDiv = document.createElement('div');
-                clearDiv.classList.add('clearfix');
-                chatArea.appendChild(clearDiv);
-
-                // 自動滾動到底部
-                chatArea.scrollTop = chatArea.scrollHeight;
-
-                // 發送 JSON 格式的訊息到伺服器
-                const message = JSON.stringify({
-                    sender: username,
-                    content: messageContent,
-                    timestamp: new Date().toISOString(),
+            // 時間格式化函式
+            function formatTimestamp(ts) {
+                const date = new Date(ts);
+                return date.toLocaleString("zh-TW", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false
                 });
-                ws.send(message);
+            }
 
-                // 清空輸入框
-                replyInput.value = '';
-            		}
-        		};
+            // 從 API 獲取用戶列表
+            async function fetchUsers() {
+                try {
+                    const response = await fetch(API_URL);
+                    if (!response.ok) {
+                        throw new Error(`HTTP 錯誤！狀態碼：${response.status}`);
+                    }
+                    users = await response.json();
+                    renderUserList();
+                } catch (error) {
+                    console.error("獲取用戶列表失敗：", error);
+                }
+            }
 
-        		sendButton.addEventListener('click', sendMessage);
+            // 渲染用戶列表
+            function renderUserList() {
+                userList.innerHTML = ""; // 清空現有列表
+                users.forEach(user => {
+                    const userItem = document.createElement("li");
+                    userItem.classList.add("user-item");
+                    userItem.dataset.memberId = user.memberId;
 
-        		// 新增 keydown 事件監聽
-        		replyInput.addEventListener('keydown', (event) => {
-            		if (event.key === 'Enter' && !event.shiftKey) { 
-                		event.preventDefault(); // 阻止默認換行行為
-                		sendMessage(); // 調用發送函數
-            			}
-        			});
-    			}
-			</script>
+                    const formattedDate = new Date(user.latestChatTime).toLocaleString("zh-TW", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false
+                    });
 
-        
-</body>
+                    userItem.innerHTML = `
+          <div><strong>${user.memberName}</strong></div>
+          <div>${user.latestChatMessage}</div>
+          <div>${formattedDate}</div>
+        `;
+
+                    userItem.addEventListener("click", () => setActiveUser(user.memberId));
+                    userList.appendChild(userItem);
+                });
+            }
+
+            // 設定當前選中的用戶並請求聊天歷史記錄
+            function setActiveUser(userId) {
+                activeUserId = userId;
+
+                document.querySelectorAll(".user-item").forEach(item => item.classList.remove("active"));
+                const activeItem = document.querySelector(`[data-member-id="${userId}"]`);
+                if (activeItem) activeItem.classList.add("active");
+
+                const user = users.find(u => u.memberId === userId);
+                if (user) {
+                    chatHeader.textContent = `與 ${user.memberName} 的聊天`;
+                    chatMessages.innerHTML = ""; // 清空聊天記錄
+                    messageInput.disabled = false;
+                    sendButton.disabled = false;
+
+                    // 透過 WebSocket 請求歷史記錄
+                    if(chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                        const historyRequestPayload = {
+                            action: 'history',
+                            message: {
+                                memberId: userId,
+                                hotelId: hotelId
+                            }
+                        };
+                        chatSocket.send(JSON.stringify(historyRequestPayload));
+                    }
+                }
+            }
+
+            // 發送消息
+            sendButton.addEventListener("click", () => {
+                const message = messageInput.value.trim();
+                if (message && activeUserId && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                    const payload = {
+                        action: 'message',
+                        message: {
+                            memberId: activeUserId,
+                            hotelId: hotelId,
+                            sender: 'H',
+                            message: message
+                        }
+                    };
+                    chatSocket.send(JSON.stringify(payload));
+
+                    // 顯示發送的訊息在畫面上
+                    const messageDiv = document.createElement("div");
+                    messageDiv.classList.add("chat-message", "user");
+                    const currentTime = formatTimestamp(new Date().getTime());
+                    messageDiv.innerHTML = `
+          <div class="message-content">${message}</div>
+          <small>${currentTime}</small>
+          <div class="clearfix"></div>
+        `;
+                    chatMessages.appendChild(messageDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    messageInput.value = "";
+                }
+            });
+
+            // 監聽鍵盤 Enter 鍵發送訊息
+            messageInput.addEventListener("keypress", function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendButton.click();
+                }
+            });
+
+            // 初始化頁面與 WebSocket 連線
+            window.addEventListener('DOMContentLoaded', function() {
+                // 建立 WebSocket 連線
+                const socketUrl = 'ws://localhost:8080/ws/chat';
+                chatSocket = new WebSocket(socketUrl);
+
+                chatSocket.onopen = function() {
+                    console.log('WebSocket 連線已建立');
+                };
+
+                chatSocket.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+
+                        // 如果回應包含 result 陣列，表示是完整歷史記錄
+                        if (data.result && Array.isArray(data.result)) {
+                            chatMessages.innerHTML = ''; // 清空現有聊天內容
+                            data.result.forEach(msg => {
+                                const messageDiv = document.createElement("div");
+                                messageDiv.classList.add("chat-message");
+
+                                // 根據 sender 區分訊息的來源
+                                if (msg.sender === 'M') {
+                                    messageDiv.classList.add("user");
+                                } else {
+                                    messageDiv.classList.add("hotel");
+                                }
+
+                                const timeString = msg.sendTime ? formatTimestamp(msg.sendTime) : "";
+
+                                // 設置訊息內容和時間
+                                messageDiv.innerHTML = `
+          <div class="message-wrapper">
+            <div class="message-content">${msg.message}</div>
+            <div class="message-time">${timeString}</div>
+          </div>
+        `;
+                                chatMessages.appendChild(messageDiv);
+                            });
+                            chatMessages.scrollTop = chatMessages.scrollHeight; // 滾動到底部
+                        } else {
+                            // 處理單一訊息
+                            const messageDiv = document.createElement("div");
+                            messageDiv.classList.add("chat-message");
+
+                            // 根據 sender 區分訊息的來源
+                            if (data.sender === 'M') {
+                                messageDiv.classList.add("user");
+                            } else {
+                                messageDiv.classList.add("hotel");
+                            }
+
+                            const timeString = data.sendTime ? formatTimestamp(data.sendTime) : "";
+
+                            // 設置訊息內容和時間
+                            messageDiv.innerHTML = `
+        <div class="message-wrapper">
+          <div class="message-content">${data.message}</div>
+          <div class="message-time">${timeString}</div>
+        </div>
+      `;
+                            chatMessages.appendChild(messageDiv);
+                            chatMessages.scrollTop = chatMessages.scrollHeight; // 滾動到底部
+                        }
+                    } catch (e) {
+                        console.error('解析訊息錯誤:', e);
+                    }
+                };
+
+                chatSocket.onerror = function(error) {
+                    console.error('WebSocket 發生錯誤:', error);
+                };
+
+                chatSocket.onclose = function() {
+                    console.log('WebSocket 連線已關閉');
+                };
+
+                // 初始化用戶列表
+                fetchUsers();
+            });
+        </script>
+    </body>
 
 </html>
