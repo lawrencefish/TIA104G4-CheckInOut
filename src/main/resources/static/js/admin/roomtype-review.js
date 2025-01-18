@@ -1,173 +1,213 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // 獲取 URL 中的 roomTypeId
-    const pathSegments = window.location.pathname.split('/');
-    const roomTypeId = pathSegments[pathSegments.length - 1]; // 從路徑中取得ID
+    try {
+        // 從 URL 獲取房型 ID
+        const pathSegments = window.location.pathname.split('/');
+        const roomTypeId = pathSegments[pathSegments.length - 1];
 
-    if (roomTypeId) {
-        try {
-            const response = await fetch(`/adminRoomType/detail/${roomTypeId}`);
-            if (!response.ok) {
-                throw new Error(`HTTP錯誤 ! 狀態碼: ${response.status}`);
-            }
-            const roomData = await response.json();
-            loadRoomData(roomData);
-        } catch (error) {
-            console.error('取得房型資料時發生錯誤:', error);
+        if (!roomTypeId) {
+            console.error('找不到房型 ID');
+            return;
         }
+
+        console.log('正在獲取房型 ID:', roomTypeId);
+        await loadRoomData(roomTypeId);
+        initializeEventListeners();
+
+    } catch (error) {
+        console.error('初始化頁面時發生錯誤:', error);
+    }
+});
+
+// 更新房型基本資訊的函數
+function updateRoomInfo(roomData) {
+    // 更新飯店名稱
+    const hotelNameEl = document.querySelector('.hotel-name');
+    if (hotelNameEl) {
+        hotelNameEl.textContent = roomData.hotel?.name || '未知飯店';
     }
 
-    // 初始化顯示評論
-//    displayReviews();
-	
-	// 	初始化其他功能
-    initializeEventListeners();
-});
+    // 更新房型名稱
+    const roomNameEl = document.querySelector('.room-header h2');
+    if (roomNameEl) {
+        roomNameEl.textContent = roomData.roomName || '未知房型';
+    }
+
+    // 更新可容納人數和早餐資訊
+    const roomInfoEl = document.querySelector('.room-details .detail-item span');
+    if (roomInfoEl) {
+        let infoText = `${roomData.maxPerson || 0}人`;
+        infoText += roomData.breakfast === 1 ? '｜附早餐' : '｜不附早餐';
+        roomInfoEl.textContent = infoText;
+    }
+
+    // 更新房型描述
+    const descriptionEl = document.querySelector('.detail-item:last-child p');
+    if (descriptionEl) {
+        descriptionEl.textContent = roomData.description || '暫無描述';
+    }
+}
+
+// 載入房型資料的主要函數
+async function loadRoomData(roomTypeId) {
+    try {
+//        const response = await fetch(`/adminRoomType/detail/${roomTypeId}`);
+//        if (!response.ok) {
+//            throw new Error(`HTTP 錯誤！狀態碼：${response.status}`);
+//        }
+//
+//        const roomData = await response.json();
+//        console.log('獲取到的房型資料:', roomData);
+//		
+//		// 檢查飯店資料
+//        if (!roomData.hotel || !roomData.hotel.name) {
+//            console.warn('找不到飯店資料:', roomData);
+//            // 不更新飯店名稱，保留原本伺服器端渲染的值
+//            // 或者從其他地方取得飯店資料
+//            const hotelNameEl = document.querySelector('.hotel-name');
+//            if (hotelNameEl && hotelNameEl.textContent && hotelNameEl.textContent !== '未知飯店') {
+//                // 保留現有的飯店名稱
+//                roomData.hotel = {
+//                    name: hotelNameEl.textContent
+//                };
+//            }
+//        }
+//        
+//        updateRoomInfo(roomData);
+        
+        // 初始化圖片切換功能
+        initializeImageSwitching();
+        
+//        if (roomData.roomTypeFacilities && roomData.roomTypeFacilities.length > 0) {
+//            loadFacilities(roomData.roomTypeFacilities);
+//        }
+    } catch (error) {
+        console.error('載入房型資料時發生錯誤:', error);
+    }
+}
+
+// 初始化圖片切換功能
+function initializeImageSwitching() {
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    const mainImage = document.getElementById('mainImage');
+
+    if (!mainImage) {
+        console.error('找不到主圖片元素');
+        return;
+    }
+
+    // 設置第一張縮圖為選中狀態
+    if (thumbnails.length > 0) {
+        thumbnails[0].classList.add('selected');
+    }
+
+    // 為每個縮圖添加點擊事件
+    thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            // 更新主圖
+            mainImage.src = this.src;
+            
+            // 更新縮圖選中狀態
+            thumbnails.forEach(thumb => thumb.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+}
 
 // 初始化事件監聽器
 function initializeEventListeners() {
-    // 圖片預覽功能
-    document.querySelectorAll('.thumbnail').forEach(thumb => {
-        thumb.addEventListener('click', function() {
-            document.getElementById('mainImage').src = this.src;
-        });
-    });
+    // 通過按鈕
+    const approveBtn = document.createElement('button');
+    approveBtn.className = 'btn-approve';
+    approveBtn.textContent = '通過';
+    approveBtn.onclick = () => handleApprove();
 
-    // 評論換頁功能
-    document.getElementById('prevPage').addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            displayReviews();
-        }
-    });
+    // 駁回按鈕
+    const rejectBtn = document.createElement('button');
+    rejectBtn.className = 'btn-reject';
+    rejectBtn.textContent = '駁回';
+    rejectBtn.onclick = () => handleReject();
 
-    document.getElementById('nextPage').addEventListener('click', () => {
-        if (currentPage * reviewsPerPage < reviews.length) {
-            currentPage++;
-            displayReviews();
-        }
-    });
+    // 加入按鈕到操作區域
+    const actionButtons = document.querySelector('.action-buttons');
+    if (actionButtons) {
+        actionButtons.innerHTML = ''; // 清除現有按鈕
+        actionButtons.appendChild(approveBtn);
+        actionButtons.appendChild(rejectBtn);
+    }
 }
 
-// 審核功能也需要更新為使用實際的 API
-async function approveRoom() {
-    const comment = document.querySelector('.comment-box').value;
-    if (!comment.trim()) {
-        alert('請輸入審核意見');
-        return;
-    }
-    
+// 處理通過審核
+async function handleApprove() {
     if (confirm('確定要通過此房型審核嗎？')) {
-        try {
-            const pathSegments = window.location.pathname.split('/');
-            const roomTypeId = pathSegments[pathSegments.length - 1];
-            
-            const response = await fetch(`/adminRoomType/review/${roomTypeId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    status: 1, // 通過
-                    comment: comment
-                })
-            });
+        await updateRoomStatus(1);
+    }
+}
 
-            if (!response.ok) {
-                throw new Error('審核失敗');
-            }
-
-            alert('審核已通過！');
-            window.location.href = '/adminRoomType/list';
-            
-        } catch (error) {
-            console.error('審核過程發生錯誤:', error);
-            alert('審核失敗，請稍後再試');
+// 處理駁回審核
+async function handleReject() {
+    // 創建彈窗
+    const dialog = document.createElement('div');
+    dialog.className = 'reject-dialog';
+    dialog.innerHTML = `
+        <div class="dialog-content">
+            <h3>駁回原因</h3>
+            <textarea id="rejectReason" placeholder="請輸入駁回原因..."></textarea>
+            <div class="dialog-buttons">
+                <button onclick="submitReject()" class="btn-confirm">確認</button>
+                <button onclick="closeDialog()" class="btn-cancel">取消</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    
+    // 添加關閉彈窗的功能
+    window.closeDialog = function() {
+        document.body.removeChild(dialog);
+    };
+    
+    // 添加提交駁回的功能
+    window.submitReject = async function() {
+        const reason = document.getElementById('rejectReason').value;
+        if (!reason.trim()) {
+            alert('請輸入駁回原因');
+            return;
         }
-    }
+        await updateRoomStatus(2, reason);
+        closeDialog();
+    };
 }
 
-// 載入房型資料
-function loadRoomData(roomData) {
-    // 設定飯店名稱
-//    document.querySelector('.hotel-name').textContent = roomData.hotelName;
-    
-    // 設定房型名稱
-//    document.querySelector('.hotel-info h2').textContent = roomData.roomType;
-    
-    // 設定房型資訊
-//    const roomInfoText = `${roomData.maxPerson}｜ 附陽台`;
-//    document.querySelector('.detail-item:nth-child(1) p').textContent = roomInfoText;
-    
-    // 設定設施資訊
-    document.querySelector('.detail-item:nth-child(2) p').textContent = 
-        roomData.facilities.join('｜');
-    
-    // 設定描述
-//    document.querySelector('.detail-item:nth-child(3) p').textContent = 
-//        roomData.description;
-    
-    // 設定圖片
-//    const mainImage = document.getElementById('mainImage');
-//    mainImage.src = roomData.images[0];
-//    
-//    const thumbnails = document.querySelectorAll('.thumbnail');
-//    thumbnails.forEach((thumb, index) => {
-//        if (roomData.images[index]) {
-//            thumb.src = roomData.images[index];
-//        }
-//    });
+// 更新房型狀態
+async function updateRoomStatus(status, comment = '') {
+    try {
+        const pathSegments = window.location.pathname.split('/');
+        const roomTypeId = pathSegments[pathSegments.length - 1];
+        
+        // 建立 URL 參數
+        const params = new URLSearchParams({
+            status: status.toString()
+        });
+        
+        const response = await fetch(`/adminRoomType/${roomTypeId}/review?${params.toString()}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                reviewComment: comment
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('審核操作失敗');
+        }
+
+        alert(status === 1 ? '審核已通過！' : '已駁回此房型！');
+        window.location.href = '/admin/reviewBackend';
+        
+    } catch (error) {
+        console.error('審核過程發生錯誤:', error);
+        alert('審核失敗，請稍後再試');
+    }
 }
-
-
-// 分頁設定
-let currentPage = 1;
-const reviewsPerPage = 3;
-
-// 顯示評論
-//function displayReviews() {
-//    const reviewsContainer = document.getElementById('reviewsContainer');
-//    reviewsContainer.innerHTML = ''; // 清空現有內容
-//
-//    const startIndex = (currentPage - 1) * reviewsPerPage;
-//    const endIndex = startIndex + reviewsPerPage;
-//    const currentReviews = reviews.slice(startIndex, endIndex);
-//
-//    currentReviews.forEach(review => {
-//        const reviewCard = document.createElement('div');
-//        reviewCard.classList.add('review-card');
-//
-//        reviewCard.innerHTML = `
-//            <div class="review-header">
-//                <span class="review-name">${review.name}</span>
-//                <span class="review-stars">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
-//            </div>
-//            <p class="review-content">${review.content}</p>
-//        `;
-//        reviewsContainer.appendChild(reviewCard);
-//    });
-
-    // 更新按鈕狀態
-//    document.getElementById('prevPage').disabled = currentPage === 1;
-//    document.getElementById('nextPage').disabled = endIndex >= reviews.length;
-//}
-
-
-
-
-// 評論換頁功能
-document.getElementById('prevPage').addEventListener('click', () => {
-    if (currentPage > 1) {
-        currentPage--;
-        displayReviews();
-    }
-});
-
-document.getElementById('nextPage').addEventListener('click', () => {
-    if (currentPage * reviewsPerPage < reviews.length) {
-        currentPage++;
-        displayReviews();
-    }
-    // 自動載入房型資料（模擬API呼叫）
-    loadRoomData();
-});
-

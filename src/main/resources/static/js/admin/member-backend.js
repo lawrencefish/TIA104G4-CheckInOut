@@ -1,106 +1,59 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    // 初始化載入訂單資料
     try {
-        // 載入 Header 和 Footer
-        await loadHeaderAndFooter();
-        
-        // 載入會員和訂單資料
-        await loadMemberAndOrderData();
-        
+        await loadOrders();
     } catch (error) {
-        console.error('載入資料失敗:', error);
-        alert('載入資料失敗，請稍後再試');
+        console.error('載入訂單資料失敗:', error);
+		showErrorMessage('載入訂單時發生錯誤，請稍後再試');
     }
 });
 
-// 假資料 - 之後可替換成資料庫資料
-const mockData = {
-    member: {
-        avatar: './img/會員頭像.jpg',
-        account: 'Godoflol@lol.com',
-        gender: '男',
-        firstName: '李',
-        lastName: '相赫',
-        birthday: '1996/05/07',
-        phone: '091234-5678',
-        email: 'Godoflol@lol.com'
-    },
-    orders: [
-        {
-            id: 'ORD20240315001',
-            hotelImage: './img/hotel1.jpg',
-            hotelName: '台中金典酒店',
-            roomType: '總統套房',
-            checkIn: '2024-03-20',
-            checkOut: '2024-03-22',
-            guests: '2位大人',
-            price: 19500
-        },
-        {
-            id: 'ORD20240315002',
-            hotelImage: './img/hotel2.jpg',
-            hotelName: '台北圓山大飯店',
-            roomType: '總統套房',
-            checkIn: '2024-04-15',
-            checkOut: '2024-04-17',
-            guests: '2位大人',
-            price: 24500
-        },
-        {
-            id: 'ORD20240315003',
-            hotelImage: './img/hotel3.jpg',
-            hotelName: '台南超級大酒店',
-            roomType: '總統套房',
-            checkIn: '2024-05-01',
-            checkOut: '2024-05-03',
-            guests: '2位大人',
-            price: 15400
-        }
-    ]
-};
+// 載入訂單資料
+async function loadOrders() {
+	// 顯示載入中狀態
+	showLoading();
+    
+	try {
+        // API 呼叫獲取訂單資料
+        const response = await fetch('/api/member/orders', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+                // 如果需要認證，可以加入 Authorization header
+                // 'Authorization': `Bearer ${getToken()}`
+            }
+        });
 
-// 載入會員和訂單資料
-async function loadMemberAndOrderData() {
-    try {
-        // 這裡可以替換成實際的 API 呼叫
-        // const response = await fetch('/api/member/data');
-        // const data = await response.json();
-        
-        // 暫時使用假資料
-        const data = mockData;
-        
-        // 載入會員資料
-        loadMemberData(data.member);
-        
-        // 載入訂單資料
-        loadOrdersList(data.orders);
-        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const orders = await response.json();
+        updateOrdersList(orders);
     } catch (error) {
-        console.error('獲取資料失敗:', error);
+        console.error('獲取訂單資料失敗:', error);
         throw error;
+	} finally {
+        // 隱藏載入中狀態
+        hideLoading();
     }
 }
 
-// 載入會員資料
-function loadMemberData(memberData) {
-    document.querySelector('.avatar').src = memberData.avatar;
-    document.querySelector('#account .content').textContent = memberData.account;
-    document.querySelector('#gender .content').textContent = memberData.gender;
-    document.querySelector('#first-name .content').textContent = memberData.firstName;
-    document.querySelector('#last-name .content').textContent = memberData.lastName;
-    document.querySelector('#birthday .content').textContent = memberData.birthday;
-    document.querySelector('#phone .content').textContent = memberData.phone;
-    document.querySelector('#email .content').textContent = memberData.email;
-}
-
 // 載入訂單列表
-function loadOrdersList(orders) {
-    const ordersContainer = document.querySelector('.orders');
-    // 保留標題
-    const title = ordersContainer.querySelector('h3');
+function updateOrdersList(orders) {
+    const ordersContainer = document.getElementById('ordersList');
+    const totalOrdersElement = document.getElementById('totalOrders');
+	
+	// 更新總訂單數
+    totalOrdersElement.textContent = orders.length;
+    
     // 清空現有內容
     ordersContainer.innerHTML = '';
-    // 重新加入標題
-    ordersContainer.appendChild(title);
+
+    if (orders.length === 0) {
+		showNoOrdersMessage(ordersContainer);
+        return;
+    }
 
     orders.forEach(order => {
         const orderElement = createOrderElement(order);
@@ -112,72 +65,85 @@ function loadOrdersList(orders) {
 function createOrderElement(order) {
     const orderContainer = document.createElement('div');
     orderContainer.className = 'order-container';
+	// 使用template literal建立訂單內容
     orderContainer.innerHTML = `
-        <img src="${order.hotelImage}" alt="${order.hotelName}" class="order-image">
+        <div class="order-image-container">
+            <img src="${order.hotelImage}" alt="${order.hotelName}" class="order-image">
+        </div>
         <div class="order-details">
-            <h3>${order.hotelName} - ${order.roomType}</h3>
-            <p>入住日期：${order.checkIn}</p>
-            <p>退房日期：${order.checkOut}</p>
-            <p>入住人數：${order.guests}</p>
-            <p class="price">$${order.price.toLocaleString()}</p>
+            <h4 class="hotel-name">${order.hotelName}</h4>
+            <div class="order-info">
+                <div class="info-row">
+                    <span class="label">入住日期：</span>
+                    <span class="value">${formatDate(order.checkIn)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">退房日期：</span>
+                    <span class="value">${formatDate(order.checkOut)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">入住人數：</span>
+                    <span class="value">${order.guests}人</span>
+                </div>
+                <div class="order-price">
+                    <span class="label">總金額：</span>
+                    <span class="value">NT$ ${formatPrice(order.price)}</span>
+                </div>
+            </div>
         </div>
     `;
 
     // 添加點擊事件導向訂單詳情頁
     orderContainer.addEventListener('click', () => {
-        window.location.href = `order-details.html?orderId=${order.id}`;
+        window.location.href = `/order-details/${order.id}`;
     });
 
     return orderContainer;
 }
 
-// 載入 Header 和 Footer
-async function loadHeaderAndFooter() {
-    try {
-        const [headerResponse, footerResponse] = await Promise.all([
-            fetch('backend-header.html'),
-            fetch('backend-footer.html')
-        ]);
+// 格式化日期
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('zh-TW', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    });
+}
 
-        const headerText = await headerResponse.text();
-        const footerText = await footerResponse.text();
+// 格式化價格
+function formatPrice(price) {
+    return price.toLocaleString('zh-TW');
+}
 
-        document.getElementById('header').innerHTML = headerText;
-        document.getElementById('footer').innerHTML = footerText;
+// 顯示無訂單訊息
+function showNoOrdersMessage(container) {
+    const messageElement = document.createElement('div');
+    messageElement.className = 'no-orders-message';
+    messageElement.textContent = '目前沒有訂單記錄';
+    container.appendChild(messageElement);
+}
 
-    } catch (error) {
-        console.error('載入 Header 或 Footer 失敗:', error);
-        throw error;
+// 顯示載入中狀態
+function showLoading() {
+    const loadingElement = document.createElement('div');
+    loadingElement.className = 'loading';
+    loadingElement.textContent = '載入中...';
+    document.querySelector('.orders').appendChild(loadingElement);
+}
+
+// 隱藏載入中狀態
+function hideLoading() {
+    const loadingElement = document.querySelector('.loading');
+    if (loadingElement) {
+        loadingElement.remove();
     }
 }
 
-// 當要改成使用資料庫時的範例：
-/*
-async function loadMemberAndOrderData() {
-    try {
-        // 獲取會員資料
-        const memberResponse = await fetch('/api/member/current', {
-            headers: {
-                'Authorization': `Bearer ${getToken()}` // 假設使用 JWT
-            }
-        });
-        const memberData = await memberResponse.json();
-
-        // 獲取訂單列表
-        const ordersResponse = await fetch('/api/member/orders', {
-            headers: {
-                'Authorization': `Bearer ${getToken()}`
-            }
-        });
-        const ordersData = await ordersResponse.json();
-
-        // 載入資料到頁面
-        loadMemberData(memberData);
-        loadOrdersList(ordersData);
-
-    } catch (error) {
-        console.error('獲取資料失敗:', error);
-        throw error;
-    }
+// 顯示錯誤訊息
+function showErrorMessage(message) {
+    const errorElement = document.createElement('div');
+    errorElement.className = 'error-message';
+    errorElement.textContent = message;
+    document.querySelector('.orders').appendChild(errorElement);
 }
-*/

@@ -1,20 +1,28 @@
 package com.admin.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hotel.model.HotelRepository;
 import com.hotel.model.HotelService;
 import com.hotel.model.HotelVO;
+import com.hotelImg.model.HotelImgRepository;
+import com.hotelImg.model.HotelImgVO;
 
 @Service("AdminHotelService")
 public class AdminHotelService {
 	
+	
 	private final HotelRepository hotelRepository; 
+	
+	@Autowired
+    private HotelImgRepository hotelImgRepository;
 	
 	public AdminHotelService(HotelRepository hotelRepository) {
 	        this.hotelRepository = hotelRepository;
@@ -47,8 +55,16 @@ public class AdminHotelService {
 	}
 
 	public Optional<HotelVO> findById(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if (id == null) {
+            return Optional.empty();
+        }
+        try {
+            return hotelRepository.findById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
 	}
 	
 	public String getStatusDescription(byte status) {
@@ -59,5 +75,24 @@ public class AdminHotelService {
             case 3: return "帳號停權";
             default: return "未知狀態";
         }
+	}
+
+	// 根據飯店 ID 查找所有圖片
+    public List<HotelImgVO> findImagesByHotelId(Integer hotelId) {
+        Optional<HotelVO> hotelOpt = hotelRepository.findById(hotelId);
+        if (hotelOpt.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return hotelOpt.get().getHotelImgs() != null ? 
+               hotelOpt.get().getHotelImgs() : 
+               new ArrayList<>();
+    }
+
+	// 根據圖片 ID 查找圖片
+	public Optional<HotelImgVO> findImageById(Integer imageId) {
+		 if (imageId == null) {
+            return Optional.empty();
+        }
+        return hotelImgRepository.findById(imageId);
 	}    
 }
