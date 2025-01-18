@@ -161,4 +161,17 @@ public class RoomInventoryService {
 	public List<RoomInventoryVO> findByDateRangeAndHotel(LocalDate startDate, LocalDate endDate, Integer hotelId) {
 		return roomInventoryRepository.findByDateRangeAndHotel(startDate, endDate, hotelId);
 	}
+
+	@Transactional
+	public void increaseInventory(Integer roomTypeId, LocalDate date, Integer quantity) {
+		RoomInventoryVO inventory = roomInventoryRepository.findByRoomTypeIdAndDate(roomTypeId, date);
+
+		if (inventory != null) {
+			inventory.setAvailableQuantity(inventory.getAvailableQuantity() + quantity);
+			roomInventoryRepository.save(inventory);
+//			System.out.println("成功恢復房型 ID " + roomTypeId + " 在日期 " + date + " 的庫存數量：" + quantity);
+		} else {
+			throw new RuntimeException("未找到房型 ID " + roomTypeId + " 在日期 " + date + " 的庫存記錄，無法恢復庫存");
+		}
+	}
 }

@@ -101,13 +101,14 @@ public class OrderControllerByTom {
         try {
             Integer orderId = requestBody.get("orderId");
 
-            // 更新訂單狀態
-            boolean isUpdated = orderService.cancelOrder(orderId);
-            if (isUpdated) {
-                return ResponseEntity.ok(Map.of("message", "訂單已成功取消"));
+            // 調用服務層方法取消訂單並恢復庫存
+            boolean isSuccess = orderService.cancelOrderAndRestoreInventory(orderId);
+
+            if (isSuccess) {
+                return ResponseEntity.ok(Map.of("message", "訂單已成功取消，庫存已恢復"));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "無法取消訂單，訂單可能不存在"));
+                        .body(Map.of("error", "無法取消訂單"));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
