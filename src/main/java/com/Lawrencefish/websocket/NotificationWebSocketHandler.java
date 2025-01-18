@@ -13,13 +13,13 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session); // 新增連線
-        System.out.println("新連線已建立，當前連線數：" + sessions.size());
+//        System.out.println("新連線已建立，當前連線數：" + sessions.size());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session); // 移除連線
-        System.out.println("連線已關閉，當前連線數：" + sessions.size());
+//        System.out.println("連線已關閉，當前連線數：" + sessions.size());
     }
 
     // 推播訊息給所有連線的客戶端

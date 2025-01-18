@@ -1048,7 +1048,7 @@
 
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log("接收到推播消息:", message);
+            // console.log("接收到推播消息:", message);
 
             if (message.type === "roomStatus") {
                 // 房間狀態更新
@@ -1066,12 +1066,12 @@
                     }));
                 }
             } else {
-                console.warn("未知的推播消息格式:", message);
+                // console.warn("未知的推播消息格式:", message);
             }
         };
 
         socket.onclose = () => {
-            console.log("WebSocket 連線已關閉");
+            // console.log("WebSocket 連線已關閉");
         };
 
         // 更新頁面上的房間狀態
