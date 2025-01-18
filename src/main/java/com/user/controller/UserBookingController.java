@@ -2,6 +2,7 @@ package com.user.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,25 +81,23 @@ public class UserBookingController {
 	@PostMapping("/addCart")
 	public ResponseEntity<Map<String, String>> addCart(@RequestBody Map<String, String> orderDetail,
 			HttpSession session) {
-		// 從 session 取得購物車 cartList，如果 session 為空則初始化
+		// 1️⃣ 取得購物車 `cartList`（若 session 無此資料則初始化）
 		List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
 		if (cartList == null) {
 			cartList = new ArrayList<>();
 		}
 
-		// 解析傳入的訂單資訊
+		// 2️⃣ 解析傳入的訂單資訊
 		Integer hotelId = Integer.valueOf(orderDetail.get("hotelId"));
 		String hotelName = orderDetail.get("hotelName");
 		Double review = Double.valueOf(orderDetail.get("review"));
-
 		LocalDate checkInDate = LocalDate.parse(orderDetail.get("checkInDate"));
 		LocalDate checkOutDate = LocalDate.parse(orderDetail.get("checkOutDate"));
-
 		Integer roomTypeId = Integer.valueOf(orderDetail.get("roomTypeId"));
 		Integer guestNum = Integer.valueOf(orderDetail.get("guestNum"));
 		Integer roomNum = Integer.valueOf(orderDetail.get("roomNum"));
 
-		// 建立 cartDetail（單筆房型資訊）
+		// 建立 `cartDetail`（單筆房型資訊）
 		Map<String, Object> cartDetail = new HashMap<>();
 		cartDetail.put("checkInDate", checkInDate);
 		cartDetail.put("checkOutDate", checkOutDate);
@@ -106,13 +105,14 @@ public class UserBookingController {
 		cartDetail.put("guestNum", guestNum);
 		cartDetail.put("roomNum", roomNum);
 
-		boolean foundHotel = false; // 是否找到相同的 hotelId
-		boolean notSameDateExists = false; // 是否已存在相同房型且日期完全一致
-		boolean sameDateAndRoomType = false; // 是否已存在相同房型且日期完全一致
+		boolean foundHotel = false; // 是否找到相同的 `hotelId`
+		boolean differentDateExists = false; // 是否有不同日期的房型
+		boolean sameRoomTypeExists = false; // 是否已存在相同房型且日期完全一致
 
+		// 3️⃣ 遍歷 `cartList` 來檢查是否已存在 `hotelId`
 		for (Map<String, Object> existingCart : cartList) {
 			if (existingCart.get("hotelId").equals(hotelId)) {
-				foundHotel = true;
+				foundHotel = true; // **此 `hotelId` 已存在**
 				List<Map<String, Object>> cartDetailList = (List<Map<String, Object>>) existingCart
 						.get("cartDetailList");
 
@@ -121,48 +121,48 @@ public class UserBookingController {
 					existingCart.put("cartDetailList", cartDetailList);
 				}
 
-				// **檢查是否已有相同房型且日期完全一致**
+				// 4️⃣ 檢查該 `hotelId` 是否已存在不同的入住/退房日期
 				for (Map<String, Object> existingDetail : cartDetailList) {
-					Integer existingRoomTypeId = (Integer) existingDetail.get("roomTypeId");
 					LocalDate existingCheckInDate = (LocalDate) existingDetail.get("checkInDate");
 					LocalDate existingCheckOutDate = (LocalDate) existingDetail.get("checkOutDate");
+					Integer existingRoomTypeId = (Integer) existingDetail.get("roomTypeId");
 
-					if (existingRoomTypeId.equals(roomTypeId) && existingCheckInDate.equals(checkInDate)
-							&& existingCheckOutDate.equals(checkOutDate)) {
-						sameDateAndRoomType = true;
-						System.out.println(notSameDateExists);
-						break;
+					// **發現不同的入住/退房日期，拒絕新增**
+					if (!existingCheckInDate.equals(checkInDate) || !existingCheckOutDate.equals(checkOutDate)) {
+						differentDateExists = true;
+						break; // 只要發現一筆不同日期的房型，即可確定不能加入
 					}
 
-					if (existingRoomTypeId.equals(roomTypeId) && !existingCheckInDate.equals(checkInDate)
-							&& !existingCheckOutDate.equals(checkOutDate)) {
-						notSameDateExists = true;
-						System.out.println(notSameDateExists);
-						break;
+					// **發現完全相同的房型和日期，拒絕新增**
+					if (existingRoomTypeId.equals(roomTypeId)) {
+						sameRoomTypeExists = true;
 					}
 				}
 
-				// **只有入住與退房日期一致的情況下才允許新增**
-				if (!notSameDateExists && !sameDateAndRoomType) {
-					cartDetailList.add(cartDetail);
-				} else if(sameDateAndRoomType){
+				// 5️⃣ 若發現不同的入住/退房日期，則返回錯誤
+				if (differentDateExists) {
+					Map<String, String> errorResponse = new HashMap<>();
+					errorResponse.put("message", "<strong>同一間旅館只能加入相同的入住與退房日期的房型！</strong>");
+					errorResponse.put("dateMismatch", "true");
+					return ResponseEntity.badRequest().body(errorResponse);
+				}
+
+				// 6️⃣ 若房型已存在，則返回錯誤
+				if (sameRoomTypeExists) {
 					Map<String, String> errorResponse = new HashMap<>();
 					errorResponse.put("message", "<strong>已經有相同的房型加入，請勿重新加入</strong>");
 					errorResponse.put("dateMismatch", "true");
 					return ResponseEntity.badRequest().body(errorResponse);
-					
-				}else{
-					Map<String, String> errorResponse = new HashMap<>();
-					errorResponse.put("message", "<strong>入住日期跟退房日期不一致，無法加入購物車</strong><br>相同旅館只能將入住與退房日期一致的房型加入購物車。");
-					errorResponse.put("dateMismatch", "true");
-					return ResponseEntity.badRequest().body(errorResponse);
 				}
 
-				break;
+				// 7️⃣ **允許新增該 `hotelId` 下的新房型（但日期相同）**
+				cartDetailList.add(cartDetail);
+				session.setAttribute("cartList", cartList);
+				return ResponseEntity.ok(Collections.singletonMap("message", "ok"));
 			}
 		}
 
-		// 如果 `hotelId` 尚未存在於 `cartList`，則新增 `cart`
+		// 8️⃣ **如果 `hotelId` 尚未存在於 `cartList`，則新增**
 		if (!foundHotel) {
 			Map<String, Object> cart = new HashMap<>();
 			cart.put("hotelId", hotelId);
@@ -176,17 +176,11 @@ public class UserBookingController {
 			cartList.add(cart);
 		}
 
-		// 更新 session，確保購物車內容被保存
+		// 9️⃣ **更新 session**
 		session.setAttribute("cartList", cartList);
 
-		// 回傳成功訊息
-		Map<String, String> response = new HashMap<>();
-		response.put("message", "ok");
-
-		// Debug 輸出
-		System.out.println("目前購物車：" + session.getAttribute("cartList"));
-
-		return ResponseEntity.ok(response);
+		// 🔟 **回傳成功訊息**
+		return ResponseEntity.ok(Collections.singletonMap("message", "ok"));
 	}
 
 	// 取得飯店資訊
@@ -275,8 +269,9 @@ public class UserBookingController {
 
 				// 取得當天房價
 				PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, date);
-				Integer totalPrice = (room.getBreakfast() == 1)
-						? todayPrice.getPrice() * roomNum + todayPrice.getBreakfastPrice() * guestNum
+				
+				Integer totalPrice = (room.getBreakfast() != 0)
+						? (todayPrice.getPrice() * roomNum) + (todayPrice.getBreakfastPrice() * guestNum)
 						: todayPrice.getPrice() * roomNum;
 
 				// 如果當天還沒有記錄最便宜的房價，或者新房價更低，則更新
@@ -289,7 +284,7 @@ public class UserBookingController {
 					dailyInventory.put(date, daydto);
 				}
 
-				System.out.println(roomTypeId + ":" + date + ":" + totalPrice);
+				System.out.println(roomTypeId + ":" + date + ":" + totalPrice + ":" + room.getAvailableQuantity());
 			}
 		}
 
@@ -394,10 +389,13 @@ public class UserBookingController {
 						inventory.put("availableQuantity", dayDto.getAvailableQuantity());
 						inventories.add(inventory);
 						totalPrice += todayPrice.getPrice();
-						if (dayDto.getBreakfast() == 1) {
+						if (dayDto.getBreakfast() != 0) {
 							totalPrice += todayPrice.getBreakfastPrice();
 						}
 						currentDate = currentDate.plusDays(1);
+						System.out.println(roomTypeId + ":" + dayDto.getDate() + ":" + totalPrice + ":"
+								+ dayDto.getAvailableQuantity() + ":" + dayDto.getInventoryId());
+
 					}
 
 					if (!isRoomAvailableEveryDay) {
@@ -405,6 +403,7 @@ public class UserBookingController {
 					}
 
 					roomType.put("totalPrice", String.valueOf(totalPrice));
+
 				}
 			}
 

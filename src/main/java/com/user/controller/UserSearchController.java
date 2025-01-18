@@ -231,10 +231,10 @@ public class UserSearchController {
 					Integer priceSum = 0;
 					while (!dateForPrice.isAfter(checkOutDateMOne)) {
 						PriceVO dailyPrice = Pservice.getPriceOfDay(roomTypeId, dateForPrice);
-						if (breakfast == 1 ) {
+						if (breakfast != 0 ) {
 							priceSum += (dailyPrice.getBreakfastPrice()*guestNum);
 						}
-						priceSum += dailyPrice.getPrice();
+						priceSum += dailyPrice.getPrice()*roomNum;
 						dateForPrice = dateForPrice.plusDays(1);
 					}
 					roomDetails.put("total_price", priceSum);

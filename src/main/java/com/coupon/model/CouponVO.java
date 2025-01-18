@@ -15,31 +15,18 @@ import javax.persistence.Table;
 
 import com.membercoupon.model.MemberCouponVO;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "coupon")
 public class CouponVO {
-
-    @Id
+	
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coupon_id")
     private Integer couponId;
-    
-//    @OneToMany(mappedBy = "coupon")
-//    private List<MemberCouponVO> memberCoupons;
-    
-    @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL)
-    private List<MemberCouponVO> memberCoupons = new ArrayList<>();
 
-    @Column(name = "create_time", nullable = false, updatable = false, insertable = false,
-            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createTime;
+    @Column(name = "create_time", nullable = false, updatable = false)
+    private LocalDateTime createTime = LocalDateTime.now();
 
     @Column(name = "active_date", nullable = false)
     private LocalDateTime activeDate;
@@ -47,7 +34,7 @@ public class CouponVO {
     @Column(name = "expiry_date", nullable = false)
     private LocalDateTime expiryDate;
 
-    @Column(name = "coupon_name", length = 11, nullable = false)
+    @Column(name = "coupon_name", nullable = false, length = 11)
     private String couponName;
 
     @Column(name = "min_spend", nullable = false)
@@ -56,11 +43,14 @@ public class CouponVO {
     @Column(name = "travel_city_num", nullable = false)
     private Integer travelCityNum;
 
-    @Column(name = "coupon_detail", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "coupon_detail", nullable = false, columnDefinition = "TEXT")
     private String couponDetail;
 
     @Column(name = "discount_amount", nullable = false)
     private Integer discountAmount;
+
+    @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL)
+    private List<MemberCouponVO> memberCoupons = new ArrayList<>();
 
 	public Integer getCouponId() {
 		return couponId;
@@ -134,4 +124,13 @@ public class CouponVO {
 		this.discountAmount = discountAmount;
 	}
 
+	public List<MemberCouponVO> getMemberCoupons() {
+		return memberCoupons;
+	}
+
+	public void setMemberCoupons(List<MemberCouponVO> memberCoupons) {
+		this.memberCoupons = memberCoupons;
+	}
 }
+    
+    

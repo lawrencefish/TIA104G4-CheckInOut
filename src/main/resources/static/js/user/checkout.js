@@ -31,7 +31,6 @@ $(document).ready(function () {
     $('#addMemberInfoBtn').on('click', (e) => {
         e.preventDefault();
         updateMemberInfo();
-        updateOrderInfo();
     })
 
     document.getElementById("coupon").addEventListener("change", function () {
@@ -134,7 +133,7 @@ function updateOrderInfo() {
         lastName: $('#lastName').val(),
         firstName: $('#firstName').val(),
         memo: $('#notes').val().trim(),
-        coupon: $('#coupon option:selected').data("id"),
+        coupon: $('#coupon option:selected').data("id") ? $("#coupon option:selected").data("id") : 0,
         checkInDate :checkInDate,
         checkOutDate : checkOutDate,
         savedCard: selectedCard,
@@ -169,6 +168,7 @@ function loadMember() {
         contentType: 'application/json',
         dataType: 'json',
         success: function (data) {
+            console.log(data);
             updateCoupon(data);
             updateCreditCard(data);
             email = data.email;
@@ -243,7 +243,7 @@ function updateOrder(data) {
         let checkOut = new Date(RcheckOutDate);
         let timeDiff = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
         let breakfast = cartDetail.breakfast;
-        let totalPrice = cartDetail.totalPrice * roomNum;
+        let totalPrice = cartDetail.totalPrice;
         let totalBreakfastPrice = cartDetail.totalbreakPrice ? cartDetail.totalbreakPrice * guestNum : 0;
         checkInDate = RcheckInDate;
         checkOutDate = RcheckOutDate;

@@ -26,6 +26,7 @@ DROP TABLE IF EXISTS admin;
 DROP TABLE IF EXISTS member;
 DROP TABLE IF EXISTS hotel;
 DROP TABLE IF EXISTS frequent_reply_list;
+DROP TABLE IF EXISTS chat_history;
 
 
 CREATE TABLE frequent_reply_list (
@@ -2558,3 +2559,38 @@ CREATE TABLE reports (
     report_content TEXT DEFAULT NULL,
     picture MEDIUMBLOB
 );
+
+CREATE TABLE chat_history (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    sender VARCHAR(50)  NOT NULL,
+    member_id BIGINT NOT NULL,
+    hotel_id BIGINT NOT NULL,
+    message TEXT NOT NULL,
+    send_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO chat_history (member_id, hotel_id, sender, message, send_time) VALUES
+(1, 21, 'M', '測試訊息 A', '2025-01-18 10:00:00'),
+(1, 21, 'H', '測試訊息 B', '2025-01-18 10:05:00'),
+(1, 21, 'M', '測試訊息 C', '2025-01-18 10:10:00'),
+(1, 21, 'H', '測試訊息 D', '2025-01-18 10:15:00'),
+(1, 21, 'M', '測試訊息 E', '2025-01-18 10:20:00'),
+(1, 21, 'M', '測試訊息 F', '2025-01-18 10:25:00'),
+(1, 21, 'H', '測試訊息 G', '2025-01-18 10:30:00'),
+(1, 21, 'H', '測試訊息 H', '2025-01-18 10:35:00'),
+(1, 21, 'M', '測試訊息 I', '2025-01-18 10:40:00'),
+(1, 21, 'H', '測試訊息 J', '2025-01-18 10:45:00');
+
+
+INSERT INTO chat_history (member_id, hotel_id, sender, message, send_time) VALUES
+(2, 21, "M", '測試訊息 1', '2025-01-18 10:00:00'),
+(2, 21, "H", '測試訊息 2', '2025-01-18 10:05:00'),
+(2, 21, "M", '測試訊息 3', '2025-01-18 10:10:00'),
+(2, 21, "H", '測試訊息 4', '2025-01-18 10:15:00'),
+(2, 21, "M", '測試訊息 5', '2025-01-18 10:20:00'),
+(2, 21, "M", '測試訊息 6', '2025-01-18 10:25:00'),
+(2, 21, "H", '測試訊息 7', '2025-01-18 10:30:00'),
+(2, 21, "H", '測試訊息 8', '2025-01-18 10:35:00'),
+(2, 21, "M", '測試訊息 9', '2025-01-18 10:40:00'),
+(2, 21, "H", '測試訊息 10', '2025-01-18 10:45:00');
+

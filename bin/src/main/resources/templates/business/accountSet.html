@@ -665,6 +665,30 @@
             text-align: center;
             margin: 5px auto;
         }
+
+        .employee-modal-actions button {
+            padding: 10px 25px; /* 增加內邊距 */
+            font-size: 1rem;   /* 調整字體大小 */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .employee-modal-actions button:hover {
+            background-color: #0056b3; /* 增加懸停效果 */
+        }
+
+        #employee-delete-button {
+            background-color: red;
+            color: white;
+        }
+
+        #employee-delete-button:hover {
+            background-color: darkred;
+        }
     </style>
 </head>
 
@@ -679,15 +703,16 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
-            <a href="#">評論管理</a>
-            <a href="#">客戶管理</a>
-            <a th:href="@{/report}">報表分析</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
+<!--            <a th:href="@{/report}">報表分析</a>-->
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-            <span class="icon">💬</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
@@ -794,8 +819,8 @@
                     </div>
                     <div class="form-group">
                         <label for="employee-modal-title">職稱</label>
-                        <select id="employee-modal-title" name="title">
-                            <option value="負責人">負責人</option>
+                        <select id="employee-modal-title" name="title" >
+                            <option value="負責人" disabled>負責人</option>
                             <option value="總經理">總經理</option>
                             <option value="經理">經理</option>
                             <option value="襄理">襄理</option>
@@ -812,9 +837,9 @@
                     </div>
                     <div class="employee-modal-actions">
                         <button id="reset-password-button" type="button">重設密碼</button>
-                        <button id="suspend-employee-button" type="button">停權</button>
                         <button id="employee-save-button" type="submit">儲存設定</button>
-                        <button id="employee-close-button" type="button">關閉</button>
+                        <button id="employee-delete-button" type="button" style="background-color: red; color: white;">刪除員工</button>
+                        <button id="employee-close-button" type="button">關閉表單</button>
                     </div>
                 </form>
             </div>
@@ -930,32 +955,7 @@
     </footer>
 
     <script>
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
@@ -1028,7 +1028,6 @@
 
         // 儲存員工資料設定
         document.getElementById('employee-save-button').addEventListener('click', () => {
-            alert('員工資料已成功更新！');
             document.getElementById('employee-modal').classList.remove('show');
         });
 
@@ -1082,32 +1081,6 @@
             addEmployeeModal.classList.add('show');
         });
 
-        // 點擊新增按鈕保存員工資料
-        // saveEmployeeButton.addEventListener('click', () => {
-        //     const id = document.getElementById('add-employee-id').value.trim();
-        //     const password = document.getElementById('add-employee-password').value.trim();
-        //     const name = document.getElementById('add-employee-name').value.trim();
-        //     const role = document.getElementById('add-employee-role').value;
-        //     const phone = document.getElementById('add-employee-phone').value.trim();
-        //     const email = document.getElementById('add-employee-email').value.trim();
-        //
-        //     if (!id || !password || !name || !phone || !email) {
-        //         alert('所有欄位都為必填！');
-        //         return;
-        //     }
-        //
-        //     // // 模擬新增員工成功
-        //     // alert("新增員工成功！");
-        //
-        //     // // 清空輸入欄位並關閉彈窗
-        //     // document.getElementById('add-employee-id').value = '';
-        //     // document.getElementById('add-employee-password').value = '';
-        //     // document.getElementById('add-employee-name').value = '';
-        //     // document.getElementById('add-employee-phone').value = '';
-        //     // document.getElementById('add-employee-email').value = '';
-        //     // addEmployeeModal.classList.remove('show');
-        // });
-
         // 點擊取消按鈕關閉彈窗
         cancelAddEmployeeButton.addEventListener('click', () => {
             addEmployeeModal.classList.remove('show');
@@ -1142,11 +1115,6 @@
                 return;
             }
 
-            // 清空輸入欄位並關閉彈窗
-            // document.getElementById('current-password').value = '';
-            // document.getElementById('update-new-password').value = '';
-            // document.getElementById('update-confirm-new-password').value = '';
-            // updateHotelPasswordModal.classList.remove('show'); // 正確關閉彈窗
         });
 
         // 點擊取消按鈕關閉彈窗
@@ -1154,6 +1122,32 @@
             updateHotelPasswordModal.classList.remove('show');
         });
 
+        // 刪除員工
+        // 刪除員工按鈕
+        const deleteEmployeeButton = document.getElementById('employee-delete-button');
+
+        deleteEmployeeButton.addEventListener('click', () => {
+            const employeeId = document.getElementById('employee-modal-id').value;
+
+            // 發送刪除請求到後端
+            fetch(`${contextPath}/employee/delete/${employeeId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+            })
+                .then((response) => response.json()) // 解析 JSON 響應
+                .then((data) => {
+                    if (data.error) {
+                        alert(`${data.error}`);
+                    } else {
+                        alert(data.message || "再見掰掰！");
+                        location.reload(); // 刷新頁面
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error deleting employee:", error);
+                    alert("刪除失敗，請稍後重試！");
+                });
+        });
     </script>
 </body>
 

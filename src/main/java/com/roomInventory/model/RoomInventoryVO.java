@@ -101,4 +101,13 @@ public class RoomInventoryVO {
     public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
+
+	@Override
+	public String toString() {
+		return "RoomInventoryVO [inventoryId=" + inventoryId + ", roomType=" + roomType + ", date=" + date
+				+ ", deleteQuantity=" + deleteQuantity + ", availableQuantity=" + availableQuantity + ", updateTime="
+				+ updateTime + "]";
+	}
+    
+    
 }

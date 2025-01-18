@@ -1,17 +1,12 @@
 package com.Lawrencefish.roomStatus.controller;
 
 import com.Lawrencefish.roomStatus.model.RoomStatusService;
-import com.order.model.OrderService;
-import com.order.model.OrderVO;
-import com.room.model.RoomService;
-import com.room.model.RoomVO;
+import com.Lawrencefish.websocket.NotificationWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,6 +32,17 @@ public class RoomStatusController {
         try {
             Integer roomId = (Integer) request.get("roomId");
             Integer status = (Integer) request.get("status");
+
+            // 更新房間狀態
+            roomStatusService.updateRoomStatus(roomId, status);
+            // 推播消息
+//            String message = String.format("房間 %d 狀態已更新為 %d", roomId, status);
+//            String message = String.format("{\"roomId\": %d, \"status\": %d}", roomId, status);
+            String message = String.format(
+                    "{\"type\": \"roomStatus\", \"roomId\": %d, \"status\": %d}",
+                    roomId, status
+            );
+            NotificationWebSocketHandler.broadcast(message);
 
             roomStatusService.updateRoomStatus(roomId, status);
             return ResponseEntity.ok(Map.of("message", "房間狀態更新成功"));

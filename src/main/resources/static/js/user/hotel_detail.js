@@ -259,6 +259,7 @@ function updateRoom(Array) {
             let totalBreakfastPrice = 0;
             let roomNum = data.roomNum;
             let guestNum = data.guestNum;
+            let realAvailableQuantity = 0;
             startDate = startDate.toISOString().split("T")[0];
             endDate = endDate.toISOString().split("T")[0];
             temp.roomNum = roomNum;
@@ -269,10 +270,15 @@ function updateRoom(Array) {
             $('#room_num').val(data.roomNum);
             $('#people_num').val(data.guestNum);
             data.inventories.forEach(di => {
+                if (realAvailableQuantity == 0){
+                    realAvailableQuantity = di.availableQuantity;
+                }else if(realAvailableQuantity > di.availableQuantity){
+                    realAvailableQuantity = di.availableQuantity
+                }
                 totalPrice += (di.price * roomNum);
                 totalBreakfastPrice += (di.breakfastPrice * guestNum);
             })
-            if (data.breakfast != 0) {
+            if (breakfast != 0) {
                 totalPrice += totalBreakfastPrice;
             }
             html =`
@@ -348,6 +354,10 @@ function updateRoom(Array) {
                                 <h4 class="mb-2 price fw-bold text-danger">
                                     總價：<span>NTD$ ${totalPrice}</span>
                                 </h4>
+                                <p class="text-muted">
+                                    剩餘庫存：<span>${realAvailableQuantity}</span>
+                                </h4>
+
 
                             </div>
 

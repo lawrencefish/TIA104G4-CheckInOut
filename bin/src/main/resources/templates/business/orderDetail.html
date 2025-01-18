@@ -488,6 +488,31 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        .status-unchecked {
+            color: orange;
+            font-weight: bold;
+        }
+        .status-complete {
+            color: green;
+            font-weight: bold;
+        }
+        .status-unknow {
+            color: gray;
+            font-weight: bold;
+        }
+        .status-cancelled {
+            color: red;
+            font-weight: bold;
+        }
+        .status-overdue {
+            color: darkred;
+            font-weight: bold;
+        }
+        .status-reserved {
+            color: blue;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -502,15 +527,16 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}">飯店管理</a>
             <a th:href="@{/orders}" class="active">訂單管理</a>
-            <a href="#">評論管理</a>
-            <a href="#">客戶管理</a>
-            <a th:href="@{/report}">報表分析</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
+<!--            <a th:href="@{/report}">報表分析</a>-->
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-            <span class="icon">💬</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
@@ -566,15 +592,21 @@
             <section class="order-details">
                 <h2>訂單資料</h2>
                 <form>
+                    <!-- 訂單狀態 -->
+                    <div class="form-group">
+                        <label for="order-status">訂單狀態</label>
+                        <input type="text" id="order-status" readonly>
+                    </div>
+
                     <!-- 客戶編號 和 訂單編號 -->
                     <div class="form-group pair">
                         <div>
-                            <label for="customer-id">客戶編號</label>
-                            <input type="text" id="customer-id" value="C12345678" readonly>
+                            <label for="order-id">訂單編號</label>
+                            <input type="text" id="order-id" readonly>
                         </div>
                         <div>
-                            <label for="order-id">訂單編號</label>
-                            <input type="text" id="order-id" value="12345678" readonly>
+                            <label for="customer-id">客戶編號</label>
+                            <input type="text" id="customer-id" readonly>
                         </div>
                     </div>
 
@@ -582,11 +614,11 @@
                     <div class="form-group pair">
                         <div>
                             <label for="last-name">客戶姓</label>
-                            <input type="text" id="last-name" value="黃" readonly>
+                            <input type="text" id="last-name" readonly>
                         </div>
                         <div>
                             <label for="first-name">客戶名</label>
-                            <input type="text" id="first-name" value="家瑜" readonly>
+                            <input type="text" id="first-name" readonly>
                         </div>
                     </div>
 
@@ -594,28 +626,20 @@
                     <div class="form-group pair">
                         <div>
                             <label for="check-in-date">入住日期</label>
-                            <input type="date" id="check-in-date" value="2024-11-17" readonly>
+                            <input type="date" id="check-in-date" readonly>
                         </div>
                         <div>
                             <label for="check-out-date">退房日期</label>
-                            <input type="date" id="check-out-date" value="2024-11-18" readonly>
+                            <input type="date" id="check-out-date" readonly>
                         </div>
                     </div>
 
-                    <!-- 顯示預定房型和數量 -->
+
+                    <!-- 動態顯示房型和數量 -->
                     <div class="form-group room-type">
                         <label>預定房型</label>
-                        <div class="room-item">
-                            <span>單人房</span>
-                            <span>2 間</span>
-                        </div>
-                        <div class="room-item">
-                            <span>雙人房</span>
-                            <span>1 間</span>
-                        </div>
-                        <div class="room-item">
-                            <span>家庭房</span>
-                            <span>1 間</span>
+                        <div class="room-item-container">
+                            <!-- 房型資訊將由 JavaScript 動態填充 -->
                         </div>
                     </div>
 
@@ -633,6 +657,7 @@
                 </form>
             </section>
         </main>
+
     </div>
 
     <!-- Footer -->
@@ -641,49 +666,12 @@
     </footer>
 
     <script>
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // 按鈕點擊事件
-            document.getElementById('cancel-order-btn').addEventListener('click', () => {
-                alert('確認取消訂單？');
-            });
-
-            document.getElementById('manage-customer-btn').addEventListener('click', () => {
-                alert('跳轉到客戶管理頁面');
-            });
-        });
-
 
         // 取得彈窗和按鈕
         const logoutModal = document.getElementById("logout-modal");
@@ -721,6 +709,276 @@
             }
         });
 
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('orderId');
+
+            if (orderId) {
+                fetchOrderDetails(orderId);
+            }
+
+            // 綁定搜尋按鈕的事件
+            const searchButton = document.getElementById('search-button');
+            const orderSearchInput = document.getElementById('order-search');
+            if (orderSearchInput) {
+                orderSearchInput.focus();
+            }
+            searchButton.addEventListener('click', () => {
+                const orderIdInput = document.getElementById('order-search').value.trim();
+                if (orderIdInput) {
+                    // fetchOrderDetails(orderIdInput);
+                    window.location.href = `${contextPath}/orders/orderDetail?orderId=${orderIdInput}`;
+                } else {
+                    alert('請輸入有效的訂單編號');
+                }
+            });
+            orderSearchInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    searchButton.click();
+                }
+            });
+
+            // 使用 querySelector 選擇 class 名為 cancel-order 的按鈕
+            const cancelButton = document.querySelector(".cancel-order");
+            if (cancelButton) {
+                cancelButton.addEventListener("click", () => {
+                    // 獲取入住日期
+                    const checkInDateValue = document.getElementById("check-in-date").value;
+
+                    if (!checkInDateValue) {
+                        alert("無法取得入住日期，請稍後重試！");
+                        return;
+                    }
+
+                    // 將日期字符串轉換為 Date 對象
+                    const checkInDate = new Date(checkInDateValue);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // 設置時間為 00:00:00
+
+                    // 判斷入住日期是否在今天之後
+                    if (checkInDate <= today) {
+                        alert("只有入住日期在今天以後的訂單才可以取消！");
+                        return;
+                    }
+
+                    // 確認取消訂單
+                    if (confirm("一旦取消即不可復原，是否確認取消？")) {
+                        // 呼叫後端 API 將訂單狀態改為 3
+                        const orderId = document.getElementById("order-id").value; // 從訂單編號輸入框中獲取 orderId
+
+                        fetch(`${contextPath}/order/cancel`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ orderId: orderId }), // 使用實際的 orderId
+                        })
+                            .then((response) => {
+                                if (!response.ok) {
+                                    throw new Error(`Failed to cancel order: HTTP ${response.status}`);
+                                }
+                                alert("訂單已取消！");
+                                location.reload(); // 刷新頁面
+                            })
+                            .catch((error) => {
+                                console.error("Error cancelling order:", error);
+                                alert("取消訂單失敗，請稍後重試！");
+                            });
+                    }
+                });
+            } else {
+                console.error("Cancel button not found!");
+            }
+        });
+
+        // 顯示加載動畫
+        function showLoading() {
+            const loader = document.getElementById("loading-spinner");
+            if (loader) loader.classList.remove("hidden");
+        }
+
+        // 隱藏加載動畫
+        function hideLoading() {
+            const loader = document.getElementById("loading-spinner");
+            if (loader) loader.classList.add("hidden");
+        }
+
+        // 獲取訂單詳細資訊
+        function fetchOrderDetails(orderId) {
+            fetch(`${contextPath}/order/details/${orderId}`)
+                .then(response => {
+                    if (response.status === 403) {
+                        alert('查無訂單');
+                        throw new Error('無權查看該訂單'); // 結束鏈式調用
+                    }
+                    if (!response.ok) {
+                        alert('查無訂單');
+                        throw new Error(`Failed to fetch order details: HTTP ${response.status}`);
+                    }
+                    return response.json(); // 確保只在成功時解析 JSON
+                })
+                .then(order => {
+                    // 填充訂單基本資訊
+                    document.getElementById('customer-id').value = order.memberId || 'N/A';
+                    document.getElementById('order-id').value = order.orderId || 'N/A';
+                    document.getElementById('first-name').value = order.memberFirstName || 'N/A';
+                    document.getElementById('last-name').value = order.memberLastName || 'N/A';
+                    document.getElementById('check-in-date').value = formatDate(order.checkInDate);
+                    document.getElementById('check-out-date').value = formatDate(order.checkOutDate);
+                    document.getElementById('customer-notes').value = order.memo || '無';
+
+                    // 填充客戶備註
+                    const customerNotes = document.getElementById("customer-notes");
+                    customerNotes.textContent = order.memo || "無"; // 如果備註為空，顯示 "無"
+
+                    // 獲取當前日期並設置時間為 0
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    // 計算 Check-in 和 Check-out 日期
+                    const checkInDate = new Date(order.checkInDate);
+                    const checkOutDate = new Date(order.checkOutDate);
+                    checkInDate.setHours(0, 0, 0, 0);
+                    checkOutDate.setHours(0, 0, 0, 0);
+
+                    // 動態計算狀態文字和樣式
+                    let statusText = '';
+                    let statusClass = '';
+
+                    if (checkInDate.getTime() === today.getTime()) {
+                        if (order.status === 0) {
+                            statusText = '未報到';
+                            statusClass = 'status-unchecked';
+                        } else if (order.status === 1) {
+                            statusText = '已報到';
+                            statusClass = 'status-complete';
+                        } else if (order.status === 2) {
+                            statusText = '未知狀態';
+                            statusClass = 'status-unknow';
+                        } else if (order.status === 3) {
+                            statusText = '取消訂單';
+                            statusClass = 'status-cancelled';
+                        }
+                    } else if (checkOutDate.getTime() === today.getTime()) {
+                        if (order.status === 0) {
+                            statusText = '逾時未報到';
+                            statusClass = 'status-overdue';
+                        } else if (order.status === 1) {
+                            statusText = '未退房';
+                            statusClass = 'status-unchecked';
+                        } else if (order.status === 2) {
+                            statusText = '已退房';
+                            statusClass = 'status-complete';
+                        } else if (order.status === 3) {
+                            statusText = '取消訂單';
+                            statusClass = 'status-cancelled';
+                        }
+                    } else if (checkOutDate.getTime() < today.getTime()) {
+                        if (order.status === 0 || order.status === 1) {
+                            statusText = '逾時未報到';
+                            statusClass = 'status-overdue';
+                        } else if (order.status === 2) {
+                            statusText = '訂單完成';
+                            statusClass = 'status-complete';
+                        } else if (order.status === 3) {
+                            statusText = '取消訂單';
+                            statusClass = 'status-cancelled';
+                        }
+                    } else if (checkInDate.getTime() > today.getTime()) {
+                        if (order.status === 0 || order.status === 1 || order.status === 2) {
+                            statusText = '預約成功';
+                            statusClass = 'status-reserved';
+                        } else if (order.status === 3) {
+                            statusText = '取消訂單';
+                            statusClass = 'status-cancelled';
+                        }
+                    }
+
+                    // 顯示狀態文字和樣式
+                    const statusElement = document.getElementById('order-status');
+                    statusElement.value = statusText;
+                    statusElement.className = ''; // 清空所有舊的 class
+                    statusElement.classList.add(statusClass);
+
+                    // 填充房型資訊
+                    const roomTypeContainer = document.querySelector('.form-group.room-type');
+                    roomTypeContainer.innerHTML = `<label>預定房型</label>`; // 清空並添加標籤
+
+                    order.orderDetails.forEach(detail => {
+                        const roomItem = document.createElement('div');
+                        roomItem.classList.add('room-item');
+                        roomItem.innerHTML = `
+                    <span>${detail.roomTypeName}</span>
+                    <span>${detail.guestNum} 位</span>
+                    <span>${detail.roomNum} 間</span>
+                `;
+                        roomTypeContainer.appendChild(roomItem);
+                    });
+                })
+                .catch(error => {
+                    // console.error('Error fetching order details:', error);
+                    // alert('無法載入訂單詳情-，請稍後再試！');
+                    // console.error('Error fetching order details:', error);
+                    // if (!error.message.includes('403')) {
+                    //     alert('查無訂單');
+                    // } else {
+                    //     alert('無法載入訂單詳情，請稍後再試！');
+                    // }
+                });
+        }
+
+
+        // 日期格式化函數
+        function formatDate(dateString) {
+            if (!dateString) return '未知日期';
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // 映射訂單狀態到文字
+        function mapOrderStatus(status) {
+            switch (status) {
+                case 0: return '未報到';
+                case 1: return '已報到';
+                case 2: return '訂單完成';
+                case 3: return '取消訂單';
+                default: return '未知狀態';
+            }
+        }
+
+        // 錯誤處理
+        function handleError(error) {
+            console.error('Error fetching order details:', error);
+            alert('無法載入訂單詳情，請稍後再試！');
+        }
+
+        // 發送取消訂單的請求
+        function cancelOrder(orderId) {
+            fetch(`${contextPath}/order/cancel`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ orderId: parseInt(orderId, 10) }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`取消訂單失敗：HTTP ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert("訂單已成功取消！");
+                    location.reload(); // 重新載入頁面
+                })
+                .catch(error => {
+                    console.error("取消訂單錯誤：", error);
+                    alert("無法取消訂單，請稍後重試！");
+                });
+        }
     </script>
 </body>
 

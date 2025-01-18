@@ -159,8 +159,8 @@ function updateCart(dataArray) {
                 let checkOut = new Date(checkOutDate);
                 let timeDiff = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
                 let breakfast = cartDetail.breakfast;
-                let totalPrice = cartDetail.totalPrice * roomNum;
-                let totalBreakfastPrice = cartDetail.totalbreakPrice ? cartDetail.totalbreakPrice * guestNum : 0;
+                let totalBreakfastPrice = cartDetail.totalbreakPrice ? cartDetail.totalbreakPrice  : 0;
+                let totalPrice = cartDetail.totalPrice ;
                 let html =`
 <div class="card room-item border rounded p-3 mb-2" data-room-id="${roomId}">
     <div class="card-body">

@@ -37,7 +37,7 @@ public class OrderVO implements java.io.Serializable {
 	@Column(name = "order_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer orderId;
-	@Column(name = "create_time")
+	@Column(name = "create_time", insertable = false, updatable = false)
 	private Timestamp createTime;
 	@Column(name = "status") //  0,已預約 1, 已報到 2, 已退房(完成訂單) 3, 取消訂單
 	private byte status;

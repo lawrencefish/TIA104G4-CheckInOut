@@ -128,13 +128,6 @@
 			<version>1.2.5</version>
 		</dependency>
 
-		<!-- websocket -->                           <!-- spring-boot 已內建依賴，但預設未下載 -->
-		<dependency>
-			<groupId>javax.websocket</groupId>
-			<artifactId>javax.websocket-api</artifactId>
-			<!-- <version>1.1</version> -->
-			<scope>provided</scope>                  <!-- ※provided只提供編譯，jar檔不匯出 -->
-		</dependency>
 
 		<!-- javax.json -->                          <!-- spring-boot 未內建依賴 -->
 		<dependency>

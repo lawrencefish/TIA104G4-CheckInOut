@@ -438,6 +438,35 @@
             border-top: 1px solid #ddd;
             margin-top: auto;
         }
+
+        table th {
+            background-color: #0056b3;
+            color: #fff;
+            cursor: pointer;
+            position: relative;
+        }
+
+        table th:hover {
+            background-color: #003f7f;
+        }
+
+        table th.sort-asc::after,
+        table th.sort-desc::after {
+            content: "";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+        }
+
+        table th.sort-asc::after {
+            border-bottom: 6px solid #fff;
+        }
+
+        table th.sort-desc::after {
+            border-top: 6px solid #fff;
+        }
     </style>
 </head>
 
@@ -452,15 +481,16 @@
         </div>
         <nav>
             <a th:href="@{/frontDesk}">櫃台系統</a>
-            <a th:href="@{/business}" class="active">飯店管理</a>
+            <a th:href="@{/business}" th:if="${#httpSession.getAttribute('employee').title == '負責人' ||
+          #httpSession.getAttribute('employee').title == '總經理'}" class="active">飯店管理</a>
             <a th:href="@{/orders}">訂單管理</a>
-            <a href="#">評論管理</a>
-            <a href="#">客戶管理</a>
-            <a th:href="@{/report}">報表分析</a>
+            <a th:href="@{/comment}">評論管理</a>
+            <a th:href="@{/client}">客戶管理</a>
+<!--            <a th:href="@{/report}">報表分析</a>-->
         </nav>
         <div class="user">
             <span class="icon">🔔</span>
-            <span class="icon">💬</span>
+            <span class="icon"><a th:href="@{/backChatRoom}" title="進入客服聊天室">💬</a></span>
             <button class="hotel-button" th:text="${#httpSession.getAttribute('hotel').name}"></button>
             <div class="dropdown">
                 <ul>
@@ -511,27 +541,32 @@
                 <!-- Section 1: 價格 -->
                 <section class="pricing-section">
                     <h2>價格</h2>
-                    <form>
+                    <form id="room-type-form">
                         <div class="form-group">
-                            <label for="room-type">房型</label>
-                            <select id="room-type">
-                                <option value="standard">標準客房</option>
-                                <option value="deluxe">豪華客房</option>
+                            <label for="room-type">選擇房型</label>
+                            <select id="room-type" name="roomType" onchange="fetchRoomTypePrices(this.value)">
+                                <option value="">請選擇房型</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="weekday-price">平日價格 (一~四)</label>
-                            <input type="text" id="weekday-price" placeholder="$ 3,000">
+                        <div id="room-type-prices" style="display: none;">
+                            <div class="form-group">
+                                <label for="weekday-price">平日價格 (一~四)</label>
+                                <input type="number" id="weekday-price" name="weekdayPrice" placeholder="未設定">
+                            </div>
+                            <div class="form-group">
+                                <label for="weekday-breakfast-price">平日早餐價格 (每人)</label>
+                                <input type="number" id="weekday-breakfast-price" name="weekdayBreakfastPrice" placeholder="未設定">
+                            </div>
+                            <div class="form-group">
+                                <label for="weekend-price">假日價格 (五~日)</label>
+                                <input type="number" id="weekend-price" name="weekendPrice" placeholder="未設定">
+                            </div>
+                            <div class="form-group">
+                                <label for="weekend-breakfast-price">假日早餐價格 (每人)</label>
+                                <input type="number" id="weekend-breakfast-price" name="weekendBreakfastPrice" placeholder="未設定">
+                            </div>
+                            <button type="button" onclick="saveRoomTypeDetails()">儲存設定</button>
                         </div>
-                        <div class="form-group">
-                            <label for="weekend-price">假日價格 (五~日)</label>
-                            <input type="text" id="weekend-price" placeholder="$ 5,000">
-                        </div>
-                        <div class="form-group">
-                            <label for="early-bird-price">早餐價格 (每人)</label>
-                            <input type="text" id="early-bird-price" placeholder="$ 200">
-                        </div>
-                        <button type="submit">提交</button>
                     </form>
                 </section>
 
@@ -541,28 +576,33 @@
                     <form id="special-price-form">
                         <div class="form-group">
                             <label for="special-room-type">房型</label>
-                            <select id="special-room-type">
-                                <option value="standard">標準客房</option>
-                                <option value="deluxe">豪華客房</option>
+                            <select id="special-room-type" onchange="handleRoomTypeChange()">
+                                <option value="">請選擇房型</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="special-start-date">特價日期起始</label>
-                            <input type="date" id="special-start-date" required>
+                        <div id="special-inputs" style="display: none;">
+                            <div class="form-group">
+                                <label for="special-start-date">特殊日期起始</label>
+                                <input type="date" id="special-start-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="special-end-date">特殊日期結束</label>
+                                <input type="date" id="special-end-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="special-price">特殊價格</label>
+                                <input type="text" id="special-price" placeholder="輸入價格" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="special-breakfast-price">特殊早餐價格</label>
+                                <input type="text" id="special-breakfast-price" placeholder="輸入早餐價格" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="remarks">備註</label>
+                                <input type="text" id="remarks" placeholder="輸入備註">
+                            </div>
+                            <button type="submit">提交</button>
                         </div>
-                        <div class="form-group">
-                            <label for="special-end-date">特價日期結束</label>
-                            <input type="date" id="special-end-date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="special-price">特價價格</label>
-                            <input type="text" id="special-price" placeholder="輸入價格" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="remarks">備註</label>
-                            <input type="text" id="remarks" placeholder="輸入備註">
-                        </div>
-                        <button type="submit">提交</button>
                     </form>
                 </section>
 
@@ -571,18 +611,18 @@
                     <h2>修改記錄</h2>
                     <table>
                         <thead>
-                            <tr>
-                                <th>房型</th>
-                                <th>開始日期</th>
-                                <th>結束日期</th>
-                                <th>原始價格</th>
-                                <th>修改後促銷價格</th>
-                                <th>備註</th>
-                                <th>操作</th>
-                            </tr>
+                        <tr>
+                            <th onclick="sortTable('roomName')">房型</th>
+                            <th onclick="sortTable('startDate')">開始日期</th>
+                            <th onclick="sortTable('endDate')">結束日期</th>
+                            <th onclick="sortTable('price')">特殊價格</th>
+                            <th onclick="sortTable('breakfastPrice')">特殊早餐價格</th>
+                            <th onclick="sortTable('remarks')">備註</th>
+                            <th>操作</th>
+                        </tr>
                         </thead>
                         <tbody id="records-body">
-                            <!-- Dynamic rows will be added here -->
+                        <!-- 动态行将插入此处 -->
                         </tbody>
                     </table>
                 </section>
@@ -594,32 +634,7 @@
         © 2024 Check in out. All rights reserved.
     </footer>
     <script>
-        // JavaScript 來切換 active 樣式，分開 header 和 aside 的 a 標籤
-        const headerLinks = document.querySelectorAll('header nav a'); // 取得 header 中所有的 a 標籤
-        const asideLinks = document.querySelectorAll('aside nav a');   // 取得 aside 中所有的 a 標籤
-
-        // Header 的 a 標籤點擊事件
-        headerLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 header a 標籤的 active 樣式
-                headerLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 header a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
-        // Aside 的 a 標籤點擊事件
-        asideLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 移除所有 aside a 標籤的 active 樣式
-                asideLinks.forEach(navLink => navLink.classList.remove('active'));
-                // 為當前被點擊的 aside a 標籤添加 active 樣式
-                // e.preventDefault(); // 阻止跳轉
-                this.classList.add('active');
-            });
-        });
-
+        const contextPath = "[[${#httpServletRequest.contextPath}]]"; // 動態獲取 contextPath
         //飯店彈窗
         document.querySelector('.hotel-button').addEventListener('click', () => {
             const dropdown = document.querySelector('.dropdown');
@@ -631,51 +646,6 @@
             if (!e.target.closest('.hotel-button') && !e.target.closest('.dropdown')) {
                 dropdown.style.display = 'none';
             }
-        });
-
-        // Special Price Form Submission
-        document.getElementById('special-price-form').addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent default form submission
-
-            // Get form values
-            const roomType = document.getElementById('special-room-type').value;
-            const startDate = document.getElementById('special-start-date').value;
-            const endDate = document.getElementById('special-end-date').value;
-            const specialPrice = document.getElementById('special-price').value;
-            const remarks = document.getElementById('remarks').value;
-
-            // Validate inputs
-            if (!startDate || !endDate || !specialPrice) {
-                alert('請完整填寫所有必要資料！');
-                return;
-            }
-
-            // Default original price based on room type
-            const originalPrice = roomType === 'standard' ? '$3,000' : '$5,000';
-
-            // Create a new row for the records table
-            const recordsBody = document.getElementById('records-body');
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-            <td>${roomType === 'standard' ? '標準客房' : '豪華客房'}</td>
-            <td>${startDate}</td>
-            <td>${endDate}</td>
-            <td>${originalPrice}</td>
-            <td>${specialPrice}</td>
-            <td>${remarks || '無'}</td>
-            <td><button class="cancel-btn">取消修改</button></td>
-        `;
-
-            // Add the row to the table
-            recordsBody.appendChild(newRow);
-
-            // Add event listener to the cancel button
-            newRow.querySelector('.cancel-btn').addEventListener('click', function () {
-                newRow.remove();
-            });
-
-            // Reset the form
-            document.getElementById('special-price-form').reset();
         });
 
         // 取得彈窗和按鈕
@@ -714,6 +684,343 @@
             }
         });
 
+        // 1/4以後新增內容
+        // 1/4以後新增內容
+        // 1/4以後新增內容
+        // 動態載入房型資料
+        document.addEventListener("DOMContentLoaded", function () {
+            // 初始化房型選項
+            fetchRoomTypes("room-type"); // 為主選擇框加載選項
+            fetchRoomTypes("special-room-type"); // 為特殊價格選擇框加載選項
+            loadSpecialPrices();
+        });
+
+        let roomTypeCache = []; // 暫存房型數據，避免多次請求
+
+        function fetchRoomTypes(selectId) {
+            if (roomTypeCache.length > 0) {
+                populateRoomTypeSelect(selectId, roomTypeCache); // 使用暫存數據
+                return;
+            }
+
+            fetch(`${contextPath}/api/roomType/roomTypes`, { method: 'GET', credentials: 'include' }) // 確保攜帶 Session 資訊
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('未授權或查詢失敗');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    roomTypeCache = data; // 暫存房型數據
+                    populateRoomTypeSelect(selectId, data); // 填充選項
+                })
+                .catch(error => console.error('Error fetching room types:', error));
+        }
+
+        function populateRoomTypeSelect(selectId, roomTypes) {
+            const roomTypeSelect = document.getElementById(selectId);
+            if (!roomTypeSelect) {
+                console.error(`未找到 ID 為 ${selectId} 的選項框`);
+                return;
+            }
+
+            // 清空已有選項
+            roomTypeSelect.innerHTML = '<option value="">請選擇房型</option>';
+
+            roomTypes.forEach(roomType => {
+                const option = document.createElement('option');
+                option.value = roomType.roomTypeId; // 使用房型 ID 作為值
+                option.textContent = roomType.roomName; // 顯示房型名稱
+                roomTypeSelect.appendChild(option);
+            });
+        }
+
+        // 處理房型選擇變更
+        function handleRoomTypeChange() {
+            const roomTypeSelect = document.getElementById('special-room-type');
+            const specialInputs = document.getElementById('special-inputs');
+
+            if (roomTypeSelect.value) {
+                // 如果選擇了房型，顯示輸入框
+                specialInputs.style.display = 'block';
+            } else {
+                // 如果未選擇房型，隱藏輸入框
+                specialInputs.style.display = 'none';
+            }
+        }
+
+        function fetchRoomTypePrices(roomTypeId) {
+            if (!roomTypeId) {
+                document.getElementById('room-type-prices').style.display = 'none';
+                return;
+            }
+
+            fetch(`${contextPath}/api/roomType/${roomTypeId}`, { method: 'GET', credentials: 'include' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('未找到該房型資訊');
+                    }
+                    return response.json();
+                })
+                .then(roomType => {
+                    const pricesContainer = document.getElementById('room-type-prices');
+                    pricesContainer.style.display = 'block';
+
+                    // 顯示或隱藏早餐價格輸入框
+                    const weekdayBreakfastInput = document.getElementById('weekday-breakfast-price');
+                    const weekendBreakfastInput = document.getElementById('weekend-breakfast-price');
+
+                    if (roomType.breakfast === 1) {
+                        weekdayBreakfastInput.parentElement.style.display = 'block';
+                        weekendBreakfastInput.parentElement.style.display = 'block';
+                    } else {
+                        weekdayBreakfastInput.parentElement.style.display = 'none';
+                        weekendBreakfastInput.parentElement.style.display = 'none';
+                    }
+
+                    // 獲取房型價格
+                    return fetch(`${contextPath}/api/price/prices/${roomTypeId}`, { method: 'GET', credentials: 'include' });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('未找到該房型的價格資訊');
+                    }
+                    return response.json();
+                })
+                .then(prices => {
+                    const weekdayPrice = prices.find(p => p.priceType === 1) || { price: null, breakfastPrice: null };
+                    const weekendPrice = prices.find(p => p.priceType === 2) || { price: null, breakfastPrice: null };
+
+                    // 填充平日和假日價格
+                    document.getElementById('weekday-price').value = weekdayPrice.price !== null ? weekdayPrice.price : '';
+                    document.getElementById('weekend-price').value = weekendPrice.price !== null ? weekendPrice.price : '';
+
+                    // 填充早餐價格
+                    document.getElementById('weekday-breakfast-price').value =
+                        weekdayPrice.breakfastPrice !== null ? weekdayPrice.breakfastPrice : '';
+                    document.getElementById('weekend-breakfast-price').value =
+                        weekendPrice.breakfastPrice !== null ? weekendPrice.breakfastPrice : '';
+                })
+                .catch(error => console.error('Error fetching room type prices:', error));
+        }
+
+        function saveRoomTypeDetails() {
+            const roomTypeId = document.getElementById('room-type').value;
+            const weekdayPrice = parseFloat(document.getElementById('weekday-price').value);
+            const weekendPrice = parseFloat(document.getElementById('weekend-price').value);
+            const weekdayBreakfastPrice = parseFloat(document.getElementById('weekday-breakfast-price').value) || null;
+            const weekendBreakfastPrice = parseFloat(document.getElementById('weekend-breakfast-price').value) || null;
+
+            // 構造 payload
+            const payload = [
+                {
+                    priceType: 1,
+                    price: weekdayPrice,
+                    breakfastPrice: weekdayBreakfastPrice
+                },
+                {
+                    priceType: 2,
+                    price: weekendPrice,
+                    breakfastPrice: weekendBreakfastPrice
+                }
+            ];
+
+            fetch(`${contextPath}/api/price/prices/${roomTypeId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(payload)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('儲存失敗');
+                    }
+                    alert('價格已成功更新！');
+                })
+                .catch(error => console.error('Error saving room type details:', error));
+        }
+
+
+        // 新增特殊價格
+        // 提交表单
+        document.getElementById('special-price-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // 防止默认提交行为
+
+            const roomTypeId = document.getElementById('special-room-type').value;
+            const startDate = document.getElementById('special-start-date').value;
+            const endDate = document.getElementById('special-end-date').value;
+            const price = parseFloat(document.getElementById('special-price').value);
+            const breakfastPrice = parseFloat(document.getElementById('special-breakfast-price').value);
+            const remarks = document.getElementById('remarks').value;
+
+            if (!roomTypeId || !startDate || !endDate || isNaN(price) || price <= 0 || isNaN(breakfastPrice) || breakfastPrice < 0) {
+                alert('請填寫完整有效的信息！');
+                return;
+            }
+
+            const payload = {
+                startDate,
+                endDate,
+                price,
+                breakfastPrice,
+                remarks // 新增的备注字段
+            };
+
+            fetch(`${contextPath}/api/price/special/${roomTypeId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('提交失敗');
+                    }
+                    alert('特殊價格已成功設置！');
+                    document.getElementById('special-price-form').reset();
+                    document.getElementById('special-inputs').style.display = 'none';
+                    location.reload()
+                })
+                .catch(error => console.error('Error submitting special price:', error));
+        });
+
+        // SESSION3部分
+        // 加载特殊价格记录
+        function loadSpecialPrices() {
+            fetch(`${contextPath}/api/price/specials`, { method: 'GET', credentials: 'include' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('加载特殊价格失败');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const recordsBody = document.getElementById('records-body');
+                    recordsBody.innerHTML = ''; // 清空现有内容
+
+                    data.forEach(record => {
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+                    <td>${record.roomType.roomName}</td>
+                    <td>${record.startDate || '無'}</td>
+                    <td>${record.endDate || '無'}</td>
+                    <td>${record.price}</td>
+                    <td>${record.breakfastPrice || '無'}</td>
+                    <td>${record.remarks || '無'}</td>
+                    <td><button class="delete-btn" data-id="${record.priceId}">X</button></td>
+                `;
+
+                        recordsBody.appendChild(row);
+                    });
+
+                    // 绑定删除按钮的事件
+                    bindDeleteButtons();
+                })
+                .catch(error => console.error('Error loading special prices:', error));
+        }
+
+        // 绑定删除按钮事件
+        function bindDeleteButtons() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const priceId = this.dataset.id;
+                    if (confirm('确定要删除这条记录吗？')) {
+                        deleteSpecialPrice(priceId);
+                    }
+                });
+            });
+        }
+
+        // 删除特殊价格记录
+        function deleteSpecialPrice(priceId) {
+            fetch(`${contextPath}/api/price/special/${priceId}`, { method: 'DELETE', credentials: 'include' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('删除失败');
+                    }
+                    alert('删除成功');
+                    loadSpecialPrices(); // 重新加载数据
+                })
+                .catch(error => console.error('Error deleting special price:', error));
+        }
+
+        let currentData = []; // 用于存储当前加载的数据
+        let sortOrder = {}; // 保存每列的排序状态
+
+        function loadSpecialPrices() {
+            fetch(`${contextPath}/api/price/specials`, { method: 'GET', credentials: 'include' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('加载特殊价格失败');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    currentData = data; // 保存当前数据
+                    renderTable(currentData); // 初始加载表格
+                })
+                .catch(error => console.error('Error loading special prices:', error));
+        }
+
+        // 渲染表格数据
+        function renderTable(data) {
+            const recordsBody = document.getElementById('records-body');
+            recordsBody.innerHTML = ''; // 清空现有内容
+
+            data.forEach(record => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+            <td>${record.roomType.roomName}</td>
+            <td>${record.startDate || '無'}</td>
+            <td>${record.endDate || '無'}</td>
+            <td>${record.price}</td>
+            <td>${record.breakfastPrice || '無'}</td>
+            <td>${record.remarks || '無'}</td>
+            <td><button class="delete-btn" data-id="${record.priceId}">X</button></td>
+        `;
+
+                recordsBody.appendChild(row);
+            });
+
+            bindDeleteButtons(); // 绑定删除事件
+        }
+
+        // 排序表格数据
+        function sortTable(column) {
+            // 初始化或切換排序狀態
+            sortOrder[column] = sortOrder[column] === 'asc' ? 'desc' : 'asc';
+
+            const sortedData = [...currentData].sort((a, b) => {
+                let valueA = a[column] || ''; // 若值为空，设置为默认空字符串
+                let valueB = b[column] || '';
+
+                // 比较逻辑：字符串比较或数字比较
+                if (typeof valueA === 'string') {
+                    valueA = valueA.toLowerCase();
+                    valueB = valueB.toLowerCase();
+                }
+
+                if (sortOrder[column] === 'asc') {
+                    return valueA > valueB ? 1 : -1;
+                } else {
+                    return valueA < valueB ? 1 : -1;
+                }
+            });
+
+            renderTable(sortedData); // 重新渲染表格
+
+            // 清除所有列的排序状态
+            const headers = document.querySelectorAll('table th');
+            headers.forEach(header => header.classList.remove('sort-asc', 'sort-desc'));
+
+            // 为当前列添加排序状态
+            const currentHeader = [...headers].find(header => header.textContent.trim() === column);
+            if (currentHeader) {
+                currentHeader.classList.add(sortOrder[column] === 'asc' ? 'sort-asc' : 'sort-desc');
+            }
+        }
     </script>
 </body>
 

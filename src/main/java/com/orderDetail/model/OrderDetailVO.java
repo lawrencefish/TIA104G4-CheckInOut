@@ -1,5 +1,6 @@
 package com.orderDetail.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,7 +24,8 @@ public class OrderDetailVO implements java.io.Serializable {
 	private Integer orderDetailId;
 	@Column(name = "room_type_id")
 	private Integer roomTypeId;
-	@ManyToOne
+	
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "order_id", nullable = false)
 	@NotNull(message = "訂單不可為空")
 	private OrderVO order;
