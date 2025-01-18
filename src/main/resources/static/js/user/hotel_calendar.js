@@ -12,6 +12,7 @@ let dateArray = [];
     fetchCalendarInfo()
         .then(function (data) {
             const today = new Date();
+            console.log(data)
             dateArray = data.date;
             // 等資料加載完後再生成日曆
             generateCalendar('#calendar-wrapper', today.getFullYear(), today.getMonth());

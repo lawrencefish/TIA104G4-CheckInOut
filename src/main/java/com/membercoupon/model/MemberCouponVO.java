@@ -77,8 +77,3 @@ public class MemberCouponVO {
 		this.createTime = createTime;
 	}
 }
-    
-    
-
-    
-    

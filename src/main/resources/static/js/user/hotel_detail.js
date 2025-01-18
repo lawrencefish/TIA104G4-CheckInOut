@@ -1,5 +1,5 @@
 let hotelId = window.location.pathname.split('/')[3];
-let temp  = {};
+let temp = {};
 
 
 // 當文件載入完成後執行初始化
@@ -28,37 +28,38 @@ $(document).ready(function () {
     $('.people').find('.plus').on('click', clickOnNum);
     $('.people').find('.minus').on('click', clickOnNum);
     $('#search-button').on('click', (e) => {
+        $('#start_date, #end_date, #room_num, #people_num').trigger('change');
         if (
             $('#start_date').text() != "" &&
             $('#end_date').text() != "" &&
             $('#room_num').val() != "" &&
             $('#people_num').val() != ""
-        ){
+        ) {
             updateSearchResult();
-        }else{
+        } else {
             showModal("請輸入完整資訊");
         }
     })
 
     // 點擊送出按鈕時的處理
-    $(document).on('click', '.orderBtn', function(e) {
-        temp.roomTypeId = $(this).attr("id").replace('btn', ""); 
+    $(document).on('click', '.orderBtn', function (e) {
+        temp.roomTypeId = $(this).attr("id").replace('btn', "");
         temp.roomTypeName = $(this).closest('.col-md-8').find('.card-title').text();
-        temp.review = $('#rating').text() == "" ? 0 :$('#rating').text();
-        temp.price = $(this).closest('div').find('.price').text().trim().replace("NTD$","");
+        temp.review = $('#rating').text() == "" ? 0 : $('#rating').text();
+        temp.price = $(this).closest('div').find('.price').text().trim().replace("NTD$", "");
         temp.breakfast = $(this).closest('div').find('.breakfast').hasClass('d-none') ? 0 : 1;
         console.log(temp);
-        addCart();        
+        addCart();
     });
 });
 
-function addCart(){
+function addCart() {
     return $.ajax({
         url: '/booking/api/addCart',
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
-        data: JSON.stringify(temp), 
+        data: JSON.stringify(temp),
         success: function (data) {
             console.log(data);
             showModal("已加入購物車");
@@ -66,6 +67,10 @@ function addCart(){
         error: function (jqXHR, textStatus, errorThrown) {
             console.error('AJAX 請求發生錯誤:', textStatus, errorThrown);
             console.log('響應文本:', jqXHR.responseText);
+            console.log(jqXHR.responseJSON.overlapDate);
+            if (jqXHR.responseJSON.dateMismatch) {
+                showModal(jqXHR.responseJSON.message);
+            }
         }
     });
 
@@ -130,7 +135,7 @@ function hotelInfoUpdate(data) {
     temp.hotelId = hotelId;
     temp.hotelName = data.name;
     if (data.avgRatings != "null") {
-        $('#rating').text(Math.floor(data.avgRatings * 10) / 10); 
+        $('#rating').text(Math.floor(data.avgRatings * 10) / 10);
         displayStars(data.avgRatings, document.querySelector('#rating-stars'));
         data.comments.forEach(ele => {
             let comment = (ele.comment.length <= 50) ? ele.comment : ele.comment.slice(0, 50) + '...';;
@@ -253,154 +258,178 @@ function updateRoom(Array) {
             let totalPrice = 0;
             let totalBreakfastPrice = 0;
             let roomNum = data.roomNum;
+            let guestNum = data.guestNum;
+            let realAvailableQuantity = 0;
+            startDate = startDate.toISOString().split("T")[0];
+            endDate = endDate.toISOString().split("T")[0];
             temp.roomNum = roomNum;
-            temp.guestNum = data.guestNum;
-            temp.checkInDate = startDate.toISOString().split("T")[0];
-            temp.checkOutDate = endDate.toISOString().split("T")[0];
-            $('#date-range').html(`入住: <span id="start_date">${startDate.toLocaleDateString()}</span> - 退房: <span id="end_date">${endDate.toLocaleDateString()}</span>`)
-            $('#room_num').val(data.roomNum); 
+            temp.guestNum = guestNum;
+            temp.checkInDate = startDate;
+            temp.checkOutDate = endDate;
+            $('#date-range').html(`入住: <span id="start_date">${startDate}</span> - 退房: <span id="end_date">${endDate}</span>`)
+            $('#room_num').val(data.roomNum);
             $('#people_num').val(data.guestNum);
             data.inventories.forEach(di => {
-                totalPrice += di.price;
-                totalBreakfastPrice += di.breakfastPrice;
+                if (realAvailableQuantity == 0){
+                    realAvailableQuantity = di.availableQuantity;
+                }else if(realAvailableQuantity > di.availableQuantity){
+                    realAvailableQuantity = di.availableQuantity
+                }
+                totalPrice += (di.price * roomNum);
+                totalBreakfastPrice += (di.breakfastPrice * guestNum);
             })
-            if (data.breakfast != 0) {
+            if (breakfast != 0) {
                 totalPrice += totalBreakfastPrice;
             }
-            html = `
-                        <div class="card shadow-lg">
-                        <div class="row g-0 align-items-center">
-                            <!-- 跑馬燈區域 -->
-                            <div class="col-md-4">
+            html =`
+                <div class="card shadow-lg">
+                    <div class="row g-0 align-items-center">
+                        <!-- 跑馬燈區域 -->
+                        <div class="col-md-4">
                             <div id="roomCarousel${roomTypeId}" class="carousel slide" data-bs-ride="carousel">
                                 <!-- 輪播圖片 -->
                                 <div class="room-carousel carousel-inner" id="room-carousel${roomTypeId}" style="height:300px">
-                                <!-- 輪播圖片項目應在此填充 -->
+                                    <!-- 輪播圖片項目應在此填充 -->
                                 </div>
                                 <!-- 輪播控制按鈕 -->
                                 <button class="carousel-control-prev" type="button" data-bs-target="#roomCarousel${roomTypeId}" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">上一張</span>
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">上一張</span>
                                 </button>
                                 <button class="carousel-control-next" type="button" data-bs-target="#roomCarousel${roomTypeId}" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">下一張</span>
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">下一張</span>
                                 </button>
                             </div>
-                            </div>
+                        </div>
 
-                            <!-- 房間資訊與互動區域 -->
-                            <div class="col-md-8">
+                        <!-- 房間資訊與互動區域 -->
+                        <div class="col-md-8">
                             <div class="card-body">
                                 <div class="row">
-                                <!-- 左側內容：房間基本資訊等 -->
-                                <div class="col-md-8">
-                                    <h3 class="card-title mb-3">${roomName}</h3>
+                                    <!-- 左側內容：房間基本資訊等 -->
+                                    <div class="col-md-8">
+                                        <h3 class="card-title mb-3">${roomName}</h3>
 
-                                    <!-- 關鍵資訊標籤 -->
-                                    <div class="mb-3">
-                                    <span class="badge bg-info me-2">可入住 ${guest} 位房客</span>
-                                    <span class="badge bg-success me-2 ${breakfast == 0 ? "d-none" : ""}">含早餐</span>
+                                        <!-- 關鍵資訊標籤 -->
+                                        <div class="mb-3">
+                                            <span class="badge bg-info me-2">可入住 ${guest} 位房客</span>
+                                            <span class="badge bg-success me-2 ${breakfast == 0 ? " d-none" : "" }">含早餐</span>
                                     </div>
 
                                     <hr>
 
-                                    <!-- 房間設施 -->
-                                    <div class="mb-3 ${facilityNum == 0 ? "d-none" : ""}" id="roomfacility${roomTypeId}">
-                                    <h6 class="mb-2">房間設施：</h6>
+                                        <!-- 房間設施 -->
+                                        <div class="mb-3 ${facilityNum == 0 ? " d-none" : ""}" id="roomfacility${roomTypeId}">
+                                        <h6 class="mb-2">房間設施：</h6>
+                                </div>
+
+                                <!-- 房間服務 -->
+                                <div class="mb-3 ${serviceNum == 0 ? " d-none" : ""}" id="roomService${roomTypeId}">
+                                <h6 class="mb-2">房間服務：</h6>
+                            </div>
+                        </div>
+
+                        <!-- 右側內容：數量選擇、價格與預訂按鈕 -->
+                        <div class="col-md-4 d-flex flex-column align-items-end justify-content-center">
+                            <h6 class="mb-2 text-muted">
+                                 總共 ${guestNum} 位入住 <br>
+                                 ${stayNight} 晚 ＊ ${parseInt(roomNum)} 間房
+                            </h6>
+
+                            <!-- 價格與早餐價格 -->
+                            <div class="mb-3 text-end">
+                                <h6 class="mb-1 text-secondary">
+                                    每晚每房 <span class="fw-bold text-primary">NTD$ ${Math.floor(totalPrice / roomNum / stayNight)}</span>
+                                </h6>
+                                <p class="mb-1 text-muted breakfast ${breakfast == 0 ? " d-none" : ""}">
+                                    <small>
+                                        <strong>
+                                            已含早餐價格<br>
+                                            每人每晚：NTD$ ${Math.floor(totalBreakfastPrice / guestNum / stayNight)}<br>
+                                            總價：NTD$ ${totalBreakfastPrice}
+                                        </strong>
+                                    </small>
+                                </p>
+                                <h4 class="mb-2 price fw-bold text-danger">
+                                    總價：<span>NTD$ ${totalPrice}</span>
+                                </h4>
+                                <p class="text-muted">
+                                    剩餘庫存：<span>${realAvailableQuantity}</span>
+                                </h4>
+
+
+                            </div>
+
+                            <!-- 預訂按鈕 -->
+                            <button id="btn${roomTypeId}" class="btn btn-lg btn-primary orderBtn">
+                                立即預訂
+                            </button>
+                        </div>
+
+
+                    </div>
+                </div>
+                `
+        } else {
+            html = `
+                < div class="card shadow-lg" >
+                    <div class="row g-0 align-items-center">
+                        <!-- 跑馬燈區域 -->
+                        <div class="col-md-4">
+                            <div id="roomCarousel${roomTypeId}" class="carousel slide" data-bs-ride="carousel">
+                                <!-- 輪播圖片 -->
+                                <div class="room-carousel carousel-inner" id="room-carousel${roomTypeId}" style="height:300px">
+                                    <!-- 輪播圖片項目應在此填充 -->
+                                </div>
+                                <!-- 輪播控制按鈕 -->
+                                <button class="carousel-control-prev" type="button" data-bs-target="#roomCarousel${roomTypeId}" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">上一張</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#roomCarousel${roomTypeId}" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">下一張</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 房間資訊與互動區域 -->
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- 左側內容：房間基本資訊等 -->
+                                    <div class="col-md-12">
+                                        <h3 class="card-title mb-3">${roomName}</h3>
+
+                                        <!-- 關鍵資訊標籤：僅保留可入住人數 -->
+                                        <div class="mb-3">
+                                            <span class="badge bg-info me-2">可入住 ${guest} 位房客</span>
+                                            <!-- 移除日期與含早餐標籤 -->
+                                        </div>
+
+                                        <hr>
+
+                                            <!-- 房間設施 -->
+                                            <div class="mb-3 ${facilityNum == 0 ? " d-none" : ""}" id="roomfacility${roomTypeId}">
+                                            <h6 class="mb-2">房間設施：</h6>
+                                            <!-- 此處填入房間設施內容 -->
                                     </div>
 
                                     <!-- 房間服務 -->
-                                    <div class="mb-3 ${serviceNum == 0 ? "d-none" : ""}" id="roomService${roomTypeId}">
+                                    <div class="mb-3 ${serviceNum == 0 ? " d-none" : ""}" id="roomService${roomTypeId}">
                                     <h6 class="mb-2">房間服務：</h6>
-                                    </div>
-                                </div>
-
-                                <!-- 右側內容：數量選擇、價格與預訂按鈕 -->
-                                <div class="col-md-4 d-flex flex-column align-self-center text-end">
-                                    <h6 class="mb-0"> ${stayNight} 晚  ${parseInt(roomNum)} 間房間 </h6>
-
-                                        <!-- 價格與早餐價格 -->
-                                        <div class="mb-3 text-end align-items-center">
-                                        <h4 class="mb-1 price">
-                                            <strong>NTD$</strong>${totalPrice}
-                                        </h4>
-                                        <p class="mb-1 text-muted breakfast ${breakfast == 0 ? "d-none" : ""}">
-                                            <strong>已含早餐價格<br>NTD$${totalBreakfastPrice}</strong>
-                                        </p>
-                                        </div>
-                                                    <!-- 預訂按鈕 -->
-                                    <button id="btn${roomTypeId}" class="btn btn-primary orderBtn">立即預訂</button>
-
-                                </div>
-
-
-                                </div>
+                                    <!-- 此處填入房間服務內容 -->
                                 </div>
                             </div>
-                            </div>
+
+                            <!-- 移除右側內容：數量選擇、價格與預訂按鈕等 -->
                         </div>
-                        </div>
-            `
-        } else {
-            html = `
-                    <div class="card shadow-lg">
-        <div class="row g-0 align-items-center">
-            <!-- 跑馬燈區域 -->
-            <div class="col-md-4">
-            <div id="roomCarousel${roomTypeId}" class="carousel slide" data-bs-ride="carousel">
-                <!-- 輪播圖片 -->
-                <div class="room-carousel carousel-inner" id="room-carousel${roomTypeId}" style="height:300px">
-                <!-- 輪播圖片項目應在此填充 -->
-                </div>
-                <!-- 輪播控制按鈕 -->
-                <button class="carousel-control-prev" type="button" data-bs-target="#roomCarousel${roomTypeId}" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">上一張</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#roomCarousel${roomTypeId}" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">下一張</span>
-                </button>
-            </div>
-            </div>
-
-            <!-- 房間資訊與互動區域 -->
-            <div class="col-md-8">
-            <div class="card-body">
-                <div class="row">
-                <!-- 左側內容：房間基本資訊等 -->
-                <div class="col-md-12">
-                    <h3 class="card-title mb-3">${roomName}</h3>
-
-                    <!-- 關鍵資訊標籤：僅保留可入住人數 -->
-                    <div class="mb-3">
-                    <span class="badge bg-info me-2">可入住 ${guest} 位房客</span>
-                    <!-- 移除日期與含早餐標籤 -->
                     </div>
-
-                    <hr>
-
-                    <!-- 房間設施 -->
-                    <div class="mb-3 ${facilityNum == 0 ? "d-none" : ""}" id="roomfacility${roomTypeId}">
-                    <h6 class="mb-2">房間設施：</h6>
-                    <!-- 此處填入房間設施內容 -->
-                    </div>
-
-                    <!-- 房間服務 -->
-                    <div class="mb-3 ${serviceNum == 0 ? "d-none" : ""}" id="roomService${roomTypeId}">
-                    <h6 class="mb-2">房間服務：</h6>
-                    <!-- 此處填入房間服務內容 -->
-                    </div>
-                </div>
-                
-                <!-- 移除右側內容：數量選擇、價格與預訂按鈕等 -->
-                </div>
-            </div>
-            </div>
-        </div>
-        </div>
-        `
+            </div >
+        </div >
+        </div >
+                `
         }
         $('.room-container').append(html);
         putRoomCarousel(roomTypeId, data.imgNum);
@@ -408,16 +437,16 @@ function updateRoom(Array) {
             let fName = rf.facilityName;
             let id = "#roomfacility" + roomTypeId;
             let html = `
-            <span class="badge rounded-pill bg-success me-1">${fName}</span>
-        `;
+                <span class="badge rounded-pill bg-success me-1"> ${ fName }</span>
+                    `;
             $(id).append(html);
         })
         data.roomService.forEach(rf => {
             let fName = rf.facilityName;
             let id = "#roomService" + roomTypeId;
             let html = `
-            <span class="badge rounded-pill bg-secondary me-1">${fName}</span>
-        `;
+                    <span class="badge rounded-pill bg-secondary me-1"> ${ fName }</span>
+                        `;
             $(id).append(html);
         })
 

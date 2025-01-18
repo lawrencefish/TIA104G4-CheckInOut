@@ -151,6 +151,12 @@ function login(e) {
         .then(data => {
             if (data.status === 'success') {
                 showLoginView();
+
+                const loginModal = bootstrap.Modal.getInstance(document.querySelector('#loginModal'));
+                if (loginModal) {
+                    loginModal.hide();
+                }
+
                 showModal(data.message);
                 if (redirectUrl){
                     window.location.href = redirectUrl;
@@ -231,18 +237,29 @@ function getAvatar(){
     
 }
 
+let modalQueue = []; // 建立一個佇列來存放訊息
+let isModalVisible = false; // 追蹤模態視窗是否正在顯示
+
 function showModal(Message) {
+    modalQueue.push(Message); // 將訊息加入佇列
+    processModalQueue(); // 處理佇列
+}
+
+function processModalQueue() {
+    if (isModalVisible || modalQueue.length === 0) return;
+
+    isModalVisible = true;
+    let currentMessage = modalQueue.shift();
+
     let loginModal = document.querySelector('#loginModal');
 
     if (!loginModal) {
-        // 如果模態視窗不存在，才動態插入
         let newDiv = document.createElement('div');
         newDiv.innerHTML = loginModalDiv;
         document.querySelector('main').appendChild(newDiv);
     }
 
-    // 更新模態視窗內容
-    loginMessage = Message;
+    loginMessage = currentMessage;
     const modalBody = document.querySelector('#login-modal-body');
     if (modalBody) {
         modalBody.innerHTML = (loginMessage) ? loginMessageDiv : loginFormView;
@@ -251,25 +268,27 @@ function showModal(Message) {
         }
     }
 
-    // 檢查是否已有實例存在
     const existingModalInstance = bootstrap.Modal.getInstance(document.querySelector('#loginModal'));
     if (existingModalInstance) {
-        existingModalInstance.dispose(); // 銷毀舊的實例
+        existingModalInstance.dispose();
     }
 
-    // 初始化並顯示新的模態視窗
-    const showModal = new bootstrap.Modal(document.querySelector('#loginModal'), {
-        keyboard: true      // 允許按 ESC 鍵關閉
-    });
-    showModal.show();
+    const modalInstance = new bootstrap.Modal(document.querySelector('#loginModal'), { keyboard: true });
+    modalInstance.show();
+
+    // 當模態視窗關閉時，標記 isModalVisible = false，並繼續處理佇列
+    document.querySelector('#loginModal').addEventListener('hidden.bs.modal', function () {
+        isModalVisible = false;
+        processModalQueue();
+    }, { once: true });
 
     // 綁定登入表單事件
     let loginForm = document.querySelector('#login_list');
     if (loginForm) {
-        loginForm.removeEventListener('submit', login); // 避免重複綁定
+        loginForm.removeEventListener('submit', login);
         loginForm.addEventListener('submit', login);
     }
-
+    
     document.querySelector('#loginModal').addEventListener('hidden.bs.modal', function () {
         redirectUrl ="";
     });
@@ -283,7 +302,6 @@ function showLoginView() {
 
             let loginBtn = document.querySelector('#navLoginBtn');
             if (loginBtn) {
-                loginBtn.removeEventListener('click', showModal); // 移除舊的事件
                 loginBtn.addEventListener('click', function (e) {
                     e.preventDefault();
                     showModal();
@@ -292,7 +310,6 @@ function showLoginView() {
 
         } else {
             document.querySelector('header').innerHTML = loginNav;
-            console.log(account);
             getAvatar();
             let logoutButton = document.querySelector('#logout');
             if (logoutButton) {

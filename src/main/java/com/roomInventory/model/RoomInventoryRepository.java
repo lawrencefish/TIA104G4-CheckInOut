@@ -34,7 +34,7 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventoryVO, 
     	       "ri.inventoryId, ri.date, ri.availableQuantity, " +
     	       "h.hotelId, h.name, h.city, h.district, h.address, " +
     	       "h.latitude, h.longitude, " +
-    	       "rt.roomTypeId, rt.maxPerson) " +
+    	       "rt.roomTypeId, rt.maxPerson, rt.breakfast) " +
     	       "FROM RoomInventoryVO ri " +
     	       "JOIN ri.roomType rt " +
     	       "JOIN rt.hotel h " +
@@ -52,7 +52,7 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventoryVO, 
     //搜尋庫存、房型
     @Query("SELECT new com.roomInventory.model.HotelRoomInventoryDTO(" +
     	       "ri.inventoryId, ri.date, ri.availableQuantity, " +
-    	       "h.hotelId, " +                               // 在此處添加逗號
+    	       "h.hotelId, h.name," +                               // 在此處添加逗號
     	       "rt.roomTypeId, rt.roomName, rt.maxPerson, rt.breakfast) " +
     	       "FROM RoomInventoryVO ri " +
     	       "JOIN ri.roomType rt " +
@@ -62,6 +62,22 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventoryVO, 
     	    @Param("hotelId") Integer hotelId
     	);
 
+    //取得旅館、特定房型、特定日期
+    @Query("SELECT new com.roomInventory.model.HotelRoomInventoryDTO(" +
+    	       "ri.inventoryId, ri.date, ri.availableQuantity, " +
+    	       "h.hotelId, h.name," +                               // 在此處添加逗號
+    	       "rt.roomTypeId, rt.roomName, rt.maxPerson, rt.breakfast) " +
+    	       "FROM RoomInventoryVO ri " +
+    	       "JOIN ri.roomType rt " +
+    	       "JOIN rt.hotel h " +
+    	       "WHERE ri.date between :startDate and :endDate AND rt.roomTypeId = :roomTypeId")
+    	List<HotelRoomInventoryDTO> findRoomsFromDateAndRoomTypeId(
+    	    @Param("startDate") LocalDate startDate,
+    	    @Param("endDate") LocalDate endDate,
+    	    @Param("roomTypeId") Integer roomTypeId
+    	);
+
+    
     //從ID找庫存
     @Query("SELECT ri FROM RoomInventoryVO ri WHERE ri.roomType.roomTypeId = :roomTypeId AND ri.date = :date")
     RoomInventoryVO findByRoomTypeIdAndDate(

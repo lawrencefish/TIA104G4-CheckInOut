@@ -228,7 +228,7 @@ $(document).ready(function () {
     }
   });
 
-  $('#sumbitBtn').on('click', (e) => {
+  $('#submitBtn').on('click', (e) => {
     let start_date = $('#start_date').text();
     let end_date = $('#end_date').text();
     if (start_date != "" && end_date != "") {

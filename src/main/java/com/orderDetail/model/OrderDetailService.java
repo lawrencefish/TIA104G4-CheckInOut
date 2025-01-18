@@ -18,14 +18,10 @@ public class OrderDetailService {
 	private SessionFactory sessionFactory;
 	
 	@Transactional
-	public void addMember(OrderDetailVO orderDetailVO) {
+	public void addOrderDetail(OrderDetailVO orderDetailVO) {
 		repository.save(orderDetailVO);
 	}
 
-	@Transactional
-	public void updateMember(OrderDetailVO orderDetailVO) {
-		repository.save(orderDetailVO);
-	}
 
 	public OrderDetailVO queryOrder(Integer orderDetailId) {
 		Optional<OrderDetailVO> optional = repository.findById(orderDetailId);

@@ -6,59 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>購物車 - Check in Out</title>
     <link rel="stylesheet" href="/vendors/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/user/template.css">
-    <style>
-        .hotel-image {
-            background-size: cover;
-            background-position: center;
-        }
+    <link rel="stylesheet" th:href="@{/css/user/template.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-        .cart-summary {
-            border-top: 2px solid #ddd;
-            padding-top: 15px;
-        }
-
-        .room-item {
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .room-item:last-child {
-            border-bottom: none;
-        }
-
-        .room-details {
-            flex-grow: 1;
-            margin-left: 15px;
-        }
-
-        .room-image {
-            width: 100px;
-            height: 100px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 5px;
-        }
-
-        .remove-button {
-            margin-left: 20px;
-        }
-
-        .quantity-select {
-            width: 60px;
-        }
-    </style>
 </head>
 
 <body>
 
     <!-- 標題列 -->
     <header class="p-1 border-bottom shadow-sm">
-        <h1 class="text-center">我的購物車</h1>
+        <h1 class="text-center">購物車</h1>
     </header>
 
     <!-- 主要內容 -->
@@ -66,80 +23,30 @@
         <div class="row">
             <!-- 購物車區域 -->
             <div class="col-md-8">
-                <h3 class="mb-3">您的購物車</h3>
-    
-                <!-- 購物車列表 -->
-                <div id="cart-container">
-                    <!-- 旅館 1 -->
-                    <div class="hotel-selection border rounded p-3 mb-3 position-relative" data-hotel-id="1">
-                        <input type="radio" name="selected-hotel" class="hotel-radio position-absolute top-0 end-0 m-3" value="1">
-                        <div class="d-flex align-items-center">
-                            <img src="https://via.placeholder.com/150" alt="台中林酒店" class="rounded hotel-image me-3">
-                            <div class="flex-grow-1">
-                                <h5 class="hotel-name mb-1">台中林酒店</h5>
-                                <p class="hotel-rating text-warning mb-0"><i class="bi bi-star-fill"></i> 4.5 / 5</p>
-                            </div>
-                            <button class="btn btn-outline-danger btn-sm remove-hotel">移除旅館</button>
-                        </div>
-                        <!-- 房型列表 -->
-                        <div class="hotel-rooms mt-3">
-                            <div class="room-item border rounded p-3 mb-2 d-flex align-items-center" data-room-id="1">
-                                <img src="https://via.placeholder.com/100" alt="雙人房" class="rounded room-image me-3">
-                                <div class="room-details flex-grow-1">
-                                    <h6 class="room-type-name mb-1"><strong>雙人房</strong></h6>
-                                    <p class="stay-info mb-0"><i class="bi bi-calendar-check"></i> 入住日期：2024/11/04 - 2024/11/05</p>
-                                    <p class="guest-info"><i class="bi bi-people"></i> 入住人數：2 人</p>
-                                    <p class="nights"><i class="bi bi-moon-stars"></i> 住宿天數：1 晚</p>
-                                    <p class="room-count"><strong>房間數：</strong> 1 間</p>
-                                    <p class="price"><strong>價格：</strong> NTD$ <span class="hotel-price">32,000</span></p>
-                                </div>
-                                <button class="btn btn-danger btn-sm remove-room"><i class="bi bi-trash"></i> 移除房型</button>
-                            </div>
-                        </div>
-                    </div>
-    
-                    <!-- 旅館 2 -->
-                    <div class="hotel-selection border rounded p-3 mb-3 position-relative" data-hotel-id="2">
-                        <input type="radio" name="selected-hotel" class="hotel-radio position-absolute top-0 end-0 m-3" value="2">
-                        <div class="d-flex align-items-center">
-                            <img src="https://via.placeholder.com/150" alt="台北文華東方酒店" class="rounded hotel-image me-3">
-                            <div class="flex-grow-1">
-                                <h5 class="hotel-name mb-1">台北文華東方酒店</h5>
-                                <p class="hotel-rating text-warning mb-0"><i class="bi bi-star-fill"></i> 4.7 / 5</p>
-                            </div>
-                            <button class="btn btn-outline-danger btn-sm remove-hotel">移除旅館</button>
-                        </div>
-                        <!-- 房型列表 -->
-                        <div class="hotel-rooms mt-3">
-                            <div class="room-item border rounded p-3 mb-2 d-flex align-items-center" data-room-id="2">
-                                <img src="https://via.placeholder.com/100" alt="豪華房" class="rounded room-image me-3">
-                                <div class="room-details flex-grow-1">
-                                    <h6 class="room-type-name mb-1"><strong>豪華房</strong></h6>
-                                    <p class="stay-info mb-0"><i class="bi bi-calendar-check"></i> 入住日期：2024/11/05 - 2024/11/06</p>
-                                    <p class="guest-info"><i class="bi bi-people"></i> 入住人數：3 人</p>
-                                    <p class="nights"><i class="bi bi-moon-stars"></i> 住宿天數：1 晚</p>
-                                    <p class="room-count"><strong>房間數：</strong> 1 間</p>
-                                    <p class="price"><strong>價格：</strong> NTD$ <span class="hotel-price">28,000</span></p>
-                                </div>
-                                <button class="btn btn-danger btn-sm remove-room"><i class="bi bi-trash"></i> 移除房型</button>
-                            </div>
-                        </div>
-                    </div>
+                <!-- 使用 d-flex 讓標題與按鈕在同一行，justify-content-between 讓按鈕靠右 -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">購物車區域</h3>
+                    <button class="btn btn-outline-danger" id="clearBtn">清除所選擇的旅館</button>
                 </div>
+            
+                <!-- 購物車列表 -->
+                <div id="cart-container"></div>
             </div>
-    
+
             <!-- 總價計算區 (置於右側) -->
             <div class="col-md-4">
                 <div class="border rounded p-3 bg-light w-100">
                     <h4 class="mb-3">總計</h4>
-                    <p><strong>房間總數：</strong> <span id="total-rooms">0</span> 間</p>
+                    <p><strong>您要結帳的是：</strong></p>
+                    <p><span class="fs-4" id="select-hotel"></p>
+                    <p><strong>房型總數：</strong> <span id="total-rooms">0</span> 種</p>
                     <p><strong>總金額：</strong> NTD$ <span id="total-price">0</span></p>
                     <button class="btn btn-success w-100" id="checkout-button">確認預訂</button>
                 </div>
             </div>
         </div>
     </main>
-                        
+
 
     <!-- 底欄 -->
     <footer>
@@ -169,28 +76,6 @@
     <script src="/vendors/jQuery/jquery-3.7.1.min.js"></script>
     <script src="/js/user/loginCheck.js" defer></script>
     <script src="/js/user/cart.js"></script>
-
-    <script>
-        // 動態計算總價
-        function calculateTotal() {
-            let total = 0;
-            document.querySelectorAll('.hotel-price').forEach(price => {
-                total += parseInt(price.textContent);
-            });
-            document.getElementById('total-price').textContent = `$${total}`;
-        }
-
-        // 移除項目
-        document.querySelectorAll('.remove-item').forEach(button => {
-            button.addEventListener('click', function () {
-                this.closest('.hotel-selection').remove();
-                calculateTotal();
-            });
-        });
-
-        // 初始化總價
-        calculateTotal();
-    </script>
 
 </body>
 

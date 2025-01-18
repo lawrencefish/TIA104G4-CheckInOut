@@ -47,6 +47,14 @@ public class RoomInventoryService {
 	}
 
 	@Transactional
+	public void roomTransaction(RoomInventoryVO inventory) {
+		if(inventory.getAvailableQuantity() >= 0) {		
+		roomInventoryRepository.save(inventory);
+		}
+	}
+
+	
+	@Transactional
 	public RoomInventoryVO updateRoomInventory(RoomInventoryVO inventory) {
 		RoomInventoryVO existingInventory = roomInventoryRepository.findById(inventory.getInventoryId())
 				.orElseThrow(() -> new IllegalArgumentException("房型庫存ID=" + inventory.getInventoryId() + " 不存在"));
@@ -67,7 +75,8 @@ public class RoomInventoryService {
 			double longitudeCenter, double radius) {
 		return roomInventoryRepository.findAvailableRooms(startDate, endDate, latitudeCenter, longitudeCenter, radius);
 	}
-	//從旅館找房
+
+	// 從旅館找房
 	public List<HotelRoomInventoryDTO> findAvailableRoomsFromHotel(Integer hotelId) {
 		return roomInventoryRepository.findAvailableRoomsFromHotel(hotelId);
 	}
@@ -76,23 +85,30 @@ public class RoomInventoryService {
 	public RoomInventoryVO findByRoomTypeIdAndDate(Integer roomTypeId, LocalDate date) {
 		return roomInventoryRepository.findByRoomTypeIdAndDate(roomTypeId, date);
 	}
+
 	public RoomInventoryVO findByRoomTypeId(Integer roomTypeId) {
 		return roomInventoryRepository.findByRoomTypeRoomTypeId(roomTypeId);
 	}
 
+	// 從日期房型Id找房（確認庫存）
+	public List<HotelRoomInventoryDTO> findRoomsFromDateAndRoomTypeId(LocalDate startDate, LocalDate endDate,
+			Integer roomTypeId) {
+		return roomInventoryRepository.findRoomsFromDateAndRoomTypeId(startDate, endDate, roomTypeId);
+	}
+
 	// 取得每日庫存量
 	public List<Map<String, Object>> getRoomCountsByDate() {
-	    List<Object[]> results = roomInventoryRepository.countRoomsByDate();
-	    List<Map<String, Object>> response = new ArrayList<>();
+		List<Object[]> results = roomInventoryRepository.countRoomsByDate();
+		List<Map<String, Object>> response = new ArrayList<>();
 
-	    results.forEach(r -> {
-	        Map<String, Object> result = new HashMap<>(); // 每次建立新的 Map
-	        result.put("date", r[0].toString());
-	        result.put("count", String.valueOf(r[1]));
-	        response.add(result); 
-	    });
+		results.forEach(r -> {
+			Map<String, Object> result = new HashMap<>(); // 每次建立新的 Map
+			result.put("date", r[0].toString());
+			result.put("count", String.valueOf(r[1]));
+			response.add(result);
+		});
 
-	    return response;
+		return response;
 	}
 
 	@Transactional
