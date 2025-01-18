@@ -23,4 +23,8 @@ public interface RoomRepository extends JpaRepository<RoomVO, Integer> {
 
     Optional<RoomVO> findByOrderDetailId(Integer orderDetailId);
 
+    // 自定義查詢方法，根據 orderDetailId 查詢房間
+    @Query("SELECT r FROM RoomVO r WHERE r.orderDetailId = :orderDetailId")
+    List<RoomVO> findRoomsByOrderDetailId(@Param("orderDetailId") Integer orderDetailId);
+
 }

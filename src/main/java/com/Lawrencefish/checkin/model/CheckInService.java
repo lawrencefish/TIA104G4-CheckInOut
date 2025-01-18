@@ -99,40 +99,55 @@ public class CheckInService {
 
     @Transactional
     public void processCheckIn(List<CheckInRequest> requests) {
-        Set<Integer> processedOrders = new HashSet<>(); // 用來記錄已更新的訂單 ID
+        Set<Integer> processedOrders = new HashSet<>(); // 用来记录已更新的订单 ID
+
         for (CheckInRequest request : requests) {
-            // 如果該訂單已處理，跳過狀態更新
+            // 如果该订单尚未处理，更新其状态
             if (!processedOrders.contains(request.getOrderId())) {
-                // 更新訂單狀態為 "已報到"
-                updateOrderStatus(request.getOrderId(), (byte) 1);
-                // 將訂單 ID 記錄為已處理
+                updateOrderStatus(request.getOrderId(), (byte) 1); // 订单状态设为已报到
                 processedOrders.add(request.getOrderId());
 
-                // 推播 Check-In 訂單狀態更新
+                // 推播 Check-In 订单状态更新
                 String checkInMessage = String.format(
                         "{\"type\": \"checkIn\", \"orderId\": %d, \"status\": %d}",
                         request.getOrderId(),
                         1
                 );
-                NotificationWebSocketHandler.broadcast(checkInMessage); // 推播給其他用戶
+                NotificationWebSocketHandler.broadcast(checkInMessage); // 推播
             }
-            // 更新房間狀態為 "已占用"
-            updateRoomStatus(request.getAssignedRoomId(), (byte) 1);
-            // 更新房間的住客信息
-            updateRoomCustomerInfo(
-                    request.getAssignedRoomId(),
-                    request.getCustomerName(),
-                    request.getCustomerPhoneNumber(),
-                    request.getOrderDetailId()
-            );
 
-            // 推播房間狀態更新
-            String roomMessage = String.format(
-                    "{\"type\": \"roomStatus\", \"roomId\": %d, \"status\": %d}",
-                    request.getAssignedRoomId(),
-                    1
-            );
-            NotificationWebSocketHandler.broadcast(roomMessage); // 推播給其他用戶
+            // 处理单个分配的房间
+            Integer assignedRoomId = request.getAssignedRoomId();
+            String customerName = request.getCustomerName();
+            String customerPhoneNumber = request.getCustomerPhoneNumber();
+
+            if (assignedRoomId != null) {
+                // 更新房间状态为 "已占用"
+                updateRoomStatus(assignedRoomId, (byte) 1);
+                // 更新房间的住客信息
+                updateRoomCustomerInfo(
+                        assignedRoomId,
+                        customerName,
+                        customerPhoneNumber,
+                        request.getOrderDetailId()
+                );
+
+                // 推播房间状态更新
+                String roomMessage = String.format(
+                        "{\"type\": \"roomStatus\", \"roomId\": %d, \"status\": %d}",
+                        assignedRoomId,
+                        1
+                );
+                NotificationWebSocketHandler.broadcast(roomMessage); // 推播给其他用户
+            } else {
+                throw new IllegalArgumentException("Assigned room ID cannot be null.");
+            }
         }
+    }
+
+
+
+    public List<RoomVO> getRoomsByOrderDetailId(Integer orderDetailId) {
+        return roomRepository.findRoomsByOrderDetailId(orderDetailId);
     }
 }

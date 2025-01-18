@@ -2,13 +2,15 @@ package com.Lawrencefish.checkin.model;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class CheckInRequest {
-    private Integer orderId; // 訂單 ID
-    private Integer orderDetailId; // 訂單明細 ID
-    private Integer assignedRoomId; // 分配的房間 ID
-    private String customerName; // 住客姓名
-    private String customerPhoneNumber; // 住客電話
+    private Integer orderId;
+    private Integer orderDetailId;
+    private Integer assignedRoomId; // 單一房間分配
+    private String customerName;
+    private String customerPhoneNumber;
 
     public Integer getOrderId() {
         return orderId;
