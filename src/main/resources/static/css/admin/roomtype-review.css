@@ -161,8 +161,11 @@ body {
 
 .action-buttons {
   display: flex;
+  justify-content: center;  /* 水平置中 */
+  align-items: center;      /* 垂直置中 */
   gap: 15px;
   margin-top: 20px;
+  padding: 10px 0;         /* 增加上下間距 */
 }
 
 .btn {
@@ -174,78 +177,95 @@ body {
   transition: all 0.3s;
 }
 
+.btn-approve, .btn-reject {
+    min-width: 120px;        /* 設定最小寬度 */
+    padding: 12px 24px;      /* 增加內邊距 */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    font-size: 16px;         /* 調整字體大小 */
+}
+
 .btn-approve {
-  background: #28a745;
-  color: white;
+    background-color: #28a745;
+    color: white;
 }
 
 .btn-reject {
-  background: #dc3545;
-  color: white;
+    background-color: #dc3545;
+    color: white;
 }
 
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.btn-approve:hover, .btn-reject:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+/* 新增的彈窗樣式 */
+.reject-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-/* 顧客評論區塊樣式 */
-.horizontal-list {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
+.dialog-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
 }
 
-.reviews-container {
-  display: flex;
-  overflow: hidden;
-  gap: 15px;
-  width: 840px;
-  max-width: 840px;
-  margin: 20px auto;
-  padding: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.dialog-content h3 {
+    margin-top: 0;
+    color: #333;
 }
 
-.review-card {
-  flex: 0 0 240px;
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.dialog-content textarea {
+    width: 100%;
+    height: 150px;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
 }
 
-.review-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
 }
 
-button.prev,
-button.next {
-  padding: 10px;
-  border: none;
-  background-color: #007bff;
-  color: #fff;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 16px;
-  width: 40px;
-  height: 40px;
+.btn-confirm {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-button.prev:disabled,
-button.next:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
-
-button.prev:hover:not(:disabled),
-button.next:hover:not(:disabled) {
-  background-color: #0056b3;
+/* 縮圖選中狀態樣式 */
+.thumbnail.selected {
+    border: 3px solid #007bff;
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }

@@ -6,42 +6,25 @@ document.addEventListener('DOMContentLoaded', function() {
     initializePage();
 });
 
-// 載入頁面組件
-async function loadComponents() {
-    try {
-        // 載入header
-        const headerResponse = await fetch('./backend-header.html');
-        const headerHtml = await headerResponse.text();
-        document.getElementById('header').innerHTML = headerHtml;
-
-        // 載入footer
-        const footerResponse = await fetch('./backend-footer.html');
-        const footerHtml = await footerResponse.text();
-        document.getElementById('footer').innerHTML = footerHtml;
-    } catch (error) {
-        console.error('載入組件失敗:', error);
-    }
-}
-
 // 初始化頁面
 async function initializePage() {
-    // 載入頁面組件
-    await loadComponents();
-    
-    // 設置日期輸入框的最大和最小值
+    // 設置日期輸入框的限制
     setDateConstraints();
     
     // 從 URL 獲取新聞 ID（如果是編輯模式）
     const urlParams = new URLSearchParams(window.location.search);
-    const newsId = urlParams.get('id');
+    currentNewsId = urlParams.get('id');
     
     // 設置表單標題
     const pageTitle = document.querySelector('.admin-banner h1');
-    pageTitle.textContent = newsId ? '編輯消息' : '創建消息';
+    pageTitle.textContent = currentNewsId ? '編輯消息' : '創建消息';
     
     // 如果是編輯模式，載入新聞數據
-    if (newsId) {
-        loadNewsData(newsId);
+    if (currentNewsId) {
+        await loadNewsData(currentNewsId);
+    } else {
+        // 如果是創建模式，設置預設日期
+        setDefaultDates();
     }
 
     // 設置圖片上傳監聽
@@ -73,23 +56,23 @@ function setDefaultDates() {
 // 載入現有新聞數據
 async function loadNewsData(newsId) {
     try {
-        // 在實際應用中，這裡應該是從 API 獲取數據
-        // 這裡使用模擬數據作為示例
-        const newsData = {
-            id: newsId,
-            title: "示例新聞標題",
-            content: "示例新聞內容...",
-            publishDate: "2024-01-01",
-            startDate: "2024-01-01",
-            imageUrl: "./img/sale.jpg"
-        };
+        const response = await fetch(`/api/news/${newsId}`);
+        if (!response.ok) {
+            throw new Error('獲取數據失敗');
+        }
+        
+        const newsData = await response.json();
 
         // 填充表單
-        document.getElementById('title').value = newsData.title;
-        document.getElementById('content').value = newsData.content;
-        document.getElementById('publishDate').value = newsData.publishDate;
-        document.getElementById('startDate').value = newsData.startDate;
-        document.getElementById('previewImage').src = newsData.imageUrl;
+        document.getElementById('title').value = newsData.newsTitle;
+        document.getElementById('content').value = newsData.description;
+        document.getElementById('publishDate').value = formatDateForInput(newsData.createTime);
+        document.getElementById('startDate').value = formatDateForInput(newsData.postTime);
+        
+        // 如果有圖片，設置圖片預覽
+        if (newsData.newsImg) {
+            document.getElementById('previewImage').src = newsData.newsImg;
+        }
 
     } catch (error) {
         console.error('載入新聞數據失敗:', error);
@@ -132,36 +115,65 @@ async function submitNews(event) {
     event.preventDefault();
 
     // 獲取表單數據
-    const formData = {
-        title: document.getElementById('title').value,
-        content: document.getElementById('content').value,
-        publishDate: document.getElementById('publishDate').value,
-        startDate: document.getElementById('startDate').value,
-        image: document.getElementById('photoUpload').files[0]
-    };
+    const formData = new FormData();
+    formData.append('newsTitle', document.getElementById('title').value);
+    formData.append('description', document.getElementById('content').value);
+    formData.append('createTime', document.getElementById('publishDate').value);
+    formData.append('postTime', document.getElementById('startDate').value);
+    
+    const imageFile = document.getElementById('photoUpload').files[0];
+    if (imageFile) {
+        formData.append('newsImg', imageFile);
+    }
 
     // 驗證日期
-    if (new Date(formData.startDate) < new Date(formData.publishDate)) {
+    if (new Date(formData.get('postTime')) < new Date(formData.get('createTime'))) {
         showMessage('開始時間不能早於發布時間', 'error');
         return;
     }
 
     try {
-        // 在實際應用中，這裡應該調用 API 提交數據
-        // 模擬 API 調用
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // 將 FormData 轉換為 JSON 格式
+        const newsData = {
+            newsTitle: formData.get('newsTitle'),
+            description: formData.get('description'),
+            createTime: formData.get('createTime'),
+            postTime: formData.get('postTime')
+        };
+
+        const url = currentNewsId ? `/api/news/${currentNewsId}` : '/api/news';
+        const method = currentNewsId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newsData)
+        });
+
+        if (!response.ok) {
+            throw new Error('提交失敗');
+        }
 
         showMessage('新聞保存成功', 'success');
         
         // 延遲後返回列表頁面
         setTimeout(() => {
-            window.location.href = 'latest-news.html';
+            window.location.href = '/admin/latestNews';
         }, 1500);
 
     } catch (error) {
         console.error('提交新聞失敗:', error);
         showMessage('提交失敗，請重試', 'error');
     }
+}
+
+// 格式化日期用於input標籤
+function formatDateForInput(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
 }
 
 // 顯示消息提示

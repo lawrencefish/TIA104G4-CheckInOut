@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>會員資料</title>
-  <link rel="stylesheet" href="./css/member-backend.css">
-  <link rel="stylesheet" href="./css/headerfooter.css">
+  <link rel="stylesheet" th:href="@{/css/admin/member-backend.css}">
+  <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
   
 
 </head>
 <body>
   <!-- 動態導入header -->
-  <div id="header"></div>
+  <div th:replace="~{admin/backend-header :: header}"></div>
 
   <main>
     <section class="company-info">
@@ -22,58 +22,50 @@
       <!-- 會員資料區塊 -->
       <div class="member-container">
         <div class="member-profile">
-          <img src="" alt="會員頭像" class="avatar">
-          <div class="info-grid">
-            <div class="info-item" data-label="帳號" id="account"><span class="content"></span></div>
-            <div class="info-item" data-label="性別" id="gender"><span class="content"></span></div>
-            <div class="info-item" data-label="姓" id="first-name"><span class="content"></span></div>
-            <div class="info-item" data-label="名" id="last-name"><span class="content"></span></div>
-            <div class="info-item" data-label="生日" id="birthday"><span class="content"></span></div>
-            <div class="info-item" data-label="連絡電話" id="phone"><span class="content"></span></div>
-            <div class="info-item" data-label="電子郵件" id="email"><span class="content"></span></div>
-          </div>
-        </div>
-      </div>
+           <!-- 顯示會員頭像 -->
+		    <img th:src="@{${avatar} != null ? ${avatar} : '/path/to/default-avatar.png'}" alt="會員頭像" class="avatar">
+		    <div class="info-grid">
+		      <div class="info-item" data-label="帳號" id="account">
+		        <span class="content" th:text="${account}"></span>
+		      </div>
+		      <div class="info-item" data-label="性別" id="gender">
+		        <span class="content" th:text="${gender}"></span>
+		      </div>
+		      <div class="info-item" data-label="姓" id="last-name">
+		        <span class="content" th:text="${lastName}"></span>
+		      </div>
+		      <div class="info-item" data-label="名" id="first-name">
+		        <span class="content" th:text="${firstName}"></span>
+		      </div>
+		      <div class="info-item" data-label="生日" id="birthday">
+		        <span class="content" th:text="${birthday}"></span>
+		      </div>
+		      <div class="info-item" data-label="連絡電話" id="phone">
+		        <span class="content" th:text="${phoneNumber}"></span>
+		      </div>
+		      <div class="info-item" data-label="電子郵件" id="email">
+		        <span class="content" th:text="${email}"></span>
+		      </div>
+		    </div>
+		  </div>
+		</div>
     </section>
 
-    <div class="container">
-      <!-- 訂單資訊區塊 -->
-      <div class="orders">
-        <h3>訂單資訊</h3>
-        <div class="order-container">
-          <img src="" alt="飯店照片" class="order-image">
-          <div class="order-details">
-            <h3>台中金典酒店 - 總統套房</h3>
-            <p>入住日期、退房日期、人數、住客資訊</p>
-            <p class="price">$19500</p>
-          </div>
-        </div>
-        
-        <div class="order-container">
-          <img src="" alt="飯店照片" class="order-image">
-          <div class="order-details">
-            <h3>台北圓山大飯店 - 總統套房</h3>
-            <p>入住日期、退房日期、人數、住客資訊</p>
-            <p class="price">$24500</p>
-          </div>
-        </div>
-        
-        <div class="order-container">
-          <img src="" alt="飯店照片" class="order-image">
-          <div class="order-details">
-            <h3>台南超級大酒店 - 總統套房</h3>
-            <p>入住日期、退房日期、人數、住客資訊</p>
-            <p class="price">$15400</p>
-          </div>
-        </div>
-      </div>
+	<div class="container">
+	<!-- 訂單資訊區塊 -->
+	<div class="orders">
+		<h3>訂單資訊</h3>
+		<span class="order-count">總訂單數：<span id="totalOrders">0</span></span>
+	</div>
+		<!-- 訂單列表容器 -->
+		<div id="ordersList"></div>
     </div>
   </main>
 
   <!-- 動態導入footer -->
-  <div id="footer"></div>
+  <div th:replace="~{admin/backend-footer :: footer}"></div>
 
-  <script src="./js/header.js"></script>
-  <script src="./js/member-backend.js"></script>
+  <script th:src="@{/js/admin/header.js}"></script>
+  <script th:src="@{/js/admin/member-backend.js}"></script>
 </body>
 </html>

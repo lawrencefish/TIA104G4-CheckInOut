@@ -9,6 +9,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 @Service
 public class RoomTypeImgService {
@@ -70,4 +74,25 @@ public class RoomTypeImgService {
     	return roomTypeImgRepository.countByRoomTypeRoomTypeId(roomTypeId);
     }
     
+    // By Barry
+    @Autowired
+    private EntityManager entityManager;
+    
+    public byte[] getFirstImageByRoomTypeId(Integer roomTypeId) {
+        try {
+            RoomTypeImgVO firstImage = entityManager.createQuery(
+                "SELECT ri FROM RoomTypeImgVO ri WHERE ri.roomType.roomTypeId = :roomTypeId ORDER BY ri.roomTypeImgId ASC",
+                RoomTypeImgVO.class)
+                .setParameter("roomTypeId", roomTypeId)
+                .setMaxResults(1)
+                .getSingleResult();
+            
+            return Optional.ofNullable(firstImage)
+                .map(RoomTypeImgVO::getPicture)
+                .orElse(null);
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+    //--------------------
 }

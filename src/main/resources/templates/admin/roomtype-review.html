@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +32,7 @@
                 <div class="room-images">
                     <!-- 主圖片 -->
                     <img th:if="${not #lists.isEmpty(roomType.roomTypeImgs)}" 
-                         th:src="@{'/adminRoomType/image/' + ${roomType.roomTypeImgs[0].imgId}}"
+                         th:src="@{'/adminRoomType/image/' + ${roomType.roomTypeImgs[0].roomTypeImgId}}"
                          alt="主要房間圖片" class="main-image" id="mainImage">
                     <img th:unless="${not #lists.isEmpty(roomType.roomTypeImgs)}"
                          th:src="@{/images/default-room.jpg}" 
@@ -43,7 +43,7 @@
                         <!-- 有圖片時顯示實際圖片 -->
                         <th:block th:if="${not #lists.isEmpty(roomType.roomTypeImgs)}">
                             <img th:each="img : ${roomType.roomTypeImgs}"
-                                 th:src="@{'/adminRoomType/image/' + ${img.imgId}}"
+                                 th:src="@{'/adminRoomType/image/' + ${img.roomTypeImgId}}"
                                  class="thumbnail"
                                  th:alt="'房型圖片' + ${imgStat.index + 1}">
                         </th:block>
@@ -65,34 +65,25 @@
             			<span th:if="${roomType.breakfast == 0}">｜不附早餐</span>
                     </div>
                     <div class="detail-item" th:if="${roomType.roomTypeFacilities != null and not #lists.isEmpty(roomType.roomTypeFacilities)}">
-				        <div class="detail-label">房間設施</div>
-<!-- 				        <p th:text="${roomTypeFacilities.facilityId, '｜')}">設施列表</p> -->
-			   	 	</div>
+					    <div class="detail-label">房間設施</div>
+					    <p class="facilities-text">
+					        <span th:each="facility, facilityStat : ${roomType.roomTypeFacilities}">
+					            <span th:text="${facility.facility.facilityName}"></span>
+					            <span th:if="${!facilityStat.last}">｜</span>
+					        </span>
+					    </p>
+					</div>
                     <div class="detail-item">
                         <div class="detail-label">描述</div>
                         <p th:text="${roomType.roomName}"></p>
                     </div>
                 </div>
-            </div>
-
-            <div class="comment-section">
-                <h3>審核意見</h3>
-                <textarea class="comment-box" placeholder="請輸入審核意見..." rows="4"></textarea>
-            </div>
+            </div>         
 
             <div class="action-buttons">
-                <button class="btn btn-approve" onclick="approveRoom()" th:if="${roomType.status == 0}">通過審核</button>
-                <button class="btn btn-reject" onclick="rejectRoom()" th:if="${roomType.status == 0}">駁回申請</button>
+                <button class="btn-approve" onclick="approveRoom()" th:if="${roomType.status == 0}">通過</button>
+                <button class="btn-reject" onclick="rejectRoom()" th:if="${roomType.status == 0}">駁回</button>
             </div>
-        </div>
-
-        <!-- 顧客評論區塊 -->
-        <div class="horizontal-list">
-            <button class="prev" id="prevPage" disabled>&lt;</button>
-            <div id="reviewsContainer" class="reviews-container">
-                <!-- 動態評論內容將由 JavaScript 生成 -->
-            </div>
-            <button class="next" id="nextPage">&gt;</button>
         </div>
     </div>
 

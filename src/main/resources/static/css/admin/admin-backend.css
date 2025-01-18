@@ -238,13 +238,11 @@ td {
 .modal-content {
     position: relative;
     background-color: #fff;
-    margin: 50px auto;
-    padding: 20px;
+    margin: 0px auto;
     border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
+    max-width: 400px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1001;
+    z-index: 1000;
 }
 
 /* 表單輸入框樣式調整 */

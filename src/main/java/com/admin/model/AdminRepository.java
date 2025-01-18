@@ -14,37 +14,46 @@ public interface AdminRepository extends JpaRepository<Admin, Integer> {
 
 	Admin findByEmail(String email);
 	
-	// 通用搜尋：根據關鍵字、狀態和權限
-    @Query("SELECT a FROM Admin a WHERE " +
-           "(:keyword IS NULL OR a.adminAccount LIKE %:keyword% OR a.email LIKE %:keyword% OR a.phoneNumber LIKE %:keyword%) AND " +
-           "(:status IS NULL OR a.status = :status) AND " +
-           "(:permissions IS NULL OR a.permissions = :permissions)")
-    List<Admin> searchAdmins(
-        @Param("keyword") String keyword,
-        @Param("status") Byte status,
-        @Param("permissions") Byte permissions
-    );
-
-    // 根據狀態與關鍵字查詢
-    @Query("SELECT a FROM Admin a WHERE (:status IS NULL OR a.status = :status) " +
-           "AND (a.adminAccount LIKE %:keyword% OR a.email LIKE %:keyword%)")
-    List<Admin> findByStatusAndKeyword(
-        @Param("status") Byte status,
-        @Param("keyword") String keyword
-    );
-
-    // 根據權限與關鍵字查詢
-    @Query("SELECT a FROM Admin a WHERE (:permissions IS NULL OR a.permissions = :permissions) " +
-           "AND (a.adminAccount LIKE %:keyword% OR a.email LIKE %:keyword%)")
-    List<Admin> findByPermissionsAndKeyword(
-        @Param("permissions") Byte permissions,
-        @Param("keyword") String keyword
-    );
-
-    // 僅根據關鍵字查詢
-    @Query("SELECT a FROM Admin a WHERE " +
-           "a.adminAccount LIKE %:keyword% OR a.email LIKE %:keyword% OR a.phoneNumber LIKE %:keyword%")
+	 // 根據狀態查詢
+    List<Admin> findByStatus(Byte status);
+    
+    // 根據權限查詢
+    List<Admin> findByPermissions(Byte permissions);
+    
+    // 根據狀態和權限查詢
+    List<Admin> findByStatusAndPermissions(Byte status, Byte permissions);
+    
+    // 根據關鍵字查詢 (可以搜索帳號、Email、電話)
+    @Query("SELECT a FROM Admin a WHERE a.adminAccount LIKE %:keyword% " +
+           "OR a.email LIKE %:keyword% " +
+           "OR a.phoneNumber LIKE %:keyword%")
     List<Admin> findByKeyword(@Param("keyword") String keyword);
+    
+    // 根據狀態和關鍵字查詢
+    @Query("SELECT a FROM Admin a WHERE (a.adminAccount LIKE %:keyword% " +
+           "OR a.email LIKE %:keyword% " +
+           "OR a.phoneNumber LIKE %:keyword%) " +
+           "AND a.status = :status")
+    List<Admin> findByStatusAndKeyword(@Param("status") Byte status, 
+                                     @Param("keyword") String keyword);
+    
+    // 根據權限和關鍵字查詢
+    @Query("SELECT a FROM Admin a WHERE (a.adminAccount LIKE %:keyword% " +
+           "OR a.email LIKE %:keyword% " +
+           "OR a.phoneNumber LIKE %:keyword%) " +
+           "AND a.permissions = :permissions")
+    List<Admin> findByPermissionsAndKeyword(@Param("permissions") Byte permissions, 
+                                          @Param("keyword") String keyword);
+    
+    // 根據狀態、權限和關鍵字查詢
+    @Query("SELECT a FROM Admin a WHERE (a.adminAccount LIKE %:keyword% " +
+           "OR a.email LIKE %:keyword% " +
+           "OR a.phoneNumber LIKE %:keyword%) " +
+           "AND a.status = :status " +
+           "AND a.permissions = :permissions")
+    List<Admin> searchAdmins(@Param("keyword") String keyword,
+                            @Param("status") Byte status,
+                            @Param("permissions") Byte permissions);
 }
 
 	// 基本的 CRUD 操作都會自動實現

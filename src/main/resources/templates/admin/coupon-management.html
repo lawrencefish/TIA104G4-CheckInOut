@@ -20,12 +20,15 @@
 
         <section class="container coupon-management">
             <div class="search-bar">
-                <input type="text" class="search-input" id="searchInput" placeholder="搜尋...">
-                <button class="btn btn-primary" onclick="searchCoupons()">搜尋</button>
-                <button class="btn btn-success" onclick="createCoupon()">創建優惠券</button>
+                <form th:action="@{/admin/coupons}" method="get" class="d-flex">
+                    <input type="text" class="search-input" name="keyword" 
+                           th:value="${param.keyword}" placeholder="搜尋...">
+                    <button type="submit" class="btn btn-primary">搜尋</button>
+                    <a th:href="@{/admin/coupons/create}" class="btn btn-success">創建優惠券</a>
+                </form>
             </div>
-
-            <table class="coupon-table" id="couponTable">
+            
+             <table class="coupon-table">
                 <thead>
                     <tr>
                         <th>優惠券名稱</th>
@@ -36,13 +39,43 @@
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody id="couponTableBody">
-                    <!-- 由 JavaScript 動態填充 -->
+                <tbody>
+                    <tr th:each="coupon : ${coupons}">
+                        <td th:text="${coupon.couponName}"></td>
+                        <td th:text="${coupon.couponDetail}"></td>
+                        <td th:text="${#lists.size(coupon.memberCoupons)}"></td>
+                        <td th:text="${coupon.minSpend}"></td>
+                        <td>
+                            <span th:text="${#temporals.format(coupon.activeDate, 'yyyy-MM-dd')}"></span>
+                            至
+                            <span th:text="${#temporals.format(coupon.expiryDate, 'yyyy-MM-dd')}"></span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a th:href="@{/admin/coupons/edit/{id}(id=${coupon.couponId})}" 
+                                   class="btn btn-sm btn-primary">編輯</a>
+                                <form th:action="@{/admin/coupons/delete/{id}(id=${coupon.couponId})}" 
+                                      method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                            onclick="return confirm('確定要刪除嗎?');">刪除</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(coupons)}">
+                        <td colspan="6" class="text-center">目前沒有優惠券</td>
+                    </tr>
                 </tbody>
             </table>
 
-            <div class="pagination" id="pagination">
-                <!-- 由 JavaScript 動態填充分頁 -->
+            <!-- 分頁 -->
+            <div th:if="${totalPages > 1}" class="pagination">
+                <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                    <a th:href="@{/admin/coupons(page=${i-1}, keyword=${param.keyword})}"
+                       th:text="${i}"
+                       th:class="${currentPage == i-1} ? 'active' : ''">
+                    </a>
+                </span>
             </div>
         </section>
     </main>

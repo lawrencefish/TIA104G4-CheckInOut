@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.roomType.model.RoomTypeService;
 import com.roomType.model.RoomTypeVO;
+import com.roomTypeImg.model.RoomTypeImgService;
+import com.roomTypeImg.model.RoomTypeImgVO;
 
 @Controller
 @RequestMapping("adminRoomType")
@@ -25,6 +30,9 @@ public class AdminRoomTypeController {
 
 	@Autowired
 	private RoomTypeService roomTypeService;
+	
+	@Autowired
+	private RoomTypeImgService roomTypeImgService;
 	
     //查詢所有房型
     @GetMapping("/findAllRooms")
@@ -88,9 +96,8 @@ public class AdminRoomTypeController {
     @GetMapping("/roomtypeReview/{roomTypeId}")
     public String showRoomTypeReviewPage(@PathVariable Integer roomTypeId, Model model) {
         RoomTypeVO roomType = roomTypeService.getRoomTypeById(roomTypeId);
-        if (roomType == null) {
-        	System.out.println("空");
-//            return "error/404";
+        if (roomType == null || roomType.getRoomTypeImgs() == null) {
+            return "redirect:/error";
         }
         model.addAttribute("roomType", roomType);
         return "admin/roomtype-review";  // 返回 HTML 頁面
@@ -125,10 +132,7 @@ public class AdminRoomTypeController {
             }
 
             // 更新狀態和審核評論
-//            roomType.setStatus(status);
-//            if (reviewComment != null && !reviewComment.trim().isEmpty()) {
-//                roomType.setReviewComment(reviewComment);
-//            }
+            roomType.setStatus(status);
             
             // 儲存更新
             RoomTypeVO updatedRoomType = roomTypeService.saveRoom(roomType);
@@ -137,5 +141,39 @@ public class AdminRoomTypeController {
             return ResponseEntity.badRequest().body("更新審核狀態失敗：" + e.getMessage());
         }
     }
+    
+    @GetMapping("/image/{imageId}")
+    @ResponseBody
+    public ResponseEntity<byte[]> getRoomImage(@PathVariable Integer imageId) {
+        try {
+            // 直接使用 RoomTypeImgVO
+            RoomTypeImgVO image = roomTypeImgService.findById(imageId);
+            if (image != null && image.getPicture() != null) {
+                return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(image.getPicture());
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+    
+    @GetMapping("/firstImage/{roomTypeId}")
+    public ResponseEntity<byte[]> getFirstRoomTypeImage(@PathVariable Integer roomTypeId) {
+        try {
+            byte[] imageBytes = roomTypeImgService.getFirstImageByRoomTypeId(roomTypeId);
+            if (imageBytes != null && imageBytes.length > 0) {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.IMAGE_JPEG);
+                return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    
     //---------------------------------------------
 }

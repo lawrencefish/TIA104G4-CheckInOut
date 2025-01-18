@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>業者管理</title>
+  <title>業者審核</title>
   <link rel="stylesheet" th:href="@{/css/admin/industry-review.css}">
   <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
 </head>
@@ -19,26 +19,32 @@
 
     <div class="container">
         <!-- Google Map -->
-        <div class="map-container">
+        <div class="map-container" id="map">
           <!-- 嵌入 Google 地圖 -->
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8354345093747!2d144.9537353153156!3d-37.81627977975148!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f11fd81%3A0xf57760d0f09d06d0!2z5p2x5ZC05Lit5q2j5LqM5bel5aSn5aSn!5e0!3m2!1szh-TW!2stw!4v1613541200714!5m2!1szh-TW!2stw" 
-            width="100%" 
-            height="100%" 
-            style="border:0;" 
-            allowfullscreen="" 
-            loading="lazy">
-          </iframe>
         </div>
         <!-- 公司資料內容 -->
         <div class="info-grid">
-          <div class="info-item" data-label="公司名稱" id="company-name"><span class="content">好吃好睡飯店</span></div>
-          <div class="info-item" data-label="統一編號" id="company-id"><span class="content">12345678</span></div>
-          <div class="info-item" data-label="縣市" id="city"><span class="content">台北市</span></div>
-          <div class="info-item" data-label="地區" id="area"><span class="content">大安區</span></div>
-          <div class="info-item" data-label="地址" id="address"><span class="content">台北市大安區光復南路123號</span></div>
-          <div class="info-item" data-label="連絡電話" id="phone"><span class="content">1234-5678</span></div>
-          <div class="info-item" data-label="電子郵件" id="email"><span class="content">example@example.com</span></div>
+          <div class="info-item" data-label="公司名稱" id="company-name">
+            <span class="content" th:text="${name}"></span>
+          </div>
+          <div class="info-item" data-label="統一編號" id="company-id">
+            <span class="content" th:text="${taxId}"></span>
+          </div>
+          <div class="info-item" data-label="縣市" id="city">
+            <span class="content" th:text="${city}"></span>
+          </div>
+          <div class="info-item" data-label="地區" id="area">
+            <span class="content" th:text="${district}"></span>
+          </div>
+          <div class="info-item" data-label="地址" id="address">
+            <span class="content" th:text="${address}"></span>
+          </div>
+          <div class="info-item" data-label="連絡電話" id="phone">
+            <span class="content" th:text="${phoneNumber}"></span>
+          </div>
+          <div class="info-item" data-label="電子郵件" id="email">
+            <span class="content" th:text="${email}"></span>
+          </div>
         </div>
     </section>
 
@@ -51,14 +57,14 @@
         <div class="image-section">
             <div class="image-row">
                 <div class="image-box">
-                    <img id="image1" src="./img/假身分證正面.png" alt="身分證正面">
+                    <img id="image1" alt="身分證正面">
                 </div>
                 <div class="image-box">
-                    <img id="image2" src="./img/假身分證正面.png" alt="身分證背面">
+                    <img id="image2" alt="身分證背面">
                 </div>
             </div>
             <div class="image-box large-image-box">
-                <img id="image3" src="./img/營業證樣本.png" alt="營業證">
+                <img id="image3" alt="營業證">
             </div>
         </div>
     </div>
@@ -98,10 +104,11 @@
   
   
 
-  <!-- Footer -->
-  <div th:replace="~{admin/backend-footer :: footer}"></div>
+	<!-- Footer -->
+	<div th:replace="~{admin/backend-footer :: footer}"></div>
 	
-  <script th:src="@{/js/admin/header.js}"></script>
-  <script th:src="@{/js/industry-review.js}"></script>
+	<script th:src="@{/js/admin/header.js}"></script>
+	<script th:src="@{/js/admin/industry-review.js}"></script>
+	<script th:src="@{https://maps.googleapis.com/maps/api/js?key=AIzaSyBts9LvRN8v8N2T2eQVwekbmVOHDiBvuZE}" async defer></script>  
 </body>
 </html>
