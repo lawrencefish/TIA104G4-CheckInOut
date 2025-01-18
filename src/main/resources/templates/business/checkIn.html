@@ -1087,30 +1087,26 @@
                         roomTypeContainer.innerHTML = ""; // 清空內容
 
                         // 遍歷訂單明細並填充內容
-                        details.orderDetails.forEach((detail) => {
-                            const detailDiv = document.createElement("div");
-                            // 動態生成 HTML，新增早餐資訊
-                            // 備份
-                            // <p><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
-                            detailDiv.innerHTML = `
-                    <p><strong>房型：</strong>${detail.roomTypeName}</p>
-                    <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
-                    <label for="room-assignment-${detail.orderDetailId}">分配房號：</label>
-                    <select id="room-assignment-${detail.orderDetailId}">
-            ${detail.availableRooms
-                                .map(
-                                    (room) => `<option value="${room.roomId}">${room.roomNumber}</option>`
-                                )
-                                .join("")}
-        </select>
-                    <div class="guest-info">
-                        <label for="guest-name-${detail.orderDetailId}">住客姓名：</label>
-                        <input type="text" id="guest-name-${detail.orderDetailId}" placeholder="輸入住客姓名">
-                        <label for="guest-phone-${detail.orderDetailId}">住客電話：</label>
-                        <input type="tel" id="guest-phone-${detail.orderDetailId}" placeholder="輸入住客電話">
-                    </div>
-                `;
-                            roomTypeContainer.appendChild(detailDiv);
+                        details.orderDetails.forEach((detail, detailIndex) => {
+                            for (let i = 0; i < detail.roomNum; i++) {
+                                const detailDiv = document.createElement("div");
+                                detailDiv.innerHTML = `
+            <p><strong>房型：</strong>${detail.roomTypeName}（房間 ${i + 1}）</p>
+            <label for="room-assignment-${detail.orderDetailId}-${i}">分配房號：</label>
+            <select id="room-assignment-${detail.orderDetailId}-${i}">
+                ${detail.availableRooms
+                                    .map((room) => `<option value="${room.roomId}">${room.roomNumber}</option>`)
+                                    .join("")}
+            </select>
+            <div class="guest-info">
+                <label for="guest-name-${detail.orderDetailId}-${i}">住客姓名：</label>
+                <input type="text" id="guest-name-${detail.orderDetailId}-${i}" placeholder="輸入住客姓名">
+                <label for="guest-phone-${detail.orderDetailId}-${i}">住客電話：</label>
+                <input type="tel" id="guest-phone-${detail.orderDetailId}-${i}" placeholder="輸入住客電話">
+            </div>
+        `;
+                                roomTypeContainer.appendChild(detailDiv);
+                            }
                         });
 
                         // 重置 checkbox 和儲存按鈕狀態
@@ -1128,63 +1124,69 @@
                 document.getElementById("not-arrived-modal").classList.add("hidden");
             });
 
-            //分配房間
+            // 分配房間
             document.getElementById("not-arrived-save-button").addEventListener("click", function () {
                 const assignments = [];
                 const roomTypeContainer = document.getElementById("not-arrived-room-type");
                 const orderId = document.getElementById("not-arrived-order-id").textContent;
-                const assignedRooms = new Set(); // 用來檢查是否重複分配
+                const assignedRooms = new Set();
 
-                // 遍歷所有房型區塊，收集數據
                 [...roomTypeContainer.children].forEach((detailDiv) => {
-                    const orderDetailId = detailDiv.querySelector("select").id.split("-")[2];
-                    const assignedRoomId = detailDiv.querySelector("select").value;
-                    const customerName = detailDiv.querySelector(`#guest-name-${orderDetailId}`).value.trim();
-                    const customerPhoneNumber = detailDiv.querySelector(`#guest-phone-${orderDetailId}`).value.trim();
+                    const selectElements = detailDiv.querySelectorAll("select");
 
-                    // if (!assignedRoomId || !customerName || !customerPhoneNumber) {
-                    //     alert("所有字段均為必填項，請完成後再提交！");
-                    //     return;
-                    // }
+                    selectElements.forEach((selectElement) => {
+                        const selectIdParts = selectElement.id.split("-");
+                        if (selectIdParts.length < 3) {
+                            console.error("房號選擇器 ID 格式錯誤:", selectElement.id);
+                            return;
+                        }
 
-                    // 檢查是否有重複分配
-                    if (assignedRooms.has(assignedRoomId)) {
-                        alert(`房號重複，請選擇其他房號！`);
-                        throw new Error("重複分配房號");
-                    }
+                        const orderDetailId = selectIdParts[2];
+                        const index = selectIdParts[3]; // 新增索引解析
+                        const assignedRoomId = selectElement.value;
 
-                    // 將分配的房號加入已使用集合
-                    assignedRooms.add(assignedRoomId);
+                        // 查找住客姓名和電話
+                        const customerNameInput = detailDiv.querySelector(`#guest-name-${orderDetailId}-${index}`);
+                        const customerPhoneInput = detailDiv.querySelector(`#guest-phone-${orderDetailId}-${index}`);
+                        const customerName = customerNameInput ? customerNameInput.value.trim() : null;
+                        const customerPhoneNumber = customerPhoneInput ? customerPhoneInput.value.trim() : null;
 
-                    assignments.push({
-                        orderId: parseInt(orderId),
-                        orderDetailId: parseInt(orderDetailId),
-                        assignedRoomId: parseInt(assignedRoomId),
-                        customerName,
-                        customerPhoneNumber,
+                        if (assignedRooms.has(assignedRoomId)) {
+                            alert(`房號重複，請選擇其他房號！`);
+                            throw new Error("重複分配房號");
+                        }
+                        assignedRooms.add(assignedRoomId);
+
+                        assignments.push({
+                            orderId: parseInt(orderId, 10),
+                            orderDetailId: parseInt(orderDetailId, 10),
+                            assignedRoomId: parseInt(assignedRoomId, 10),
+                            customerName: customerName || null,
+                            customerPhoneNumber: customerPhoneNumber || null,
+                        });
                     });
                 });
 
-                // 發送數據到後端
                 fetch(`${contextPath}/checkIn/saveCheckInDetails`, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(assignments)
+                    body: JSON.stringify(assignments),
                 })
                     .then((response) => {
                         if (response.ok) {
                             alert("Check-in details saved successfully.");
                             document.getElementById("not-arrived-modal").classList.add("hidden");
-                            location.reload()
-                            // 可在此刷新頁面或更新 UI
+                            location.reload();
                         } else {
                             response.text().then((text) => alert(text));
                         }
                     })
                     .catch((error) => console.error("Error saving check-in details:", error));
             });
+
+
 
             // 已報到彈窗
             const arrivedModal = document.getElementById("arrived-modal");
@@ -1223,21 +1225,36 @@
 
                         roomTypeContainer.innerHTML = ""; // 清空內容
 
-                        // 遍歷訂單明細並填充已分配的房間資訊
+                        // 遍歷訂單明細，填充每個房型和其下的房間資訊
                         details.orderDetails.forEach((detail) => {
                             const detailDiv = document.createElement("div");
                             detailDiv.classList.add("room-detail");
 
-                            // 備份
-                            // <p><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
-                            // 動態生成 HTML，顯示已分配的房間和住客信息
+                            // 添加房型名稱和基本信息
                             detailDiv.innerHTML = `
-                    <p><strong>房型：</strong>${detail.roomTypeName}</p>
+                    <p><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
                     <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
-                    <p><strong>分配房號：</strong>${detail.assignedRoomNumber || "未分配"}</p>
-                    <p><strong>住客姓名：</strong>${detail.customerName || "未提供"}</p>
-                    <p><strong>住客電話：</strong>${detail.customerPhoneNumber || "未提供"}</p>
+                    <p><strong>入住人數：</strong>${detail.guestNum}</p>
                 `;
+
+                            // 添加對應房型的分配房間列表
+                            const roomListContainer = document.createElement("div");
+                            roomListContainer.classList.add("room-list");
+                            roomListContainer.innerHTML = `<p><strong>分配房間：</strong></p>`;
+
+                            // 遍歷房間資訊
+                            detail.rooms.forEach((room) => {
+                                const roomInfo = document.createElement("p");
+                                roomInfo.innerHTML = `
+                        房號：${room.assignedRoomNumber || "未分配"}<br>
+                        住客姓名：${room.customerName || "未提供"}<br>
+                        電話：${room.customerPhoneNumber || "未提供"}<hr>
+                    `;
+                                roomListContainer.appendChild(roomInfo);
+                            });
+
+                            // 將房間列表加入到明細區塊
+                            detailDiv.appendChild(roomListContainer);
                             roomTypeContainer.appendChild(detailDiv);
                         });
 
@@ -1249,6 +1266,7 @@
                         alert("無法載入已報到的訂單詳情，請稍後重試！");
                     });
             }
+
 
 
 

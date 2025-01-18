@@ -13,10 +13,10 @@ public class UpdateRoomInventory {
         String passwd = "123456";
 
         // SQL 查詢
-        String selectOrderDetailsSQL = "SELECT order_id, room_type_id FROM order_detail";
+        String selectOrderDetailsSQL = "SELECT order_id, room_type_id, room_num FROM order_detail";
         String selectOrderSQL = "SELECT check_in_date, status FROM orders WHERE order_id = ?";
         String updateRoomInventorySQL = "UPDATE room_inventory " +
-                "SET available_quantity = available_quantity - 1 " +
+                "SET available_quantity = available_quantity - ? " +
                 "WHERE room_type_id = ? AND date = ?";
 
         try (Connection conn = DriverManager.getConnection(url, userid, passwd)) {
@@ -27,6 +27,7 @@ public class UpdateRoomInventory {
                 while (rsOrderDetails.next()) {
                     int orderId = rsOrderDetails.getInt("order_id");
                     int roomTypeId = rsOrderDetails.getInt("room_type_id");
+                    int roomNum = rsOrderDetails.getInt("room_num"); // 獲取房間數量
 
                     // 2. 根據 order_id 查詢對應的 check_in_date 和 status
                     try (PreparedStatement psOrder = conn.prepareStatement(selectOrderSQL)) {
@@ -44,8 +45,9 @@ public class UpdateRoomInventory {
 
                                 // 4. 更新 room_inventory 的 available_quantity
                                 try (PreparedStatement psUpdateInventory = conn.prepareStatement(updateRoomInventorySQL)) {
-                                    psUpdateInventory.setInt(1, roomTypeId);
-                                    psUpdateInventory.setString(2, checkInDate);
+                                    psUpdateInventory.setInt(1, roomNum); // 減少的數量
+                                    psUpdateInventory.setInt(2, roomTypeId);
+                                    psUpdateInventory.setString(3, checkInDate);
 
                                     int updatedRows = psUpdateInventory.executeUpdate();
                                     if (updatedRows > 0) {

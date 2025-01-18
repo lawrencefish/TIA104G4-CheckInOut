@@ -717,6 +717,7 @@
                     <h2>已退房訂單詳情</h2>
                     <p><strong>訂單編號：</strong><span id="checked-out-order-id"></span></p>
                     <p><strong>客戶姓名：</strong><span id="checked-out-customer-name"></span></p>
+                    <p><strong>客戶姓名：</strong><span id="checked-out-customer-note"></span></p>
                     <div id="checked-out-room-type">
                         <!-- 動態生成訂單明細 -->
                     </div>
@@ -930,13 +931,10 @@
             }
 
             function showNotCheckedOutDetails(order) {
-                // 填充彈窗的基本信息
                 document.getElementById("not-checked-out-order-id").textContent = order.orderId;
-
                 const formattedName = formatMemberName(order.memberName);
                 document.getElementById("not-checked-out-customer-name").textContent = formattedName;
 
-                // 使用訂單編號獲取詳細資料
                 fetch(`${contextPath}/checkIn/getArrivedDetails?orderId=${order.orderId}`)
                     .then((response) => {
                         if (!response.ok) {
@@ -945,32 +943,34 @@
                         return response.json();
                     })
                     .then((details) => {
+                        const roomTypeContainer = document.getElementById("not-checked-out-room-type");
                         // 填充客戶備註
                         const customerNoteElement = document.getElementById("not-checked-out-customer-note");
                         if (customerNoteElement) {
                             customerNoteElement.textContent = details.memo || "無備註";
                         }
-
-                        // 清空並填充房型明細
-                        const roomTypeContainer = document.getElementById("not-checked-out-room-type");
                         roomTypeContainer.innerHTML = ""; // 清空內容
 
-                        // 遍歷訂單明細並顯示房型資訊
                         details.orderDetails.forEach((detail) => {
                             const detailDiv = document.createElement("div");
                             detailDiv.classList.add("room-detail");
                             detailDiv.innerHTML = `
-                                        <p data-room-id="${detail.roomId}"><strong>房型：</strong>${detail.roomTypeName}（${detail.roomNum} 間）</p>
-                                        <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
-                                        <p><strong>分配房號：</strong>${detail.assignedRoomNumber || "未分配"}</p>
-                                        <p><strong>住客姓名：</strong>${detail.customerName || "未提供"}</p>
-                                        <p><strong>住客電話：</strong>${detail.customerPhoneNumber || "未提供"}</p>
-                                    `;
+                    <p><strong>房型：</strong>${detail.roomTypeName}</p>
+                    <p><strong>入住人數：</strong>${detail.guestNum}</p>
+                    <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
+                    <div class="room-list">
+                        ${detail.rooms.map(room => `
+                            <p data-room-id="${room.roomId}">
+                                房號：${room.assignedRoomNumber}<br>
+                                住客姓名：${room.customerName || "未提供"}<br>
+                                電話：${room.customerPhoneNumber || "未提供"}<hr>
+                            </p>
+                        `).join("")}
+                    </div>
+                `;
                             roomTypeContainer.appendChild(detailDiv);
                         });
 
-
-                        // 顯示彈窗
                         document.getElementById("not-checked-out-modal").classList.remove("hidden");
                     })
                     .catch((error) => {
@@ -980,55 +980,33 @@
             }
 
 
+
             // 發送 checkout 請求
             document.getElementById("not-checked-out-confirm-button").addEventListener("click", function () {
-                console.log("Confirm button clicked");
-
-                // 提取基本資訊
                 const roomTypeContainer = document.getElementById("not-checked-out-room-type");
                 const orderId = document.getElementById("not-checked-out-order-id").textContent;
 
-                const roomIds = [...roomTypeContainer.children]
-                    .map((detailDiv) => {
-                        const roomElement = detailDiv.querySelector("p[data-room-id]");
-                        if (!roomElement) {
-                            console.error("Room element not found in:", detailDiv);
-                        }
-                        return roomElement ? parseInt(roomElement.dataset.roomId) : null;
-                    })
-                    .filter((roomId) => {
-                        if (roomId === null || isNaN(roomId)) {
-                            console.error("Invalid room ID found:", roomId);
-                        }
-                        return roomId !== null && !isNaN(roomId);
-                    });
+                const roomIds = [...roomTypeContainer.querySelectorAll("[data-room-id]")]
+                    .map((roomElement) => parseInt(roomElement.getAttribute("data-room-id"), 10))
+                    .filter((roomId) => !isNaN(roomId));
 
-                console.log("Collected room IDs for check-out:", roomIds);
-
-                // 如果未找到房間 ID，提示錯誤並退出
                 if (roomIds.length === 0) {
                     alert("未找到任何房間資訊，無法退房！");
-                    console.error("No room IDs found for order:", orderId);
                     return;
                 }
 
-                console.log("Collected room IDs for check-out:", roomIds);
-
-                // 發送數據到後端
                 fetch(`${contextPath}/checkOut/saveCheckOutDetails`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ orderId: parseInt(orderId), roomIds }),
+                    body: JSON.stringify({ orderId: parseInt(orderId, 10), roomIds }),
                 })
                     .then((response) => response.json())
                     .then((data) => {
                         if (data.error) {
-                            // 顯示錯誤訊息
                             alert(`退房失敗：${data.error}`);
                         } else {
-                            // 顯示成功訊息
                             alert(data.message || "退房成功！");
-                            location.reload(); // 刷新頁面
+                            location.reload();
                         }
                     })
                     .catch((error) => {
@@ -1036,8 +1014,6 @@
                         alert("退房請求失敗，請稍後重試！");
                     });
             });
-
-
             function showCheckedOutOrderDetails(order) {
                 // 填充基本資訊
                 document.getElementById("checked-out-order-id").textContent = order.orderId;
@@ -1048,8 +1024,8 @@
                 const roomTypeContainer = document.getElementById("checked-out-room-type");
                 roomTypeContainer.innerHTML = "載入中...";
 
-                // 調用 API 獲取訂單明細
-                fetch(`${contextPath}/checkIn/getCheckedOutDetails?orderId=${order.orderId}`)
+                // 調用 checkIn/orderDetails API 獲取訂單明細
+                fetch(`${contextPath}/checkIn/orderDetails?orderId=${order.orderId}`)
                     .then((response) => {
                         if (!response.ok) {
                             throw new Error(`Failed to fetch order details: ${response.status}`);
@@ -1057,18 +1033,25 @@
                         return response.json();
                     })
                     .then((details) => {
-                        // 清空訂單明細容器
+                        // 清空訂單明細容器// 填充客戶備註
+                        const customerNoteElement = document.getElementById("checked-out-customer-note");
+                        if (customerNoteElement) {
+                            customerNoteElement.textContent = details.memo || "無備註";
+                        }
                         roomTypeContainer.innerHTML = "";
 
-                        // 遍歷並填充訂單明細
+                        // 遍歷並填充訂單明細（僅顯示房型和訂房數量）
                         details.orderDetails.forEach((detail) => {
                             const detailDiv = document.createElement("div");
                             detailDiv.classList.add("room-detail");
+
+                            // 顯示房型名稱和訂房數量
                             detailDiv.innerHTML = `
                     <p><strong>房型：</strong>${detail.roomTypeName}</p>
-                    <p><strong>入住人數：</strong>${detail.guestNum || "未提供"}</p>
+                    <p><strong>訂房數量：</strong>${detail.roomNum} 間</p>
                     <p><strong>早餐：</strong>${detail.breakfast ? "含早餐" : "不含早餐"}</p>
                 `;
+
                             roomTypeContainer.appendChild(detailDiv);
                         });
 
@@ -1084,6 +1067,7 @@
                         document.getElementById("checked-out-modal").classList.remove("hidden");
                     });
             }
+
 
 
 
