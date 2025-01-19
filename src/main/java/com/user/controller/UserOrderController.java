@@ -88,8 +88,21 @@ public class UserOrderController {
 
 		// 調用 checkCart 方法來檢查並更新購物車數據
 		List<Map<String, Object>> updatedCartList = checkCart(cartList);
-
+		
 		return ResponseEntity.ok(updatedCartList);
+	}
+	
+	//取得會員訂單
+	@PostMapping("/order/getMemberOrder")
+	public void getMemberOrder(HttpSession session) {
+		List<OrderVO> responseList = new ArrayList<>();
+		Map<String, Object> response = new HashMap<>();
+		MemberVO member = (MemberVO) session.getAttribute("member");
+		if(member != null) {
+			responseList =  orderService.findByMemberId(member.getMemberId());
+			System.out.println(responseList);
+		}
+		
 	}
 
 	public List<Map<String, Object>> checkCart(List<Map<String, Object>> cartList) {

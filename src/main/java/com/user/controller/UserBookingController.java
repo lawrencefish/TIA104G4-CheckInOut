@@ -375,7 +375,7 @@ public class UserBookingController {
 					LocalDate currentDate = checkInDate;
 					while (!currentDate.isAfter(checkOutDateMOne)) {
 						HotelRoomInventoryDTO dayDto = dateToDto.get(currentDate);
-						if (dayDto == null || dayDto.getAvailableQuantity() < needRooms) {
+						if (dayDto == null || dayDto.getAvailableQuantity() < roomNum) {
 							isRoomAvailableEveryDay = false;
 							break;
 						}
@@ -389,12 +389,12 @@ public class UserBookingController {
 						inventory.put("availableQuantity", dayDto.getAvailableQuantity());
 						inventories.add(inventory);
 						totalPrice += todayPrice.getPrice();
+					    System.out.println("需要的房間:"+needRooms+"房型ID: " + dayDto.getRoomTypeId() + ", 日期: " + dayDto.getDate() + ", 可用數量: " + dayDto.getAvailableQuantity());
+
 						if (dayDto.getBreakfast() != 0) {
 							totalPrice += todayPrice.getBreakfastPrice();
 						}
 						currentDate = currentDate.plusDays(1);
-						System.out.println(roomTypeId + ":" + dayDto.getDate() + ":" + totalPrice + ":"
-								+ dayDto.getAvailableQuantity() + ":" + dayDto.getInventoryId());
 
 					}
 
