@@ -270,9 +270,9 @@ function updateRoom(Array) {
             $('#room_num').val(data.roomNum);
             $('#people_num').val(data.guestNum);
             data.inventories.forEach(di => {
-                if (realAvailableQuantity == 0){
+                if (realAvailableQuantity == 0) {
                     realAvailableQuantity = di.availableQuantity;
-                }else if(realAvailableQuantity > di.availableQuantity){
+                } else if (realAvailableQuantity > di.availableQuantity) {
                     realAvailableQuantity = di.availableQuantity
                 }
                 totalPrice += (di.price * roomNum);
@@ -314,7 +314,7 @@ function updateRoom(Array) {
                                         <!-- 關鍵資訊標籤 -->
                                         <div class="mb-3">
                                             <span class="badge bg-info me-2">可入住 ${guest} 位房客</span>
-                                            <span class="badge bg-success me-2 ${breakfast == 0 ? " d-none" : "" }">含早餐</span>
+                                            <span class="badge bg-success me-2 ${breakfast == 0 ? " d-none" : ""}">含早餐</span>
                                     </div>
 
                                     <hr>
@@ -333,8 +333,8 @@ function updateRoom(Array) {
                         <!-- 右側內容：數量選擇、價格與預訂按鈕 -->
                         <div class="col-md-4 d-flex flex-column align-items-end justify-content-center">
                             <h6 class="mb-2 text-muted">
-                                 總共 ${guestNum} 位入住 <br>
-                                 ${stayNight} 晚 ＊ ${parseInt(roomNum)} 間房
+                                總共 ${guestNum} 位入住 <br>
+                                    ${stayNight} 晚 ＊ ${parseInt(roomNum)} 間房
                             </h6>
 
                             <!-- 價格與早餐價格 -->
@@ -343,20 +343,20 @@ function updateRoom(Array) {
                                     每晚每房 <span class="fw-bold text-primary">NTD$ ${Math.floor(totalPrice / roomNum / stayNight)}</span>
                                 </h6>
                                 <p class="mb-1 text-muted breakfast ${breakfast == 0 ? " d-none" : ""}">
-                                    <small>
-                                        <strong>
-                                            已含早餐價格<br>
+                                <small>
+                                    <strong>
+                                        已含早餐價格<br>
                                             每人每晚：NTD$ ${Math.floor(totalBreakfastPrice / guestNum / stayNight)}<br>
-                                            總價：NTD$ ${totalBreakfastPrice}
-                                        </strong>
-                                    </small>
-                                </p>
-                                <h4 class="mb-2 price fw-bold text-danger">
-                                    總價：<span>NTD$ ${totalPrice}</span>
-                                </h4>
-                                <p class="text-muted">
-                                    剩餘庫存：<span>${realAvailableQuantity}</span>
-                                </h4>
+                                                總價：NTD$ ${totalBreakfastPrice}
+                                            </strong>
+                                        </small>
+                                    </p>
+                                    <h4 class="mb-2 price fw-bold text-danger">
+                                        總價：<span>NTD$ ${totalPrice}</span>
+                                    </h4>
+                                    <p class="text-muted">
+                                        剩餘庫存：<span>${realAvailableQuantity}</span>
+                                    </h4>
 
 
                             </div>
@@ -367,68 +367,69 @@ function updateRoom(Array) {
                             </button>
                         </div>
 
-
                     </div>
                 </div>
-                `
+            `
         } else {
-            html = `
-                < div class="card shadow-lg" >
-                    <div class="row g-0 align-items-center">
-                        <!-- 跑馬燈區域 -->
-                        <div class="col-md-4">
-                            <div id="roomCarousel${roomTypeId}" class="carousel slide" data-bs-ride="carousel">
-                                <!-- 輪播圖片 -->
-                                <div class="room-carousel carousel-inner" id="room-carousel${roomTypeId}" style="height:300px">
-                                    <!-- 輪播圖片項目應在此填充 -->
-                                </div>
-                                <!-- 輪播控制按鈕 -->
-                                <button class="carousel-control-prev" type="button" data-bs-target="#roomCarousel${roomTypeId}" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">上一張</span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#roomCarousel${roomTypeId}" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">下一張</span>
-                                </button>
-                            </div>
+            html =`
+<div class="card shadow-lg">
+    <div class="row g-0 align-items-center">
+        <!-- 跑馬燈區域 -->
+        <div class="col-md-4">
+            <div id="roomCarousel${roomTypeId}" class="carousel slide" data-bs-ride="carousel">
+                <!-- 輪播圖片 -->
+                <div class="room-carousel carousel-inner" id="room-carousel${roomTypeId}" style="height:300px">
+                    <!-- 輪播圖片項目應在此填充 -->
+                </div>
+                <!-- 輪播控制按鈕 -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#roomCarousel${roomTypeId}"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">上一張</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#roomCarousel${roomTypeId}"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">下一張</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 房間資訊與互動區域 -->
+        <div class="col-md-8">
+            <div class="card-body">
+                <div class="row">
+                    <!-- 左側內容：房間基本資訊等 -->
+                    <div class="col-md-12">
+                        <h3 class="card-title mb-3">${roomName}</h3>
+
+                        <!-- 關鍵資訊標籤：僅保留可入住人數 -->
+                        <div class="mb-3">
+                            <span class="badge bg-info me-2">可入住 ${guest} 位房客</span>
+                            <!-- 移除日期與含早餐標籤 -->
                         </div>
 
-                        <!-- 房間資訊與互動區域 -->
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <div class="row">
-                                    <!-- 左側內容：房間基本資訊等 -->
-                                    <div class="col-md-12">
-                                        <h3 class="card-title mb-3">${roomName}</h3>
+                        <hr>
 
-                                        <!-- 關鍵資訊標籤：僅保留可入住人數 -->
-                                        <div class="mb-3">
-                                            <span class="badge bg-info me-2">可入住 ${guest} 位房客</span>
-                                            <!-- 移除日期與含早餐標籤 -->
-                                        </div>
+                        <!-- 房間設施 -->
+                        <div class="mb-3 ${facilityNum == 0 ? " d-none" : "" }" id="roomfacility${roomTypeId}">
+                            <h6 class="mb-2">房間設施：</h6>
+                            <!-- 此處填入房間設施內容 -->
+                        </div>
 
-                                        <hr>
-
-                                            <!-- 房間設施 -->
-                                            <div class="mb-3 ${facilityNum == 0 ? " d-none" : ""}" id="roomfacility${roomTypeId}">
-                                            <h6 class="mb-2">房間設施：</h6>
-                                            <!-- 此處填入房間設施內容 -->
-                                    </div>
-
-                                    <!-- 房間服務 -->
-                                    <div class="mb-3 ${serviceNum == 0 ? " d-none" : ""}" id="roomService${roomTypeId}">
-                                    <h6 class="mb-2">房間服務：</h6>
-                                    <!-- 此處填入房間服務內容 -->
-                                </div>
-                            </div>
-
-                            <!-- 移除右側內容：數量選擇、價格與預訂按鈕等 -->
+                        <!-- 房間服務 -->
+                        <div class="mb-3 ${serviceNum == 0 ? " d-none" : "" }" id="roomService${roomTypeId}">
+                            <h6 class="mb-2">房間服務：</h6>
+                            <!-- 此處填入房間服務內容 -->
                         </div>
                     </div>
-            </div >
-        </div >
-        </div >
+
+                    <!-- 移除右側內容：數量選擇、價格與預訂按鈕等 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
                 `
         }
         $('.room-container').append(html);
@@ -437,7 +438,7 @@ function updateRoom(Array) {
             let fName = rf.facilityName;
             let id = "#roomfacility" + roomTypeId;
             let html = `
-                <span class="badge rounded-pill bg-success me-1"> ${ fName }</span>
+                <span class="badge rounded-pill bg-success me-1" > ${ fName }</span>
                     `;
             $(id).append(html);
         })
@@ -445,7 +446,7 @@ function updateRoom(Array) {
             let fName = rf.facilityName;
             let id = "#roomService" + roomTypeId;
             let html = `
-                    <span class="badge rounded-pill bg-secondary me-1"> ${ fName }</span>
+                    <span class="badge rounded-pill bg-secondary me-1" > ${ fName }</span>
                         `;
             $(id).append(html);
         })
