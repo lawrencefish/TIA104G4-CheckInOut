@@ -157,11 +157,6 @@ public class AdminController {
         return "redirect:/admin/list";  // 刪除完成後重導向到列表頁
     }
     
-    @GetMapping("couponManagement")
-    public String showCouponManagement() {
-    	return "admin/coupon-management";
-    }
-    
     @GetMapping("appealManagement")
     public String showAppealManagement() {
     	return "admin/appeal-management";

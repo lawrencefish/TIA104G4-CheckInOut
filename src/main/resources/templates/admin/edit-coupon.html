@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>創建/編輯優惠券</title>
     <link rel="stylesheet" th:href="@{/css/admin/edit-coupon.css}">
     <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
-    
 </head>
 <body>
     <!-- 動態導入header -->
@@ -14,60 +13,79 @@
     <main>
         <section class="admin-banner">
             <div class="container">
-                <h1>創建/編輯優惠券</h1>
+                <h1 th:text="${coupon.couponId == null ? '創建優惠券' : '編輯優惠券'}">創建/編輯優惠券</h1>
             </div>
         </section>
 
         <section class="container">
             <div class="coupon-form-container">
                 <div class="coupon-preview" id="couponPreview">
-                    <h2>$<span id="previewAmount">200</span></h2>
+                    <h2>$<span id="previewAmount" th:text="${coupon.discountAmount ?: '200'}"></span></h2>
                     <hr>
-                    <p id="previewName">優惠券名稱</p>
+                    <p id="previewName" th:text="${coupon.couponName ?: '優惠券名稱'}">優惠券名稱</p>
                     <p class="small">
                         使用期限：<br>
-                        <span id="previewStartDate">2024/01/01</span> - <br>
-                        <span id="previewEndDate">2024/12/31</span><br>
-                        滿 $<span id="previewMinSpend">1000</span> 即可使用
+                        <span id="previewStartDate" th:text="${#temporals.format(coupon.activeDate, 'yyyy/MM/dd')}">2024/01/01</span> - <br>
+                        <span id="previewEndDate" th:text="${#temporals.format(coupon.expiryDate, 'yyyy/MM/dd')}">2024/12/31</span><br>
+                        滿 $<span id="previewMinSpend" th:text="${coupon.minSpend ?: '1000'}">1000</span> 即可使用
                     </p>
                 </div>
 
-                <form id="couponForm" onsubmit="submitCoupon(event)">
-                    <div class="form-group">
-                        <label for="couponName">優惠券名稱</label>
-                        <input type="text" id="couponName" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="amount">優惠金額</label>
-                        <input type="number" id="amount" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="startDate">開始日期</label>
-                        <input type="date" id="startDate" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="endDate">結束日期</label>
-                        <input type="date" id="endDate" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="minSpend">最低消費金額</label>
-                        <input type="number" id="minSpend" class="form-control" required>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">發布優惠券</button>
-                    </div>
-                </form>
+                <form th:action="@{/admin/coupon/save}" method="post" th:object="${coupon}" onsubmit="return validateForm()">
+					<input type="hidden" th:field="*{couponId}" />
+				    
+				    <div class="form-group">
+				        <label for="couponName">優惠券名稱</label>
+				        <input type="text" class="form-control" id="couponName" 
+				               th:field="*{couponName}" required maxlength="11">
+				    </div>
+				
+				    <div class="form-group">
+				        <label for="discountAmount">優惠金額</label>
+				        <input type="number" class="form-control" id="discountAmount" 
+				               th:field="*{discountAmount}" required min="1">
+				    </div>
+				
+				    <div class="form-group">
+					    <label for="activeDate">開始日期</label>
+					    <input type="date" class="form-control" id="activeDate" 
+					           th:field="*{activeDate}" required>
+					</div>
+					
+					<div class="form-group">
+					    <label for="expiryDate">結束日期</label>
+					    <input type="date" class="form-control" id="expiryDate" 
+					           th:field="*{expiryDate}" required>
+					</div>
+				
+				    <div class="form-group">
+				        <label for="minSpend">最低消費金額</label>
+				        <input type="number" class="form-control" id="minSpend" 
+				               th:field="*{minSpend}" required min="1">
+				    </div>
+				
+				    <div class="form-group">
+				        <label for="couponDetail">優惠券描述</label>
+				        <textarea class="form-control" id="couponDetail" 
+				                  th:field="*{couponDetail}" required></textarea>
+				    </div>
+				
+				    <div class="form-actions">
+				        <button type="submit" class="btn btn-primary" 
+				                th:text="${coupon.couponId == null ? '發布優惠券' : '更新優惠券'}">
+				            發布優惠券
+				        </button>
+				        <a th:href="@{/admin/coupon}" class="btn btn-secondary">取消</a>
+				    </div>
+				</form>
             </div>
         </section>
     </main>
+
     <!-- 動態導入footer -->
     <div th:replace="~{admin/backend-footer :: footer}"></div>
 
     <script th:src="@{/js/admin/header.js}"></script>
     <script th:src="@{/js/admin/edit-coupon.js}"></script>
+</body>
 </html>
