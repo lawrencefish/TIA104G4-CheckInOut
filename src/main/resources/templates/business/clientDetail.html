@@ -469,9 +469,9 @@
         <!-- 主內容 -->
         <main class="main-content">
             <h1>客戶資料</h1>
-            <div class="form-group">
-                <button id="edit-btn" class="edit-btn">編輯</button>
-            </div>
+<!--             <div class="form-group"> -->
+<!--                 <button id="edit-btn" class="edit-btn">編輯</button> -->
+<!--             </div> -->
             <form class="customer-form" th:action="@{/client/update}" method="post">
             <input type="hidden" name="memberId" th:value="${client.memberId}">
     <div class="form-group">
@@ -479,27 +479,24 @@
         <div id="clientid" th:text="${client.memberId}"></div>
         <div class="form-group">
             <label for="clientpic">客戶頭像</label>
-            <img th:src="@{${client.avatar}}" alt="頭像">
+            <img th:src="${client.avatar}" alt="頭像">
         </div>
     </div>
     <div class="form-row">
         <div class="form-group">
             <label for="lastname">中文姓</label>
-            <input type="text" id="lastname" name="lastName" class="readonly" th:value="${client.lastName}" readonly>
+            <div id="lastname" class="readonly" th:text="${client.lastName}"></div>
         </div>
         <div class="form-group">
             <label for="firstname">中文名</label>
-            <input type="text" id="firstname" name="firstName" class="readonly" th:value="${client.firstName}" readonly>
+            <div id="firstname" class="readonly" th:text="${client.firstName}"></div>
         </div>
     </div>
     <div class="form-row">
         <div class="form-group">
             <label for="gender">性別</label>
-        <select id="gender" name="gender" class="readonly">
-            <option th:value="M" th:selected="${client.gender == 'M'}">男</option>
-            <option th:value="F" th:selected="${client.gender == 'F'}">女</option>
-        </select>
-        </div>
+        	<div id="gender" class="readonly" th:text="${client.gender == 'M' ? '男' : (client.gender == 'F' ? '女' : '未知')}"></div>
+        	</div>
         <div class="form-group">
             <label for="bday">生日</label>
             <input type="date" name="birthday" class="readonly" th:value="${#dates.format(client.birthday, 'yyyy-MM-dd')}" readonly>
@@ -525,10 +522,10 @@
 <!--         </div> -->
 <!--     </div> -->
 
-                <div class="form-group">
-                    <button class="btn-save">儲存</button>
-                    <button class="btn-cancel">取消</button>
-                </div>
+<!--                 <div class="form-group"> -->
+<!--                     <button class="btn-save">儲存</button> -->
+<!--                     <button class="btn-cancel">取消</button> -->
+<!--                 </div> -->
             </form>
         </main>
     </div>
