@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.coupon.model.CouponVO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.member.model.MemberVO;
 
 @Entity
@@ -23,10 +24,12 @@ public class MemberCouponVO {
     @Column(name = "member_coupon_id")
     private Integer memberCouponId;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
     private MemberVO member;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id", referencedColumnName = "coupon_id", nullable = false)
     private CouponVO coupon;
@@ -76,4 +79,14 @@ public class MemberCouponVO {
 	public void setCreateTime(LocalDateTime createTime) {
 		this.createTime = createTime;
 	}
+	
+	public boolean isValid() {
+        return this.couponStatus == 1 && 
+               this.coupon.getExpiryDate().isAfter(LocalDateTime.now());
+    }
 }
+    
+    
+
+    
+    

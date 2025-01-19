@@ -11,7 +11,7 @@ public class CouponDisUtil {
 
     public void distributeNewMemberCoupon(Integer memberId) {
         System.out.println("Distributing new member coupon to member ID: " + memberId);
-        couponService.issueCouponToNewMember(memberId);
+        couponService.issueNewMemberCoupon(memberId);
     }
 
     public void distributeTravelCityCoupons(Integer memberId, Integer cityCount) {
