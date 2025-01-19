@@ -365,23 +365,22 @@
                 </div>
                 <div class="form-group">
                     <label for="orderid">欲檢舉之訂單編號(非必填)</label>
-                    <input type="text" id="orderid">
+                    <input type="number" id="orderid" min="0" oninput="validity.valid||(value='');">
                 </div>
                 <div class="form-group">
                     <label for="reason">檢舉事由</label>
                     <textarea id="reason" rows="5"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="attachments">附加照片/檔案</label>
+                    <label for="attachments">附加照片</label>
                     <div class="file-upload">
-                        <input type="file" id="file1">
-                        <input type="file" id="file2">
+                        <input type="file" id="file1" accept=".jpg,.jpeg,.png">
                     </div>
-                    <small>支援的檔案類型：.jpg, .png ...</small>
+                    <small>支援的檔案類型：jpg、jpeg、png</small>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-submit">送出</button>
-                    <button type="button" class="btn btn-cancel">取消</button>
+                    <button type="button" class="btn btn-cancel" id="cancelButton">取消</button>
                 </div>
             </form>
         </main>
@@ -425,11 +424,7 @@
             event.preventDefault(); // 防止表單提交刷新頁面
             const reasonInput = document.querySelector('#reason').value.trim();
 
-            if (reasonInput) {
-                // 顯示成功彈窗
-                successPopout.classList.add('show');
-            } else {
-                // 顯示失敗彈窗
+            if (!reasonInput) {
                 failurePopout.classList.add('show');
             }
         });
@@ -444,6 +439,68 @@
             });
         });
 
+        // 呼叫API並處理成功/失敗彈窗
+        document.querySelector('.btn-submit').addEventListener('click', async (event) => {
+            event.preventDefault(); // 防止表單提交刷新頁面
+
+            const orderId = document.querySelector('#orderid').value.trim();
+            const reason = document.querySelector('#reason').value.trim();
+            const fileInput = document.querySelector('#file1');
+            const file = fileInput.files[0];
+
+            // 檢查檢舉事由（必填）
+            if (!reason) {
+                // 顯示失敗彈窗
+                showFailurePopout("請輸入檢舉事由！");
+                return;
+            }
+
+            // 建立 FormData
+            const formData = new FormData();
+            if (orderId) formData.append('orderId', orderId); // 非必填欄位
+            formData.append('reportContent', reason);
+            if (file) formData.append('image', file); // 圖片為選填欄位
+
+            const memberId = document.querySelector('#clientid').textContent.trim();
+
+            try {
+                // 呼叫 API
+                const response = await fetch(`http://localhost:8080/api/report/member/${memberId}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // 如果 API 回傳成功，顯示成功彈窗
+                    successPopout.classList.add('show');
+                } else if (response.status === 404) {
+                    // 如果 API 回傳 404，提取 message 並顯示失敗彈窗
+                    const data = await response.json();
+                    const errorMessage = data.message || "發生未知錯誤";
+                    showFailurePopout(errorMessage);
+                } else {
+                    // 如果 API 回傳失敗，顯示失敗彈窗
+                    const errorMsg = await response.text();
+                    console.error('提交失敗', response.status, errorMsg);
+                    showFailurePopout("提交失敗，請稍後再試！");
+                }
+            } catch (error) {
+                // 如果 API 呼叫發生錯誤，顯示失敗彈窗
+                showFailurePopout("網路連線失敗，請稍後再試！");
+
+            }
+        });
+
+        // 顯示失敗彈窗的函數
+        function showFailurePopout(message) {
+            const failureMessage = document.querySelector('.failure-popout .popout p');
+            failureMessage.textContent = message; // 更新彈窗中的訊息
+            failurePopout.classList.add('show');
+        }
+
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            window.history.back(); // 返回上一頁
+        });
     </script>
 </body>
 
