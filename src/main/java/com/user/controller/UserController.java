@@ -71,11 +71,6 @@ public class UserController {
 	public String favorite() {
 		return "/user/favorite";
 	}
-
-	@GetMapping("/hotel_detail")
-	public String hotelDetail() {
-		return "/user/hotel_detail";
-	}
 	
 	@GetMapping("/hotel_detail/{id}")
 	public String hotelDetail(@PathVariable Integer id) {

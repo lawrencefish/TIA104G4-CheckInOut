@@ -50,20 +50,19 @@ import com.order.model.OrderVO;
 
 @RestController
 @RequestMapping("/user/api")
-public class UserRestController {
+public class UserMemberController {
 	@Autowired
 	MemberService memServ;
 	@Autowired
 	private Validator validator;
 
-	private static final Logger logger = LoggerFactory.getLogger(UserRestController.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserMemberController.class);
 
 	// 登入
 	@PostMapping("/login")
 	public Map<String, String> memberLogin(@RequestBody Map<String, String> loginRequest, HttpSession session) {
 	    String account = loginRequest.get("account");
 	    String password = loginRequest.get("password");
-	    String url = loginRequest.get("url");
 
 	    Map<String, String> response = new HashMap<>();
 	    if (memServ.existsByAccount(account)) {

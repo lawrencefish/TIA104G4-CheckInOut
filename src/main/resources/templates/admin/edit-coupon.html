@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>創建/編輯優惠券</title>
-    <link rel="stylesheet" href="./css/edit-coupon.css">
-    <link rel="stylesheet" href="./css/headerfooter.css">
+    <link rel="stylesheet" th:href="@{/css/admin/edit-coupon.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/headerfooter.css}">
     
 </head>
 <body>
     <!-- 動態導入header -->
-    <div id="header"></div>
+    <div th:replace="~{admin/backend-header :: header}"></div>
 
     <main>
         <section class="admin-banner">
@@ -66,8 +66,8 @@
         </section>
     </main>
     <!-- 動態導入footer -->
-    <div id="footer"></div>
+    <div th:replace="~{admin/backend-footer :: footer}"></div>
 
-    <script src="./js/header.js"></script>
-    <script src="./js/edit-coupon.js"></script>
+    <script th:src="@{/js/admin/header.js}"></script>
+    <script th:src="@{/js/admin/edit-coupon.js}"></script>
 </html>

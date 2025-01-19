@@ -18,22 +18,22 @@ public class CreditcardVO {
     @Column(name = "creditcard_id")
     private int creditcardId;
 
-    @NotBlank(message ="請輸入卡片名稱")
+    @NotNull(message ="請輸入卡片名稱")
     @Column(name = "creditcard_name", length = 30)
     private String creditcardName;
 
-    @NotBlank(message ="請輸入卡號")
-    @Size(min = 16, max = 16)
+    @NotNull(message ="請輸入卡號")
+    @Size(min = 16, max = 16, message="請輸入16碼數字")
     @Column(name = "creditcard_num", unique = true)
     private String creditcardNum;
 
-    @NotBlank(message ="請輸入安全碼")
-    @Size(min = 3, max = 6)
+    @NotNull(message ="請輸入安全碼")
+    @Size(min = 3, max = 6, message="請輸入3-6碼數字")
     @Column(name = "creditcard_security")
     private String creditcardSecurity;
 
-    @NotBlank(message ="請輸入期限")
-    @Size(min = 4, max = 4)
+    @NotNull(message ="請輸入期限")
+    @Size(min = 4, max = 4, message="請輸入4碼期限")
     @Column(name = "expiry_date")
     private String expiryDate;
     
@@ -98,4 +98,13 @@ public class CreditcardVO {
 		this.member = member;
 	}
     
+	public void setCreditcardInfo(String creditcardName, String creditcardNum, String creditcardSecurity,
+			String expiryDate, MemberVO member) {
+		this.creditcardName = creditcardName;
+		this.creditcardNum = creditcardNum;
+		this.creditcardSecurity = creditcardSecurity;
+		this.expiryDate = expiryDate;
+		this.member = member;
+	}
+
 }

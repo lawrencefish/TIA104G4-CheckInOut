@@ -1,5 +1,6 @@
 package com.orderDetail.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,7 +24,8 @@ public class OrderDetailVO implements java.io.Serializable {
 	private Integer orderDetailId;
 	@Column(name = "room_type_id")
 	private Integer roomTypeId;
-	@ManyToOne
+	
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "order_id", nullable = false)
 	@NotNull(message = "訂單不可為空")
 	private OrderVO order;
@@ -38,53 +40,53 @@ public class OrderDetailVO implements java.io.Serializable {
 
 	public OrderDetailVO(){
 	}
-	
+
 	public Integer getOrderDetailId() {
 		return orderDetailId;
-	}
-
-	public void setOrderDetailId(Integer orderDetailId) {
-		this.orderDetailId = orderDetailId;
 	}
 
 	public Integer getRoomTypeId() {
 		return roomTypeId;
 	}
 
-	public void setRoomTypeId(Integer roomTypeId) {
-		this.roomTypeId = roomTypeId;
-	}
-
 	public OrderVO getOrder() {
 		return order;
-	}
-
-	public void setOrderId(OrderVO order) {
-		this.order = order;
 	}
 
 	public Integer getGuestNum() {
 		return guestNum;
 	}
 
-	public void setGuestNum(Integer guestNum) {
-		this.guestNum = guestNum;
-	}
-
 	public Integer getRoomNum() {
 		return roomNum;
-	}
-
-	public void setRoomNum(Integer roomNum) {
-		this.roomNum = roomNum;
 	}
 
 	public Byte getBreakfast() {
 		return breakfast;
 	}
 
+	public void setOrderDetailId(Integer orderDetailId) {
+		this.orderDetailId = orderDetailId;
+	}
+
+	public void setRoomTypeId(Integer roomTypeId) {
+		this.roomTypeId = roomTypeId;
+	}
+
+	public void setOrder(OrderVO order) {
+		this.order = order;
+	}
+
+	public void setGuestNum(Integer guestNum) {
+		this.guestNum = guestNum;
+	}
+
+	public void setRoomNum(Integer roomNum) {
+		this.roomNum = roomNum;
+	}
+
 	public void setBreakfast(Byte breakfast) {
 		this.breakfast = breakfast;
 	}
-
+	
 }

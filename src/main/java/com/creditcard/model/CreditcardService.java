@@ -18,20 +18,28 @@ public class CreditcardService {
 	private SessionFactory sessionFactory;
 	
 	@Transactional
-	public void addMember(CreditcardVO creditcardVo) {
+	public CreditcardVO addCreditCardAndGet(CreditcardVO creditcardVo) {
+		return repository.save(creditcardVo);
+	}
+	@Transactional
+	public void addCreditCard(CreditcardVO creditcardVo) {
 		repository.save(creditcardVo);
 	}
 
 	@Transactional
-	public void updateMember(CreditcardVO creditcardVo) {
+	public void updateCreditCard(CreditcardVO creditcardVo) {
 		repository.save(creditcardVo);
 	}
 
-	public CreditcardVO queryOrder(Integer creditcardId) {
+	public CreditcardVO queryCreditCard(Integer creditcardId) {
 		Optional<CreditcardVO> optional = repository.findById(creditcardId);
 		return optional.orElse(null);  
 	}
   
+	public List<CreditcardVO> findCreditcardByMemberId(Integer memberId) {
+		return repository.findByMemberMemberId(memberId); 
+	}
+
 	public List<CreditcardVO> getAll() {
 		return repository.findAll();
 	}

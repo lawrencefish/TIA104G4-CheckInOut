@@ -1,7 +1,10 @@
 package com.Lawrencefish.order.model;
 
+import com.Lawrencefish.OrderDetail.model.OrderDetailRepositoryByTom;
 import com.order.model.OrderRepository;
 import com.order.model.OrderVO;
+import com.orderDetail.model.OrderDetailVO;
+import com.roomInventory.model.RoomInventoryService;
 import com.roomType.model.RoomTypeRepository;
 import com.roomType.model.RoomTypeVO;
 import org.hibernate.SessionFactory;
@@ -21,6 +24,10 @@ public class OrderServiceByTom {
 	private OrderRepositoryByTom orderRepository;
 	@Autowired
 	private RoomTypeRepository roomTypeRepository;
+	@Autowired
+	private OrderDetailRepositoryByTom orderDetailRepository;
+	@Autowired
+	private RoomInventoryService roomInventoryService;
 
 	public List<Map<String, Object>> getTodayOrders(Integer hotelId) {
 		// 獲取今天日期
@@ -158,6 +165,36 @@ public class OrderServiceByTom {
 		// 更新訂單狀態為 3 (取消)
 		order.setStatus((byte) 3); // 将整数 3 转换为 byte 类型
 		orderRepository.save(order);
+
+		return true;
+	}
+
+	@Transactional
+	public boolean cancelOrderAndRestoreInventory(Integer orderId) {
+		// 查詢訂單是否存在
+		Optional<OrderVO> optionalOrder = orderRepository.findById(orderId);
+		if (!optionalOrder.isPresent()) {
+			throw new RuntimeException("訂單不存在，無法取消");
+		}
+
+		OrderVO order = optionalOrder.get();
+
+		// 更新訂單狀態為取消
+		if (order.getStatus() == 3) {
+			throw new RuntimeException("訂單已被取消，無法再次取消");
+		}
+		order.setStatus((byte)3); // 設置訂單狀態為取消
+		orderRepository.save(order);
+
+		// 查詢訂單詳細資訊並恢復庫存
+		List<OrderDetailVO> orderDetails = orderDetailRepository.findByOrder(order);
+		for (OrderDetailVO detail : orderDetails) {
+			// 將 Date 轉換為 LocalDate
+			LocalDate checkInDate = order.getCheckInDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			// 恢復庫存
+			roomInventoryService.increaseInventory(detail.getRoomTypeId(), checkInDate, detail.getRoomNum());
+		}
 
 		return true;
 	}

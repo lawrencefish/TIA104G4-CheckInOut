@@ -57,8 +57,8 @@ public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
 	    @Query("SELECT new com.order.dto.AvgRatingsAndCommentDTO(" +
 	            "COUNT(o.commentContent), AVG(o.rating)) " +
 	            "FROM OrderVO o " +
-	            "WHERE o.orderId = :orderId")
-	     Optional<AvgRatingsAndCommentDTO> findRatingAndCommentByOrderId(@Param("orderId") Integer orderId);
+	            "WHERE o.hotel.hotelId = :hotelId")
+	     Optional<AvgRatingsAndCommentDTO> findRatingAndCommentByOrderId(@Param("hotelId") Integer hotelId);
 
 	    @Query("SELECT o.member FROM OrderVO o WHERE o.hotel.name = :hotelName GROUP BY o.member.memberId ORDER BY o.member.memberId ASC")
 	    List<MemberVO> findClientsByHotelName(@Param("hotelName") String hotelName);

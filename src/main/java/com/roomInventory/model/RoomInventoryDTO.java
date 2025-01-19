@@ -17,8 +17,9 @@ public class RoomInventoryDTO {
     private Double longitude;
     //roomType物件
     private Integer roomTypeId;
+    private Byte breakfast;
     private Integer maxPerson;
-    
+
     public RoomInventoryDTO(
             Integer inventoryId,
             LocalDate date,
@@ -31,7 +32,8 @@ public class RoomInventoryDTO {
             Double latitude,
             Double longitude,
             Integer roomTypeId,
-            Integer maxPerson) {
+            Integer maxPerson,
+            Byte breakfast) {
         this.inventoryId = inventoryId;
         this.date = date;
         this.availableQuantity = availableQuantity;
@@ -43,6 +45,7 @@ public class RoomInventoryDTO {
         this.latitude = latitude;
         this.longitude = longitude;
         this.roomTypeId = roomTypeId;
+        this.breakfast =  breakfast;
         this.maxPerson = maxPerson;
     }
     
@@ -117,5 +120,11 @@ public class RoomInventoryDTO {
 	}
 	public void setMaxPerson(Integer maxPerson) {
 		this.maxPerson = maxPerson;
+	}
+	public Byte getBreakfast() {
+		return breakfast;
+	}
+	public void setBreakfast(Byte breakfast) {
+		this.breakfast = breakfast;
 	}	
 }
