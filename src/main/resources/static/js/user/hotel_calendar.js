@@ -284,8 +284,8 @@ function fetchCalendarInfo() {
         dataType: 'json',
         data: JSON.stringify({
             id: hotelId,
-            roomNum: $('#room_num').val() == "" ? 0 : $('#room_num').val(),
-            guestNum: $('#people_num').val() == "" ? 0 : $('#people_num').val()
+            roomNum: $('#room_num').val() == "" ? 1 : $('#room_num').val(),
+            guestNum: $('#people_num').val() == "" ? 1 : $('#people_num').val()
         })
     });
 }

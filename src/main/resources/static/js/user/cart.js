@@ -85,6 +85,7 @@ function checkLogin() {
         $.post("/user/api/loginCheck", function (response) {
             if (response.message == "not login") {
                 showModal("登入後才能進行結帳！");
+                showModal();
                 resolve(false); // 未登入，返回 false
             } else {
                 resolve(true); // 已登入，返回 true

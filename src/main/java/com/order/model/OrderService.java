@@ -90,7 +90,11 @@ public class OrderService {
 		AvgRatingsAndCommentDTO stats = optionalStats.orElse(new AvgRatingsAndCommentDTO(0L, 0.0));
 		return stats;
 	}
-
+	
+	public List<OrderVO> findByMemberId(Integer memberId){
+		return orderRepository.findTop2ByMemberMemberId(memberId);
+	}
+ 	
 	public OrderVO findById(Integer orderId) {
 		// TODO Auto-generated method stub
 		return null;
@@ -121,5 +125,6 @@ public class OrderService {
  	    memberRepository.save(existingMember); // 儲存更新後的資料
  	}
   
+
 }
 
