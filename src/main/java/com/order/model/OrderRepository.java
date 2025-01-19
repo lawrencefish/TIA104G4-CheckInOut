@@ -75,14 +75,15 @@ public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
 	            @Param("clientMail") String clientMail,
 	            @Param("clientPhone") String clientPhone);
 
-		List<OrderVO> findByHotelHotelIdAndRatingIsNotNullAndCommentContentIsNotNull(Integer hotelId);
+		  List<OrderVO> findByHotelHotelIdAndRatingIsNotNullAndCommentContentIsNotNull(Integer hotelId);
 
-	@Query(value = """
-		SELECT COUNT(*)
-		FROM orders
-		WHERE order_id = :orderId
-		  AND member_id = :memberId
-	""", nativeQuery = true)
-	long countByOrderIdAndMemberId(@Param("orderId") Integer orderId, @Param("memberId") Integer memberId);
+	    @Query(value = """
+		    SELECT COUNT(*)
+		    FROM orders
+		    WHERE order_id = :orderId
+		    AND member_id = :memberId
+	      """, nativeQuery = true)
+	      long countByOrderIdAndMemberId(@Param("orderId") Integer orderId, @Param("memberId") Integer memberId);
+
 
 }

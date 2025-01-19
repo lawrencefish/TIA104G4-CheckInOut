@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.admin.model.AdminMemberServive;
+import com.admin.model.AdminMemberService;
 import com.member.model.MemberVO;
 
 @RestController
@@ -23,7 +23,7 @@ import com.member.model.MemberVO;
 public class AdminMemberController {
 
     @Autowired
-    private AdminMemberServive adminMemberService;
+    private AdminMemberService adminMemberService;
 
     // 獲取所有會員資料
     @GetMapping("/findAllMembers")

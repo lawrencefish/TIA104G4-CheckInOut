@@ -208,7 +208,7 @@ public class UserSearchController {
 					LocalDate currentDate = checkInDate;
 					while (!currentDate.isAfter(checkOutDateMOne)) {
 						RoomInventoryDTO dayDto = dateMap.get(currentDate);
-						if (dayDto == null || dayDto.getAvailableQuantity() < needRooms) {
+						if (dayDto == null || dayDto.getAvailableQuantity() < roomNum) {
 							isRoomAvailableEveryDay = false;
 							break;
 						}
