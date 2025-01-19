@@ -93,11 +93,11 @@ public class UserOrderController {
 
 		// 調用 checkCart 方法來檢查並更新購物車數據
 		List<Map<String, Object>> updatedCartList = checkCart(cartList);
-		
+
 		return ResponseEntity.ok(updatedCartList);
 	}
-	
-	//取得會員訂單
+
+	// 取得會員訂單
 	@PostMapping("/order/getMemberOrder")
 	public List<OrderDTO> getMemberOrder(HttpSession session) {
 		List<OrderDTO> responseList = new ArrayList<>();
@@ -143,11 +143,11 @@ public class UserOrderController {
 						PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, cartDetailInfo.getDate());
 						cartDetail.put("roomName", cartDetailInfo.getRoomName());
 						cartDetail.put("breakfast", cartDetailInfo.getBreakfast());
-						totalPrice += (todayPrice.getPrice()*roomNum);
+						totalPrice += (todayPrice.getPrice() * roomNum);
 
 						if (cartDetailInfo.getBreakfast() != 0) {
-							totalbreakPrice += (todayPrice.getBreakfastPrice()*guestNum);
-							totalPrice += (todayPrice.getBreakfastPrice()*guestNum);
+							totalbreakPrice += (todayPrice.getBreakfastPrice() * guestNum);
+							totalPrice += (todayPrice.getBreakfastPrice() * guestNum);
 						}
 					}
 
@@ -305,7 +305,7 @@ public class UserOrderController {
 		}
 		return creditCardList;
 	}
-	
+
 	@Transactional
 	@PostMapping("/order/checkout")
 	public Map<String, Object> checkout(@RequestBody Map<String, Object> orderInfo, HttpSession session) {
@@ -330,16 +330,17 @@ public class UserOrderController {
 			// **如果是新信用卡**
 			Map<String, Object> savedCardMap = (Map<String, Object>) savedCardObj;
 			System.out.println(savedCardMap);
-			String name = lastName+"的信用卡"+checkInDate.toString();
+			String name = lastName + "的信用卡" + checkInDate.toString();
 			creditcard = new CreditcardVO();
-			creditcard.setCreditcardInfo(name,
-					(String) savedCardMap.get("cardNumber"), (String) savedCardMap.get("securityCode"),
-					(String) savedCardMap.get("expiryDate"), (MemberVO) session.getAttribute("member"));
+			creditcard.setCreditcardInfo(name, (String) savedCardMap.get("cardNumber"),
+					(String) savedCardMap.get("securityCode"), (String) savedCardMap.get("expiryDate"),
+					(MemberVO) session.getAttribute("member"));
 			// **存入資料庫**
 			creditcard = cDService.addCreditCardAndGet(creditcard);
 		}
 
-		Map<String, Object> orderSaved = (Map<String, Object>) session.getAttribute("OrderTobeCheckOut");		
+		List<String> roomTypeIdList = new ArrayList<String>();
+		Map<String, Object> orderSaved = (Map<String, Object>) session.getAttribute("OrderTobeCheckOut");
 		List<Map<String, Object>> orderSavedDetailList = (List<Map<String, Object>>) orderSaved.get("cartDetailList");
 		try {
 			OrderVO order = new OrderVO();
@@ -357,6 +358,7 @@ public class UserOrderController {
 			List<OrderDetailVO> orderDetails = new ArrayList<>();
 			for (Map<String, Object> orderSavedDetail : orderSavedDetailList) {
 				Integer roomTypeId = (Integer) orderSavedDetail.get("roomTypeId");
+				roomTypeIdList.add(String.valueOf(roomTypeId));
 				Byte breakfast = (Byte) orderSavedDetail.get("breakfast");
 				Integer guestNum = (Integer) orderSavedDetail.get("guestNum");
 				Integer roomNum = (Integer) orderSavedDetail.get("roomNum");
@@ -372,24 +374,19 @@ public class UserOrderController {
 						ri.setAvailableQuantity(newQuantity);
 						RIservice.roomTransaction(ri);
 					} else {
-					    response.put("message", "房間不足，請選擇其他日期或房型");
-					    response.put("popup", "yes");
-					    session.setAttribute("OrderTobeCheckOut","");
-					    deleteCart(String.valueOf(roomTypeId),session);
+						response.put("message", "房間不足，請選擇其他日期或房型");
+						response.put("popup", "yes");
+						session.setAttribute("OrderTobeCheckOut", "");
+						deleteCart(String.valueOf(roomTypeId), session);
 
-				        throw new RuntimeException("房間不足，請選擇其他日期或房型");					    
+						throw new RuntimeException("房間不足，請選擇其他日期或房型");
 					}
 					PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, date);
 					Integer todayTotalPrice = (breakfast != 0)
 							? (todayPrice.getPrice() * roomNum) + (todayPrice.getBreakfastPrice() * guestNum)
 							: todayPrice.getPrice() * roomNum;
 					reCalcTotalPrice += todayTotalPrice;
-					System.out.println("今日房價:"+todayPrice.getPrice()*roomNum);
-					System.out.println("今日早餐價:"+todayPrice.getBreakfastPrice()*guestNum);
-					System.out.println("今日總價:"+todayTotalPrice);
-
 				}
-				System.out.println(reCalcTotalPrice);
 				OrderDetailVO orderDetail = new OrderDetailVO();
 				orderDetail.setBreakfast(breakfast);
 				orderDetail.setGuestNum(guestNum);
@@ -399,37 +396,39 @@ public class UserOrderController {
 				oDService.addOrderDetail(orderDetail);
 				orderDetails.add(orderDetail);
 			}
-						
-			if (couponId != 0 ) {
-				MemberCouponVO coupon =  mCService.getById(couponId);
-	            if (coupon != null && coupon.getCoupon().getDiscountAmount() != null) {
-	                discount = coupon.getCoupon().getDiscountAmount();    
+
+			if (couponId != 0) {
+				MemberCouponVO coupon = mCService.getById(couponId);
+				if (coupon != null && coupon.getCoupon().getDiscountAmount() != null) {
+					discount = coupon.getCoupon().getDiscountAmount();
 					reCalcTotalPrice -= discount;
 					mCService.useCoupon(couponId);
-	            }
+				}
 			}
 
-			
-			System.out.println("重算的:"+reCalcTotalPrice);
-			System.out.println("訂單的:"+finalPrice);
-			System.out.println(finalPrice==reCalcTotalPrice);
-			
+
 			if (reCalcTotalPrice.equals(finalPrice)) {
-				
+
 				order.setTotalAmount(reCalcTotalPrice);
 				orderService.addOrder(order);
 				response.put("message", "交易成功");
-			}else {
-			    response.put("popup", "yes");
+
+				session.setAttribute("OrderTobeCheckOut", "");
+				for (String roomTypeId : roomTypeIdList) {
+					deleteCart(roomTypeId, session);
+				}
+
+			} else {
+				response.put("popup", "yes");
 				response.put("message", "金額錯誤，請重新再試一次");
-		        throw new RuntimeException("金額錯誤，請重新再試一次");
+				throw new RuntimeException("金額錯誤，請重新再試一次");
 
 			}
 		} catch (Exception e) {
-		    e.printStackTrace(); // 印出完整的錯誤訊息到控制台
-		    response.put("message", "訂單失敗，請重新再試一次");
-		    response.put("error", e.toString()); // 儲存完整錯誤資訊
-		    throw e; 
+			e.printStackTrace(); // 印出完整的錯誤訊息到控制台
+			response.put("message", "訂單失敗，請重新再試一次");
+			response.put("error", e.toString()); // 儲存完整錯誤資訊
+			throw e;
 		}
 		return response;
 	}
