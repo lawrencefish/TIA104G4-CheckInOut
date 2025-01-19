@@ -171,7 +171,7 @@ public class HotelVO {
     // Constructors, Getters, Setters
     // ----------------------------------
 
-    public HotelVO() {
+	public HotelVO() {
     }
 
     // 可自行新增方便的建構子、Getter/Setter或使用 Lombok 省略

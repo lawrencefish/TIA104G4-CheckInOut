@@ -10,6 +10,7 @@
 //import org.springframework.boot.autoconfigure.SpringBootApplication;
 //
 //import com.googleAPI.GeocodingService;
+//import com.order.model.OrderDTO;
 //import com.order.model.OrderService;
 //import com.price.model.PriceRepository;
 //import com.price.model.PriceService;
@@ -45,25 +46,28 @@
 //
 //	@Override
 //	public void run(String... args) throws Exception {
+//		List<OrderDTO> order =  orderService.getOrdersWithDetailsByMemberId(1);
+//		for (OrderDTO orders : order) {
+//			System.out.println(orders.getEmail());
+//		}
+//		Double ratings = orderService.getAvgRatingAndCommentCounts(1).orElse(null).getAvgRatings();
+//		long comments = orderService.getAvgRatingAndCommentCounts(1).orElse(null).getCommentConuts();
+//		System.out.println(ratings+","+comments);
 //
-////		Double ratings = orderService.getAvgRatingAndCommentCounts(1).orElse(null).getAvgRatings();
-////		long comments = orderService.getAvgRatingAndCommentCounts(1).orElse(null).getCommentConuts();
-////		System.out.println(ratings+","+comments);
-////
-////		String tibame = "彰化縣";
-////		Double[] latLnt = gService.getCoordinatesFromPlace(tibame);
-////		System.out.println(latLnt[0]+","+latLnt[1]);
-//
-////		LocalDate startDate = LocalDate.parse("2025-01-09");
-////		LocalDate endDate = LocalDate.parse("2025-01-13");
-////		System.out.println("test");
-////		List<RoomInventoryDTO> RI = RIservice.findAvailableRooms(startDate, endDate, 23, 120, 0.5);
-////		System.out.println(RI);
-////		RI.forEach(ri ->{
-////			PriceVO price = Pservice.getPriceOfDay(ri.getRoomTypeId(),startDate);
-////			System.out.println(ri.toString());
-////			System.out.println(price.getPriceType());
-////			System.out.println(price.getPrice());
-////		});
-//	}
-//}
+//		String tibame = "彰化縣";
+//		Double[] latLnt = gService.getCoordinatesFromPlace(tibame);
+//		System.out.println(latLnt[0]+","+latLnt[1]);
+
+//		LocalDate startDate = LocalDate.parse("2025-01-09");
+//		LocalDate endDate = LocalDate.parse("2025-01-13");
+//		System.out.println("test");
+//		List<RoomInventoryDTO> RI = RIservice.findAvailableRooms(startDate, endDate, 23, 120, 0.5);
+//		System.out.println(RI);
+//		RI.forEach(ri ->{
+//			PriceVO price = Pservice.getPriceOfDay(ri.getRoomTypeId(),startDate);
+//			System.out.println(ri.toString());
+//			System.out.println(price.getPriceType());
+//			System.out.println(price.getPrice());
+//		});
+	}
+}

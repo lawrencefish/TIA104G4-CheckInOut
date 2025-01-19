@@ -55,7 +55,6 @@ public class OrderVO implements java.io.Serializable {
 	@ManyToOne
 	@JoinColumn(name = "hotel_id", nullable = false)
 	private HotelVO hotel;
-
 	// 連接到會員，多對一
 	@NotNull(message = "會員不可為空")
 	@ManyToOne
