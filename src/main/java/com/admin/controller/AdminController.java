@@ -37,7 +37,7 @@ public class AdminController {
     private HotelService hotelService;
     
     @Autowired
-    private AdminMemberServive adminMemberServive;
+    private AdminMemberService adminMemberService;
     
     @Autowired
     private MemberService memberService;
@@ -195,7 +195,7 @@ public class AdminController {
     public String showUserBackend(Model model) {
     	// 獲取所有飯店資料
         List<HotelVO> hotels = hotelService.findAll();
-        List<MemberVO> members = adminMemberServive.findAllMembers();
+        List<MemberVO> members = adminMemberService.findAllMembers();
         
      // 添加到 model
         model.addAttribute("hotels", hotels);

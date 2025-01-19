@@ -19,7 +19,7 @@ import com.member.model.MemberVO;
 
 @Service
 @Transactional
-public class AdminMemberServive {
+public class AdminMemberService {
 	
 	@Autowired
     private MemberRepository memberRepository;
