@@ -16,39 +16,38 @@ import com.member.model.MemberRepository;
 import com.member.model.MemberVO;
 import com.order.dto.AvgRatingsAndCommentDTO;
 import com.order.dto.CommentDTO;
+import com.orderDetail.model.OrderDetailDTO;
+import com.orderDetail.model.OrderDetailRepository;
 
 @Service("OrderService")
 public class OrderService {
 
 	@Autowired
-	OrderRepository repository;
-
+	OrderRepository orderRepository;
+	@Autowired
+	OrderDetailRepository orderDetailRepository;
  	@Autowired
  	MemberRepository memberRepository;
 	
-	@Autowired
-	private SessionFactory sessionFactory;
 
 	@Transactional
 	public void addOrder(OrderVO orderVO) {
-		repository.save(orderVO);
+		orderRepository.save(orderVO);
 	}
 
 	public OrderVO queryOrder(Integer orderId) {
-		Optional<OrderVO> optional = repository.findById(orderId);
+		Optional<OrderVO> optional = orderRepository.findById(orderId);
 		return optional.orElse(null);
 	}
-
+	
 	public List<OrderVO> getAll() {
-		return repository.findAll();
+		return orderRepository.findAll();
 	}
 
 	public List<CommentDTO> getAllComments() {
-		return repository.findAllComments();
+		return orderRepository.findAllComments();
 	}
 
-	@Autowired
-	private OrderRepository orderRepository;
 
 	public Page<CommentDTO> getFilteredComments(String clientName, String hotelName, Integer orderId, int page, int size) {
 
@@ -70,7 +69,7 @@ public class OrderService {
 	@Transactional
 	public void saveReply(Integer orderId, String commentReply) {
 		// 檢查訂單是否存在
-		Optional<OrderVO> orderOptional = repository.findById(orderId);
+		Optional<OrderVO> orderOptional = orderRepository.findById(orderId);
 		if (orderOptional.isEmpty()) {
 			throw new RuntimeException("找不到對應的訂單，無法儲存回覆");
 		}
@@ -82,7 +81,7 @@ public class OrderService {
 		order.setCommentReply(commentReply);
 
 		// 儲存更新後的訂單
-		repository.save(order);
+		orderRepository.save(order);
 	}
 
 	public AvgRatingsAndCommentDTO getAvgRatingAndCommentCounts(Integer orderId) {
@@ -90,16 +89,13 @@ public class OrderService {
 		AvgRatingsAndCommentDTO stats = optionalStats.orElse(new AvgRatingsAndCommentDTO(0L, 0.0));
 		return stats;
 	}
-	
-	public List<OrderVO> findByMemberId(Integer memberId){
-		return orderRepository.findTop2ByMemberMemberId(memberId);
-	}
- 	
+	 	
 	public OrderVO findById(Integer orderId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	
  	public List<MemberVO> findClientsByHotel(String hotelName) {
          return orderRepository.findClientsByHotelName(hotelName);
      }
@@ -107,6 +103,19 @@ public class OrderService {
  	public List<MemberVO> searchClients(Integer clientId, String clientName, String clientMail, String clientPhone) {
          return orderRepository.searchClients(clientId, clientName, clientMail, clientPhone);
      }
+ 	
+    public List<OrderDTO> getOrdersWithDetailsByMemberId(Integer memberId) {
+        List<OrderDTO> orders = orderRepository.findOrdersByMemberId(memberId);
+
+        for (OrderDTO order : orders) {
+            List<OrderDetailDTO> details = orderDetailRepository.findOrderDetailsByOrderId(order.getOrderId());
+            order.setOrderDetails(details);
+        }
+
+        return orders;
+    }
+ 	
+ 	//////聊天室的東西
 	
  	public MemberVO getMemberId(Integer memberId) {
          return memberRepository.findById(memberId)

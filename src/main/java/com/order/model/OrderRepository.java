@@ -84,6 +84,19 @@ public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
 		    AND member_id = :memberId
 	      """, nativeQuery = true)
 	      long countByOrderIdAndMemberId(@Param("orderId") Integer orderId, @Param("memberId") Integer memberId);
+		
+	    @Query("SELECT new com.order.model.OrderDTO( " +
+			       "m.memberId, o.orderId, o.createTime, o.status, o.checkInDate, o.checkOutDate, o.totalAmount, " +
+			       "o.guestLastName, o.guestFirstName, o.memo, o.rating, o.commentContent, o.commentReply, " +
+			       "o.commentCreateTime, " +
+			       "h.hotelId, h.name, h.city, h.district, h.address, h.phoneNumber, h.email, " +
+			       "c.creditcardNum) " +
+			       "FROM OrderVO o " +
+			       "JOIN o.member m " +
+			       "JOIN o.hotel h " +
+			       "JOIN o.creditcard c " +
+			       "WHERE o.member.memberId = :memberId")
+			List<OrderDTO> findOrdersByMemberId(@Param("memberId") Integer memberId);
 
 
 }

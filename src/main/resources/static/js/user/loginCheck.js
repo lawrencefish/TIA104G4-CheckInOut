@@ -52,7 +52,7 @@ const loginNav = `
 `;
 const loginModalDiv = `
 	<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered" style="max-width:40vw;">
+        <div class="modal-dialog modal-dialog-centered modal-xl">  <!-- 這裡使用 modal-xl -->
 			<div class="modal-content text-center">
 				<div class="modal-body" id="login-modal-body">
 				</div>
@@ -80,7 +80,6 @@ const loginFormView =`
         </div>
         <div class="d-grid gap-2">
             <button class="btn btn-primary login" type="submit">登入</button>
-            <button class="btn btn-primary" type="button" data-bs-dismiss="modal">Sign in with Google</button>
             <a class="btn btn-primary" id="register" type="button" href="/user/register">註冊</a>
         </div>
     </form>
@@ -240,8 +239,8 @@ function getAvatar(){
 let modalQueue = []; // 建立一個佇列來存放訊息
 let isModalVisible = false; // 追蹤模態視窗是否正在顯示
 
-function showModal(Message) {
-    modalQueue.push(Message); // 將訊息加入佇列
+function showModal(message = null, isMessage = true) {
+    modalQueue.push({ message, isMessage }); // 將訊息及模式加入佇列
     processModalQueue(); // 處理佇列
 }
 
@@ -249,22 +248,25 @@ function processModalQueue() {
     if (isModalVisible || modalQueue.length === 0) return;
 
     isModalVisible = true;
-    let currentMessage = modalQueue.shift();
+    let { message, isMessage } = modalQueue.shift();
 
     let loginModal = document.querySelector('#loginModal');
-
+    
     if (!loginModal) {
         let newDiv = document.createElement('div');
         newDiv.innerHTML = loginModalDiv;
         document.querySelector('main').appendChild(newDiv);
     }
 
-    loginMessage = currentMessage;
     const modalBody = document.querySelector('#login-modal-body');
     if (modalBody) {
-        modalBody.innerHTML = (loginMessage) ? loginMessageDiv : loginFormView;
-        if (loginMessage) {
-            document.querySelector('#loginMessage').innerHTML = loginMessage;
+        if (message === null) {
+            modalBody.innerHTML = loginFormView;
+        } else if (isMessage) {
+            modalBody.innerHTML = loginMessageDiv; 
+            document.querySelector('#loginMessage').innerHTML = message;
+        } else {
+            modalBody.innerHTML = message; // 直接更改 innerHTML
         }
     }
 
@@ -290,10 +292,10 @@ function processModalQueue() {
     }
     
     document.querySelector('#loginModal').addEventListener('hidden.bs.modal', function () {
-        redirectUrl ="";
+        redirectUrl = "";
     });
-
 }
+
 
 function showLoginView() {
     loginCheck().then(account => {

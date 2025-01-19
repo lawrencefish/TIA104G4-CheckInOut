@@ -13,6 +13,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.order.model.OrderVO;
+import com.roomType.model.RoomTypeVO;
 
 @Entity
 @Table(name = "order_detail")
@@ -22,7 +23,8 @@ public class OrderDetailVO implements java.io.Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "order_detail_id")
 	private Integer orderDetailId;
-	@Column(name = "room_type_id")
+	
+	@Column(name = "room_type_id", nullable = false)
 	private Integer roomTypeId;
 	
 	@ManyToOne(cascade = CascadeType.ALL)

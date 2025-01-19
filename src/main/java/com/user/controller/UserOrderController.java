@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ import com.member.model.MemberVO;
 import com.membercoupon.model.MemberCouponRepository;
 import com.membercoupon.model.MemberCouponService;
 import com.membercoupon.model.MemberCouponVO;
+import com.order.model.OrderDTO;
 import com.order.model.OrderService;
 import com.order.model.OrderVO;
 import com.orderDetail.model.OrderDetailService;
@@ -40,6 +42,7 @@ import com.price.model.PriceVO;
 import com.roomInventory.model.HotelRoomInventoryDTO;
 import com.roomInventory.model.RoomInventoryService;
 import com.roomInventory.model.RoomInventoryVO;
+import com.roomType.model.RoomTypeService;
 import com.roomTypeFacility.model.RoomTypeFacilityService;
 import com.roomTypeImg.model.RoomTypeImgService;
 import com.roomTypeImg.model.RoomTypeImgVO;
@@ -56,6 +59,8 @@ public class UserOrderController {
 	GeocodingService gService;
 	@Autowired
 	RoomTypeImgService roomTypeImgService;
+	@Autowired
+	RoomTypeService roomTypeService;
 	@Autowired
 	HotelImgService hotelImgService;
 	@Autowired
@@ -94,15 +99,13 @@ public class UserOrderController {
 	
 	//取得會員訂單
 	@PostMapping("/order/getMemberOrder")
-	public void getMemberOrder(HttpSession session) {
-		List<OrderVO> responseList = new ArrayList<>();
-		Map<String, Object> response = new HashMap<>();
+	public List<OrderDTO> getMemberOrder(HttpSession session) {
+		List<OrderDTO> responseList = new ArrayList<>();
 		MemberVO member = (MemberVO) session.getAttribute("member");
-		if(member != null) {
-			responseList =  orderService.findByMemberId(member.getMemberId());
-			System.out.println(responseList);
+		if (member != null) {
+			responseList = orderService.getOrdersWithDetailsByMemberId(member.getMemberId());
 		}
-		
+		return responseList;
 	}
 
 	public List<Map<String, Object>> checkCart(List<Map<String, Object>> cartList) {
