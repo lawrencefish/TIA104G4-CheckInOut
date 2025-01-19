@@ -319,7 +319,7 @@
     <!-- Header -->
     <header>
         <div class="logo">
-             <a th:href="@{/frontDesk}">
+            <a th:href="@{/frontDesk}">
                 <img th:src="@{/imgs/CheckInOut_logo.png}" alt="logo">
                 <span>飯店管理系統</span>
             </a>
@@ -348,70 +348,90 @@
     <div class="container">
         <main class="main-content">
             <h1>評論客戶</h1>
-           <form class="report-form" th:action="@{/client/comment}" method="post">
-    <div class="form-group">
-        <label for="clientid">客戶編號</label>
-        <span id="clientid" th:text="${client.memberId}"></span>
-    </div>
-    <div class="form-group">
-        <label for="clientemail">客戶電子信箱</label>
-        <span id="clientemail" th:text="${client.account}"></span>
-    </div>
-    <div class="form-group">
-        <label for="reason">評論</label>
-        <textarea id="reason" name="commentContent" rows="5"></textarea>
-    </div>
-    <div class="form-actions">
-        <button type="submit" class="btn btn-submit">送出</button>
-        <button type="button" class="btn btn-cancel">取消</button>
-    </div>
-</form>
-
+            <form class="report-form" id="commentForm">
+                <div class="form-group">
+                    <label for="clientid">客戶編號</label>
+                    <span id="clientid" th:text="${client.memberId}"></span>
+                </div>
+                <div class="form-group">
+                    <label for="clientemail">客戶電子信箱</label>
+                    <span id="clientemail" th:text="${client.account}"></span>
+                </div>
+                <div class="form-group">
+                    <label for="reason">評論</label>
+                    <textarea id="reason" name="commentContent" rows="5"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-submit" id="submitComment">送出</button>
+                    <button type="button" class="btn btn-cancel" id="cancelButton">取消</button>
+                </div>
+            </form>
         </main>
     </div>
-    <div class="popout-container">
+    <div class="popout-container" id="popoutContainer">
         <div class="popout">
-            <h3>我們已經收到您的評論</h3>
-            <p>謝謝您!</p>
-            <button class="close-popout">確認</button>
+            <h3 id="popoutTitle">結果</h3>
+            <p id="popoutMessage">訊息內容</p>
+            <button class="close-popout" id="closePopout">確認</button>
         </div>
     </div>
-    <!-- Footer -->
     <footer>
         &copy; 2024 Check in out. All rights reserved.
     </footer>
     <script>
-        document.querySelector('.hotel-button').addEventListener('click', () => {
-            const dropdown = document.querySelector('.dropdown');
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const submitBtn = document.getElementById('submitComment');
+            const popoutContainer = document.getElementById('popoutContainer');
+            const popoutTitle = document.getElementById('popoutTitle');
+            const popoutMessage = document.getElementById('popoutMessage');
+            const closePopout = document.getElementById('closePopout');
 
-        const submitBtn = document.querySelector('.btn-submit');
-        const popoutContainer = document.querySelector('.popout-container');
-        const popout = document.querySelector('.popout'); // 選取彈窗本身
-        const closePopout = document.querySelector('.close-popout');
+            // 送出按鈕事件
+            submitBtn.addEventListener('click', async () => {
+                const memberId = document.querySelector('#clientid').textContent.trim();
+                const commentContent = document.getElementById('reason').value.trim();
 
-        // 打開彈窗
-        submitBtn.addEventListener('click', () => {
-            popoutContainer.classList.add('show');
-            event.preventDefault();
-        });
+                // 檢查評論內容
+                if (!commentContent) {
+                    showPopout('錯誤', '請輸入評論內容');
+                    return;
+                }
 
-        // 點擊彈窗外部區域關閉彈窗
-        popoutContainer.addEventListener('click', (event) => {
-            if (event.target === popoutContainer) {
+                try {
+                    const response = await fetch(`http://localhost:8080/api/comment/member/${memberId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ commentContent }),
+                    });
+
+                    if (response.ok) {
+                        showPopout('成功', '評論提交成功！');
+                    } else {
+                        const errorData = await response.json();
+                        showPopout('錯誤', errorData.message || '評論提交失敗');
+                    }
+                } catch (error) {
+                    showPopout('錯誤', '無法連線到伺服器，請稍後再試');
+                }
+            });
+
+            // 關閉彈窗
+            closePopout.addEventListener('click', () => {
                 popoutContainer.classList.remove('show');
+            });
+
+            // 顯示彈窗
+            function showPopout(title, message) {
+                popoutTitle.textContent = title;
+                popoutMessage.textContent = message;
+                popoutContainer.classList.add('show');
             }
         });
 
-        // 點擊彈窗內部阻止冒泡
-        popout.addEventListener('click', (event) => {
-            event.stopPropagation(); // 阻止冒泡，防止觸發 popoutContainer 的 click 事件
-        });
-
-        // 點擊「確認」按鈕關閉彈窗
-        closePopout.addEventListener('click', () => {
-            popoutContainer.classList.remove('show');
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            window.history.back(); // 返回上一頁
         });
     </script>
 </body>

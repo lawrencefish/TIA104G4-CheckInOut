@@ -235,7 +235,7 @@
 	<script src="/js/user/loginCheck.js" defer></script>
 	<!-- 引入必要的 JS 庫 -->
 	<script th:if="${session != null && session.memberId != null}">
-		$('chatButton').removeClass('d-none');
+		$('#chatButton').removeClass("d-none");
 		window.addEventListener('DOMContentLoaded', function() {
 			// 建立 WebSocket 連線
 			const socketUrl = 'ws://localhost:8080/ws/chat';

@@ -1,5 +1,6 @@
 package com.order.model;
 
+import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,9 +75,17 @@ public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
 	            @Param("clientMail") String clientMail,
 	            @Param("clientPhone") String clientPhone);
 
-		List<OrderVO> findByHotelHotelIdAndRatingIsNotNullAndCommentContentIsNotNull(Integer hotelId);
+		  List<OrderVO> findByHotelHotelIdAndRatingIsNotNullAndCommentContentIsNotNull(Integer hotelId);
 
-		@Query("SELECT new com.order.model.OrderDTO( " +
+	    @Query(value = """
+		    SELECT COUNT(*)
+		    FROM orders
+		    WHERE order_id = :orderId
+		    AND member_id = :memberId
+	      """, nativeQuery = true)
+	      long countByOrderIdAndMemberId(@Param("orderId") Integer orderId, @Param("memberId") Integer memberId);
+		
+	    @Query("SELECT new com.order.model.OrderDTO( " +
 			       "m.memberId, o.orderId, o.createTime, o.status, o.checkInDate, o.checkOutDate, o.totalAmount, " +
 			       "o.guestLastName, o.guestFirstName, o.memo, o.rating, o.commentContent, o.commentReply, " +
 			       "o.commentCreateTime, " +
@@ -88,4 +97,6 @@ public interface OrderRepository extends JpaRepository<OrderVO, Integer> {
 			       "JOIN o.creditcard c " +
 			       "WHERE o.member.memberId = :memberId")
 			List<OrderDTO> findOrdersByMemberId(@Param("memberId") Integer memberId);
+
+
 }
