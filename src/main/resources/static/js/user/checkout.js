@@ -37,7 +37,7 @@ $(document).ready(function () {
         let tempPrice = parseInt($('.totalPrice').text()) - this.value;
         let html =
             `<p class="fw-bold text-success">折扣：${this.value}
-       <br>
+        <br>
         <span>折扣後總價：${tempPrice}</span>
         </p>
        `
@@ -106,14 +106,20 @@ function checkout() {
             console.log("📌 響應文本:", jqXHR.responseText);
             if (jqXHR.responseJSON) {
                 console.log("API 回傳錯誤:", jqXHR.responseJSON);
+                if(jqXHR.responseJSON.popup="yes"){
+                    showModal(jqXHR.responseJSON.message);
+                    setTimeout(function () {
+                        window.location.href="/user/cart/"
+                    }, 3000)
+                }else{
                 showModal("訂單失敗，請稍後再試！");
                 setTimeout(function () {
                     location.reload();
-                }, 1000)
+                }, 3000)
+                }
             }
         }
     });
-}
 }
 
 function updateOrderInfo() {
@@ -141,7 +147,7 @@ function loadCart() {
         dataType: 'json',
         success: function (data) {
             console.log(data);
-            if (data != null && Object.keys(obj).length &&
+            if (data != null &&
                 data.cartDetailList != null && data.cartDetailList.length > 0) {
                 updateOrder(data);
             }else{

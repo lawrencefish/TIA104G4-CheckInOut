@@ -283,7 +283,6 @@ public class UserBookingController {
 					daydto.put("roomTypeId", String.valueOf(roomTypeId));
 					dailyInventory.put(date, daydto);
 				}
-
 				System.out.println(roomTypeId + ":" + date + ":" + totalPrice + ":" + room.getAvailableQuantity());
 			}
 		}
@@ -389,7 +388,6 @@ public class UserBookingController {
 						inventory.put("availableQuantity", dayDto.getAvailableQuantity());
 						inventories.add(inventory);
 						totalPrice += todayPrice.getPrice();
-					    System.out.println("需要的房間:"+needRooms+"房型ID: " + dayDto.getRoomTypeId() + ", 日期: " + dayDto.getDate() + ", 可用數量: " + dayDto.getAvailableQuantity());
 
 						if (dayDto.getBreakfast() != 0) {
 							totalPrice += todayPrice.getBreakfastPrice();

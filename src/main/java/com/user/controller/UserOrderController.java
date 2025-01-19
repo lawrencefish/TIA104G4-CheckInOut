@@ -277,7 +277,7 @@ public class UserOrderController {
 	}
 
 	public List<Map<String, Object>> getMemberCoupon(MemberVO member) {
-		List<MemberCouponVO> mCList = mCService.findByMemberIdAndCouponStatus(member.getMemberId(), (byte) 1);
+		List<MemberCouponVO> mCList = mCService.getActiveMemberCoupons(member.getMemberId());
 		List<Map<String, Object>> couponList = new ArrayList<>();
 		for (MemberCouponVO mC : mCList) {
 			Map<String, Object> coupon = new HashMap<>();
@@ -370,6 +370,10 @@ public class UserOrderController {
 						RIservice.roomTransaction(ri);
 					} else {
 					    response.put("message", "房間不足，請選擇其他日期或房型");
+					    response.put("popup", "yes");
+					    session.setAttribute("OrderTobeCheckOut","");
+					    deleteCart(String.valueOf(roomTypeId),session);
+
 				        throw new RuntimeException("房間不足，請選擇其他日期或房型");					    
 					}
 					PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, date);
@@ -398,8 +402,7 @@ public class UserOrderController {
 	            if (coupon != null && coupon.getCoupon().getDiscountAmount() != null) {
 	                discount = coupon.getCoupon().getDiscountAmount();    
 					reCalcTotalPrice -= discount;
-	                coupon.setCouponStatus((byte) 0); // 標記已使用
-	                mCService.save(coupon);
+					mCService.useCoupon(couponId);
 	            }
 			}
 
@@ -414,6 +417,8 @@ public class UserOrderController {
 				orderService.addOrder(order);
 				response.put("message", "交易成功");
 			}else {
+			    response.put("popup", "yes");
+				response.put("message", "金額錯誤，請重新再試一次");
 		        throw new RuntimeException("金額錯誤，請重新再試一次");
 
 			}
