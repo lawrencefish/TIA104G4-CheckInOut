@@ -51,7 +51,7 @@ public class CouponController {
 
     @PostMapping("/issue-new-member/{memberId}")
     public ResponseEntity<Void> issueNewMemberCoupon(@PathVariable Integer memberId) {
-        couponService.issueCouponToNewMember(memberId);
+        couponService.issueNewMemberCoupon(memberId);
         return ResponseEntity.ok().build();
     }
 
@@ -78,7 +78,7 @@ public class CouponController {
 
     @PostMapping("/test/issue/{memberId}")
     public ResponseEntity<Void> testIssueCoupon(@PathVariable Integer memberId) {
-        couponService.issueCouponToNewMember(memberId);
+        couponService.issueNewMemberCoupon(memberId);
         return ResponseEntity.ok().build();
     }
 
@@ -90,12 +90,27 @@ public class CouponController {
 
     @GetMapping("/test/member-coupons/{memberId}")
     public ResponseEntity<List<MemberCouponVO>> getMemberCoupons(@PathVariable Integer memberId) {
-        List<MemberCouponVO> memberCoupons = couponService.getMemberCoupons(memberId);
-        return ResponseEntity.ok(memberCoupons);
+        try {
+            List<MemberCouponVO> memberCoupons = couponService.getMemberCoupons(memberId);
+            System.out.println("Returning " + memberCoupons.size() + " coupons for member " + memberId);
+            if (memberCoupons.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(memberCoupons);
+        } catch (Exception e) {
+            System.err.println("Error getting coupons for member " + memberId + ": " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
     
     @GetMapping("/test")
     public ResponseEntity<String> test() {
         return ResponseEntity.ok("Test successful");
+    }
+    
+    @PostMapping("/issue-to-all/{couponId}")
+    public ResponseEntity<String> issueCouponToAllMembers(@PathVariable Integer couponId) {
+        couponService.issueCouponToAllMembers(couponId);
+        return ResponseEntity.ok("優惠券已成功發送給所有會員");
     }
 }

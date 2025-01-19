@@ -70,72 +70,104 @@
     <script src="/vendors/jQuery/jquery-3.7.1.min.js"></script>
     <script src="/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-        $(document).ready(function() {
-            const memberId = 1; // 這裡應該是登入會員的ID
+   <script>
+function getCurrentMemberId() {
+    return $.ajax({
+        url: '/user/api/current-id',
+        method: 'GET',
+        async: false
+    }).responseJSON;
+}
 
-            function loadCoupons() {
-                $.ajax({
-                    url: `/api/coupons/test/member-coupons/${memberId}`,
-                    method: 'GET',
-                    success: function(response) {
-                        const couponList = $('#couponList');
-                        couponList.empty();
-                        if (response.length > 0) {
-                            response.forEach(function(coupon) {
-                                const couponElement = $(`
-                                    <div class="coupon">
-                                        <h3>${coupon.coupon.couponName}</h3>
-                                        <p>折扣金額: ${coupon.coupon.discountAmount} 元</p>
-                                        <p>最低消費: ${coupon.coupon.minSpend} 元</p>
-                                        <p>有效期至: ${new Date(coupon.coupon.expiryDate).toLocaleDateString()}</p>
-                                        <p class="coupon-status">狀態: ${coupon.couponStatus === 1 ? '<span class="text-success">可使用</span>' : '<span class="text-danger">已失效</span>'}</p>
-                                        ${coupon.couponStatus === 1 ? '<button class="btn btn-dark use-coupon">使用優惠券</button>' : ''}
-                                    </div>
-                                `);
-                                couponList.append(couponElement);
-
-                                if (coupon.couponStatus === 1) {
-                                    couponElement.find('.use-coupon').click(function() {
-                                        useCoupon(coupon.memberCouponId);
-                                    });
-                                }
-                            });
-                        } else {
-                            couponList.html('<p class="text-center">您目前沒有可用的優惠券</p>');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        showAlert('danger', '獲取優惠券失敗: ' + xhr.responseText);
-                    }
+$(document).ready(function() {
+    const memberId = getCurrentMemberId();
+    if (memberId) {
+        loadCoupons(memberId);
+    } else {
+        showAlert('danger', '請先登入以查看您的優惠券');
+    }
+});
+function loadCoupons(memberId) {
+    $.ajax({
+        url: `/api/coupons/test/member-coupons/${memberId}`,
+        method: 'GET',
+        success: function(response) {
+            const couponList = $('#couponList');
+            couponList.empty();
+            if (response && response.length > 0) {
+                response.forEach(function(memberCoupon) {
+                    const coupon = memberCoupon.coupon;
+                    const couponElement = $(`
+                        <div class="coupon">
+                            <h3>會員優惠券 ID: ${memberCoupon.memberCouponId}</h3>
+                            <p>創建時間: ${new Date(memberCoupon.createTime).toLocaleString()}</p>
+                            <p>狀態: ${memberCoupon.couponStatus === 1 ? '<span class="text-success">可使用</span>' : '<span class="text-danger">已失效</span>'}</p>
+                            ${coupon ? `
+                                <p>優惠券名稱: ${coupon.couponName}</p>
+                                <p>折扣金額: ${coupon.discountAmount} 元</p>
+                                <p>最低消費: ${coupon.minSpend} 元</p>
+                                <p>適用城市數: ${coupon.travelCityNum}</p>
+                                <p>有效期至: ${new Date(coupon.expiryDate).toLocaleDateString()}</p>
+                                <p>優惠詳情: ${coupon.couponDetail}</p>
+                            ` : '<p>優惠券詳情無法顯示</p>'}
+                        </div>
+                    `);
+                    couponList.append(couponElement);
                 });
+            } else {
+                couponList.html('<p class="text-center">您目前沒有可用的優惠券</p>');
             }
+        },
+        error: function(xhr, status, error) {
+            showAlert('danger', '獲取優惠券失敗: ' + xhr.responseText);
+        }
+    });
+}
 
-            function useCoupon(memberCouponId) {
-                // 這裡應該發送請求到後端來標記優惠券為已使用
-                // 目前只是模擬這個過程
-                showAlert('success', `優惠券 ${memberCouponId} 已使用`);
-                loadCoupons(); // 重新加載優惠券列表
+/* function loadCoupons(memberId) {
+    $.ajax({
+        url: `/api/coupons/test/member-coupons/${memberId}`,
+        method: 'GET',
+        success: function(response) {
+            const couponList = $('#couponList');
+            couponList.empty();
+            if (response && response.length > 0) {
+                response.forEach(function(memberCoupon) {
+                    const couponElement = $(`
+                        <div class="coupon">
+                            <h3>會員優惠券 ID: ${memberCoupon.memberCouponId}</h3>
+                            <p>創建時間: ${new Date(memberCoupon.createTime).toLocaleString()}</p>
+                            <p class="coupon-status">狀態: ${memberCoupon.couponStatus === 1 ? '<span class="text-success">可使用</span>' : '<span class="text-danger">已失效</span>'}</p>
+                        </div>
+                    `);
+                    couponList.append(couponElement);
+                });
+            } else {
+                couponList.html('<p class="text-center">您目前沒有可用的優惠券</p>');
             }
+        },
+        error: function(xhr, status, error) {
+            showAlert('danger', '獲取優惠券失敗: ' + xhr.responseText);
+            console.error('Error fetching coupons:', error);
+        }
+    });
+} */
 
-            function showAlert(type, message) {
-                const alertHtml = `
-                    <div class="alert alert-${type} alert-dismissible fade show mb-4" role="alert">
-                        ${message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-                
-                $('.coupon-container').prepend(alertHtml);
-                
-                setTimeout(() => {
-                    $('.alert').alert('close');
-                }, 5000);
-            }
+function showAlert(type, message) {
+    const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show mb-4" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
 
-            loadCoupons(); // 初次加載優惠券
-        });
-    </script>
+    $('.coupon-container').prepend(alertHtml);
+
+    setTimeout(() => {
+        $('.alert').alert('close');
+    }, 5000);
+}
+</script>
     <script src="/js/user/loginCheck.js" defer></script>
 </body>
 </html>

@@ -44,12 +44,7 @@ public class CouponService {
         couponRepository.deleteById(couponId);
     }
 
-    @Transactional
-    public void issueCouponToNewMember(Integer memberId) {
-        MemberVO member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
-        CouponVO newMemberCoupon = getCouponForNewMember();
-        issueCouponToMember(member, newMemberCoupon);
-    }
+    
 
     @Transactional
     public void issueCouponBasedOnTravelCities(Integer memberId, Integer travelCityCount) {
@@ -94,4 +89,45 @@ public class CouponService {
     public List<MemberCouponVO> getMemberCoupons(Integer memberId) {
         return memberCouponRepository.findByMember_MemberId(memberId);
     }
+    
+    //發給所有會員
+    @Transactional
+    public void issueCouponToAllMembers(Integer couponId) {
+        CouponVO coupon = couponRepository.findById(couponId)
+            .orElseThrow(() -> new ResourceNotFoundException("Coupon not found"));
+        
+        List<MemberVO> allMembers = memberRepository.findAll();
+        
+        for (MemberVO member : allMembers) {
+            if (!memberCouponRepository.existsByMember_MemberIdAndCoupon_CouponId(member.getMemberId(), couponId)) {
+                MemberCouponVO memberCoupon = new MemberCouponVO();
+                memberCoupon.setMember(member);
+                memberCoupon.setCoupon(coupon);
+                memberCoupon.setCouponStatus((byte) 1); // 假設 1 表示有效
+                memberCoupon.setCreateTime(LocalDateTime.now());
+                memberCouponRepository.save(memberCoupon);
+            }
+        }
+        
+        }
+        //	註冊發送優惠券
+        @Transactional
+        public void issueNewMemberCoupon(Integer memberId) {
+            Integer newMemberCouponId = 9; // ID對應到數據庫中的新會員優惠券
+            
+            CouponVO newMemberCoupon = couponRepository.findById(newMemberCouponId)
+                .orElseThrow(() -> new ResourceNotFoundException("New member coupon not found"));
+            
+            MemberVO member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found"));
+            
+            MemberCouponVO memberCoupon = new MemberCouponVO();
+            memberCoupon.setMember(member);
+            memberCoupon.setCoupon(newMemberCoupon);
+            memberCoupon.setCouponStatus((byte) 1); // 假設 1 表示有效
+            memberCoupon.setCreateTime(LocalDateTime.now());
+            
+            memberCouponRepository.save(memberCoupon);
+        
+        }
 }

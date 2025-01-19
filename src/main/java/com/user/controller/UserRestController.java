@@ -298,7 +298,20 @@ public class UserRestController {
 			response.put("message", "註冊失敗：" + e.getMessage());
 			return response;
 		}
+		
+		
 	}
+	
+	@GetMapping("/current-id")
+	public ResponseEntity<Integer> getCurrentMemberId(HttpSession session) {
+	    Integer memberId = (Integer) session.getAttribute("memberId");
+	    if (memberId != null) {
+	        return ResponseEntity.ok(memberId);
+	    } else {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    }
+	}
+
 	
 	
 	//更新訂單狀態時觸發檢查優惠券
