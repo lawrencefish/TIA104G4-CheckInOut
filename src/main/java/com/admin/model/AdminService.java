@@ -2,6 +2,7 @@ package com.admin.model;
 
 import java.awt.print.Pageable;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,25 +27,36 @@ public class AdminService {
 	// 搜尋方法
     public List<Admin> searchAdmins(String keyword, Byte status, Byte permissions){
         
-    	if (keyword.trim().isEmpty()) {
-    		return repository.findAll();
-    	}
+    	if (keyword == null) {
+    		// 如果只有狀態或權限的篩選
+            if (status != null && permissions == null) {
+                return repository.findByStatus(status);
+            } else if (permissions != null && status == null) {
+                return repository.findByPermissions(permissions);
+            } else if (status != null && permissions != null) {
+                return repository.findByStatusAndPermissions(status, permissions);
+            } else {
+                return repository.findAll();
+            }
+        }
     	
-    	if (status != null && permissions == null) {
-            // 如果僅指定了狀態
-            return repository.findByStatusAndKeyword(status, keyword);
+    	// keyword 不為 null，處理搜索邏輯
+        String trimmedKeyword = keyword.trim();
+        if (trimmedKeyword.isEmpty()) {
+            return repository.findAll();
+        }
+        
+        // 有關鍵字的搜尋
+        if (status != null && permissions == null) {
+            return repository.findByStatusAndKeyword(status, trimmedKeyword);
         } else if (permissions != null && status == null) {
-            // 如果僅指定了權限
-            return repository.findByPermissionsAndKeyword(permissions, keyword);
+            return repository.findByPermissionsAndKeyword(permissions, trimmedKeyword);
         } else if (status != null && permissions != null) {
-            // 如果狀態和權限都指定，使用更通用的查詢
-            return repository.searchAdmins(keyword, status, permissions);
+            return repository.searchAdmins(trimmedKeyword, status, permissions);
         } else {
-            // 如果都未指定，僅依關鍵字查詢
-            return repository.findByKeyword(keyword);
+            return repository.findByKeyword(trimmedKeyword);
         }
     }
-	
 	// 日誌紀錄
 //	public void logAction(AdminLogDTO logDTO) {
 //		AdminLog log = new AdminLog();
@@ -94,8 +106,26 @@ public class AdminService {
 	
 	// 更新管理員
 	public Admin update(Admin admin) {
-		return repository.save(admin);
-	}
+        try {
+            // 確保必要欄位不為 null
+            Objects.requireNonNull(admin.getAdminId(), "Admin ID must not be null");
+            Objects.requireNonNull(admin.getAdminAccount(), "Admin account must not be null");
+            
+            // 驗證 email 格式
+            if (admin.getEmail() != null && !admin.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                throw new IllegalArgumentException("Invalid email format");
+            }
+            
+            // 驗證電話號碼格式
+            if (admin.getPhoneNumber() != null && !admin.getPhoneNumber().matches("^\\d{10}$")) {
+                throw new IllegalArgumentException("Invalid phone number format");
+            }
+            
+            return repository.save(admin);
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating admin: " + e.getMessage(), e);
+        }
+    }
 	
 	// 刪除管理員
 	public void delete(Integer adminId) {

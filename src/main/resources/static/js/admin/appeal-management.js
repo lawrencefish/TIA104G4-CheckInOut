@@ -8,51 +8,6 @@ const pageSize = 10;
 let totalPages = 10;
 let currentTable = 'member'; // 預設為會員申訴表格
 
-
-// 檢查登入狀態
-// async function checkLoginStatus() {
-//     try {
-//         const response = await fetch('/admin/check-login', {
-//             credentials: 'include'
-//         });
-//         const data = await response.json();
-        
-//         if (!data.isLoggedIn) {
-//             window.location.href = '/adminlogin.html';
-//             return;
-//         }
-        
-//         // 檢查權限
-//         if (!data.permissions.includes('complaint_management')) {
-//             showToast('您沒有權限訪問此頁面', 'error');
-//             setTimeout(() => {
-//                 window.location.href = '/admin/dashboard.html';
-//             }, 2000);
-//         }
-//     } catch (error) {
-//         console.error('檢查登入狀態失敗:', error);
-//         showToast('驗證失敗，請重新登入', 'error');
-//     }
-// }
-
-// 載入 Header 和 Footer
-// async function loadHeaderFooter() {
-//     try {
-//         // 載入 Header
-//         const headerResponse = await fetch('/backend-header.html');
-//         const headerHtml = await headerResponse.text();
-//         document.getElementById('header').innerHTML = headerHtml;
-
-//         // 載入 Footer
-//         const footerResponse = await fetch('/backend-footer.html');
-//         const footerHtml = await footerResponse.text();
-//         document.getElementById('footer').innerHTML = footerHtml;
-//     } catch (error) {
-//         console.error('載入頁面組件失敗:', error);
-//         showToast('載入頁面組件失敗', 'error');
-//     }
-// }
-
 // 初始化頁面
 function initializePage() {
     renderTableHeaders(); // 初始化表頭

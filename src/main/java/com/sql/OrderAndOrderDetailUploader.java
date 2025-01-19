@@ -247,8 +247,8 @@ public class OrderAndOrderDetailUploader {
 				// guest_num => 1~4
 				int guestNum = rand.nextInt(4) + 1;
 
-				// room_num => 0或1
-				int roomNum = 1;
+				// 產生隨機的 roomNum 值，只能是 1 或 2
+				int roomNum = rand.nextInt(2) + 1;
 
 				// breakfast => 0或1
 				int breakfast = rand.nextInt(2);

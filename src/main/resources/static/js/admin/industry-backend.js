@@ -1,299 +1,221 @@
 // 全局狀態管理
 const state = {
-  currentSlide: 0,
-  slides: [],
-  currentReviewPage: 1,
-  reviewsPerPage: 5,
-  allReviews: [],
-  businessData: null
+	map: null,
+    geocoder: null,
+    mapInitialized: false,
+	currentSlide: 0  // 添加當前幻燈片索引
 };
 
-// API 端點配置（暫時註解）
+// 設置 API 端點
 const API_ENDPOINTS = {
-  HOTEL_INFO: '/hotel/getHotelData'
-//  REVIEWS: '/api/reviews',
-//  IMAGES: '/api/images'
+//    HOTEL_INFO: '/business/hotelInfo',
+    HOTEL_IMAGES: '/adminHotel/getHotelImages'
 };
 
+// 將 initMap 設為全域函數
+window.initMap = function() {
+    console.log('Google Maps API 已載入');
+    initializeMap();
+};
 
-// 初始化函數
-async function initializeApp() {
-  try {
-    console.log('初始化應用程式開始');
-    
-    // 從 URL 獲取業者 ID
-    const urlParams = new URLSearchParams(window.location.search);
-    const businessId = urlParams.get('id');
-    
-    if (!businessId) {
-      console.warn('未提供業者ID，使用預設值');
-      // throw new Error('未提供業者ID');
+// 初始化地圖
+function initializeMap() {
+    if (!window.google || !window.google.maps) {
+        console.error('Google Maps API 未載入');
+        return;
     }
 
-    // 載入業者數據
-    await loadBusinessData(businessId);
-    
-    // 初始化組件
-    initializeComponents();
-    
-    // 設置事件監聽器
-    setupEventListeners();
-    
-    // 載入預設評論
-    changeReview('member');
-    
-    console.log('初始化應用程式完成');
-  } catch (error) {
-    console.error('初始化錯誤:', error);
-    showErrorMessage('載入頁面時發生錯誤');
-  }
-}
+    try {
+        // 從 HTML 中獲取地址資料
+        const cityElement = document.querySelector('#company-city .content');
+        const districtElement = document.querySelector('#company-area .content');
+        const addressElement = document.querySelector('#company-address .content');
+        const companyNameElement = document.querySelector('#company-name .content');
 
-// 載入業者數據
-async function loadBusinessData(hotelId) {
-  try {
-    console.log('開始載入業者資料，ID:', hotelId);
-    
-    // API 調用（暫時註解）
-    
-    const response = await fetch(`${/hotel/getHotelData}/${hotelId}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+        if (!cityElement || !districtElement || !addressElement) {
+            console.error('找不到必要的地址資料');
+            return;
+        }
+
+        const city = cityElement.textContent.trim();
+        const district = districtElement.textContent.trim();
+        const address = addressElement.textContent.trim();
+        const companyName = companyNameElement ? companyNameElement.textContent.trim() : '';
+
+        const fullAddress = `${city}${district}${address}`;
+        
+        const mapElement = document.getElementById('map');
+        if (!mapElement) {
+            console.error('找不到地圖容器元素');
+            return;
+        }
+
+        // 清空地圖容器
+        mapElement.innerHTML = '';
+        
+        // 建立地圖
+        state.map = new google.maps.Map(mapElement, {
+            zoom: 16,
+            center: { lat: 25.033964, lng: 121.564468 }, // 預設台北市中心
+            mapTypeControl: false,
+            streetViewControl: false
+        });
+
+        // 初始化地理編碼器
+        state.geocoder = new google.maps.Geocoder();
+
+        // 地理編碼
+        state.geocoder.geocode({ address: fullAddress }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                const location = results[0].geometry.location;
+                state.map.setCenter(location);
+                new google.maps.Marker({
+                    map: state.map,
+                    position: location,
+                    title: companyName
+                });
+            } else {
+                console.error("地理編碼失敗: ", status);
+                showErrorMessage("無法在地圖上顯示地址");
+            }
+        });
+    } catch (error) {
+        console.error('初始化地圖時發生錯誤:', error);
+        showErrorMessage('地圖載入失敗');
     }
-    state.hotelInfo = await response.json();
-    
-
-    console.log('業者資料載入成功:', state.businessData);
-    await updateBusinessInfo();
-    
-  } catch (error) {
-    console.error('載入業者資料時發生錯誤:', error);
-    throw error;
-  }
 }
 
-// 更新業者信息
-async function updateBusinessInfo() {
-  try {
-    // 更新基本資訊
-    const fieldMappings = {
-      'company-name': 'name',
-      'company-id': 'id',
-      'company-city': 'city',
-      'company-area': 'area',
-      'company-address': 'address',
-      'company-phone': 'phone',
-      'company-email': 'email'
-    };
-
-    Object.entries(fieldMappings).forEach(([elementId, dataField]) => {
-      const element = document.querySelector(`#${elementId} .content`);
-      if (element && state.businessData[dataField]) {
-        element.textContent = state.businessData[dataField];
-        console.log(`更新 ${elementId} 為: ${state.businessData[dataField]}`);
-      }
-    });
-
-    // 更新圖片
-    await updateImages();
-  } catch (error) {
-    console.error('更新業者資訊時發生錯誤:', error);
-    throw error;
-  }
+// 錯誤訊息顯示函數
+function showErrorMessage(message) {
+    const errorElement = document.getElementById('errorMessage');
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 3000);
+    } else {
+        console.error(message);
+    }
 }
 
-// 更新圖片
-async function updateImages() {
-  try {
-    // API 調用
-//    const response = await fetch(`${API_ENDPOINTS.IMAGES}/${state.businessData.id}`);
-//    const images = await response.json();
-//    const images = state.businessData.images;
+// 載入環境照片
+async function loadEnvironmentPhotos() {
+	try {
+        // 從 URL 獲取 hotelId
+        const urlParams = new URLSearchParams(window.location.search);
+        const hotelId = urlParams.get('id');
+        
+        if (!hotelId) {
+            console.error('找不到飯店 ID');
+            return;
+        }
 
-    // 更新證件圖片
-    document.getElementById('image1').src = images.idCardFront;
-    document.getElementById('image2').src = images.idCardBack;
-    document.getElementById('image3').src = images.businessLicense;
+        // 使用新的 API 端點
+        const response = await fetch(`${API_ENDPOINTS.HOTEL_IMAGES}/${hotelId}`);
+        if (!response.ok) {
+            throw new Error('Failed to load environment photos');
+        }
+        
+        const imageIds = await response.json();
+        if (imageIds && imageIds.length > 0) {
+            updateEnvironmentPhotos(imageIds);
+        }
+    } catch (error) {
+        console.error('載入環境照片失敗:', error);
+        showErrorMessage('載入環境照片失敗');
+    }
+}
 
-    // 更新輪播圖片
+// 更新環境照片
+function updateEnvironmentPhotos(imageIds) {
     const carouselContent = document.querySelector('.carousel-content');
-    if (carouselContent) {
-      carouselContent.innerHTML = images.environment
-        .map((src, index) => `
-          <img src="${src}" 
-               alt="環境照片 ${index + 1}" 
-               class="carousel-image" 
-               onclick="openModal(this)" 
-               style="display: ${index === 0 ? 'block' : 'none'}">`)
-        .join('');
-      
-      state.slides = document.getElementsByClassName('carousel-image');
-    }
-  } catch (error) {
-    console.error('更新圖片時發生錯誤:', error);
-    throw error;
-  }
-}
+    if (!carouselContent || !imageIds.length) return;
 
-// 評論功能
-async function changeReview(type) {
-  console.log('切換評論類型:', type);
-  
-  try {
-    const buttons = document.querySelectorAll('.reviewBtn');
-    buttons.forEach(button => {
-      if (button.getAttribute('data-review-type') === type) {
-        button.classList.add('active');
-      } else {
-        button.classList.remove('active');
-      }
-    });
-
-    const activeButton = document.querySelector(`[data-review-type="${type}"]`);
-    if (activeButton) {
-      activeButton.classList.add('active');
-    }
-
-    // API 調用（暫時註解）
+    carouselContent.innerHTML = imageIds
+        .map((imageId, index) => `
+			<div class="carousel-item ${index === 0 ? 'active' : ''}">
+                <img src="/adminHotel/getHotelImage/${imageId}" 
+                     alt="環境照片 ${index + 1}" 
+                     class="carousel-image" 
+                     onclick="openModal(this)">
+            </div>
+        `).join('');
     
-    const response = await fetch(`${API_ENDPOINTS.REVIEWS}/${type}`);
-    state.allReviews = await response.json();
-    
-    state.allReviews = mockReviews[type] || [];
-    state.currentReviewPage = 1;
-    displayReviews();
-  } catch (error) {
-    console.error('載入評論時發生錯誤:', error);
-    showErrorMessage('載入評論時發生錯誤');
-  }
-}
-
-// 顯示評論
-function displayReviews() {
-  const reviewList = document.querySelector('.review-list');
-  if (!reviewList) return;
-
-  reviewList.innerHTML = '';
-
-  const startIndex = (state.currentReviewPage - 1) * state.reviewsPerPage;
-  const endIndex = startIndex + state.reviewsPerPage;
-  const reviewsToShow = state.allReviews.slice(startIndex, endIndex);
-
-  reviewsToShow.forEach(review => {
-    const reviewCard = document.createElement('div');
-    reviewCard.className = 'review-card';
-    reviewCard.innerHTML = `
-      <p>會員名稱：${review.title}</p>
-      <p class="description">${review.description}</p>
-    `;
-    reviewList.appendChild(reviewCard);
-  });
-
-// 更新分頁按鈕顯示
-// 更新分頁按鈕狀態
-const loadMoreBtn = document.getElementById('loadMoreBtn');
-const backBtn = document.getElementById('backBtn');
-
-if (loadMoreBtn) {
-  loadMoreBtn.style.display = endIndex < state.allReviews.length ? 'block' : 'none';
-}
-
-if (backBtn) {
-  backBtn.style.display = state.currentReviewPage > 1 ? 'block' : 'none';
-}
-}
+		// 初始化輪播狀態
+	    state.currentSlide = 0;
+	    
+	    // 如果有多張圖片，啟動自動輪播
+	    if (imageIds.length > 1) {
+	        startAutoSlide();
+	    }
+	}
 
 // 輪播功能
 function changeSlide(direction) {
-  if (state.slides.length === 0) return;
-
-  state.slides[state.currentSlide].style.display = 'none';
-  state.currentSlide = (state.currentSlide + direction + state.slides.length) % state.slides.length;
-  state.slides[state.currentSlide].style.display = 'block';
-}
-
+	const slides = document.getElementsByClassName('carousel-item');
+	    if (!slides.length) return;
+	    
+	    // 移除當前活動幻燈片的 active 類
+	    slides[state.currentSlide].classList.remove('active');
+	    
+	    // 計算下一張幻燈片的索引
+	    state.currentSlide = (state.currentSlide + direction + slides.length) % slides.length;
+	    
+	    // 添加 active 類到新的活動幻燈片
+	    slides[state.currentSlide].classList.add('active');
+	}
+	
 function startAutoSlide() {
-  setInterval(() => changeSlide(1), 5000);
+	const slides = document.getElementsByClassName('carousel-item');
+    if (slides.length > 1) {  // 只有當有多張圖片時才啟動自動輪播
+        setInterval(() => changeSlide(1), 3000);
+    }
 }
-
 // 圖片模態框功能
 function openModal(img) {
-  if (!img?.src) {
-    console.error('無效的圖片來源');
-    return;
-  }
-
-  const modal = document.getElementById('imageModal');
-  const modalImage = document.getElementById('modalImage');
-  if (modal && modalImage) {
-    modalImage.src = img.src;
-    modal.style.display = 'flex';
-  }
+    if (!img?.src) return;
+    
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    if (modal && modalImage) {
+        modalImage.src = img.src;
+        modal.style.display = 'flex';
+    }
 }
 
 function closeModal() {
-  const modal = document.getElementById('imageModal');
-  if (modal) {
-    modal.style.display = 'none';
-  }
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
-// 加載更多評論
-function loadMoreReviews() {
-  state.currentReviewPage++;
-  displayReviews();
-}
-
-// 返回上一頁
-function goBack() {
-  if (state.currentReviewPage > 1) {
-    state.currentReviewPage--;
-    displayReviews();
-  }
-}
-
-// 顯示錯誤訊息
-function showErrorMessage(message) {
-  console.error(message);
-  const errorElement = document.getElementById('errorMessage');
-  if (errorElement) {
-    errorElement.textContent = message;
-    errorElement.style.display = 'block';
-    setTimeout(() => {
-      errorElement.style.display = 'none';
-    }, 3000);
-  } else {
-    alert(message);
-  }
-}
 
 // 初始化組件
 function initializeComponents() {
-  state.slides = document.getElementsByClassName('carousel-image');
+	loadEnvironmentPhotos(); // 在初始化時載入照片
+    state.slides = document.getElementsByClassName('carousel-item');
 }
 
 // 設置事件監聽器
 function setupEventListeners() {
-  // 模態框點擊關閉
-  window.onclick = event => {
-    const modal = document.getElementById('imageModal');
-    if (event.target === modal) {
-      closeModal();
-    }
-  };
-
-  // 評論按鈕點擊事件
-  const reviewButtons = document.querySelectorAll('.reviewBtn');
-  reviewButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const type = button.getAttribute('data-review-type');
-      changeReview(type);
-    });
-  });
-
-  // 開始自動輪播
-  startAutoSlide();
+    // 模態框點擊關閉
+    window.onclick = event => {
+        const modal = document.getElementById('imageModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
 }
 
 // 當 DOM 載入完成時初始化應用
-document.addEventListener('DOMContentLoaded', initializeApp);
+document.addEventListener('DOMContentLoaded', () => {
+	initializeComponents();
+    setupEventListeners();
+	
+	// 如果 Google Maps API 已經載入，直接初始化地圖
+    if (window.google && window.google.maps) {
+        initializeMap();
+    }
+});

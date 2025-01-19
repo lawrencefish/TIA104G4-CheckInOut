@@ -197,28 +197,28 @@ body {
 }
 
 .pass, .reject {
-  padding: 12px 30px;
+  min-width: 120px;        /* 設定最小寬度 */
+  padding: 12px 24px;      /* 增加內邊距 */
   border: none;
   border-radius: 5px;
-  color: white;
-  font-size: 18px;
   cursor: pointer;
-  margin: 0 10px;
-  transition: all 0.3s ease;
+  font-weight: bold;
+  transition: all 0.3s;
+  font-size: 16px; 
 }
 
 .pass {
-  background-color: #00ac6a;
-  box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+  background-color: #28a745;
+  color: white;
 }
 
 .reject {
-  background-color: #D71103;
-  box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+  background-color: #dc3545;
+  color: white;
 }
 
 .pass:hover, .reject:hover {
-  box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 

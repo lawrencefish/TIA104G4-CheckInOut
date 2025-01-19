@@ -36,8 +36,8 @@
           <label for="filterPermissions">篩選權限：</label>
           <select id="filterPermissions">
             <option value="all">全部</option>
-            <option value="1">高階管理員</option>
-            <option value="0">一般管理員</option>
+            <option value="1">主管</option>
+            <option value="0">管理員</option>
           </select>
         </div>
         <div class="form-actions">
@@ -57,15 +57,12 @@
               <input type="text" id="username" name="username" required autocomplete="username">
               <span id="usernameError" class="error-message"></span>
             </div>
-            <div>
-              <label for="name">姓名</label>
-              <input type="text" id="name" name="name" required autocomplete="name">
-            </div>
+            
             <div>
               <label for="permissions">權限</label>
               <select id="permissions" name="permissions" required>
                 <option value="0">管理員</option>
-                <option value="1">資深管理員</option>
+                <option value="1">主管</option>
               </select>
             </div>
             <div>
@@ -99,7 +96,7 @@
           <thead>
             <tr>
               <th>管理員編號</th>
-              <th>管理員名稱</th>
+              <th>管理員帳號</th>
               <th>權限</th>
               <th>狀態</th>
               <th>新增日期</th>
@@ -110,20 +107,7 @@
             </tr>
           </thead>
           <tbody id="userTableBody">
-<!--           	<tr th:each="admin : ${admins}"> -->
-<!--           		<td th:text="${admin.adminId}"></td>	 -->
-<!--           		<td th:text="${admin.adminAccount}"></td>	 -->
-<!--           		<td th:text="${admin.permissions == 1 ? '高階管理員' : '一般管理員'}"></td>	 -->
-<!--           		<td th:text="${admin.status == 1 ? '啟用中' : '停用'}"></td>	 -->
-<!--           		<td th:text="${#dates.format(admin.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>	 -->
-<!--           		<td th:text="${admin.phoneNumber}"></td>	 -->
-<!--           		<td th:text="${admin.email}"></td> -->
-<!--           		<td >尚未實作</td> -->
-<!--           		<td> -->
-<!--           			<button th:attr="data-id=${admin.adminId}" class="edit-btn">編輯</button> -->
-<!--           			<button th:attr="data-id=${admin.adminId}" class="delete-btn">刪除</button> -->
-<!--           		</td>	 -->
-<!--           	</tr> -->
+          
           </tbody>
         </table>
         <div class="pagination" id="pagination"></div>

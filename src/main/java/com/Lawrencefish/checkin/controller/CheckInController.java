@@ -77,6 +77,15 @@ public class CheckInController {
     @PostMapping("/saveCheckInDetails")
     public ResponseEntity<?> saveCheckInDetails(@RequestBody List<CheckInRequest> requests) {
         try {
+//            System.out.println("Received Check-In Requests:");
+//            requests.forEach(request -> {
+//                System.out.println("Order ID: " + request.getOrderId());
+//                System.out.println("Order Detail ID: " + request.getOrderDetailId());
+//                System.out.println("Assigned Room ID: " + request.getAssignedRoomId());
+//                System.out.println("Customer Name: " + request.getCustomerName());
+//                System.out.println("Customer Phone Number: " + request.getCustomerPhoneNumber());
+//                System.out.println("-------------------------");
+//            });
             checkInService.processCheckIn(requests);
             return ResponseEntity.ok("Check-in details saved successfully.");
         } catch (RuntimeException e) {
@@ -118,11 +127,19 @@ public class CheckInController {
                 detailMap.put("roomTypeName", roomTypeName);
 
                 // 查詢分配的房間信息
-                RoomVO room = checkInService.getRoomByOrderDetailId(detail.getOrderDetailId());
-                detailMap.put("roomId", room.getRoomId()); // 添加房間 ID
-                detailMap.put("assignedRoomNumber", room.getNumber());
-                detailMap.put("customerName", room.getCustomerName());
-                detailMap.put("customerPhoneNumber", room.getCustomerPhoneNumber());
+                List<RoomVO> rooms = checkInService.getRoomsByOrderDetailId(detail.getOrderDetailId());
+                List<Map<String, Object>> roomInfoList = new ArrayList<>();
+                for (RoomVO room : rooms) {
+                    Map<String, Object> roomInfo = new HashMap<>();
+                    roomInfo.put("roomId", room.getRoomId());
+                    roomInfo.put("assignedRoomNumber", room.getNumber());
+                    roomInfo.put("customerName", room.getCustomerName());
+                    roomInfo.put("customerPhoneNumber", room.getCustomerPhoneNumber());
+                    roomInfoList.add(roomInfo);
+                }
+
+                // 將房間信息加入到明細中
+                detailMap.put("rooms", roomInfoList);
 
                 detailsList.add(detailMap);
             }
@@ -136,6 +153,7 @@ public class CheckInController {
                     .body(Map.of("error", "Error retrieving arrived details", "message", e.getMessage()));
         }
     }
+
 
     @GetMapping("/getCheckedOutDetails")
     public ResponseEntity<?> getCheckedOutDetails(@RequestParam("orderId") Integer orderId) {

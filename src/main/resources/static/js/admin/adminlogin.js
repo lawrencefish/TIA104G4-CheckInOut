@@ -1,47 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-//    initializeApp();
 	setupEventListeners();
 });
 
-//function initializeApp() {
-//    loadHeaderFooter();
-//    setupFormValidation();
-//    setupEventListeners();
-//}
-
-//function loadHeaderFooter() {
-//    // 載入 header
-//    fetch('backend-header.html')
-//        .then(response => response.text())
-//        .then(data => {
-//            document.getElementById('header').innerHTML = data;
-//        })
-//        .catch(error => console.error('載入 header 失敗:', error));
-//
-//    // 載入 footer
-//    fetch('backend-footer.html')
-//        .then(response => response.text())
-//        .then(data => {
-//            document.getElementById('footer').innerHTML = data;
-//        })
-//        .catch(error => console.error('載入 footer 失敗:', error));
-//}
-
-//function setupFormValidation() {
-//    const form = document.getElementById('loginForm');
-//    if (!form) return;
-//
-//    form.addEventListener('submit', async (e) => {
-//        e.preventDefault();
-//        e.stopPropagation();
-//
-//        if (form.checkValidity()) {
-//            await handleLogin();
-//        }
-//
-//        form.classList.add('was-validated');
-//    });
-//}
 
 function setupEventListeners() {
     const forgotPasswordLink = document.getElementById('forgotPassword');
@@ -97,10 +57,4 @@ function handleForgotPassword() {
     alert('忘記密碼功能即將推出');
 }
 
-//function showError(message) {
-//    const errorElement = document.getElementById('errorMessage');
-//    if (errorElement) {
-//        errorElement.textContent = message;
-//        errorElement.classList.remove('d-none');
-//    }
-//}
+

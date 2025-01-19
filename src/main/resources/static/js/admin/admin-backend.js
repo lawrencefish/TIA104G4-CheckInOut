@@ -2,17 +2,17 @@ $(document).ready(function () {
 	// 獲取應用程式的 context path
 	    const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
 	    
-    // === 配置常數 ===
+    // === 配置常數 === ${contextPath}
     const CONFIG = {
         itemsPerPage: 10,
         defaultSortField: 'adminId',
         defaultSortDirection: 'desc',
         passwordMinLength: 8,
 		apiEndpoints: {
-		            list: `${contextPath}/admin/list/api`,
-		            edit: `${contextPath}/admin/edit`,
-		            add: `${contextPath}/admin/add`,
-		            updateStatus: `${contextPath}/admin/updateStatus`
+		            list: `/admin/list/api`,
+		            edit: `/admin/edit`,
+		            add: `/admin/add`,
+		            updateStatus: `/admin/updateStatus`
 		        }
     };
 
@@ -95,7 +95,7 @@ $(document).ready(function () {
     };
 	
 	adminAccount: (account) => {
-//            const isValid = /^[a-zA-Z0-9_]{4,20}$/.test(account);
+            const isValid = /^[a-zA-Z0-9_]{4,20}$/.test(account);
             return {
                 isValid: true,
                 errors: []
@@ -142,13 +142,11 @@ $(document).ready(function () {
         post: async (url, data = {}) => {
             try {
 				// 添加 contextPath
-                const fullUrl = url.startsWith('/') ? `${contextPath}${url}` : url;
-                
-                console.log('Sending POST request to:', fullUrl);
+                console.log('Sending POST request to:', url);
                 console.log('Request data:', data);
 				
                 const response = await $.ajax({
-                    url: fullUrl,
+                    url: url,
                     method: 'POST',
                     data: JSON.stringify(data),
                     contentType: 'application/json',
@@ -290,7 +288,7 @@ $(document).ready(function () {
 				<tr data-admin-id="${escapeHtml(admin.adminId)}">
                     <td>${escapeHtml(admin.adminId)}</td>
                     <td>${escapeHtml(admin.adminAccount)}</td>
-                    <td>${admin.permissions === 1 ? '資深管理員' : '管理員'}</td>
+                    <td>${admin.permissions === 1 ? '主管' : '管理員'}</td>
                     <td>
                         <span class="status-badge ${statusClass}">${statusText}</span>
                     </td>
@@ -320,16 +318,25 @@ $(document).ready(function () {
     }
 
     // === 新增：日期格式化函數 ===
-    function formatDate(dateString) {
-        return new Date(dateString).toLocaleString('zh-TW', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
-    }
+	function formatDate(dateString) {
+	    if (!dateString) return '-';
+	    try {
+	        const date = new Date(dateString);
+	        if (isNaN(date.getTime())) return '-';
+	        
+	        return date.toLocaleString('zh-TW', {
+	            year: 'numeric',
+	            month: '2-digit',
+	            day: '2-digit',
+	            hour: '2-digit',
+	            minute: '2-digit',
+	            second: '2-digit'
+	        });
+	    } catch (error) {
+	        console.error('Date formatting error:', error);
+	        return '-';
+	    }
+	}
 
     // === 修改：更新管理員詳細資訊視窗 ===
     function showAdminDetails(admin) {
@@ -506,24 +513,26 @@ $(document).ready(function () {
     });
 
     function getSearchFilters() {
-		const filters = {
-		        keyword: $('#keyword').val() || '',
-		    };
-		    
-		    // 修改狀態篩選的處理方式
-		    const status = $('#filterStatus').val();
-		    if (status && status !== 'all') {
-		        filters.status = parseInt(status); // 轉換為數字
-		    }
-		    
-		    // 修改權限篩選的處理方式
-		    const permissions = $('#filterPermissions').val();
-		    if (permissions && permissions !== 'all') {
-		        filters.permissions = parseInt(permissions); // 轉換為數字
-		    }
-		    
-		    return filters;
-    }
+		const keyword = $('#keyword').val().trim();
+        const status = $('#filterStatus').val();
+        const permissions = $('#filterPermissions').val();
+		       
+		const filters = {};
+		
+		if (keyword) {
+           filters.keyword = keyword;
+        }
+       
+        if (status && status !== 'all') {
+           filters.status = parseInt(status);
+        }
+       
+        if (permissions && permissions !== 'all') {
+           filters.permissions = parseInt(permissions);
+        }
+       
+        return filters;
+   }
 
     // === 修改：分頁控制更新 ===
     function renderPagination(totalPages, currentPageNum) {
@@ -567,43 +576,152 @@ $(document).ready(function () {
     // === 修改：新增管理員表單提交 ===
     $('#addAdminForm').on('submit', async function(e) {
         e.preventDefault();
+		
+		// 清除先前的錯誤訊息
+        $('.error-message').text('');
         
-        const formData = {};
-        $(this).serializeArray().forEach(item => {
-            formData[item.name] = item.value;
-        });
-
-        // 驗證密碼
-        if (formData.password !== formData.confirmPassword) {
-            $('#passwordError').text('密碼不一致');
+		const formData = {
+            adminAccount: $('#username').val(),
+            adminPassword: $('#password').val(),
+            confirmPassword: $('#confirmPassword').val(),
+            name: $('#name').val(),
+            permissions: parseInt($('#permissions').val()),
+            phoneNumber: $('#phone').val(),
+            email: $('#email').val(),
+        };
+		
+		// 表單驗證
+        const errors = validateForm(formData);
+        if (Object.keys(errors).length > 0) {
+            Object.keys(errors).forEach(key => {
+                $(`#${key}Error`).text(errors[key]);
+            });
             return;
         }
 
-        // 驗證密碼強度
-        const passwordValidation = validateData.password(formData.password);
-        if (!passwordValidation.isValid) {
-            $('#passwordError').text(passwordValidation.errors.join('\n'));
-            return;
-        }
-
-        try {
-            // 發送API請求新增管理員
-            await api.post('/admin/add', formData);
-            
-            // 重新獲取列表
-            await fetchAdminList(1, getSearchFilters());
-            
-            // 清空表單並關閉視窗
-            this.reset();
-            $('#addAdminModal').fadeOut();
-            $('#passwordError').text('');
-            
-            alert('新增成功');
+		try {
+	        const response = await $.ajax({
+	            url: CONFIG.apiEndpoints.add,
+	            method: 'POST',
+	            contentType: 'application/json',
+	            data: JSON.stringify(formData)
+	        });
+			
+		// 重新獲取管理員列表
+        await fetchAdminList(1, getSearchFilters());
+        
+        // 關閉modal並清空表單
+        $('#addAdminModal').hide();
+        this.reset();
+        
+        // 顯示成功訊息
+        showSuccessMessage('新增管理員成功！');
+	            
         } catch (error) {
             handleError(error, '新增管理員失敗');
         }
     });
+	
+	// 表單驗證函數
+   	function validateForm(data) {
+       const errors = {};
+       
+       // 帳號驗證
+       if (!data.adminAccount || data.adminAccount.length < 4) {
+           errors.username = '帳號必須至少4個字符';
+       }
+       
+       // 密碼驗證
+       if (!data.adminPassword || data.adminPassword.length < 8) {
+           errors.password = '密碼必須至少8個字符';
+       }
+       
+       // 確認密碼
+       if (data.adminPassword !== data.confirmPassword) {
+           errors.confirmPassword = '兩次密碼不一致';
+       }
+       
+       // 電話驗證
+       if (!data.phoneNumber || !/^\d{10}$/.test(data.phoneNumber)) {
+           errors.phone = '請輸入10位數字的電話號碼';
+       }
+       
+       // Email驗證
+       if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+           errors.email = '請輸入有效的電子郵件地址';
+       }
+       
+       return errors;
+   }
+   
+   // 狀態切換功能優化
+       async function toggleAdminStatus(admin) {
+           if (!admin || admin.permissions === 1) {
+               showErrorMessage('無法更改主管狀態');
+               return;
+           }
+
+           const newStatus = admin.status === 1 ? 0 : 1;
+           const actionText = newStatus === 1 ? '啟用' : '停用';
+
+           if (confirm(`確定要${actionText}管理員 ${admin.adminAccount} 的帳號嗎？`)) {
+               try {
+                   await $.ajax({
+                       url: CONFIG.apiEndpoints.updateStatus,
+                       method: 'POST',
+                       contentType: 'application/json',
+                       data: JSON.stringify({
+                           adminId: admin.adminId,
+                           status: newStatus
+                       })
+                   });
+
+                   // 更新成功後重新獲取列表
+                   await fetchAdminList(currentPage, getSearchFilters());
+                   showSuccessMessage(`${actionText}成功！`);
+
+               } catch (error) {
+                   handleError(error, `${actionText}失敗`);
+               }
+           }
+       }
+
+       // 成功訊息顯示函數
+       function showSuccessMessage(message) {
+           const $alert = $('<div>')
+               .addClass('success-alert')
+               .text(message)
+               .appendTo('body');
+
+           setTimeout(() => $alert.fadeOut(() => $alert.remove()), 3000);
+       }
+
+       // 錯誤訊息顯示函數
+       function showErrorMessage(message) {
+           const $alert = $('<div>')
+               .addClass('error-alert')
+               .text(message)
+               .appendTo('body');
+
+           setTimeout(() => $alert.fadeOut(() => $alert.remove()), 3000);
+       }
 
     // 初始化
     fetchAdminList(currentPage);
+	
+	// 在這裡加入 Modal 相關的事件綁定
+    $('#addAdminBtn').on('click', function() {
+        $('#addAdminModal').show();
+    });
+
+    $('.modal-close-btn').on('click', function() {
+        $('#addAdminModal').hide();
+    });
+
+    $(window).on('click', function(event) {
+        if ($(event.target).is('#addAdminModal')) {
+            $('#addAdminModal').hide();
+        }
+    });
+	
 });

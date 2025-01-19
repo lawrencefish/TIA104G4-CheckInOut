@@ -9,196 +9,165 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 100);
     });
 
-    const UserManagementApp = {
-        // DataTables 配置
-        dataTableConfig: {
-            order: [[0, 'desc']],
-            pageLength: 10,
-            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            stateSave: true,
-            searching: true,
-            ordering: true,
-            info: true,
-            paging: true,
-            autoWidth: false,
-            responsive: true,
-            dom: 'lrtip',
-            pagingType: 'full_numbers',
-            language: {
-                "sProcessing": "處理中...",
-                "sLengthMenu": "顯示 _MENU_ 筆",
-                "sZeroRecords": "沒有匹配結果",
-                "sInfo": "顯示第 _START_ 至 _END_ 筆結果，共 _TOTAL_ 筆",
-                "sInfoEmpty": "顯示第 0 至 0 筆結果，共 0 筆",
-                "sInfoFiltered": "(從 _MAX_ 項結果過濾)",
-                "sInfoPostFix": "",
-                "sSearch": "搜尋:",
-                "sUrl": "",
-                "sEmptyTable": "表格中無可用數據",
-                "sLoadingRecords": "載入中...",
-                "sInfoThousands": ",",
-                "oPaginate": {
-                    "sFirst": "首頁",
-                    "sPrevious": "上頁",
-                    "sNext": "下頁",
-                    "sLast": "末頁"
-                }
-            },
-            drawCallback: function(settings) {
-                const api = this.api();
-                if (api.page.info().pages > 1) {
-                    $('.dataTables_paginate').show();
-                }
-            }
-        },
+	const UserManagementApp = {
+	        init() {
+	            this.initializeTables();
+	            this.setupTableToggle();
+	            this.setupSearch();
+	            this.setupStatusUpdates();
+				this.trackLoginTime();
+	        },
 
-        // 初始化
-        init() {
-            this.setupTableToggle();
-            this.setupSearchAndFilter();
-            this.setupDetailButtonListeners();
-            this.loadBusinessData(); // 加載業者資料
-            this.initializeTables(); // 初始化表格
-        },
+	        // 初始化 DataTables
+	        initializeTables() {
+	            const commonConfig = {
+	                pageLength: 10,
+	                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+	                language: {
+	                    "sProcessing": "處理中...",
+	                    "sLengthMenu": "顯示 _MENU_ 筆",
+	                    "sZeroRecords": "沒有匹配結果",
+	                    "sInfo": "顯示第 _START_ 至 _END_ 筆結果，共 _TOTAL_ 筆",
+	                    "sInfoEmpty": "顯示第 0 至 0 筆結果，共 0 筆",
+	                    "sInfoFiltered": "(從 _MAX_ 項結果過濾)",
+	                    "oPaginate": {
+	                        "sFirst": "首頁",
+	                        "sPrevious": "上頁",
+	                        "sNext": "下頁",
+	                        "sLast": "末頁"
+	                    }
+	                }
+	            };
+				
+				
 
-        // 加載業者資料
-		loadBusinessData() {
-		    fetch('/adminHotel/findAllHotels')
-		        .then(response => {
-		            if (!response.ok) {
-		                throw new Error(`HTTP error! status: ${response.status}`);
-		            }
-		            return response.json();
-		        })
-		        .then(data => {
-		            if (!Array.isArray(data)) {
-		                console.error('後端返回數據格式不正確', data);
-		                return;
-		            }
-		            this.renderBusinessTable(data);
-		        })
-		        .catch(error => {
-		            console.error('加載業者資料時出錯：', error);
-		        });
-		},
-        // 渲染業者資料到表格
-        renderBusinessTable(data) {
-            // 如果 DataTable 已經初始化，先銷毀它
-            if ($.fn.DataTable.isDataTable('#businessTable')) {
-                $('#businessTable').DataTable().destroy();
-            }
+	            // 初始化業者表格
+	            this.businessTable = $('#businessTable').DataTable(commonConfig);
+	            
+	            // 初始化會員表格
+	            this.memberTable = $('#memberTable').DataTable(commonConfig);
+	        },
 
-            // 初始化 DataTable 並填充業者資料
-            const businessTable = $('#hotel').DataTable({
-                ...this.dataTableConfig,
-                data: data,  // 將獲取到的資料填充到 DataTable 中
-                columns: [
-                    { title: "業者ID", data: "hotelId" },
-                    { title: "業者名稱", data: "hotelName" },
-                    { title: "業者電話", data: "hotelPhone" },
-                    // 其他欄位...
-                ]
-            });
+	        // 設置表格切換
+			setupTableToggle() {
+			    const businessBtn = $('#businessNameBtn');
+			    const memberBtn = $('#memberNameBtn');
+			    const businessTable = $('#businessTable_wrapper');
+			    const memberTable = $('#memberTable_wrapper');
 
-            this.setupPagination(businessTable);
-        },
+			    businessBtn.click(function () {
+			        $(this).addClass('active');
+			        memberBtn.removeClass('active');
+			        businessTable.show();
+			        memberTable.hide();
+			    });
 
-        // 初始化表格
-        initializeTables() {
-            // 初始化 DataTables
-            if ($.fn.DataTable.isDataTable('#businessTable')) {
-                $('#businessTable').DataTable().destroy();
-            }
-            if ($.fn.DataTable.isDataTable('#memberTable')) {
-                $('#memberTable').DataTable().destroy();
-            }
+			    memberBtn.click(function () {
+			        $(this).addClass('active');
+			        businessBtn.removeClass('active');
+			        memberTable.show();
+			        businessTable.hide();
+			    });
 
-            const businessTable = $('#businessTable').DataTable(this.dataTableConfig);
-            const memberTable = $('#memberTable').DataTable(this.dataTableConfig);
+			    // 預設顯示業者表格，隱藏會員表格
+			    businessTable.show();
+			    memberTable.hide();
+			},
 
-            this.setupPagination(businessTable, memberTable);
-        },
+	        // 設置搜尋功能
+	        setupSearch() {
+	            const self = this;
+	            
+	            // 全局搜尋
+	            $('#globalSearch').on('keyup', function() {
+	                const searchValue = $(this).val();
+	                const activeTable = $('#businessTable_wrapper').is(':visible') ? 
+	                    self.businessTable : self.memberTable;
+	                activeTable.search(searchValue).draw();
+	            });
 
-        // 設置分頁
-        setupPagination(businessTable, memberTable) {
-            const paginationContainer = $('<div class="table-pagination"></div>');
-            $('.table-wrapper').append(paginationContainer)           
+	            // 狀態篩選
+	            $('#statusFilter').on('change', function() {
+	                const statusValue = $(this).val();
+	                const activeTable = $('#businessTable_wrapper').is(':visible') ? 
+	                    self.businessTable : self.memberTable;
+	                
+	                // 使用自定義過濾器
+	                $.fn.dataTable.ext.search.push(function(settings, data) {
+	                    if (!statusValue) return true; // 如果沒有選擇狀態，顯示所有記錄
+	                    
+	                    const rowStatus = data[2]; // 假設狀態在第三列
+	                    if (statusValue === '0' && rowStatus === '待審核') return true;
+	                    if (statusValue === '1' && rowStatus === '啟用中') return true;
+	                    if (statusValue === '2' && rowStatus === '停權') return true;
+	                    return false;
+	                });
+	                
+	                activeTable.draw();
+	                
+	                // 清除過濾器
+	                $.fn.dataTable.ext.search.pop();
+	            });
+	        },
 
-            this.setupPaginationEvents(businessTable, memberTable);
-        },
+	        // 設置狀態更新功能
+	        setupStatusUpdates() {
+				$('.btn-status-update').click(function () {
+				    const id = $(this).data('id');
+				    const currentStatus = $(this).data('status');
+				    const newStatus = currentStatus === 0 ? 1 : 0;
+				    const buttonText = newStatus === 0 ? '啟用' : '停權'; // 按照需求改變按鈕文字
 
-        // 設置分頁事件
-        setupPaginationEvents(businessTable, memberTable) {
+				    if (!confirm(`確定要將狀態更改為 ${buttonText} 嗎？`)) return;
 
-            // 分頁大小變更
-            $('.dataTables_length select').on('change', function() {
-                const newLength = $(this).val();
-                businessTable.page.len(newLength).draw();
-                memberTable.page.len(newLength).draw();
-            });
-        },
+				    const apiPath = $('#businessTable_wrapper').is(':visible')
+				        ? '/adminHotel/updateStatus'
+				        : '/adminMember/updateStatus';
 
-        // 設置搜尋和篩選
-        setupSearchAndFilter() {
-            const globalSearch = document.getElementById('globalSearch');
-            const searchBtn = document.getElementById('searchBtn');
-            const statusFilter = document.getElementById('statusFilter');
+				    fetch(apiPath, {
+				        method: 'POST',
+				        headers: { 'Content-Type': 'application/json' },
+				        body: JSON.stringify({ id, status: newStatus })
+				    })
+				        .then(response => response.json())
+				        .then(data => {
+				            if (data.success) {
+				                $(this).data('status', newStatus).text(buttonText); // 更新按鈕文字
+				            } else {
+				                alert('更新失敗：' + data.message);
+				            }
+				        })
+				        .catch(error => {
+				            console.error('更新狀態時發生錯誤：', error);
+				            alert('更新失敗，請稍後再試');
+				        });
+				});
+	        },
+			
+			// 追踪登入時間
+	        trackLoginTime() {
+	            // 取得所有會員的登入時間元素
+	            const loginTimeElements = document.querySelectorAll('.member-login-time');
+	            
+	            loginTimeElements.forEach(element => {
+	                // 如果元素內容為空或是初始值，設置當前時間
+	                if (!element.textContent || element.textContent.trim() === '') {
+	                    const currentTime = new Date();
+	                    const formattedTime = currentTime.toLocaleString('zh-TW', {
+	                        year: 'numeric',
+	                        month: '2-digit',
+	                        day: '2-digit',
+	                        hour: '2-digit',
+	                        minute: '2-digit',
+	                        second: '2-digit'
+	                    });
+	                    element.textContent = formattedTime;
+	                }
+	            });
+	        }
+			   
+	    };
 
-            const performSearch = () => {
-                const searchValue = globalSearch.value;
-                const statusValue = statusFilter.value;
-
-                const activeTable = $('#businessTable').is(':visible') 
-                    ? $('#businessTable').DataTable()
-                    : $('#memberTable').DataTable();
-
-                // 組合搜尋條件
-                let combinedSearch = '';
-                if (searchValue) combinedSearch += searchValue;
-                if (statusValue) {
-                    combinedSearch += combinedSearch ? ' ' + statusValue : statusValue;
-                }
-
-                activeTable.search(combinedSearch).draw();
-            };
-
-            searchBtn.addEventListener('click', performSearch);
-            globalSearch.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') performSearch();
-            });
-            statusFilter.addEventListener('change', performSearch);
-        },
-
-        // 設置詳細資訊按鈕事件
-        setupDetailButtonListeners() {
-            $(document).on('click', '.btn-info', function() {
-                const row = $(this).closest('tr');
-                const hotelId = row.data('hotelId');
-                window.location.href = `/admin/industryBackend/${hotelId}`;
-            });
-        },
-
-        // 表格切換
-        setupTableToggle() {
-            $('#businessNameBtn').on('click', function() {
-                $(this).addClass('active');
-                $('#memberNameBtn').removeClass('active');
-                $('#businessTable_wrapper').show();
-                $('#memberTable_wrapper').hide();
-            });
-
-            $('#memberNameBtn').on('click', function() {
-                $(this).addClass('active');
-                $('#businessNameBtn').removeClass('active');
-                $('#memberTable_wrapper').show();
-                $('#businessTable_wrapper').hide();
-            });
-
-            // 初始顯示業者表格
-            $('#businessNameBtn').click();
-        },
-    };
-
-    // 初始化應用
-    UserManagementApp.init();
-});
+	    // 初始化應用
+	    UserManagementApp.init();
+	});
