@@ -10,7 +10,7 @@ const notLoginNav =
     </a>
     <ul class="nav col justify-content-end login">
         <li><a href="/user/order" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
-        <li><a href="/user/cart" class="nav-link px-2 link-body-emphasis">購物車</a></li>
+        <li><a href="/user/cart" class="nav-link px-2 link-body-emphasis" id="cart">購物車</a></li>
         <li><a href="" class="d-block link-body-emphasis text-decoration-none px-2 py-2" id="navLoginBtn">登入 / 註冊</a></li>
     </ul>
 `
@@ -25,7 +25,9 @@ const loginNav = `
             <!-- 登入後 -->
             <ul class="nav col justify-content-end login">
                 <li><a href="/user/order" class="nav-link px-2 link-body-emphasis">訂單查詢</a></li>
-                <li><a href="/user/cart" class="nav-link px-10 link-body-emphasis">購物車</a></li>
+                <li><a href="/user/cart" class="nav-link px-10 link-body-emphasis" id="cart">
+                    購物車   
+                </a></li>
                 <li>
                     <div class="dropdown text-end px-2 py-20">
                         <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
@@ -106,7 +108,6 @@ let footer = `
 			</div>
 		</div>
 `
-
 let redirectUrl ="";
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -235,6 +236,21 @@ function getAvatar(){
     
 }
 
+//取得購物車長度
+function getCartLength() {
+    $.get("/user/api/cart/get", function (response) {
+        let length = response.cartLength;
+        let notfiHtml = `
+            購物車 <span class="badge bg-secondary bg-danger rounded-pill">${length}</span> 
+        `
+        if (length!=="0"){
+            $('#cart').html(notfiHtml);
+        }
+        return response.cartLength;
+    });
+}
+
+
 let modalQueue = []; // 建立一個佇列來存放訊息
 let isModalVisible = false; // 追蹤模態視窗是否正在顯示
 
@@ -320,7 +336,7 @@ function showLoginView() {
     loginCheck().then(account => {
         if (!account) {
             document.querySelector('header').innerHTML = notLoginNav;
-
+            getCartLength();
             let loginBtn = document.querySelector('#navLoginBtn');
             if (loginBtn) {
                 loginBtn.addEventListener('click', function (e) {
@@ -332,6 +348,7 @@ function showLoginView() {
         } else {
             document.querySelector('header').innerHTML = loginNav;
             getAvatar();
+            getCartLength();
             let logoutButton = document.querySelector('#logout');
             if (logoutButton) {
                 logoutButton.removeEventListener('click', logout);

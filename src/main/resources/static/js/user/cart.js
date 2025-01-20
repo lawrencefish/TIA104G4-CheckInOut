@@ -77,6 +77,7 @@ function deletCart(id) {
         showModal(response.message);
         loadCart();
         setTimeout(calcPrice, 100);
+        showLoginView();
     });
 }
 
@@ -99,7 +100,6 @@ function calcPrice() {
     let rooms = $('input[name="selectedHotel"]:checked').closest('div').find('.hotel-rooms');
     let roomNum = rooms.find('.room-item').length;
     let price = 0;
-    console.log(rooms);
     rooms.find('.room-item').each(function (index, ele) {
         price += parseInt($(this).find('.hotel-price').text());
     })

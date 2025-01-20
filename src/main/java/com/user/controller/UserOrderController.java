@@ -131,13 +131,6 @@ public class UserOrderController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PostMapping("/comment/get")
-	public ResponseEntity<Map<String, Object>> sendComment(@RequestBody Map<String, Object> comment) {
-	    Map<String, Object> response = new HashMap<>();
-	    response.put("received", comment);
-	    return ResponseEntity.ok(response);
-	}
-
 	// 取消訂單
 	@PostMapping("/order/cancel")
 	public ResponseEntity<Map<String, Object>> cancelOrder(@RequestParam String orderId, HttpSession session) {

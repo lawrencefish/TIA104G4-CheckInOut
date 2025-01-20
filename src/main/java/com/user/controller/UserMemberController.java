@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -311,6 +312,14 @@ public class UserMemberController {
 	    }
 	}
 
+	@GetMapping("/cart/get")
+	public ResponseEntity<Map<String, String>> getCartLength(HttpSession session) {
+		List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
+		Map<String, String> response = new HashMap<>();
+		String cartSize = cartList != null ? String.valueOf(cartList.size()) : "0";
+		response.put("cartLength", cartSize);
+		return ResponseEntity.ok(response);
+	}
 	
 	
 	//更新訂單狀態時觸發檢查優惠券

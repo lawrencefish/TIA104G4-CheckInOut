@@ -62,6 +62,7 @@ function addCart() {
         data: JSON.stringify(temp),
         success: function (data) {
             console.log(data);
+            getCartLength();
             showModal("已加入購物車");
         },
         error: function (jqXHR, textStatus, errorThrown) {
