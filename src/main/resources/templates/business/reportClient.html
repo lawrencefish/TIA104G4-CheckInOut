@@ -465,7 +465,7 @@
 
             try {
                 // 呼叫 API
-                const response = await fetch(`http://localhost:8080/api/report/member/${memberId}`, {
+                const response = await fetch(`/api/report/member/${memberId}`, {
                     method: 'POST',
                     body: formData
                 });
