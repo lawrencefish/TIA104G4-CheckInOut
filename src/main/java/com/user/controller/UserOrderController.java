@@ -77,7 +77,7 @@ public class UserOrderController {
 	CreditcardService cDService;
 	@Autowired
 	OrderDetailService oDService;
-	
+
 	// 取得購物車訂單明細
 	@PostMapping("/cart/get")
 	public ResponseEntity<List<Map<String, Object>>> getCart(HttpSession session) {
@@ -107,18 +107,65 @@ public class UserOrderController {
 		}
 		return responseList;
 	}
+	
+	//傳送評論
+	@PostMapping("/comment/send")
+	public ResponseEntity<Map<String, Object>> sendComment(@RequestBody Map<String, Object> comment, HttpSession session) {
+		Map<String, Object> response = new HashMap<>();
+		Integer orderId = Integer.valueOf((String) comment.get("orderId"));
+		Integer rating = Integer.valueOf((String) comment.get("rating"));
+		String commentContent =  (String) comment.get("commentContet");
+		try {
+		OrderVO order = orderService.queryOrder(orderId);
+		order.setRating(rating);
+		order.setCommentContent(commentContent);
+		Date now = new Date(System.currentTimeMillis());
+		order.setCommentCreateTime(now);
+		orderService.updateOrder(order);
+		}catch(Exception e){
+			response.put("error",e.getMessage());
+			response.put("message","存入錯誤，請再試一次");
 
-	//取消訂單
+		}
+		response.put("message", "評分送出成功！謝謝您的評價！");
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/comment/get")
+	public ResponseEntity<Map<String, Object>> sendComment(@RequestBody Map<String, Object> comment) {
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("received", comment);
+	    return ResponseEntity.ok(response);
+	}
+
+	// 取消訂單
 	@PostMapping("/order/cancel")
 	public ResponseEntity<Map<String, Object>> cancelOrder(@RequestParam String orderId, HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
-		Byte status = 3;
-		orderService.setStatus(Integer.valueOf(orderId),status);
+		try {
+			OrderVO order = orderService.queryOrder(Integer.valueOf(orderId));
+			LocalDate checkInDate = new Date(order.getCheckInDate().getTime()).toLocalDate();
+			LocalDate checkOutDate = new Date(order.getCheckOutDate().getTime()).toLocalDate();
+			List<OrderDetailVO> details = order.getOrderDetail();
+			for (OrderDetailVO detail : details) {
+				for (LocalDate date = checkInDate; !date.isEqual(checkOutDate); date = date.plusDays(1)) {
+					RoomInventoryVO ri = RIservice.findByRoomTypeIdAndDate(detail.getRoomTypeId(), date);
+					Integer newQuantity = ri.getAvailableQuantity() + detail.getRoomNum();
+					ri.setAvailableQuantity(newQuantity);
+					RIservice.roomTransaction(ri);
+				}
+			}
+			orderService.cancelOrder(Integer.valueOf(orderId));
+		} catch (Exception e) {
+			response.put("error",e.getMessage());
+			response.put("message", "取消訂單錯誤");
+			throw new RuntimeException("取消訂單錯誤");
+		}
 		System.out.println(orderService.queryOrder(Integer.valueOf(orderId)));
-		response.put("message", "已經成功取消編號"+orderId+"訂單");
+		response.put("message", "已經成功取消編號" + orderId + "訂單");
 		return ResponseEntity.ok(response);
 	}
-	
+
 	public List<Map<String, Object>> checkCart(List<Map<String, Object>> cartList) {
 		List<Map<String, Object>> updatedCartList = new ArrayList<>();
 
@@ -411,7 +458,6 @@ public class UserOrderController {
 					mCService.useCoupon(couponId);
 				}
 			}
-
 
 			if (reCalcTotalPrice.equals(finalPrice)) {
 
