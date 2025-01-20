@@ -6,23 +6,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>訂單</title>
 	<link rel="stylesheet" th:href="@{/vendors/bootstrap/css/bootstrap.min.css}">
-	<link rel="stylesheet" th:href="@{/css/user/template.css}">
+	<link rel="stylesheet" th:href="@{/css/user/order.css}">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-
-
-	<style>
-		/* 讓未選取的星星呈現灰色，選取後呈現金色 */
-		.star {
-			cursor: pointer;
-			color: #ccc;
-			/* 預設灰色 */
-		}
-
-		.star.active {
-			color: gold;
-			/* 選取後金色 */
-		}
-	</style>
 </head>
 
 <body>
@@ -92,53 +77,5 @@
 	<script src="/js/user/order.js" defer></script>
 
 </body>
-<script>
-	// 以簡易方式控制顯示/隱藏，示範用，請視情況擴充或改寫
-	function showTab(tabId) {
-		// 取得所有 .tab-panel 並隱藏
-		const panels = document.querySelectorAll('.tab-panel');
-		panels.forEach(panel => {
-			panel.classList.add('d-none');
-		});
-
-		// 顯示對應 tabId 的面板
-		const targetPanel = document.getElementById(tabId);
-		if (targetPanel) {
-			targetPanel.classList.remove('d-none');
-		}
-
-		// 讓按鈕外觀也可切換active
-		const btns = document.querySelectorAll('.nav-link');
-		btns.forEach(btn => {
-			btn.classList.remove('active');
-		});
-		event.target.classList.add('active');
-	}
-
-	// 顯示取消提示範例
-	function showCancelConfirm(orderId) {
-		// 您可在此彈出 Modal 確認等
-		// 這裡示範直接顯示 Bootstrap Alert
-		const alertBox = document.getElementById('successAlert');
-		alertBox.classList.remove('d-none');
-		alertBox.textContent = `訂單 ${orderId} 已成功取消`;
-	}
-
-	// 以下為範例函式
-	function showDetails(orderId) {
-		console.log("顯示詳細訂單：" + orderId);
-		// 依需求自行加 Modal 或跳轉
-	}
-
-	function showReviewForm(orderId) {
-		console.log("顯示評論表單：" + orderId);
-		// 依需求自行加評論 Modal
-	}
-
-	function showReviewDetails(orderId) {
-		console.log("顯示已評論內容：" + orderId);
-		// 依需求自行加評論細節視窗
-	}
-</script>
 
 </html>

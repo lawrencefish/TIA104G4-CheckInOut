@@ -23,6 +23,7 @@ import com.orderDetail.model.OrderDetailDTO;
 import com.orderDetail.model.OrderDetailRepository;
 import com.price.model.PriceService;
 import com.price.model.PriceVO;
+import com.roomInventory.model.RoomInventoryRepository;
 
 @Service("OrderService")
 public class OrderService {
@@ -37,6 +38,8 @@ public class OrderService {
 	MemberRepository memberRepository;
 	@Autowired
 	MemberCouponRepository mCRepository;
+	@Autowired
+	RoomInventoryRepository riRepository;
 
 	@Transactional
 	public void addOrder(OrderVO orderVO) {
@@ -96,9 +99,11 @@ public class OrderService {
 		return stats;
 	}
 	
-	public void setStatus (Integer orderId , Byte status){
+	public void cancelOrder (Integer orderId){
 		OrderVO order = orderRepository.getById(orderId);
-		order.setStatus(status);
+		Byte cancelStatus = 3;
+		order.setStatus(cancelStatus);
+		
 		orderRepository.save(order);
 	}
 		

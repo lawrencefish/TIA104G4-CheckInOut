@@ -77,7 +77,7 @@ public class UserOrderController {
 	CreditcardService cDService;
 	@Autowired
 	OrderDetailService oDService;
-	
+
 	// 取得購物車訂單明細
 	@PostMapping("/cart/get")
 	public ResponseEntity<List<Map<String, Object>>> getCart(HttpSession session) {
@@ -108,17 +108,34 @@ public class UserOrderController {
 		return responseList;
 	}
 
-	//取消訂單
+	// 取消訂單
 	@PostMapping("/order/cancel")
 	public ResponseEntity<Map<String, Object>> cancelOrder(@RequestParam String orderId, HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
-		Byte status = 3;
-		orderService.setStatus(Integer.valueOf(orderId),status);
+		try {
+			OrderVO order = orderService.queryOrder(Integer.valueOf(orderId));
+			LocalDate checkInDate = new Date(order.getCheckInDate().getTime()).toLocalDate();
+			LocalDate checkOutDate = new Date(order.getCheckOutDate().getTime()).toLocalDate();
+			List<OrderDetailVO> details = order.getOrderDetail();
+			for (OrderDetailVO detail : details) {
+				for (LocalDate date = checkInDate; !date.isEqual(checkOutDate); date = date.plusDays(1)) {
+					RoomInventoryVO ri = RIservice.findByRoomTypeIdAndDate(detail.getRoomTypeId(), date);
+					Integer newQuantity = ri.getAvailableQuantity() + detail.getRoomNum();
+					ri.setAvailableQuantity(newQuantity);
+					RIservice.roomTransaction(ri);
+				}
+			}
+			orderService.cancelOrder(Integer.valueOf(orderId));
+		} catch (Exception e) {
+			response.put("error",e.getMessage());
+			response.put("message", "取消訂單錯誤");
+			throw new RuntimeException("取消訂單錯誤");
+		}
 		System.out.println(orderService.queryOrder(Integer.valueOf(orderId)));
-		response.put("message", "已經成功取消編號"+orderId+"訂單");
+		response.put("message", "已經成功取消編號" + orderId + "訂單");
 		return ResponseEntity.ok(response);
 	}
-	
+
 	public List<Map<String, Object>> checkCart(List<Map<String, Object>> cartList) {
 		List<Map<String, Object>> updatedCartList = new ArrayList<>();
 
@@ -411,7 +428,6 @@ public class UserOrderController {
 					mCService.useCoupon(couponId);
 				}
 			}
-
 
 			if (reCalcTotalPrice.equals(finalPrice)) {
 
