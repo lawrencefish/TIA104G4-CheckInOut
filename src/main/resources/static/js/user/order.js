@@ -1,3 +1,9 @@
+let comment = {
+    orderId : 0,
+    rating: 0,
+    commentContet :""
+};
+
 $(document).ready(function () {
     loadOrder(function (data) {
         updateTab(data); // ✅ 在這裡正確使用 AJAX 回應數據
@@ -39,6 +45,11 @@ $(document).ready(function () {
         });
     });
 
+    $(document).on("click", ".sendCommentBtn", function (e) {
+        e.preventDefault();
+        setComment();
+    })
+
 });
 
 function tabSelect() {
@@ -60,6 +71,43 @@ function tabSelect() {
     });
 
 }
+
+function setComment(){
+    comment.commentContet = $('#commentContent').val();
+    comment.orderId =  $("#id").text();
+    comment.rating = $("#ratingDisplay").text();
+    sendComment(function(data){
+        console.log(data);
+        let modalInstance = bootstrap.Modal.getInstance(document.getElementById("loginModal"));
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+        showModal(data.message);
+        loadOrder(function (data) {
+            updateTab(data); 
+        });
+    })
+}
+
+
+function sendComment(callback) {
+    $.ajax({
+        url: '/order/api/comment/send',
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(comment),
+        success: function (data) {
+            if (callback) callback(data);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert(jqXHR.responseText);
+            console.error('AJAX 請求發生錯誤:', textStatus, errorThrown);
+            console.log('響應文本:', jqXHR.responseText);
+        }
+    });
+}
+
 
 function loadOrder(callback) {
     $.ajax({
@@ -112,7 +160,11 @@ function updateTab(dataArray) {
                 }
                 break;
             case 1:
+                if (today > inputCOD) {
+                inputStatus = "逾期未入住";
+                }else{
                 inputStatus = "入住中"
+                }
                 break;
             case 2:
                 inputStatus = "完成訂單"
@@ -334,7 +386,7 @@ function updateDetail(data, id) {
 
                             <p class="mb-2">
                                 <strong>訂單總價：</strong>
-                                <span id="totalPrice" class="text-danger fw-bold">NT$ ${totalPriceAdd}</span>
+                                <span id="totalPrice" class="text-danger fw-bold">NTD$ ${totalPriceAdd}</span>
                             </p>
 
                             <p class="mb-0">
@@ -345,12 +397,8 @@ function updateDetail(data, id) {
                         </div>
 
                         <!-- 取消訂單按鈕 -->
-                        <div class="mb-4 ${ (status != 0 || twoDaysAfter > inputCID) ? "d-none" : "" } "">
+                        <div class="cancelOrder mb-4 ${ (status != 0 || twoDaysAfter > inputCID) ? "d-none" : "" } "">
                             <button class="btn btn-danger w-100 fw-bold cancelBtn" data-order-id="${orderId}">取消訂單</button>
-                        </div>
-                        <hr>
-
-                            <div class="p-3 rounded-3 bg-white commentArea">
                         </div>
                 </div>
             `
@@ -358,6 +406,8 @@ function updateDetail(data, id) {
     $modal.empty();
     $modal = $(modalHtml);
     let toCommentHTML = `
+            <hr>
+        <div class="p-3 rounded-3 bg-white commentArea border">
                 <h5 class="fw-bold text-center mb-4">評論</h5>
 
                 <!--星級評分 -->
@@ -373,7 +423,7 @@ function updateDetail(data, id) {
                     </div>
 
                     <!-- 目前評分（透過 JS 動態顯示） -->
-                    <span id="ratingDisplay" class="ms-3 text-secondary">5</span>
+                    <span id="ratingDisplay" class="ms-3 text-secondary"></span>
                 </div>
 
                 <!--評論輸入框 -->
@@ -381,27 +431,44 @@ function updateDetail(data, id) {
                 <textarea id="commentContent" class="form-control mt-2" rows="3" placeholder="寫下您的評論..."></textarea>
 
                 <div class="mt-3 text-end">
-                    <button class="btn btn-primary btn-sm fw-bold">提交評論</button>
+                    <button class="btn btn-primary btn-sm fw-bold sendCommentBtn">提交評論</button>
                 </div>
+            </div>
         `
     let commentHtml = `
-<h5 class="fw-bold text-center mb-3">評論</h5>
+        <hr>
+        <div class="p-3 rounded-3 bg-white commentArea border">
+            <h5 class="fw-bold text-center mb-3">評論</h5>
 
-<!-- 星級評分 -->
-<p class="mb-2"><strong>評分：</strong> ${rating} ★</p>
+            <!-- 星級評分 -->
+            <div class="d-flex flex-column align-items-center mb-3">
+                <div class="starContainer" class="d-flex">
+                    <span class="star fs-4 me-1" data-value="1">★</span>
+                    <span class="star fs-4 me-1" data-value="2">★</span>
+                    <span class="star fs-4 me-1" data-value="3">★</span>
+                    <span class="star fs-4 me-1" data-value="4">★</span>
+                    <span class="star fs-4 me-1" data-value="5">★</span>
+                    <span class="ratingDisplay" class="ms-3 text-secondary">${rating} 星</span>
+                </div>
+            </div>
 
-<!-- 評論 -->
-<p class="mb-2 ${comment.trim() === "" ? "d-none" : ""}"><strong>評論：</strong> ${comment}</p>
+            <!-- 評論 -->
+            <p class="mb-2 ${comment.trim() === "" ? " d-none" : "" }"><strong>評論：</strong> ${comment}</p>
 
-<!-- 業者回覆 -->
-<p class="mb-0 ${commentReply.trim() === "" ? "d-none" : ""}"><strong>業者回覆：</strong> ${commentReply}</p>
-            `
-
+            <!-- 業者回覆 -->
+            <p class="mb-0 ${commentReply.trim() === "" ? " d-none" : "" }"><strong>業者回覆：</strong> ${commentReply}</p>
+        </div> 
+`
     if(rating == "" && comment =="" && status == 2){
-        $modal.find('.commentArea').append(toCommentHTML);
+        $modal.find('.cancelOrder').after(toCommentHTML);
+
     }else if (status == 2){
-        $modal.find('.commentArea').append(commentHtml);
+        $modal.find('.cancelOrder').after(commentHtml);
+        for(let i = 0 ; i < rating ; i++){
+            $modal.find('.starContainer .star')[i].classList.add("active");
+        }
     }
+
     d.orderDetails.forEach(de => {
         let roomName = de.roomName;
         let roomTypeId = de.roomTypeId;
@@ -436,7 +503,7 @@ function updateDetail(data, id) {
         totalPriceAdd += (parseInt(totalPrice) + parseInt(totalBreakfastPrice));
         $modal.find('.roomType').append(roomTypeHtml);
     })
-    $modal.find('#totalPrice').text(totalPriceAdd);
+    $modal.find('#totalPrice').text("NT$"+totalPriceAdd);
     let html = $modal.prop("outerHTML");
 
     showModal(html, false);
@@ -448,7 +515,7 @@ function setRating(rating) {
     highlightStars(rating);
 
     // **更新顯示評分**
-    document.getElementById("ratingDisplay").textContent = `${rating} 星`;
+    document.getElementById("ratingDisplay").textContent = `${rating}`;
 }
 
 function highlightStars(rating) {

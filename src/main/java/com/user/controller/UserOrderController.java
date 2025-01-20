@@ -107,6 +107,37 @@ public class UserOrderController {
 		}
 		return responseList;
 	}
+	
+	//傳送評論
+	@PostMapping("/comment/send")
+	public ResponseEntity<Map<String, Object>> sendComment(@RequestBody Map<String, Object> comment, HttpSession session) {
+		Map<String, Object> response = new HashMap<>();
+		System.out.println(comment);
+		Integer orderId = Integer.valueOf((String) comment.get("orderId"));
+		Integer rating = Integer.valueOf((String) comment.get("rating"));
+		String commentContent =  (String) comment.get("commentContet");
+		try {
+		OrderVO order = orderService.queryOrder(orderId);
+		order.setRating(rating);
+		order.setCommentContent(commentContent);
+		Date now = new Date(System.currentTimeMillis());
+		order.setCommentCreateTime(now);
+		orderService.updateOrder(order);
+		}catch(Exception e){
+			response.put("error",e.getMessage());
+			response.put("message","存入錯誤，請再試一次");
+
+		}
+		response.put("message", "評分送出成功！謝謝您的評價！");
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/comment/get")
+	public ResponseEntity<Map<String, Object>> sendComment(@RequestBody Map<String, Object> comment) {
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("received", comment);
+	    return ResponseEntity.ok(response);
+	}
 
 	// 取消訂單
 	@PostMapping("/order/cancel")

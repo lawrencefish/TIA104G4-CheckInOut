@@ -45,6 +45,10 @@ public class OrderService {
 	public void addOrder(OrderVO orderVO) {
 		orderRepository.save(orderVO);
 	}
+	@Transactional
+	public void updateOrder(OrderVO orderVO) {
+		 orderRepository.save(orderVO);
+	}
 
 	public OrderVO queryOrder(Integer orderId) {
 		Optional<OrderVO> optional = orderRepository.findById(orderId);
