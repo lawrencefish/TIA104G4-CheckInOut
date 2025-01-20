@@ -551,6 +551,13 @@
             margin-right: 10px;
         }
 
+        #checked-out-status {
+            text-align: center; /* 置中 */
+            color: green; /* 綠色文字 */
+            font-weight: bold; /* 粗體字 */
+            font-size: 16px; /* 可根據需求調整字體大小 */
+            margin-top: 20px; /* 增加與上方內容的間距 */
+        }
     </style>
 </head>
 
@@ -1006,6 +1013,7 @@
                             alert(`退房失敗：${data.error}`);
                         } else {
                             alert(data.message || "退房成功！");
+                            document.getElementById("not-checked-out-modal").classList.add("hidden");
                             // location.reload();
                         }
                     })
