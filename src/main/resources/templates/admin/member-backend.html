@@ -23,19 +23,26 @@
       <div class="member-container">
         <div class="member-profile">
            <!-- 顯示會員頭像 -->
-		    <img th:src="@{${avatar} != null ? ${avatar} : '/path/to/default-avatar.png'}" alt="會員頭像" class="avatar">
+		    <img th:if="${memberAvatar != null}" 
+		         th:src="@{'data:image/jpeg;base64,' + ${memberAvatar}}"
+		         class="member-avatar"
+		         alt="會員頭像" />
+		    <img th:unless="${memberAvatar != null}"
+		         th:src="@{/imgs/user/defaultAvatar.png}"
+		         class="member-avatar"
+		         alt="預設頭像" />
 		    <div class="info-grid">
 		      <div class="info-item" data-label="帳號" id="account">
 		        <span class="content" th:text="${account}"></span>
-		      </div>
-		      <div class="info-item" data-label="性別" id="gender">
-		        <span class="content" th:text="${gender}"></span>
 		      </div>
 		      <div class="info-item" data-label="姓" id="last-name">
 		        <span class="content" th:text="${lastName}"></span>
 		      </div>
 		      <div class="info-item" data-label="名" id="first-name">
 		        <span class="content" th:text="${firstName}"></span>
+		      </div>
+		      <div class="info-item" data-label="性別" id="gender">
+		        <span class="content" th:text="${gender}"></span>
 		      </div>
 		      <div class="info-item" data-label="生日" id="birthday">
 		        <span class="content" th:text="${birthday}"></span>
