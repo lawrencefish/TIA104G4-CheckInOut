@@ -396,6 +396,16 @@ textarea {
 .readonly:focus {
 	outline: none;
 }
+
+.client-avatar {
+	width: 100px; /* 設置寬度 */
+	height: 100px; /* 設置高度 */
+	object-fit: cover; /* 確保圖片按照比例縮放且填滿 */
+	border-radius: 50%; /* 如果需要圓形頭像，保留這行 */
+	border: 1px solid #ccc; /* 可選：增加邊框 */
+	padding: 5px; /* 可選：增加內邊距 */
+	background-color: #f9f9f9; /* 可選：設置背景色 */
+}
 </style>
 </head>
 
@@ -475,8 +485,8 @@ textarea {
 					<label for="clientid">客戶編號</label>
 					<div id="clientid" th:text="${client.memberId}"></div>
 					<div class="form-group">
-						<label for="clientpic">客戶頭像</label> <img th:src="${client.avatar}"
-							alt="頭像">
+						<label for="clientpic">客戶頭像</label> <img th:src="${avatar}"
+							alt="頭像" class="client-avatar">
 					</div>
 				</div>
 				<div class="form-row">
