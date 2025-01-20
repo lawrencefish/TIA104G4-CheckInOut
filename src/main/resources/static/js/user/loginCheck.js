@@ -36,7 +36,6 @@ const loginNav = `
                             data-bs-display="static">
                             <li><a class="dropdown-item" href="/user/profile">會員中心</a></li>
                             <li><a class="dropdown-item" href="/user/order">訂單管理</a></li>
-                            <li><a class="dropdown-item" href="/user/favorite">我的最愛</a></li>
                             <li><a class="dropdown-item" href="/user/coupon">優惠券</a></li>
                             <li>
                                 <hr class="dropdown-divider">
