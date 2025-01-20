@@ -94,62 +94,65 @@
     <script src="/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        $(document).ready(function() {
-            $('#contactUsForm').on('submit', function(e) {
-                e.preventDefault();
-                
-                const submitBtn = $(this).find('button[type="submit"]');
-                const spinner = submitBtn.find('.spinner-border');
-                const normalText = submitBtn.find('.normal-text');
-                
-                // 禁用按鈕並顯示loading
-                submitBtn.prop('disabled', true);
-                spinner.removeClass('d-none');
-                normalText.addClass('d-none');
+$(document).ready(function() {
+    // 定義 API 基底路徑，可以根據環境設置動態變數
+    const apiBasePath = window.location.origin + '/api';
 
-                const formData = {
-                    name: $('#name').val(),
-                    email: $('#email').val(),
-                    message: $('#message').val()
-                };
+    $('#contactUsForm').on('submit', function(e) {
+        e.preventDefault();
 
-                $.ajax({
-                    url: 'http://localhost:8080/api/submit',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(formData),
-                    success: function(response) {
-                        showAlert('success', '感謝您的來信，我們會盡快回覆！');
-                        $('#contactUsForm')[0].reset();
-                    },
-                    error: function() {
-                        showAlert('danger', '發送失敗，請稍後再試。');
-                    },
-                    complete: function() {
-                        // 啟用按鈕並隱藏loading
-                        submitBtn.prop('disabled', false);
-                        spinner.addClass('d-none');
-                        normalText.removeClass('d-none');
-                    }
-                });
-            });
+        const submitBtn = $(this).find('button[type="submit"]');
+        const spinner = submitBtn.find('.spinner-border');
+        const normalText = submitBtn.find('.normal-text');
 
-            function showAlert(type, message) {
-                const alertHtml = `
-                    <div class="alert alert-${type} alert-dismissible fade show mb-4" role="alert">
-                        ${message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-                
-                $('#contactUsForm').prepend(alertHtml);
-                
-                setTimeout(() => {
-                    $('.alert').alert('close');
-                }, 5000);
+        // 禁用按鈕並顯示loading
+        submitBtn.prop('disabled', true);
+        spinner.removeClass('d-none');
+        normalText.addClass('d-none');
+
+        const formData = {
+            name: $('#name').val(),
+            email: $('#email').val(),
+            message: $('#message').val()
+        };
+
+        $.ajax({
+            url: `${apiBasePath}/submit`, // 使用動態路徑
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(response) {
+                showAlert('success', '感謝您的來信，我們會盡快回覆！');
+                $('#contactUsForm')[0].reset();
+            },
+            error: function() {
+                showAlert('danger', '發送失敗，請稍後再試。');
+            },
+            complete: function() {
+                // 啟用按鈕並隱藏loading
+                submitBtn.prop('disabled', false);
+                spinner.addClass('d-none');
+                normalText.removeClass('d-none');
             }
         });
-    </script>
+    });
+
+    function showAlert(type, message) {
+        const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show mb-4" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        `;
+
+        $('#contactUsForm').prepend(alertHtml);
+
+        setTimeout(() => {
+            $('.alert').alert('close');
+        }, 5000);
+    }
+});
+</script>
     <script src="/js/user/loginCheck.js" defer></script>
     
 </body>

@@ -119,7 +119,7 @@ public class EmployeeService {
 
         // 禁止刪除負責人
         if (currentEmployee.getEmployeeId() == targetEmployee.getEmployeeId()) {
-            throw new RuntimeException("不好吧？");
+            throw new RuntimeException("不可刪");
         }
         if ("負責人".equals(targetEmployee.getTitle()) && !("負責人".equals(currentEmployee.getTitle()))) {
             throw new RuntimeException("想造反阿？");
@@ -130,7 +130,7 @@ public class EmployeeService {
         int targetEmployeeRank = titleHierarchy.getOrDefault(targetEmployee.getTitle(), Integer.MAX_VALUE);
 
         if (currentEmployeeRank >= targetEmployeeRank) {
-            throw new RuntimeException("等你比他大才可以開除他");
+            throw new RuntimeException("不可刪除你的上司");
         }
 
         // 執行刪除

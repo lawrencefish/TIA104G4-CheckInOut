@@ -70,7 +70,7 @@ public class ClientController {
             avatar = "data:image/png;base64," + Base64.getEncoder().encodeToString(client.getAvatar());
         } else {
             // 使用默認圖片
-            avatar = "/imgs/defaultAvatar.png";
+            avatar = "/imgs/user/defaultAvatar.png";
         }
 
         model.addAttribute("client", client);
