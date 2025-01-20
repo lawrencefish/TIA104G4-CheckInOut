@@ -69,7 +69,7 @@ public class OrderVO implements java.io.Serializable {
 
 //    //連接到會員優惠券，ㄧ對一
 //    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-//	private MemberCouponVO MemberCoupon;
+	private Integer memberCouponId;
 
 	@Column(name = "total_amount", nullable = false)
 	@NotNull(message = "價格不得為空")
@@ -236,6 +236,14 @@ public class OrderVO implements java.io.Serializable {
 
 	public void setHotel(HotelVO hotel) {
 		this.hotel = hotel;
+	}
+	
+	public Integer getMemberCouponId() {
+		return memberCouponId;
+	}
+
+	public void setMemberCouponId(Integer memberCouponId) {
+		this.memberCouponId = memberCouponId;
 	}
 
 	@Override

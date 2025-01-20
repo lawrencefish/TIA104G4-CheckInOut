@@ -77,7 +77,7 @@ public class UserOrderController {
 	CreditcardService cDService;
 	@Autowired
 	OrderDetailService oDService;
-
+	
 	// 取得購物車訂單明細
 	@PostMapping("/cart/get")
 	public ResponseEntity<List<Map<String, Object>>> getCart(HttpSession session) {
@@ -108,6 +108,17 @@ public class UserOrderController {
 		return responseList;
 	}
 
+	//取消訂單
+	@PostMapping("/order/cancel")
+	public ResponseEntity<Map<String, Object>> cancelOrder(@RequestParam String orderId, HttpSession session) {
+		Map<String, Object> response = new HashMap<>();
+		Byte status = 3;
+		orderService.setStatus(Integer.valueOf(orderId),status);
+		System.out.println(orderService.queryOrder(Integer.valueOf(orderId)));
+		response.put("message", "已經成功取消編號"+orderId+"訂單");
+		return ResponseEntity.ok(response);
+	}
+	
 	public List<Map<String, Object>> checkCart(List<Map<String, Object>> cartList) {
 		List<Map<String, Object>> updatedCartList = new ArrayList<>();
 
@@ -329,7 +340,6 @@ public class UserOrderController {
 		} else if (savedCardObj instanceof Map) {
 			// **如果是新信用卡**
 			Map<String, Object> savedCardMap = (Map<String, Object>) savedCardObj;
-			System.out.println(savedCardMap);
 			String name = lastName + "的信用卡" + checkInDate.toString();
 			creditcard = new CreditcardVO();
 			creditcard.setCreditcardInfo(name, (String) savedCardMap.get("cardNumber"),
@@ -365,11 +375,6 @@ public class UserOrderController {
 				for (LocalDate date = checkInDate; !date.isEqual(checkOutDate); date = date.plusDays(1)) {
 					RoomInventoryVO ri = RIservice.findByRoomTypeIdAndDate(roomTypeId, date);
 					Integer newQuantity = ri.getAvailableQuantity() - roomNum;
-					System.out.println(ri.toString());
-					System.out.println(ri.getAvailableQuantity());
-					System.out.println(roomTypeId);
-					System.out.println(date);
-					System.out.println(roomNum);
 					if (newQuantity >= 0) {
 						ri.setAvailableQuantity(newQuantity);
 						RIservice.roomTransaction(ri);
@@ -401,6 +406,7 @@ public class UserOrderController {
 				MemberCouponVO coupon = mCService.getById(couponId);
 				if (coupon != null && coupon.getCoupon().getDiscountAmount() != null) {
 					discount = coupon.getCoupon().getDiscountAmount();
+					order.setMemberCouponId(couponId);
 					reCalcTotalPrice -= discount;
 					mCService.useCoupon(couponId);
 				}

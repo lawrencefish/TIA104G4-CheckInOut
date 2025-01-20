@@ -52,7 +52,7 @@ const loginNav = `
 `;
 const loginModalDiv = `
 	<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">  <!-- 這裡使用 modal-xl -->
+        <div class="modal-dialog modal-dialog-centered modal-lg"> 
 			<div class="modal-content text-center">
 				<div class="modal-body" id="login-modal-body">
 				</div>
@@ -240,8 +240,8 @@ let modalQueue = []; // 建立一個佇列來存放訊息
 let isModalVisible = false; // 追蹤模態視窗是否正在顯示
 
 function showModal(message = null, isMessage = true) {
-    modalQueue.push({ message, isMessage }); // 將訊息及模式加入佇列
-    processModalQueue(); // 處理佇列
+    modalQueue.push({ message, isMessage }); // 將訊息加入佇列
+    processModalQueue();
 }
 
 function processModalQueue() {
@@ -251,51 +251,71 @@ function processModalQueue() {
     let { message, isMessage } = modalQueue.shift();
 
     let loginModal = document.querySelector('#loginModal');
-    
+
+    // **1️⃣ 如果 Modal 不存在，先建立**
     if (!loginModal) {
         let newDiv = document.createElement('div');
         newDiv.innerHTML = loginModalDiv;
         document.querySelector('main').appendChild(newDiv);
     }
 
-    const modalBody = document.querySelector('#login-modal-body');
+    let modalDiv = document.querySelector('#loginModal');
+    let modalBody = document.querySelector('#login-modal-body');
+
+    // **2️⃣ 更新 `modalBody` 內容**
     if (modalBody) {
         if (message === null) {
-            modalBody.innerHTML = loginFormView;
+            modalBody.innerHTML = loginFormView; // ✅ 插入登入表單
         } else if (isMessage) {
-            modalBody.innerHTML = loginMessageDiv; 
-            document.querySelector('#loginMessage').innerHTML = message;
+            modalBody.innerHTML = loginMessageDiv; // ✅ 插入訊息模板
+            let loginMessage = document.querySelector('#loginMessage');
+            if (loginMessage) {
+                loginMessage.innerHTML = message; // ✅ 插入實際訊息
+            }
         } else {
-            modalBody.innerHTML = message; // 直接更改 innerHTML
+            modalBody.innerHTML = message; // ✅ 直接替換內容（保留 `modalDiv`）
         }
     }
 
-    const existingModalInstance = bootstrap.Modal.getInstance(document.querySelector('#loginModal'));
-    if (existingModalInstance) {
-        existingModalInstance.dispose();
-    }
+    // **3️⃣ 確保 Modal 重新初始化**
+    setTimeout(() => {
+        let modalElement = document.querySelector('#loginModal');
+        if (!modalElement) {
+            console.error("❌ `#loginModal` 不存在，無法初始化 Bootstrap Modal！");
+            return;
+        }
 
-    const modalInstance = new bootstrap.Modal(document.querySelector('#loginModal'), { keyboard: true });
-    modalInstance.show();
+        // **4️⃣ 移除舊的 Modal 實例，避免錯誤**
+        const existingModalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (existingModalInstance) {
+            existingModalInstance.dispose();
+        }
 
-    // 當模態視窗關閉時，標記 isModalVisible = false，並繼續處理佇列
-    document.querySelector('#loginModal').addEventListener('hidden.bs.modal', function () {
+        // **5️⃣ 建立新的 Modal 並顯示**
+        const modalInstance = new bootstrap.Modal(modalElement, { keyboard: true });
+        modalInstance.show();
+    }, 50); // ✅ 確保 DOM 更新後執行
+
+    // **6️⃣ 綁定 `hidden.bs.modal` 事件，只綁定一次**
+    modalDiv.addEventListener('hidden.bs.modal', function () {
         isModalVisible = false;
-        processModalQueue();
+        if (modalQueue.length > 0) {
+            processModalQueue();
+        }
     }, { once: true });
 
-    // 綁定登入表單事件
+    // **7️⃣ 綁定登入表單事件**
     let loginForm = document.querySelector('#login_list');
     if (loginForm) {
-        loginForm.removeEventListener('submit', login);
+        loginForm.removeEventListener('submit', login); // **確保不會重複綁定**
         loginForm.addEventListener('submit', login);
     }
-    
-    document.querySelector('#loginModal').addEventListener('hidden.bs.modal', function () {
-        redirectUrl = "";
-    });
-}
 
+    // **8️⃣ `hidden.bs.modal` 時清除 `redirectUrl`**
+    modalDiv.addEventListener('hidden.bs.modal', function () {
+        redirectUrl = "";
+    }, { once: true });
+}
 
 function showLoginView() {
     loginCheck().then(account => {

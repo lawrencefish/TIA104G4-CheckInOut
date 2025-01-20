@@ -1,5 +1,7 @@
 package com.orderDetail.model;
 
+import javax.persistence.Transient;
+
 public class OrderDetailDTO {
 
 	private Integer orderDetailId;
@@ -10,7 +12,12 @@ public class OrderDetailDTO {
 	private Integer roomTypeId;
     private String roomName;
     private Integer maxPerson;
-    
+    //price
+    @Transient
+    private Integer totalPrice;
+    @Transient
+    private Integer totalBreakfastPrice;
+
     
 	public OrderDetailDTO(Integer orderDetailId, Integer guestNum, Integer roomNum, Byte breakfast, Integer roomTypeId,
 			String roomName, Integer maxPerson) {
@@ -22,7 +29,10 @@ public class OrderDetailDTO {
 		this.roomTypeId = roomTypeId;
 		this.roomName = roomName;
 		this.maxPerson = maxPerson;
+		this.totalPrice = 0;
+		this.totalBreakfastPrice = 0;
 	}
+	
 	public Integer getOrderDetailId() {
 		return orderDetailId;
 	}
@@ -66,6 +76,20 @@ public class OrderDetailDTO {
 		this.maxPerson = maxPerson;
 	}
 
+	public Integer getTotalPrice() {
+		return totalPrice;
+	}
 
+	public Integer getTotalBreakfastPrice() {
+		return totalBreakfastPrice;
+	}
+
+	public void setTotalPrice(Integer totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+
+	public void setTotalBreakfastPrice(Integer totalBreakfastPrice) {
+		this.totalBreakfastPrice = totalBreakfastPrice;
+	}
 
 }
