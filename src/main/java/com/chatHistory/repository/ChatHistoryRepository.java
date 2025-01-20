@@ -2,7 +2,6 @@ package com.chatHistory.repository;
 
 import com.chatHistory.model.ChatHistory;
 import org.springframework.data.repository.query.Param;
-import com.chatHistory.pojo.response.MemberChatResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -32,6 +31,6 @@ public interface ChatHistoryRepository extends JpaRepository<ChatHistory, Long> 
         ) 
         ORDER BY ch.send_time DESC
         """, nativeQuery = true)
-    List<Object[]> selectAllMembersLatestChat(@Param("hotelId") String hotelId);
+    List<Object[]> selectAllMembersLatestChat(@Param("hotelId") Long hotelId);
 
 }

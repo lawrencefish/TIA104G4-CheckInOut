@@ -1,7 +1,7 @@
 package com.chatHistory.service;
 
 import com.chatHistory.model.ChatHistory;
-import com.chatHistory.pojo.response.MemberChatResponse;
+import com.chatHistory.dto.MemberChatDto;
 import com.chatHistory.repository.ChatHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,13 +25,13 @@ public class ChatHistoryService {
         chatHistoryRepository.save(chatHistory);
     }
 
-    public List<MemberChatResponse> getMembersWhoChatted(String hotelId) {
+    public List<MemberChatDto> getMembersWhoChatted(Long hotelId) {
         List<Object[]> rawResults = chatHistoryRepository.selectAllMembersLatestChat(hotelId);
 
-        List<MemberChatResponse> responses = new ArrayList<>();
+        List<MemberChatDto> responses = new ArrayList<>();
 
         for (Object[] row : rawResults) {
-            MemberChatResponse response = new MemberChatResponse(
+            MemberChatDto response = new MemberChatDto(
                     ((BigInteger) row[0]).longValue(),
                     (String) row[1],
                     ((Timestamp) row[3]).getTime(),

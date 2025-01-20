@@ -347,7 +347,6 @@
 
         <script>
             const hotelId = "[[${#httpSession.getAttribute('hotel').hotelId}]]";
-            const API_URL = `http://localhost:8080/api/chat/members?hotelId=${hotelId}`;
 
             // DOM 元素
             const userList = document.getElementById("userList");
@@ -359,6 +358,7 @@
             let users = [];
             let activeUserId = null;
             let chatSocket;
+            let listSocket;
 
             // 時間格式化函式
             function formatTimestamp(ts) {
@@ -374,18 +374,45 @@
                 });
             }
 
-            // 從 API 獲取用戶列表
-            async function fetchUsers() {
-                try {
-                    const response = await fetch(API_URL);
-                    if (!response.ok) {
-                        throw new Error(`HTTP 錯誤！狀態碼：${response.status}`);
+            // 初始化用戶列表的 WebSocket 連線
+            function initListWebSocket() {
+                const listSocketUrl = `ws://localhost:8080/ws/chatList`;
+                listSocket = new WebSocket(listSocketUrl);
+
+                listSocket.onopen = function() {
+                    console.log('User list WebSocket 連線已建立');
+                    // 連線建立後，發送請求以取得用戶列表
+                    const request = {
+                        action: 'message',
+                        message: {
+                            hotelId: hotelId
+                        }
+                    };
+                    listSocket.send(JSON.stringify(request));
+                };
+
+                listSocket.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        // 假設伺服器回應為用戶列表的 JSON 陣列
+                        if (data.result && Array.isArray(data.result)) {
+                            users = data.result;
+                            renderUserList();
+                        } else {
+                            console.warn('收到非預期的回應格式:', data);
+                        }
+                    } catch (err) {
+                        console.error('解析用戶列表錯誤:', err);
                     }
-                    users = await response.json();
-                    renderUserList();
-                } catch (error) {
-                    console.error("獲取用戶列表失敗：", error);
-                }
+                };
+
+                listSocket.onerror = function(error) {
+                    console.error('User list WebSocket 發生錯誤:', error);
+                };
+
+                listSocket.onclose = function() {
+                    console.log('User list WebSocket 連線已關閉');
+                };
             }
 
             // 渲染用戶列表
@@ -407,10 +434,10 @@
                     });
 
                     userItem.innerHTML = `
-          <div><strong>${user.memberName}</strong></div>
-          <div>${user.latestChatMessage}</div>
-          <div>${formattedDate}</div>
-        `;
+                <div><strong>${user.memberName}</strong></div>
+                <div>${user.latestChatMessage}</div>
+                <div>${formattedDate}</div>
+            `;
 
                     userItem.addEventListener("click", () => setActiveUser(user.memberId));
                     userList.appendChild(userItem);
@@ -466,10 +493,10 @@
                     messageDiv.classList.add("chat-message", "user");
                     const currentTime = formatTimestamp(new Date().getTime());
                     messageDiv.innerHTML = `
-          <div class="message-content">${message}</div>
-          <small>${currentTime}</small>
-          <div class="clearfix"></div>
-        `;
+                <div class="message-content">${message}</div>
+                <small>${currentTime}</small>
+                <div class="clearfix"></div>
+            `;
                     chatMessages.appendChild(messageDiv);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                     messageInput.value = "";
@@ -486,7 +513,7 @@
 
             // 初始化頁面與 WebSocket 連線
             window.addEventListener('DOMContentLoaded', function() {
-                // 建立 WebSocket 連線
+                // 建立聊天室 WebSocket 連線
                 const socketUrl = 'ws://localhost:8080/ws/chat';
                 chatSocket = new WebSocket(socketUrl);
 
@@ -516,11 +543,11 @@
 
                                 // 設置訊息內容和時間
                                 messageDiv.innerHTML = `
-          <div class="message-wrapper">
-            <div class="message-content">${msg.message}</div>
-            <div class="message-time">${timeString}</div>
-          </div>
-        `;
+                            <div class="message-wrapper">
+                                <div class="message-content">${msg.message}</div>
+                                <div class="message-time">${timeString}</div>
+                            </div>
+                        `;
                                 chatMessages.appendChild(messageDiv);
                             });
                             chatMessages.scrollTop = chatMessages.scrollHeight; // 滾動到底部
@@ -540,11 +567,11 @@
 
                             // 設置訊息內容和時間
                             messageDiv.innerHTML = `
-        <div class="message-wrapper">
-          <div class="message-content">${data.message}</div>
-          <div class="message-time">${timeString}</div>
-        </div>
-      `;
+                        <div class="message-wrapper">
+                            <div class="message-content">${data.message}</div>
+                            <div class="message-time">${timeString}</div>
+                        </div>
+                    `;
                             chatMessages.appendChild(messageDiv);
                             chatMessages.scrollTop = chatMessages.scrollHeight; // 滾動到底部
                         }
@@ -561,8 +588,8 @@
                     console.log('WebSocket 連線已關閉');
                 };
 
-                // 初始化用戶列表
-                fetchUsers();
+                // 初始化用戶列表的 WebSocket 連線
+                initListWebSocket();
             });
         </script>
     </body>
