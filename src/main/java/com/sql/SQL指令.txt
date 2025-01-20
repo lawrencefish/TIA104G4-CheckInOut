@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS checkinout;
 use checkinout;
 
+
 DROP TABLE IF EXISTS chat_history;
 DROP TABLE IF EXISTS reports;
 DROP TABLE IF EXISTS comments;
@@ -27,6 +28,7 @@ DROP TABLE IF EXISTS admin;
 DROP TABLE IF EXISTS member;
 DROP TABLE IF EXISTS hotel;
 DROP TABLE IF EXISTS frequent_reply_list;
+DROP TABLE IF EXISTS chat_history;
 
 
 CREATE TABLE frequent_reply_list (
