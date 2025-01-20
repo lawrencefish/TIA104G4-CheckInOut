@@ -376,7 +376,7 @@
 
             // 初始化用戶列表的 WebSocket 連線
             function initListWebSocket() {
-                const listSocketUrl = `ws://localhost:8080/ws/chatList`;
+            	const listSocketUrl = `ws://${window.location.host}/ws/chatList`;
                 listSocket = new WebSocket(listSocketUrl);
 
                 listSocket.onopen = function() {
@@ -514,7 +514,7 @@
             // 初始化頁面與 WebSocket 連線
             window.addEventListener('DOMContentLoaded', function() {
                 // 建立聊天室 WebSocket 連線
-                const socketUrl = 'ws://localhost:8080/ws/chat';
+                const socketUrl = `ws://${window.location.host}/ws/chat`;
                 chatSocket = new WebSocket(socketUrl);
 
                 chatSocket.onopen = function() {

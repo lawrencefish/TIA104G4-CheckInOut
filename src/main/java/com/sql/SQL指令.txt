@@ -1,9 +1,9 @@
 CREATE DATABASE IF NOT EXISTS checkinout;
 use checkinout;
 
-DROP TABLE IF EXISTS chat_history
-DROP TABLE IF EXISTS reports
-DROP TABLE IF EXISTS comments
+DROP TABLE IF EXISTS chat_history;
+DROP TABLE IF EXISTS reports;
+DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS room;
 DROP TABLE IF EXISTS contact_us;
 DROP TABLE IF EXISTS order_detail;

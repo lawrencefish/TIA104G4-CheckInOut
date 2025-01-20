@@ -238,7 +238,7 @@
 		$('#chatButton').removeClass("d-none");
 		window.addEventListener('DOMContentLoaded', function() {
 			// 建立 WebSocket 連線
-			const socketUrl = 'ws://localhost:8080/ws/chat';
+			const socketUrl = `ws://${window.location.host}/ws/chat`;
 			const chatSocket = new WebSocket(socketUrl);
 
 			chatSocket.onmessage = function(event) {
