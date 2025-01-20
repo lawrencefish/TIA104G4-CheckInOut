@@ -876,11 +876,11 @@
                     } else if (today.getTime() > checkInDate.getTime() && today.getTime() < checkOutDate.getTime()) {
                         // 日期介於 Check-In 和 Check-Out 之間
                         if (order.status === 0) {
-                            statusText = '未報到';
-                            statusClass = 'status-unchecked';
+                            statusText = '逾時未報到';
+                            statusClass = 'status-overdue';
                         } else if (order.status === 1) {
                             statusText = '入住中';
-                            statusClass = 'status-checked-in';
+                            statusClass = 'status-complete';
                         } else if (order.status === 2) {
                             statusText = '已退房';
                             statusClass = 'status-complete';
