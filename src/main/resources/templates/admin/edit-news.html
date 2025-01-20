@@ -22,7 +22,9 @@
             <div class="news-form-container">
                 <div class="image-section">
                     <div class="image-preview">
-                        <img id="previewImage" src="./img/sale.jpg" alt="Preview">
+                        <img id="previewImage" th:src="@{/imgs/default-image.png}" alt="Preview" style="max-width: 100%; height: auto;">
+                        <div id="loading" style="display: none;">載入中...</div>
+                        <div id="error" style="display: none;" class="error-message"></div>
                     </div>
                     <input type="file" id="photoUpload" accept="image/*" style="display: none">
                     <button class="btn btn-primary" onclick="document.getElementById('photoUpload').click()">

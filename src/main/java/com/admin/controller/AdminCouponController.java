@@ -4,6 +4,8 @@ import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,8 +97,10 @@ public class AdminCouponController {
 	public ResponseEntity<?> save(@Valid @ModelAttribute("coupon") CouponVO coupon, 
 	                            BindingResult result) {
 	    try {
+	        System.out.println("接收到的優惠券數據：" + coupon);
+	        
+	        // 基本驗證
 	        if (result.hasErrors()) {
-	            // 修改這部分的錯誤處理
 	            List<Map<String, String>> errors = result.getFieldErrors().stream()
 	                .map(error -> {
 	                    Map<String, String> errorMap = new HashMap<>();
@@ -108,7 +112,12 @@ public class AdminCouponController {
 	            return ResponseEntity.badRequest().body(errors);
 	        }
 
-	        // 設定時間
+	        // 設置預設值
+	        if (coupon.getTravelCityNum() == null) {
+	            coupon.setTravelCityNum(0); // 設置預設值為 0
+	        }
+
+	        // 設定創建時間
 	        if (coupon.getCouponId() == null) {
 	            coupon.setCreateTime(LocalDateTime.now());
 	        }
@@ -116,9 +125,10 @@ public class AdminCouponController {
 	        // 保存優惠券
 	        CouponVO savedCoupon = adminCouponService.save(coupon);
 	        return ResponseEntity.ok(savedCoupon);
-	    } catch (RuntimeException e) {
+	    } catch (Exception e) {
+	        e.printStackTrace();
 	        Map<String, String> error = new HashMap<>();
-	        error.put("message", e.getMessage());
+	        error.put("message", "保存優惠券失敗: " + e.getMessage());
 	        return ResponseEntity.badRequest().body(error);
 	    }
 	}
@@ -126,15 +136,35 @@ public class AdminCouponController {
 	// 日期格式轉換
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
+	    DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+	    
 	    binder.registerCustomEditor(LocalDateTime.class, new PropertyEditorSupport() {
 	        @Override
 	        public void setAsText(String text) throws IllegalArgumentException {
+	            System.out.println("正在轉換日期：" + text);
+	            
 	            try {
-	                LocalDate date = LocalDate.parse(text);
-	                setValue(date.atStartOfDay());
+	                if (text == null || text.trim().isEmpty()) {
+	                    setValue(null);
+	                    return;
+	                }
+	                
+	                // 使用 ISO_DATE 格式解析日期 (YYYY-MM-DD)
+	                LocalDate date = LocalDate.parse(text.trim(), formatter);
+	                LocalDateTime dateTime = date.atStartOfDay();
+	                setValue(dateTime);
+	                
+	                System.out.println("日期轉換成功：" + dateTime);
 	            } catch (Exception e) {
-	                setValue(null);
+	                System.out.println("日期轉換失敗：" + e.getMessage());
+	                throw new IllegalArgumentException("日期格式不正確，請使用 YYYY-MM-DD 格式");
 	            }
+	        }
+
+	        @Override
+	        public String getAsText() {
+	            LocalDateTime value = (LocalDateTime) getValue();
+	            return value == null ? "" : value.toLocalDate().format(formatter);
 	        }
 	    });
 	}

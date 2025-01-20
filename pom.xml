@@ -257,15 +257,15 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-        	<groupId>
-        		0205U_Maven_SpringBootMVC_Thymeleaf_Ver5_SpringData-Jpa
-        	</groupId>
-        	<artifactId>
-        		0205U_Maven_SpringBootMVC_Thymeleaf_Ver5_SpringData-Jpa
-        	</artifactId>
-        	<version>0.0.1-SNAPSHOT</version>
-        </dependency>
+<!--        <dependency>-->
+<!--        	<groupId>-->
+<!--        		0205U_Maven_SpringBootMVC_Thymeleaf_Ver5_SpringData-Jpa-->
+<!--        	</groupId>-->
+<!--        	<artifactId>-->
+<!--        		0205U_Maven_SpringBootMVC_Thymeleaf_Ver5_SpringData-Jpa-->
+<!--        	</artifactId>-->
+<!--        	<version>0.0.1-SNAPSHOT</version>-->
+<!--        </dependency>-->
 	</dependencies>
 
 	<build>

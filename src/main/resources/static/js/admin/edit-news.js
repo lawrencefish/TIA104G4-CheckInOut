@@ -114,59 +114,110 @@ function setupImageUpload() {
 async function submitNews(event) {
     event.preventDefault();
 
-    // 獲取表單數據
-    const formData = new FormData();
-    formData.append('newsTitle', document.getElementById('title').value);
-    formData.append('description', document.getElementById('content').value);
-    formData.append('createTime', document.getElementById('publishDate').value);
-    formData.append('postTime', document.getElementById('startDate').value);
-    
-    const imageFile = document.getElementById('photoUpload').files[0];
+	// 獲取表單數據
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
+    const publishDate = document.getElementById('publishDate').value;
+    const startDate = document.getElementById('startDate').value;
+	const imageFile = document.getElementById('photoUpload').files[0];
+	
+	// 如果有圖片，先壓縮
+    let compressedImage = null;
     if (imageFile) {
-        formData.append('newsImg', imageFile);
+        compressedImage = await compressImage(imageFile);
     }
+	
+	const formData = new FormData();
+	    formData.append('newsTitle', title);
+	    formData.append('description', content);
+	    formData.append('createTime', publishDate);
+	    formData.append('postTime', startDate);
+	    if (imageFile) {
+	        formData.append('newsImg', imageFile);
+	    }
 
-    // 驗證日期
-    if (new Date(formData.get('postTime')) < new Date(formData.get('createTime'))) {
-        showMessage('開始時間不能早於發布時間', 'error');
-        return;
-    }
+	    try {
+	        // 獲取當前新聞 ID（如果是編輯模式）
+	        const urlParams = new URLSearchParams(window.location.search);
+	        const newsId = urlParams.get('id');
+	        
+	        const url = newsId ? `/api/news/${newsId}` : '/api/news';
+	        const method = newsId ? 'PUT' : 'POST';
 
-    try {
-        // 將 FormData 轉換為 JSON 格式
-        const newsData = {
-            newsTitle: formData.get('newsTitle'),
-            description: formData.get('description'),
-            createTime: formData.get('createTime'),
-            postTime: formData.get('postTime')
+	        // 發送請求
+	        const response = await fetch(url, {
+	            method: method,
+	            body: formData  // 直接發送 FormData，不設置 Content-Type
+	        });
+
+	        if (!response.ok) {
+	            throw new Error('提交失敗');
+	        }
+
+	        showMessage('新聞保存成功', 'success');
+	        
+	        // 延遲後返回列表頁面
+	        setTimeout(() => {
+	            window.location.href = '/admin/latestNews';
+	        }, 1500);
+
+	    } catch (error) {
+	        console.error('提交新聞失敗:', error);
+	        showMessage('提交失敗，請重試', 'error');
+	    }
+	}
+	
+// 圖片壓縮函數
+async function compressImage(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // 設置最大尺寸
+                const MAX_WIDTH = 1200;
+                const MAX_HEIGHT = 1200;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // 轉換為 blob
+                canvas.toBlob(
+                    (blob) => {
+                        resolve(new File([blob], file.name, {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        }));
+                    },
+                    'image/jpeg',
+                    0.7  // 壓縮質量，0.7 通常是個好的平衡點
+                );
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
         };
-
-        const url = currentNewsId ? `/api/news/${currentNewsId}` : '/api/news';
-        const method = currentNewsId ? 'PUT' : 'POST';
-        
-        const response = await fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(newsData)
-        });
-
-        if (!response.ok) {
-            throw new Error('提交失敗');
-        }
-
-        showMessage('新聞保存成功', 'success');
-        
-        // 延遲後返回列表頁面
-        setTimeout(() => {
-            window.location.href = '/admin/latestNews';
-        }, 1500);
-
-    } catch (error) {
-        console.error('提交新聞失敗:', error);
-        showMessage('提交失敗，請重試', 'error');
-    }
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 // 格式化日期用於input標籤
@@ -197,3 +248,44 @@ document.getElementById('publishDate').addEventListener('change', function(e) {
     }
     startDate.min = e.target.value;
 });
+
+// 抓取單張圖片
+function fetchNewsImage(newsId) {
+    const imgElement = document.getElementById('newsImage');
+    const loadingElement = document.getElementById('loading');
+    const errorElement = document.getElementById('error');
+	
+	// 如果元素不存在，直接返回
+	    if (!loading || !previewImage || !error) {
+	        console.error('Required DOM elements not found');
+	        return;
+	    }
+    
+    // 顯示加載中
+    loadingElement.style.display = 'block';
+    imgElement.style.display = 'none';
+    errorElement.style.display = 'none';
+    
+    fetch(`/api/news/${newsId}/image`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('圖片加載失敗');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            imgElement.src = url;
+            imgElement.style.display = 'block';
+            loadingElement.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorElement.textContent = '圖片加載失敗';
+            errorElement.style.display = 'block';
+            loadingElement.style.display = 'none';
+        });
+}
+
+// 使用示例
+fetchNewsImage(1);
