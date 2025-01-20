@@ -29,6 +29,8 @@ public class ChatEndpoint extends BaseWsEndpoint {
     private ChatSessionManager sessionManager;
     @Autowired
     private ChatHistoryService chatHistoryService;
+    @Autowired
+    private ChatListEndpoint chatListEndpoint;
 
     @OnOpen
     public void onOpen(Session session) {
@@ -49,6 +51,7 @@ public class ChatEndpoint extends BaseWsEndpoint {
         }else if("message".equalsIgnoreCase(req.getAction())) {
             save(chatRequest);
             sendMessage(chatRequest);
+            refreshChatList(chatRequest.getHotelId());
         } else {
             throw new IllegalArgumentException("action 只能為 history 或 message");
         }
@@ -96,4 +99,9 @@ public class ChatEndpoint extends BaseWsEndpoint {
 
         chatHistoryService.create(chatHistory);
     }
+
+    private void refreshChatList(Long hotelId) throws Exception {
+        chatListEndpoint.sendMessage(hotelId);
+    }
+
 }
