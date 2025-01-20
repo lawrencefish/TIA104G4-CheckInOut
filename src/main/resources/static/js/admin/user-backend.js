@@ -112,36 +112,46 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	        // 設置狀態更新功能
 	        setupStatusUpdates() {
-				$('.btn-status-update').click(function () {
-				    const id = $(this).data('id');
-				    const currentStatus = $(this).data('status');
-				    const newStatus = currentStatus === 0 ? 1 : 0;
-				    const buttonText = newStatus === 0 ? '啟用' : '停權'; // 按照需求改變按鈕文字
+				// 初始化按鈕文字
+	            $('.btn-status-update').each(function() {
+	                const status = $(this).closest('tr').find('td:nth-child(3)').text().trim();
+	                const buttonText = status === '啟用中' ? '停權' : '啟用';
+	                $(this).text(buttonText);
+	            });
 
-				    if (!confirm(`確定要將狀態更改為 ${buttonText} 嗎？`)) return;
+	            // 處理按鈕點擊事件
+	            $('.btn-status-update').click(function () {
+	                const id = $(this).data('id');
+	                const currentStatus = $(this).closest('tr').find('td:nth-child(3)').text().trim() === '啟用中' ? 1 : 0;
+	                const newStatus = currentStatus === 1 ? 0 : 1;
+	                const buttonText = currentStatus === 1 ? '啟用' : '停權';
 
-				    const apiPath = $('#businessTable_wrapper').is(':visible')
-				        ? '/adminHotel/updateStatus'
-				        : '/adminMember/updateStatus';
+	                if (!confirm(`確定要將狀態更改為 ${currentStatus === 1 ? '停權' : '啟用'} 嗎？`)) return;
 
-				    fetch(apiPath, {
-				        method: 'POST',
-				        headers: { 'Content-Type': 'application/json' },
-				        body: JSON.stringify({ id, status: newStatus })
-				    })
-				        .then(response => response.json())
-				        .then(data => {
-				            if (data.success) {
-				                $(this).data('status', newStatus).text(buttonText); // 更新按鈕文字
-				            } else {
-				                alert('更新失敗：' + data.message);
-				            }
-				        })
-				        .catch(error => {
-				            console.error('更新狀態時發生錯誤：', error);
-				            alert('更新失敗，請稍後再試');
-				        });
-				});
+	                const apiPath = $('#businessTable_wrapper').is(':visible')
+	                    ? '/adminHotel/updateStatus'
+	                    : '/adminMember/updateStatus';
+
+	                fetch(apiPath, {
+	                    method: 'POST',
+	                    headers: { 'Content-Type': 'application/json' },
+	                    body: JSON.stringify({ id, status: newStatus })
+	                })
+	                    .then(response => response.json())
+	                    .then(data => {
+	                        if (data.success) {
+	                            // 更新按鈕文字和狀態欄位
+	                            $(this).text(buttonText);
+	                            $(this).closest('tr').find('td:nth-child(3)').text(newStatus === 1 ? '啟用中' : '停權');
+	                        } else {
+	                            alert('更新失敗：' + data.message);
+	                        }
+	                    })
+	                    .catch(error => {
+	                        console.error('更新狀態時發生錯誤：', error);
+	                        alert('更新失敗，請稍後再試');
+	                    });
+	            });
 	        },
 			
 			// 追踪登入時間
