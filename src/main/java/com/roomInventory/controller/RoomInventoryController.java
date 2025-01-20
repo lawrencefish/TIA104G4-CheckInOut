@@ -87,10 +87,7 @@ public class RoomInventoryController {
 
     @PutMapping("/update")
     public ResponseEntity<List<RoomInventoryVO>> updateRoomInventories(@RequestBody List<RoomInventoryVO> inventories) {
-//        System.out.println("收到更新請求: " + inventories); // 打印接收到的更新數據
-
         if (inventories.isEmpty()) {
-//            System.out.println("接收到空的更新數據");
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
@@ -98,15 +95,12 @@ public class RoomInventoryController {
 
         for (RoomInventoryVO inventory : inventories) {
             try {
-//                System.out.println("正在處理房型庫存: " + inventory);
 
                 // 更新庫存數據
                 RoomInventoryVO updatedInventory = roomInventoryService.updateRoomInventory(inventory);
                 updatedInventories.add(updatedInventory);
 
-//                System.out.println("成功更新: " + updatedInventory);
             } catch (Exception e) {
-//                System.err.println("更新失敗: 房型庫存ID=" + inventory.getInventoryId() + "，錯誤=" + e.getMessage());
                 e.printStackTrace(); // 打印錯誤堆疊信息
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
             }
