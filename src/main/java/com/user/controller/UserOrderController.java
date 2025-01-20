@@ -112,7 +112,6 @@ public class UserOrderController {
 	@PostMapping("/comment/send")
 	public ResponseEntity<Map<String, Object>> sendComment(@RequestBody Map<String, Object> comment, HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
-		System.out.println(comment);
 		Integer orderId = Integer.valueOf((String) comment.get("orderId"));
 		Integer rating = Integer.valueOf((String) comment.get("rating"));
 		String commentContent =  (String) comment.get("commentContet");
