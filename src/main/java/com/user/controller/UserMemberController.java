@@ -302,10 +302,10 @@ public class UserMemberController {
 		
 		// 更新會員資料
 		try {
-			memServ.addMember(memberInfo);
+			MemberVO savedMember = memServ.addMember(memberInfo);
 			
 			// 註冊成功後發布事件
-//		    eventPublisher.publishEvent(new MemberRegisteredEvent(this, member));
+		    eventPublisher.publishEvent(new MemberRegisteredEvent(savedMember));
 	        
 			response.put("success", "success");
 			response.put("message", "註冊成功 恭喜獲得一張新會員優惠券");
