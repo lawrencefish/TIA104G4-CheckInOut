@@ -65,6 +65,8 @@ public class UserMemberController {
 	
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
+	
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(UserMemberController.class);
 
