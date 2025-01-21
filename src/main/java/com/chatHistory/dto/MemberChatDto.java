@@ -1,4 +1,4 @@
-package com.chatHistory.pojo.response;
+package com.chatHistory.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberChatResponse {
+public class MemberChatDto {
 
     private Long memberId;
 

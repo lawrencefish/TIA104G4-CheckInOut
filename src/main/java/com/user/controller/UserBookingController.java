@@ -283,7 +283,6 @@ public class UserBookingController {
 					daydto.put("roomTypeId", String.valueOf(roomTypeId));
 					dailyInventory.put(date, daydto);
 				}
-
 				System.out.println(roomTypeId + ":" + date + ":" + totalPrice + ":" + room.getAvailableQuantity());
 			}
 		}
@@ -375,7 +374,7 @@ public class UserBookingController {
 					LocalDate currentDate = checkInDate;
 					while (!currentDate.isAfter(checkOutDateMOne)) {
 						HotelRoomInventoryDTO dayDto = dateToDto.get(currentDate);
-						if (dayDto == null || dayDto.getAvailableQuantity() < needRooms) {
+						if (dayDto == null || dayDto.getAvailableQuantity() < roomNum) {
 							isRoomAvailableEveryDay = false;
 							break;
 						}
@@ -389,12 +388,11 @@ public class UserBookingController {
 						inventory.put("availableQuantity", dayDto.getAvailableQuantity());
 						inventories.add(inventory);
 						totalPrice += todayPrice.getPrice();
+
 						if (dayDto.getBreakfast() != 0) {
 							totalPrice += todayPrice.getBreakfastPrice();
 						}
 						currentDate = currentDate.plusDays(1);
-						System.out.println(roomTypeId + ":" + dayDto.getDate() + ":" + totalPrice + ":"
-								+ dayDto.getAvailableQuantity() + ":" + dayDto.getInventoryId());
 
 					}
 

@@ -27,6 +27,11 @@ public class MemberCouponService {
     @Autowired
     private CouponRepository couponRepository;
     
+    
+    public MemberCouponVO getById(Integer memberCouponId) {
+    	return memberCouponRepository.getById(memberCouponId);
+    }
+    
     public List<MemberCouponVO> getMemberCoupons(Integer memberId) {
         List<MemberCouponVO> coupons = memberCouponRepository.findByMember_MemberId(memberId);
         coupons.forEach(mc -> {

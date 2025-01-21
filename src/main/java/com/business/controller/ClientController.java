@@ -1,5 +1,6 @@
 package com.business.controller;
 
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +62,23 @@ public class ClientController {
     @GetMapping("/clientDetail/{memberId}")
     public String showClientDetail(@PathVariable Integer memberId, Model model) {
         MemberVO client = orderService.getMemberId(memberId);
+        
+        // 處理頭像資料
+        String avatar;
+        if (client.getAvatar() != null && client.getAvatar().length > 0) {
+            // 將 byte[] 轉換為 Base64 字符串
+            avatar = "data:image/png;base64," + Base64.getEncoder().encodeToString(client.getAvatar());
+        } else {
+            // 使用默認圖片
+            avatar = "/imgs/user/defaultAvatar.png";
+        }
+
         model.addAttribute("client", client);
+        model.addAttribute("avatar", avatar);
+
         return "business/clientDetail"; 
     }
+
     
     @PostMapping("/update")
     public String updateClient(@ModelAttribute MemberVO updatedClient) {

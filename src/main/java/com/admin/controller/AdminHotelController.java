@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -173,6 +174,31 @@ public class AdminHotelController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    @PostMapping("/updateStatus")
+    public ResponseEntity<?> updateStatus(@RequestBody Map<String, Object> request) {
+        try {
+            Integer id = (Integer) request.get("id");
+            Integer status = (Integer) request.get("status");
+            
+            if (id == null || status == null) {
+                return ResponseEntity.badRequest().body("ID 和狀態不能為空");
+            }
+
+            adminHotelService.updateStatus(id, status);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "狀態更新成功");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "更新失敗：" + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
     

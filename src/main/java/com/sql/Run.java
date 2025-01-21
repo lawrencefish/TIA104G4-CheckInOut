@@ -13,6 +13,8 @@ public class Run {
 
         //  更新庫存數量
         UpdateRoomInventory.run();
+        // 會員照片 雄大&兔兔
+        MemberAvatarWriter.run();
 //        HotelFacilityUploader.run();
 //        RoomTypeFacilityUploader.run();
 //        RoomUploader.run();

@@ -972,7 +972,9 @@
                     location.reload(); // 重新整理整個頁面
                     closeModal();
                 })
-                .catch(error => console.error('Error updating inventory:', error));
+                .catch(error => {// 改為使用 alert 顯示錯誤訊息
+                    alert('更新失敗');
+                });
         });
 
         // 建立庫存

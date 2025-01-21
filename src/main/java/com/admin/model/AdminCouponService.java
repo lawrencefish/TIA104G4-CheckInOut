@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +19,15 @@ public class AdminCouponService {
     private CouponRepository couponRepository;
 
     // 分頁查詢所有優惠券
-//    public Page<CouponVO> findAll(Pageable pageable) {
-//        return couponRepository.findAll(pageable);
-//    }
+    public Page<CouponVO> findAll(Pageable pageable) {
+        return couponRepository.findAll(pageable);
+    }
 
     // 關鍵字搜尋優惠券(搜尋名稱和描述)
-//    public Page<CouponVO> findByKeyword(String keyword, Pageable pageable) {
-//        return couponRepository.findByCouponNameContainingOrCouponDetailContaining(
-//            keyword, keyword, pageable);
-//    }
+    public Page<CouponVO> findByKeyword(String keyword, Pageable pageable) {
+        return couponRepository.findByCouponNameContainingOrCouponDetailContaining(
+            keyword, keyword, pageable);
+    }
 
     // 根據ID查詢單個優惠券
     public CouponVO findById(Integer id) {
@@ -38,23 +38,44 @@ public class AdminCouponService {
     // 創建或更新優惠券
     @Transactional
     public CouponVO save(CouponVO coupon) {
-        // 驗證日期
-        validateCouponDates(coupon);
-        // 驗證金額
-        validateAmounts(coupon);
-        return couponRepository.save(coupon);
+        try {
+            // 驗證
+            validateCouponDates(coupon);
+            validateAmounts(coupon);
+            
+            // 設置預設值
+            if (coupon.getCouponId() == null) {
+                coupon.setCreateTime(LocalDateTime.now());
+                coupon.setTravelCityNum(0);
+            }
+            
+            // 保存
+            return couponRepository.save(coupon);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("保存優惠券失敗: " + e.getMessage());
+        }
     }
-
     // 刪除優惠券
-//    @Transactional
-//    public void deleteById(Integer id) {
-//        CouponVO coupon = findById(id);
-//        // 檢查是否有人已經領取此優惠券
-//        if (!coupon.getMemberCoupons().isEmpty()) {
-//            throw new RuntimeException("已有會員領取此優惠券，無法刪除");
-//        }
-//        couponRepository.deleteById(id);
-//    }
+    @Transactional
+    public void deleteById(Integer id) {
+        try {
+            System.out.println("查找優惠券，ID: " + id);
+            CouponVO coupon = findById(id);
+            
+            // 檢查是否有人已經領取此優惠券
+//            if (!coupon.getMemberCoupons().isEmpty()) {
+//                throw new RuntimeException("已有會員領取此優惠券，無法刪除");
+//            }
+            
+            System.out.println("執行刪除操作");
+            couponRepository.deleteById(id);
+            System.out.println("刪除完成");
+        } catch (Exception e) {
+            System.err.println("刪除過程發生錯誤: " + e.getMessage());
+            throw new RuntimeException("刪除優惠券失敗: " + e.getMessage());
+        }
+    }
 
     // 批次刪除優惠券
 //    @Transactional
@@ -66,10 +87,10 @@ public class AdminCouponService {
 
     // 檢查優惠券日期
     private void validateCouponDates(CouponVO coupon) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
         
         if (coupon.getActiveDate().isBefore(now)) {
-            throw new RuntimeException("生效日期不能早於現在");
+            throw new RuntimeException("生效日期不能早於今天");
         }
         
         if (coupon.getExpiryDate().isBefore(coupon.getActiveDate())) {

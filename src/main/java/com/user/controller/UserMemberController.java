@@ -65,6 +65,8 @@ public class UserMemberController {
 	
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
+	
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(UserMemberController.class);
 
@@ -302,7 +304,7 @@ public class UserMemberController {
 			MemberVO savedMember = memServ.addMember(memberInfo);
 			
 			// 註冊成功後發布事件
-		    eventPublisher.publishEvent(new MemberRegisteredEvent(savedMember));
+//		    eventPublisher.publishEvent(new MemberRegisteredEvent(this, member));
 	        
 			response.put("success", "success");
 			response.put("message", "註冊成功 恭喜獲得一張新會員優惠券");
