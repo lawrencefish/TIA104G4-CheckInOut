@@ -374,7 +374,7 @@
         .review-item {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ccc;
+            
             border-radius: 7px;
             font-size: 1rem;
             resize: vertical;
@@ -480,17 +480,13 @@
     </div>
 		
 
-    <!-- 主體內容 -->
+   <!-- 主體內容 -->
    <div class="container">
     <!-- Aside -->
     <aside class="sidebar" id="aside">
         <label for="common-replies">常用回覆</label>
-        <select id="common-replies" onchange="loadReply()">
-            <!-- 使用後端的 replies 資料 -->
-            <option th:each="reply : ${replies}"
-                    th:value="${reply.replyId}"
-                    th:text="${reply.title}">
-            </option>
+        <select id="common-replies">
+            <option value="" disabled selected>請選擇常用回覆</option>
         </select>
         <a th:href="@{/frequentReply}"><button class="btn-add">新增</button></a>
     </aside>
@@ -499,12 +495,15 @@
     <main class="main-content" id="main">
         <div class="review-section">
             <h3>訂單編號&nbsp;&nbsp;<span th:text="${comment.orderId}"></span></h3><br>
-            <h4>飯店&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.hotelName}"></span></h4>
-            <h4>評論時間&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></span></h4>
-            <h4>顧客姓名&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.clientLastName} + ${comment.clientFirstName}"></h4>
+            <h4>飯店:&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.hotelName}"></span></h4>
+            <h4>評論時間:&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></span></h4>
+            <h4>顧客姓名:&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.clientLastName} + ${comment.clientFirstName}"></h4>
             <input type="hidden" id="orderId" th:value="${comment.orderId}" />
             <div class="review-item">
-                <p th:text="${comment.commentContent}"></p>
+                <p>
+    				<strong>評論內容: </strong>
+    				<span th:text="${comment.commentContent}"></span>
+				</p>
             </div>
         </div>
 
@@ -618,7 +617,40 @@
                 })
                 .catch(error => console.error('載入回覆出錯:', error));
         }
+		
+        // 加載常用回覆到下拉選單
+        function loadReplies() {
+            fetch('/api/comment/frequentlyReply')
+                .then(response => {
+                    if (!response.ok) throw new Error('無法載入回覆資料');
+                    return response.json();
+                })
+                .then(replies => {
+                    const selectElement = document.getElementById('common-replies');
+                    selectElement.innerHTML = '<option value="" disabled selected>請選擇常用回覆</option>'; // 添加提示選項
 
+                    replies.forEach(reply => {
+                        const option = document.createElement('option');
+                        option.value = reply.replyId;
+                        option.textContent = reply.title;
+                        option.dataset.content = reply.content; // 將 content 存為 data 屬性
+                        selectElement.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('載入回覆列表時出錯:', error));
+        }
+
+        // 當選擇選項時，自動將對應內容填入回覆框
+        document.getElementById('common-replies').addEventListener('change', (event) => {
+            const selectedOption = event.target.selectedOptions[0];
+            const replyContent = selectedOption.dataset.content; // 取得 data-content
+            document.getElementById('responseInput').value = replyContent || ''; // 填入回覆框
+        });
+
+        // 初始化時加載常用回覆
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReplies(); // 載入回覆列表
+        });
     </script>
 
 

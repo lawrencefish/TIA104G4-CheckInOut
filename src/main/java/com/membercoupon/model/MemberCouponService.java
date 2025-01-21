@@ -27,6 +27,11 @@ public class MemberCouponService {
     @Autowired
     private CouponRepository couponRepository;
     
+    
+    public MemberCouponVO getById(Integer memberCouponId) {
+    	return memberCouponRepository.getById(memberCouponId);
+    }
+    
     public List<MemberCouponVO> getMemberCoupons(Integer memberId) {
         List<MemberCouponVO> coupons = memberCouponRepository.findByMember_MemberId(memberId);
         coupons.forEach(mc -> {
@@ -76,6 +81,20 @@ public class MemberCouponService {
         memberCoupon.setCouponStatus((byte) 2); // 假設 2 表示已使用
         memberCouponRepository.save(memberCoupon);
     }
+    
+    @Transactional
+    public void returnCoupon(Integer memberCouponId) {
+        MemberCouponVO memberCoupon = memberCouponRepository.findById(memberCouponId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member coupon not found"));
+
+        if (memberCoupon.getCouponStatus() != 2) {
+            throw new IllegalStateException("This coupon is not valid");
+        }
+
+        memberCoupon.setCouponStatus((byte) 1); // 假設 2 表示已使用
+        memberCouponRepository.save(memberCoupon);
+    }
+
 
     @Transactional
     public void deleteMemberCoupon(Integer memberCouponId) {

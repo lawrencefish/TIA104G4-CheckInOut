@@ -14,21 +14,23 @@
     <main>
         <section class="admin-banner">
             <div class="container">
-                <h1>創建/編輯消息</h1>
+                <h1></h1>
             </div>
         </section>
 
         <section class="container">
             <div class="news-form-container">
                 <div class="image-section">
-                    <div class="image-preview">
-                        <img id="previewImage" src="./img/sale.jpg" alt="Preview">
-                    </div>
-                    <input type="file" id="photoUpload" accept="image/*" style="display: none">
-                    <button class="btn btn-primary" onclick="document.getElementById('photoUpload').click()">
-                        上傳照片
-                    </button>
-                </div>
+				    <div class="image-preview">
+				        <img id="previewImage" th:src="@{/imgs/default-image.png}" alt="Preview">
+				        <div id="loading" style="display: none;">載入中...</div>
+				        <div id="error" style="display: none;" class="error-message"></div>
+				    </div>
+				    <input type="file" id="photoUpload" accept="image/*" style="display: none">
+				    <button class="btn btn-primary" onclick="document.getElementById('photoUpload').click()">
+				        上傳照片
+				    </button>
+				</div>
 
                 <form id="newsForm" onsubmit="submitNews(event)">
                     <div class="form-group">

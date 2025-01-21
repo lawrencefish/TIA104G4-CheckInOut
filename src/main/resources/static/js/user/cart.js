@@ -77,6 +77,7 @@ function deletCart(id) {
         showModal(response.message);
         loadCart();
         setTimeout(calcPrice, 100);
+        showLoginView();
     });
 }
 
@@ -85,6 +86,7 @@ function checkLogin() {
         $.post("/user/api/loginCheck", function (response) {
             if (response.message == "not login") {
                 showModal("登入後才能進行結帳！");
+                showModal();
                 resolve(false); // 未登入，返回 false
             } else {
                 resolve(true); // 已登入，返回 true
@@ -98,7 +100,6 @@ function calcPrice() {
     let rooms = $('input[name="selectedHotel"]:checked').closest('div').find('.hotel-rooms');
     let roomNum = rooms.find('.room-item').length;
     let price = 0;
-    console.log(rooms);
     rooms.find('.room-item').each(function (index, ele) {
         price += parseInt($(this).find('.hotel-price').text());
     })

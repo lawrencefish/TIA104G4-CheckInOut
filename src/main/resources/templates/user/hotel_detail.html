@@ -184,14 +184,11 @@
 			<!-- 房型選擇 -->
 			<div class="col-12">
 				<div class="room-container container my-4">
-
-
-
 				</div>
 			</div>
 
 			<!-- 浮動聊天按鈕 -->
-			<button id="chatButton" class="btn btn-primary">聊天</button>
+			<button id="chatButton" class="btn btn-primary d-none">聊天</button>
 
 			<!-- 聊天彈窗 -->
 			<div id="chatPopup" class="d-flex hidden">
@@ -205,7 +202,7 @@
 					<button id="sendMessage" class="btn btn-primary">送出</button>
 				</div>
 			</div>
-
+		</div>
 	</main>
 
 
@@ -237,12 +234,11 @@
 	<script th:src="@{/js/user/hotel_detail.js}"></script>
 	<script src="/js/user/loginCheck.js" defer></script>
 	<!-- 引入必要的 JS 庫 -->
-	<script th:src="@{/vendors/bootstrap/js/bootstrap.bundle.min.js}"></script>
-	<script th:src="@{/vendors/jQuery/jquery-3.7.1.min.js}"></script>
-	<script>
+	<script th:if="${session != null && session.memberId != null}">
+		$('#chatButton').removeClass("d-none");
 		window.addEventListener('DOMContentLoaded', function() {
 			// 建立 WebSocket 連線
-			const socketUrl = 'ws://localhost:8080/ws/chat';
+			const socketUrl = `ws://${window.location.host}/ws/chat`;
 			const chatSocket = new WebSocket(socketUrl);
 
 			chatSocket.onmessage = function(event) {
@@ -288,8 +284,7 @@
 					console.error('解析訊息錯誤:', e);
 				}
 			};
-
-			const memberId = "[[${#httpSession.getAttribute('memberId')}]]";
+			const memberId = "[[${#httpSession.getAttribute('memberId')}]]" ;
 			const url = new URL(window.location.href);
 			const pathParts = url.pathname.split('/');
 			const hotelId = pathParts[pathParts.indexOf('hotel_detail') + 1]; // 提取 'hotel_detail' 後的部分

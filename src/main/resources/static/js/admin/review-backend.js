@@ -31,11 +31,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                             const imageBlob = await imgResponse.blob();
                             hotel.imageUrl = URL.createObjectURL(imageBlob);
                         } else {
-                            hotel.imageUrl = '/static/images/default-hotel.jpg'; // 預設圖片
+                            hotel.imageUrl = '/static/imgs/default-hotel.png'; // 預設圖片
                         }
                     } catch (error) {
                         console.error('獲取飯店圖片錯誤:', error);
-                        hotel.imageUrl = '/static/images/default-hotel.jpg';
+                        hotel.imageUrl = '/static/imgs/default-hotel.png';
                     }
                     return hotel;
                 }));
@@ -66,11 +66,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                             const imageBlob = await imgResponse.blob();
                             room.imageUrl = URL.createObjectURL(imageBlob);
                         } else {
-                            room.imageUrl = '/static/images/default-room.jpg'; // 預設圖片
+                            room.imageUrl = '/static/imgs/default-room.png'; // 預設圖片
                         }
                     } catch (error) {
                         console.error('獲取房型圖片錯誤:', error);
-                        room.imageUrl = '/static/images/default-room.jpg';
+                        room.imageUrl = '/static/imgs/default-room.png';
                     }
                     return room;
                 }));

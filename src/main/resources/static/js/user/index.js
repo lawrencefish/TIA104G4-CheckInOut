@@ -21,7 +21,7 @@ const apikey = "AIzaSyAQ4SS_rzxn4J8dPktZjUiVMAkjGA_dCuo";
     }));
   d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n));
 })
-  ({ key: apikey, v: "weekly" ,libraries: "places"});
+  ({ key: apikey, v: "weekly", libraries: "places" });
 
 let map;
 
@@ -43,7 +43,7 @@ async function initMap() {
     componentRestrictions: { country: "tw" }  // 限制在台灣
   };
   const autocomplete = new google.maps.places.Autocomplete(input, options);
-  
+
 
   $.getJSON("/vendors/twCity.json", function (e) {
     let features = e.features;
@@ -222,10 +222,12 @@ $(document).ready(function () {
       showModal("數量不能大於10");
       $('#guestNum').val(10);
     }
-    if ($('#roomNum').val() > $('#guestNum').val() && $('#guestNum').val() != "" && $('#roomNum').val() != "") {
-      showModal("房數大於入住人數，請重新輸入");
-      $('#guestNum').val($('#roomNum').val());
-    }
+    setTimeout(function () {
+      if ($('#roomNum').val() > $('#guestNum').val() && $('#guestNum').val() != "" && $('#roomNum').val() != "") {
+        showModal("房數大於入住人數，請重新輸入");
+        $('#guestNum').val($('#roomNum').val());
+      }
+    },100);
   });
 
   $('#submitBtn').on('click', (e) => {

@@ -15,6 +15,7 @@ let dateArray = [];
             console.log(data)
             dateArray = data.date;
             // 等資料加載完後再生成日曆
+            disableDate = [];
             generateCalendar('#calendar-wrapper', today.getFullYear(), today.getMonth());
         })
         .catch(function (error) {
@@ -284,8 +285,8 @@ function fetchCalendarInfo() {
         dataType: 'json',
         data: JSON.stringify({
             id: hotelId,
-            roomNum: $('#room_num').val() == "" ? 0 : $('#room_num').val(),
-            guestNum: $('#people_num').val() == "" ? 0 : $('#people_num').val()
+            roomNum: $('#room_num').val() == "" ? 1 : $('#room_num').val(),
+            guestNum: $('#people_num').val() == "" ? 1 : $('#people_num').val()
         })
     });
 }

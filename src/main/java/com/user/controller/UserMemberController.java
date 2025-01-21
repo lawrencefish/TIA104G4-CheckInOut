@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -301,10 +302,10 @@ public class UserMemberController {
 		
 		// 更新會員資料
 		try {
-			MemberVO savedMember = memServ.addMember(memberInfo);
+			memServ.addMember(memberInfo);
 			
 			// 註冊成功後發布事件
-		    eventPublisher.publishEvent(new MemberRegisteredEvent(savedMember));
+//		    eventPublisher.publishEvent(new MemberRegisteredEvent(this, member));
 	        
 			response.put("success", "success");
 			response.put("message", "註冊成功 恭喜獲得一張新會員優惠券");
@@ -325,6 +326,15 @@ public class UserMemberController {
 	    } else {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	    }
+	}
+	
+	@GetMapping("/cart/get")
+	public ResponseEntity<Map<String, String>> getCartLength(HttpSession session) {
+		List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
+		Map<String, String> response = new HashMap<>();
+		String cartSize = cartList != null ? String.valueOf(cartList.size()) : "0";
+		response.put("cartLength", cartSize);
+		return ResponseEntity.ok(response);
 	}
 
 	

@@ -182,10 +182,6 @@ function hotelLoading(data, map) {
         let hotelCard = `
                     <div class="col ${hotelID}">
                         <div class="card h-100 my-3 position-relative" id="card-${hotelID}">
-                            <!-- 愛心按鈕 -->
-                            <button class="btn btn-light heart-button position-absolute top-0 end-0 m-2">
-                                ♥
-                            </button>
                             <div class="row g-0">
                                 <div class="col-4" style="height:200px; overflow: hidden;">
                                     <img src="${hotelIMG}" style="width:100%; height:100%; object-fit:cover;" alt="${hotelName}">
@@ -276,7 +272,18 @@ function hotelLoading(data, map) {
         });
         addCardClickEvent(hotelID, position);
         markers.push(marker); // 儲存標記
-    });
+    }
+    );
+    if(data.hotels.length == 0 ){
+        let emptyHtml = `
+        <div class="text-center py-5">
+            <i class="bi bi-search fs-1 text-muted"></i>
+            <h5 class="fw-bold text-muted mt-3">找不到符合條件的結果</h5>
+            <p class="text-muted">請嘗試更改搜尋條件，或查看其他地區。</p>
+        </div>
+        `
+        $('.card-scroll').append(emptyHtml);
+    }
 };
 
 function findRoomWithLowestTotalPrice(data) {

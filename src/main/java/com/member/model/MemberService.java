@@ -34,8 +34,7 @@ public class MemberService {
 //	}
 	
 	@Transactional
-	public MemberVO addMember(MemberVO memberVO) {
-		
+	public MemberVO addMember(MemberVO memberVO) {		
 	    try {
 	        MemberVO savedMember = repository.save(memberVO);
 	        return savedMember;
@@ -43,8 +42,6 @@ public class MemberService {
 	    } catch (Exception e) {
 	        System.out.println("註冊會員資料失敗" + e.getMessage());
 	        throw new RuntimeException("註冊會員資料失敗", e);
-	    }
-	}
 	
 	
 	
@@ -82,6 +79,11 @@ public class MemberService {
 	public byte[] findAvatarByAccount(String account) {
 		return repository.findByAccount(account).getAvatar();
 	}
+	
+	public MemberVO findByAccount(String account) {
+		return repository.findByAccount(account);
+	}
+
 
 	public MemberVO findByMemberId(Integer memberId) {
 		Optional<MemberVO> optional = repository.findById(memberId);

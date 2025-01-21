@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ import com.member.model.MemberVO;
 import com.membercoupon.model.MemberCouponRepository;
 import com.membercoupon.model.MemberCouponService;
 import com.membercoupon.model.MemberCouponVO;
+import com.order.model.OrderDTO;
 import com.order.model.OrderService;
 import com.order.model.OrderVO;
 import com.orderDetail.model.OrderDetailService;
@@ -40,6 +42,7 @@ import com.price.model.PriceVO;
 import com.roomInventory.model.HotelRoomInventoryDTO;
 import com.roomInventory.model.RoomInventoryService;
 import com.roomInventory.model.RoomInventoryVO;
+import com.roomType.model.RoomTypeService;
 import com.roomTypeFacility.model.RoomTypeFacilityService;
 import com.roomTypeImg.model.RoomTypeImgService;
 import com.roomTypeImg.model.RoomTypeImgVO;
@@ -56,6 +59,8 @@ public class UserOrderController {
 	GeocodingService gService;
 	@Autowired
 	RoomTypeImgService roomTypeImgService;
+	@Autowired
+	RoomTypeService roomTypeService;
 	@Autowired
 	HotelImgService hotelImgService;
 	@Autowired
@@ -90,6 +95,69 @@ public class UserOrderController {
 		List<Map<String, Object>> updatedCartList = checkCart(cartList);
 
 		return ResponseEntity.ok(updatedCartList);
+	}
+
+	// 取得會員訂單
+	@PostMapping("/order/getMemberOrder")
+	public List<OrderDTO> getMemberOrder(HttpSession session) {
+		List<OrderDTO> responseList = new ArrayList<>();
+		MemberVO member = (MemberVO) session.getAttribute("member");
+		if (member != null) {
+			responseList = orderService.getOrdersWithDetailsByMemberId(member.getMemberId());
+		}
+		return responseList;
+	}
+	
+	//傳送評論
+	@PostMapping("/comment/send")
+	public ResponseEntity<Map<String, Object>> sendComment(@RequestBody Map<String, Object> comment, HttpSession session) {
+		Map<String, Object> response = new HashMap<>();
+		Integer orderId = Integer.valueOf((String) comment.get("orderId"));
+		Integer rating = Integer.valueOf((String) comment.get("rating"));
+		String commentContent =  (String) comment.get("commentContet");
+		try {
+		OrderVO order = orderService.queryOrder(orderId);
+		order.setRating(rating);
+		order.setCommentContent(commentContent);
+		Date now = new Date(System.currentTimeMillis());
+		order.setCommentCreateTime(now);
+		orderService.updateOrder(order);
+		}catch(Exception e){
+			response.put("error",e.getMessage());
+			response.put("message","存入錯誤，請再試一次");
+
+		}
+		response.put("message", "評分送出成功！謝謝您的評價！");
+		return ResponseEntity.ok(response);
+	}
+
+	// 取消訂單
+	@PostMapping("/order/cancel")
+	public ResponseEntity<Map<String, Object>> cancelOrder(@RequestParam String orderId, HttpSession session) {
+		Map<String, Object> response = new HashMap<>();
+		try {
+			OrderVO order = orderService.queryOrder(Integer.valueOf(orderId));
+			LocalDate checkInDate = new Date(order.getCheckInDate().getTime()).toLocalDate();
+			LocalDate checkOutDate = new Date(order.getCheckOutDate().getTime()).toLocalDate();
+			List<OrderDetailVO> details = order.getOrderDetail();
+			for (OrderDetailVO detail : details) {
+				for (LocalDate date = checkInDate; !date.isEqual(checkOutDate); date = date.plusDays(1)) {
+					RoomInventoryVO ri = RIservice.findByRoomTypeIdAndDate(detail.getRoomTypeId(), date);
+					Integer newQuantity = ri.getAvailableQuantity() + detail.getRoomNum();
+					ri.setAvailableQuantity(newQuantity);
+					RIservice.roomTransaction(ri);
+				}
+			}
+			mCService.returnCoupon(order.getMemberCouponId());
+			orderService.cancelOrder(Integer.valueOf(orderId));
+		} catch (Exception e) {
+			response.put("error",e.getMessage());
+			response.put("message", "取消訂單錯誤");
+			throw new RuntimeException("取消訂單錯誤");
+		}
+		System.out.println(orderService.queryOrder(Integer.valueOf(orderId)));
+		response.put("message", "已經成功取消編號" + orderId + "訂單");
+		return ResponseEntity.ok(response);
 	}
 
 	public List<Map<String, Object>> checkCart(List<Map<String, Object>> cartList) {
@@ -127,11 +195,11 @@ public class UserOrderController {
 						PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, cartDetailInfo.getDate());
 						cartDetail.put("roomName", cartDetailInfo.getRoomName());
 						cartDetail.put("breakfast", cartDetailInfo.getBreakfast());
-						totalPrice += (todayPrice.getPrice()*roomNum);
+						totalPrice += (todayPrice.getPrice() * roomNum);
 
 						if (cartDetailInfo.getBreakfast() != 0) {
-							totalbreakPrice += (todayPrice.getBreakfastPrice()*guestNum);
-							totalPrice += (todayPrice.getBreakfastPrice()*guestNum);
+							totalbreakPrice += (todayPrice.getBreakfastPrice() * guestNum);
+							totalPrice += (todayPrice.getBreakfastPrice() * guestNum);
 						}
 					}
 
@@ -264,7 +332,7 @@ public class UserOrderController {
 	}
 
 	public List<Map<String, Object>> getMemberCoupon(MemberVO member) {
-		List<MemberCouponVO> mCList = mCService.findByMemberIdAndCouponStatus(member.getMemberId(), (byte) 1);
+		List<MemberCouponVO> mCList = mCService.getActiveMemberCoupons(member.getMemberId());
 		List<Map<String, Object>> couponList = new ArrayList<>();
 		for (MemberCouponVO mC : mCList) {
 			Map<String, Object> coupon = new HashMap<>();
@@ -289,7 +357,7 @@ public class UserOrderController {
 		}
 		return creditCardList;
 	}
-	
+
 	@Transactional
 	@PostMapping("/order/checkout")
 	public Map<String, Object> checkout(@RequestBody Map<String, Object> orderInfo, HttpSession session) {
@@ -313,17 +381,17 @@ public class UserOrderController {
 		} else if (savedCardObj instanceof Map) {
 			// **如果是新信用卡**
 			Map<String, Object> savedCardMap = (Map<String, Object>) savedCardObj;
-			System.out.println(savedCardMap);
-			String name = lastName+"的信用卡"+checkInDate.toString();
+			String name = lastName + "的信用卡" + checkInDate.toString();
 			creditcard = new CreditcardVO();
-			creditcard.setCreditcardInfo(name,
-					(String) savedCardMap.get("cardNumber"), (String) savedCardMap.get("securityCode"),
-					(String) savedCardMap.get("expiryDate"), (MemberVO) session.getAttribute("member"));
+			creditcard.setCreditcardInfo(name, (String) savedCardMap.get("cardNumber"),
+					(String) savedCardMap.get("securityCode"), (String) savedCardMap.get("expiryDate"),
+					(MemberVO) session.getAttribute("member"));
 			// **存入資料庫**
 			creditcard = cDService.addCreditCardAndGet(creditcard);
 		}
 
-		Map<String, Object> orderSaved = (Map<String, Object>) session.getAttribute("OrderTobeCheckOut");		
+		List<String> roomTypeIdList = new ArrayList<String>();
+		Map<String, Object> orderSaved = (Map<String, Object>) session.getAttribute("OrderTobeCheckOut");
 		List<Map<String, Object>> orderSavedDetailList = (List<Map<String, Object>>) orderSaved.get("cartDetailList");
 		try {
 			OrderVO order = new OrderVO();
@@ -341,35 +409,30 @@ public class UserOrderController {
 			List<OrderDetailVO> orderDetails = new ArrayList<>();
 			for (Map<String, Object> orderSavedDetail : orderSavedDetailList) {
 				Integer roomTypeId = (Integer) orderSavedDetail.get("roomTypeId");
+				roomTypeIdList.add(String.valueOf(roomTypeId));
 				Byte breakfast = (Byte) orderSavedDetail.get("breakfast");
 				Integer guestNum = (Integer) orderSavedDetail.get("guestNum");
 				Integer roomNum = (Integer) orderSavedDetail.get("roomNum");
 				for (LocalDate date = checkInDate; !date.isEqual(checkOutDate); date = date.plusDays(1)) {
 					RoomInventoryVO ri = RIservice.findByRoomTypeIdAndDate(roomTypeId, date);
 					Integer newQuantity = ri.getAvailableQuantity() - roomNum;
-					System.out.println(ri.toString());
-					System.out.println(ri.getAvailableQuantity());
-					System.out.println(roomTypeId);
-					System.out.println(date);
-					System.out.println(roomNum);
 					if (newQuantity >= 0) {
 						ri.setAvailableQuantity(newQuantity);
 						RIservice.roomTransaction(ri);
 					} else {
-					    response.put("message", "房間不足，請選擇其他日期或房型");
-				        throw new RuntimeException("房間不足，請選擇其他日期或房型");					    
+						response.put("message", "房間不足，請選擇其他日期或房型");
+						response.put("popup", "yes");
+						session.setAttribute("OrderTobeCheckOut", "");
+						deleteCart(String.valueOf(roomTypeId), session);
+
+						throw new RuntimeException("房間不足，請選擇其他日期或房型");
 					}
 					PriceVO todayPrice = Pservice.getPriceOfDay(roomTypeId, date);
 					Integer todayTotalPrice = (breakfast != 0)
 							? (todayPrice.getPrice() * roomNum) + (todayPrice.getBreakfastPrice() * guestNum)
 							: todayPrice.getPrice() * roomNum;
 					reCalcTotalPrice += todayTotalPrice;
-					System.out.println("今日房價:"+todayPrice.getPrice()*roomNum);
-					System.out.println("今日早餐價:"+todayPrice.getBreakfastPrice()*guestNum);
-					System.out.println("今日總價:"+todayTotalPrice);
-
 				}
-				System.out.println(reCalcTotalPrice);
 				OrderDetailVO orderDetail = new OrderDetailVO();
 				orderDetail.setBreakfast(breakfast);
 				orderDetail.setGuestNum(guestNum);
@@ -379,36 +442,39 @@ public class UserOrderController {
 				oDService.addOrderDetail(orderDetail);
 				orderDetails.add(orderDetail);
 			}
-						
-			if (couponId != 0 ) {
-				MemberCouponVO coupon =  mCService.getById(couponId);
-	            if (coupon != null && coupon.getCoupon().getDiscountAmount() != null) {
-	                discount = coupon.getCoupon().getDiscountAmount();    
+
+			if (couponId != 0) {
+				MemberCouponVO coupon = mCService.getById(couponId);
+				if (coupon != null && coupon.getCoupon().getDiscountAmount() != null) {
+					discount = coupon.getCoupon().getDiscountAmount();
+					order.setMemberCouponId(couponId);
 					reCalcTotalPrice -= discount;
-	                coupon.setCouponStatus((byte) 0); // 標記已使用
-	                mCService.save(coupon);
-	            }
+					mCService.useCoupon(couponId);
+				}
 			}
 
-			
-			System.out.println("重算的:"+reCalcTotalPrice);
-			System.out.println("訂單的:"+finalPrice);
-			System.out.println(finalPrice==reCalcTotalPrice);
-			
 			if (reCalcTotalPrice.equals(finalPrice)) {
-				
+
 				order.setTotalAmount(reCalcTotalPrice);
 				orderService.addOrder(order);
 				response.put("message", "交易成功");
-			}else {
-		        throw new RuntimeException("金額錯誤，請重新再試一次");
+
+				session.setAttribute("OrderTobeCheckOut", "");
+				for (String roomTypeId : roomTypeIdList) {
+					deleteCart(roomTypeId, session);
+				}
+
+			} else {
+				response.put("popup", "yes");
+				response.put("message", "金額錯誤，請重新再試一次");
+				throw new RuntimeException("金額錯誤，請重新再試一次");
 
 			}
 		} catch (Exception e) {
-		    e.printStackTrace(); // 印出完整的錯誤訊息到控制台
-		    response.put("message", "訂單失敗，請重新再試一次");
-		    response.put("error", e.toString()); // 儲存完整錯誤資訊
-		    throw e; 
+			e.printStackTrace(); // 印出完整的錯誤訊息到控制台
+			response.put("message", "訂單失敗，請重新再試一次");
+			response.put("error", e.toString()); // 儲存完整錯誤資訊
+			throw e;
 		}
 		return response;
 	}

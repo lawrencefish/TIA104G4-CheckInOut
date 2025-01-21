@@ -10,7 +10,7 @@ function profileGetInfo() {
             document.querySelector('#lastName').value = data.lastName;
             document.querySelector('#firstName').value = data.firstName;
             document.querySelector('#gender').value = data.gender;
-            document.querySelector('#birthday').value = data.birthday;
+            document.querySelector('#birthday').value = data.birthday.split(" ")[0];
             document.querySelector('#phone').value = data.phone;
 
             // 處理頭像圖片

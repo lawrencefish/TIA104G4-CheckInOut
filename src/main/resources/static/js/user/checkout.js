@@ -16,8 +16,8 @@ let orderInfo = {
     email: $('#email').val(),
     lastName: $('#lastName').val(),
     firstName: $('#firstName').val(),
-    checkInDate : "",
-    checkOutDate : "",
+    checkInDate: "",
+    checkOutDate: "",
     memo: $('#notes').val().trim(),
     coupon: $('#coupon option:selected').data("id"),
     savedCard: selectedCard,
@@ -37,7 +37,7 @@ $(document).ready(function () {
         let tempPrice = parseInt($('.totalPrice').text()) - this.value;
         let html =
             `<p class="fw-bold text-success">折扣：${this.value}
-       <br>
+        <br>
         <span>折扣後總價：${tempPrice}</span>
         </p>
        `
@@ -93,36 +93,31 @@ function checkout() {
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
-        data: JSON.stringify(orderInfo),  
+        data: JSON.stringify(orderInfo),
         success: function (data) {
             console.log("✅ 訂單成功回應:", data);
+            showModal("✅ 訂單完成！")
+            setTimeout(function () {
+                window.location.href = "/user/";
+            }, 2000);
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.error("🚨 AJAX 請求發生錯誤:", textStatus, errorThrown);
             console.log("📌 響應文本:", jqXHR.responseText);
             if (jqXHR.responseJSON) {
-                console.log("❌ API 回傳錯誤:", jqXHR.responseJSON);
-                alert(jqXHR.responseJSON.message || "訂單失敗，請稍後再試！");
+                console.log("API 回傳錯誤:", jqXHR.responseJSON);
+                if(jqXHR.responseJSON.popup="yes"){
+                    showModal(jqXHR.responseJSON.message);
+                    setTimeout(function () {
+                        window.location.href="/user/cart/"
+                    }, 3000)
+                }else{
+                showModal("訂單失敗，請稍後再試！");
+                setTimeout(function () {
+                    location.reload();
+                }, 3000)
+                }
             }
-        }
-    });
-}
-
-
-function orderSend() {
-    $.ajax({
-        url: "/order/api/checkout", // 你的後端 API URL
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify(orderInfo),
-        success: function (response) {
-            console.log("成功提交訂單：", response);
-            alert("訂單提交成功！");
-            window.location.href = "/order/confirmation"; // 成功後跳轉
-        },
-        error: function (xhr, status, error) {
-            console.error("發生錯誤：", error);
-            alert("訂單提交失敗，請稍後再試！");
         }
     });
 }
@@ -134,8 +129,8 @@ function updateOrderInfo() {
         firstName: $('#firstName').val(),
         memo: $('#notes').val().trim(),
         coupon: $('#coupon option:selected').data("id") ? $("#coupon option:selected").data("id") : 0,
-        checkInDate :checkInDate,
-        checkOutDate : checkOutDate,
+        checkInDate: checkInDate,
+        checkOutDate: checkOutDate,
         savedCard: selectedCard,
         finalPrice: $('#finalPrice').text().trim()
     };
@@ -152,7 +147,16 @@ function loadCart() {
         dataType: 'json',
         success: function (data) {
             console.log(data);
-            updateOrder(data);
+            if (data != null &&
+                data.cartDetailList != null && data.cartDetailList.length > 0) {
+                updateOrder(data);
+            }else{
+                showModal("好像已經沒有庫存了，請重新結帳！");
+                setTimeout(function () {
+                    window.location.href = "/user/cart";
+                }, 2000);    
+
+            }
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.error('AJAX 請求發生錯誤:', textStatus, errorThrown);

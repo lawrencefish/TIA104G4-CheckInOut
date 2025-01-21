@@ -59,12 +59,23 @@ public class RoomInventoryService {
 		RoomInventoryVO existingInventory = roomInventoryRepository.findById(inventory.getInventoryId())
 				.orElseThrow(() -> new IllegalArgumentException("房型庫存ID=" + inventory.getInventoryId() + " 不存在"));
 
-		// 更新刪減數量
-		existingInventory.setDeleteQuantity(inventory.getDeleteQuantity());
+		// 計算刪減數量的變化
+		int oldDeleteQuantity = existingInventory.getDeleteQuantity();
+		int newDeleteQuantity = inventory.getDeleteQuantity();
+		// 檢查新的刪減數量不可為負
+		if (newDeleteQuantity < 0) {
+			throw new IllegalArgumentException("刪減數量不可為負");
+		}
+		int quantityDifference = newDeleteQuantity - oldDeleteQuantity;
 
-		// 更新可用數量
-		int remainingQuantity = existingInventory.getRoomType().getRoomNum() - inventory.getDeleteQuantity();
-		existingInventory.setAvailableQuantity(Math.max(0, remainingQuantity));
+		// 動態調整庫存數量
+		int newAvailableQuantity = existingInventory.getAvailableQuantity() - quantityDifference;
+		if (newAvailableQuantity < 0) {
+			throw new IllegalArgumentException("可用庫存不足，無法更新刪減數量");
+		}
+
+		existingInventory.setDeleteQuantity(newDeleteQuantity);
+		existingInventory.setAvailableQuantity(newAvailableQuantity);
 
 		// 保存更改
 		return roomInventoryRepository.save(existingInventory);

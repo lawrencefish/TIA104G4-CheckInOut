@@ -34,7 +34,7 @@
 	          <select id="statusFilter">
 	              <option value="">所有狀態</option>
 	              <option value="1">啟用中</option>
-	              <option value="0">尚未審核</option>
+	              <option value="0">待審核</option>
 	              <option value="2">停權</option>
 	          </select>
 	      </div>
@@ -59,7 +59,8 @@
 	                  <td th:text="${hotel.hotelId}"></td>
 	                  <td th:text="${hotel.name}"></td>
 	                  <td>
-	                      <span th:text="${hotel.status == 0 ? '待審核' : '啟用中'}" 
+	                      <span class="status-badge"
+	                      		th:text="${hotel.status == 0 ? '待審核' : '啟用中'}" 
 	                            th:class="${hotel.status == 0 ? 'status-pending' : 'status-approved'}">
 	                      </span>
 	                  </td>
@@ -68,9 +69,10 @@
 	                  <td th:text="${#dates.format(hotel.updateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
 	                  <td>
 	                      <a th:href="@{/admin/industryBackend(id=${hotel.hotelId})}" class="btn btn-info">詳細資料</a>
-	                      <button class="btn btn-status-update" 
-	                              th:attr="data-id=${hotel.hotelId},data-status=${hotel.status}">
-	                          <span th:text="${hotel.status == 0 ? '停權' : '啟用'}"></span>
+	                      <button class="btn-status-update" 
+	                              th:classappend="${hotel.status == 0 ? 'disable-btn' : 'enable-btn'}"
+	                              th:attr="data-id=${hotel.hotelId},data-status=${hotel.status}"
+	                       		  th:text="${hotel.status == 0 ? '停權' : '啟用'}">
 	                      </button>
 	                  </td>
 	              </tr>
@@ -96,7 +98,8 @@
 	              <td th:text="${member.lastName} + ${member.firstName}"></td>
 	              <td th:text="${member.memberId}"></td>
 	              <td>
-	                  <span th:text="${member.status == 1 ? '啟用中' : '停權'}"
+	                  <span class="status-badge"
+	                  		th:text="${member.status == 1 ? '啟用中' : '停權'}"
 	                        th:class="${member.status == 1 ? 'status-active' : 'status-banned'}">
 	                  </span>
 	              </td>
@@ -106,8 +109,9 @@
 	              <td>
 	                  <a th:href="@{/admin/memberBackend(id=${member.memberId})}" class="btn btn-info">詳細資料</a>
 	                  <button class="btn btn-status-update"
-	                          th:attr="data-id=${member.memberId},data-status=${member.status}">
-	                      <span th:text="${member.status == 1 ? '停權' : '啟用'}"></span>
+	                  		  th:classappend="${member.status == 1 ? 'disable-btn' : 'enable-btn'}"
+	                          th:attr="data-id=${member.memberId},data-status=${member.status}"
+	                      	  th:text="${member.status == 1 ? '停權' : '啟用'}">
 	                  </button>
 	              </td>
 	          </tr>

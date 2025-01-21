@@ -449,37 +449,46 @@
             background-color: #dcdcdc;
         }
         
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin-top: 20px;
-        }
+       .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 確保垂直對齊 */
+    gap: 10px;
+    margin-top: 20px;
+}
 
-        .page-button {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-            cursor: pointer;
-            font-size: 14px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
+.pagination a,
+.pagination button {
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    border-radius: 5px;
+    transition: all 0.3s;
+    cursor: pointer;
+    min-width: 60px; /* 確保按鈕寬度一致 */
+    text-align: center;
+}
 
-        .page-button.active {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
+.pagination a.active,
+.pagination button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
 
-        .page-button:hover {
-            background-color: #f0f0f0;
-        }
+.pagination a:hover,
+.pagination button:hover {
+    background-color: #e0e0e0;
+}
 
-        .page-button:disabled {
-            background-color: #e9ecef;
-            cursor: not-allowed;
-        }
+.pagination a:disabled,
+.pagination button:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
 
         
     </style>
@@ -588,13 +597,24 @@
                 </table>
             
      <div class="pagination">
-                <button class="pagination-btn first-page">回到第一頁</button>
-                <button class="pagination-btn prev-page">上一頁</button>
-                <div id="page-numbers" class="page-numbers"> </div>
-                <button class="pagination-btn next-page">下一頁</button>
-                <button class="pagination-btn last-page">跳到最後一頁</button>
-            </div>
-	
+    <!-- 上一頁 -->
+    <a th:href="@{/comment/allComment(page=${currentPage - 1}, clientName=${clientName}, orderId=${orderId})}"
+       th:if="${currentPage > 0}"
+       class="page-button">上一頁</a>
+
+    <!-- 頁碼 -->
+    <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+        <a th:href="@{/comment/allComment(page=${i - 1}, clientName=${clientName}, orderId=${orderId})}"
+           th:text="${i}"
+           th:classappend="${i == currentPage + 1} ? 'active'" class="page-button"></a>
+    </span>
+
+    <!-- 下一頁 -->
+    <a th:href="@{/comment/allComment(page=${currentPage + 1}, clientName=${clientName}, orderId=${orderId})}"
+       th:if="${currentPage < totalPages - 1}"
+       class="page-button">下一頁</a>
+</div>
+
 </main>
 
     </div>
