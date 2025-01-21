@@ -295,7 +295,6 @@ $(document).ready(function () {
                     <td>${formatDate(admin.createTime)}</td>
                     <td>${escapeHtml(admin.phoneNumber)}</td>
                     <td>${escapeHtml(admin.email)}</td>
-                    <td>${admin.lastLoginTime ? formatDate(admin.lastLoginTime) : '-'}</td>
                     <td class="action-buttons">
                         <button class="button detail-btn">詳細資訊</button>
                         <button class="button status-btn ${actionButtonClass}" 
@@ -391,11 +390,6 @@ $(document).ready(function () {
                 <div class="form-group">
                     <label>建立時間：</label>
                     <input type="text" value="${formatDate(admin.createTime)}" disabled>
-                </div>
-                
-                <div class="form-group">
-                    <label>最後登入：</label>
-                    <input type="text" value="${admin.lastLoginTime ? formatDate(admin.lastLoginTime) : '-'}" disabled>
                 </div>
                 
                 <button type="submit" class="button save-btn">儲存修改</button>

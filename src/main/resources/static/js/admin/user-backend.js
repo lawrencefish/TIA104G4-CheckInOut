@@ -39,8 +39,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	                }
 	            };
 				
-				
-
 	            // 初始化業者表格
 	            this.businessTable = $('#businessTable').DataTable(commonConfig);
 	            
@@ -96,11 +94,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 	                $.fn.dataTable.ext.search.push(function(settings, data) {
 	                    if (!statusValue) return true; // 如果沒有選擇狀態，顯示所有記錄
 	                    
-	                    const rowStatus = data[2]; // 假設狀態在第三列
-	                    if (statusValue === '0' && rowStatus === '待審核') return true;
-	                    if (statusValue === '1' && rowStatus === '啟用中') return true;
-	                    if (statusValue === '2' && rowStatus === '停權') return true;
-	                    return false;
+	                    const rowStatus = data[2].trim(); // 假設狀態在第三列
+						console.log('Status Value:', statusValue);
+			            console.log('Row Status:', rowStatus)
+						// 使用狀態值對應
+			            const statusMap = {
+			                '待審核': '0',
+			                '啟用中': '1',
+			                '停權': '2'
+			            };
+			            
+			            return statusValue === statusMap[rowStatus];
 	                });
 	                
 	                activeTable.draw();
@@ -122,8 +126,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 	            // 處理按鈕點擊事件
 	            $('.btn-status-update').click(function () {
 	                const id = $(this).data('id');
-	                const currentStatus = $(this).closest('tr').find('td:nth-child(3)').text().trim() === '啟用中' ? 1 : 0;
-	                const newStatus = currentStatus === 1 ? 0 : 1;
+	                const currentStatus = $(this).closest('tr').find('td:nth-child(3)').text().trim() === '啟用中' ? 1 : 2;
+	                const newStatus = currentStatus === 1 ? 2 : 1;
 	                const buttonText = currentStatus === 1 ? '啟用' : '停權';
 
 	                if (!confirm(`確定要將狀態更改為 ${currentStatus === 1 ? '停權' : '啟用'} 嗎？`)) return;
