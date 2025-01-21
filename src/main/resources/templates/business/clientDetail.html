@@ -406,6 +406,17 @@ textarea {
 	padding: 5px; /* 可選：增加內邊距 */
 	background-color: #f9f9f9; /* 可選：設置背景色 */
 }
+
+#note {
+    padding: 10px;
+    
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    font-size: 1rem;
+    color: #333;
+    width: 100%;
+}
+
 </style>
 </head>
 
@@ -487,7 +498,7 @@ textarea {
 					<div class="form-group">
 						<label for="clientpic">客戶頭像</label> <img th:src="${avatar}"
 							alt="頭像" class="client-avatar">
-					</div>
+					</div>					
 				</div>
 				<div class="form-row">
 					<div class="form-group">
@@ -522,10 +533,10 @@ textarea {
 						name="account" class="readonly" th:value="${client.account}"
 						readonly>
 				</div>
-				<!--     <div class="form-group"> -->
-				<!--         <label for="note">備註</label> -->
-				<!--         <input type="text" id="note" class="readonly" th:value="${client.note}" readonly> -->
-				<!--     </div> -->
+				<div class="form-group">
+    				<label for="note">備註</label>
+    				<div id="note" class="readonly" th:text="${commentContent}"></div>
+					</div>
 				<!--     <div class="form-group"> -->
 				<!--         <label for="history">歷史訂單</label> -->
 				<!--         <div id="history" th:utext="${client.history}"> -->

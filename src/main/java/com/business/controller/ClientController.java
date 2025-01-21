@@ -3,6 +3,8 @@ package com.business.controller;
 import java.util.Base64;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.order.model.OrderService;
 import com.order.model.OrderVO;
+import com.comment.service.CommentService;
 import com.hotel.model.HotelVO;
 import com.member.model.*;
 
@@ -25,6 +28,9 @@ public class ClientController {
 	
 	@Autowired
     private OrderService orderService;
+	
+	@Autowired
+    private CommentService commentService;
 
     @GetMapping("")
     public String showClient() {
@@ -60,9 +66,10 @@ public class ClientController {
     }
     
     @GetMapping("/clientDetail/{memberId}")
-    public String showClientDetail(@PathVariable Integer memberId, Model model) {
+    public String showClientDetail(@PathVariable Integer memberId, Model model, HttpSession session) {
+        // 從 orderService 獲取客戶資料
         MemberVO client = orderService.getMemberId(memberId);
-        
+
         // 處理頭像資料
         String avatar;
         if (client.getAvatar() != null && client.getAvatar().length > 0) {
@@ -73,12 +80,23 @@ public class ClientController {
             avatar = "/imgs/user/defaultAvatar.png";
         }
 
+        // 從 session 獲取當前飯店的 hotelId
+        HotelVO hotel = (HotelVO) session.getAttribute("hotel");
+        if (hotel == null) {
+            throw new IllegalStateException("Hotel not found in session.");
+        }
+        Integer hotelId = hotel.getHotelId();
+
+        // 使用 hotelId 和 memberId 查詢評論內容
+        String commentContent = commentService.getCommentContentByHotelAndMember(hotelId, memberId);
+
+        // 添加模型屬性
         model.addAttribute("client", client);
         model.addAttribute("avatar", avatar);
+        model.addAttribute("commentContent", commentContent);
 
-        return "business/clientDetail"; 
+        return "business/clientDetail";
     }
-
     
     @PostMapping("/update")
     public String updateClient(@ModelAttribute MemberVO updatedClient) {

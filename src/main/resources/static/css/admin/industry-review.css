@@ -60,18 +60,17 @@ body {
   /* Google Map區塊 */
   .container {
     display: flex; /* 使用 Flexbox 排列 */
-    gap: 20px; /* 左右區塊之間的間距 */
-    align-items: stretch; /* 左右區塊高度一致 */
+    justify-content: center;
     margin: 20px;
   }
   
-  .map-container {
-    flex: 1; /* 左側區塊占 2 份空間 */
-    height: 400px; /* 固定地圖高度 */
-    border: 1px solid #ccc; /* 添加邊框方便查看 */
-    border-radius: 5px;
-    overflow: hidden;
-  }
+/*   .map-container { */
+/*     flex: 1; 左側區塊占 2 份空間 */
+/*     height: 400px; 固定地圖高度 */
+/*     border: 1px solid #ccc; 添加邊框方便查看 */
+/*     border-radius: 5px; */
+/*     overflow: hidden; */
+/*   } */
   
   /*公司資料內容*/
   .info-grid {  
@@ -84,7 +83,7 @@ body {
     font-size: 16px;
     color: #333;
     line-height: 1.8;
-    flex: 2; /* 右側區塊占 1 份空間 */
+    flex: 2; 
     background-color: #f9f9f9; /* 背景色 */
     padding: 20px;
     border: 1px solid #ccc; /* 添加邊框方便查看 */

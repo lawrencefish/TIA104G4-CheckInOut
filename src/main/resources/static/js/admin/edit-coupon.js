@@ -19,21 +19,28 @@ function setupDateConstraints() {
     
     try {
         // 設置最小日期為今天
-        const today = new Date().toISOString().split('T')[0];
-        console.log('設置日期限制：', {today});
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
         
-        activeDate.min = today;
-        expiryDate.min = today;
-        
+        // 設置預設值
         if (!activeDate.value) {
-            activeDate.value = today;
+            activeDate.value = todayStr;
         }
         
         if (!expiryDate.value) {
-            const defaultEndDate = new Date();
-            defaultEndDate.setMonth(defaultEndDate.getMonth() + 1);
+            const defaultEndDate = new Date(today);
+            defaultEndDate.setMonth(today.getMonth() + 1);
             expiryDate.value = defaultEndDate.toISOString().split('T')[0];
         }
+        
+        // 設置最小日期限制
+        activeDate.min = todayStr;
+        expiryDate.min = activeDate.value;
+        
+        console.log('日期設置完成:', {
+            activeDate: activeDate.value,
+            expiryDate: expiryDate.value
+        });
     } catch (error) {
         console.error('設置日期限制時發生錯誤：', error);
     }
@@ -85,31 +92,58 @@ function setupFormValidation() {
         clearAllErrors();
         
         // 前端驗證
-        if (!validateForm()) {
+        const isValid = validateForm();
+        console.log('表單驗證結果：', isValid);
+        
+        if (!isValid) {
+            console.log('表單驗證失敗');
             return;
         }
 
-        try {
-            const formData = new FormData(form);
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData
-            });
+	 try {
+	        const formData = new FormData(form);
+	        
+	        // 格式化日期
+	        const activeDate = document.getElementById('activeDate');
+	        const expiryDate = document.getElementById('expiryDate');
+	        
+	        // 確保日期格式為 ISO 格式 (YYYY-MM-DD)
+	        if (activeDate.value) {
+	            const date = new Date(activeDate.value);
+	            formData.set('activeDate', date.toISOString().split('T')[0]);
+	        }
+	        
+	        if (expiryDate.value) {
+	            const date = new Date(expiryDate.value);
+	            formData.set('expiryDate', date.toISOString().split('T')[0]);
+	        }
+	        
+	        // 輸出要提交的數據
+	        console.log('準備提交的數據：');
+	        for (let [key, value] of formData.entries()) {
+	            console.log(`${key}: ${value}`);
+	        }
 
-            if (response.ok) {
-                showMessage('保存成功', 'success');
-                setTimeout(() => {
-                    window.location.href = '/admin/coupon';
-                }, 1000);
-            } else {
-                const data = await response.json();
-                handleSaveErrors(data);
-            }
-        } catch (error) {
-            console.error('保存失敗:', error);
-            showMessage('保存失敗，請重試', 'error');
-        }
-    });
+	        const response = await fetch(form.action, {
+	            method: 'POST',
+	            body: formData
+	        });
+
+	        const data = await response.json();
+	        
+	        if (response.ok) {
+	            showMessage('保存成功', 'success');
+	            setTimeout(() => {
+	                window.location.href = '/admin/coupon';
+	            }, 1000);
+	        } else {
+	            handleSaveErrors(data);
+	        }
+	    } catch (error) {
+	        console.error('保存失敗:', error);
+	        showMessage('保存失敗，請重試', 'error');
+	    }
+	});
 }
 
 // 處理保存錯誤
@@ -121,9 +155,7 @@ function handleSaveErrors(data) {
         });
     } else if (data.message) {
         // 處理業務邏輯錯誤
-        if (data.message.includes('生效日期')) {
-            showFieldError('activeDate', data.message);
-        } else if (data.message.includes('到期日期')) {
+        if (data.message.includes('到期日期')) {
             showFieldError('expiryDate', data.message);
         } else if (data.message.includes('折扣金額')) {
             showFieldError('discountAmount', data.message);
@@ -161,7 +193,6 @@ function updatePreview() {
 }
 
 // 驗證表單
-// 驗證表單
 function validateForm() {
     let isValid = true;
     
@@ -169,41 +200,75 @@ function validateForm() {
     clearAllErrors();
     
     // 驗證優惠金額
-    const discountAmount = parseInt(document.getElementById('discountAmount').value);
-    if (discountAmount <= 0) {
+    const discountAmount = document.getElementById('discountAmount');
+    const minSpend = document.getElementById('minSpend');
+    
+    // 添加 debug 日誌
+    console.log('驗證數值：', {
+        discountAmount: discountAmount.value,
+        minSpend: minSpend.value
+    });
+    
+    if (!discountAmount.value || parseInt(discountAmount.value) <= 0) {
         showFieldError('discountAmount', '優惠金額必須大於 0');
         isValid = false;
     }
 
-    // 驗證最低消費金額
-    const minSpend = parseInt(document.getElementById('minSpend').value);
-    if (minSpend <= 0) {
+    if (!minSpend.value || parseInt(minSpend.value) <= 0) {
         showFieldError('minSpend', '最低消費金額必須大於 0');
         isValid = false;
     }
 
     // 驗證優惠金額與最低消費金額的關係
-    if (discountAmount >= minSpend) {
+    if (parseInt(discountAmount.value) >= parseInt(minSpend.value)) {
         showFieldError('discountAmount', '優惠金額不能大於或等於最低消費金額');
         isValid = false;
     }
 
     // 驗證日期
-    const activeDate = new Date(document.getElementById('activeDate').value);
-    const expiryDate = new Date(document.getElementById('expiryDate').value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const activeDate = document.getElementById('activeDate');
+    const expiryDate = document.getElementById('expiryDate');
+    
+    // 添加 debug 日誌
+    console.log('驗證日期：', {
+        activeDate: activeDate.value,
+        expiryDate: expiryDate.value
+    });
 
-    if (activeDate < today) {
-        showFieldError('activeDate', '開始日期不能早於今天');
+    if (!activeDate.value) {
+        showFieldError('activeDate', '請選擇生效日期');
         isValid = false;
     }
-
-    if (expiryDate < activeDate) {
-        showFieldError('expiryDate', '結束日期不能早於開始日期');
+    
+    if (!expiryDate.value) {
+        showFieldError('expiryDate', '請選擇到期日期');
         isValid = false;
     }
+    
+    if (activeDate.value && expiryDate.value) {
+        const activeDateObj = new Date(activeDate.value);
+        const expiryDateObj = new Date(expiryDate.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        console.log('日期比較：', {
+            today: today,
+            activeDate: activeDateObj,
+            expiryDate: expiryDateObj
+        });
 
+        if (activeDateObj < today) {
+            showFieldError('activeDate', '生效日期不能早於今天');
+            isValid = false;
+        }
+
+        if (expiryDateObj < activeDateObj) {
+            showFieldError('expiryDate', '到期日期不能早於生效日期');
+            isValid = false;
+        }
+    }
+
+    console.log('驗證結果：', isValid);
     return isValid;
 }
 

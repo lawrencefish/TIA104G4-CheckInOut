@@ -16,7 +16,7 @@ public class AuthenticationFilter implements Filter {
     
     // 管理員需要登入的頁面 -byBarry
     private static final List<String> ADMIN_PROTECTED_PATHS = Arrays.asList(
-    		"/admin/adminBackend", "/admin/list", "/admin/edit"
+    		"/admin/adminBackend", "/admin/reviewBackend", "/admin/editNews", "/admin/latestNews", "/admin/appealManagement", "/admin/couponManagement", "/admin/userBackend"
     		); 
     // 前台需要登入的頁面 By YuCheng
     private static final List<String> USER_PROTECTED_PATHS = Arrays.asList(
