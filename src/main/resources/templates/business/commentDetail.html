@@ -374,7 +374,7 @@
         .review-item {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ccc;
+            
             border-radius: 7px;
             font-size: 1rem;
             resize: vertical;
@@ -495,12 +495,15 @@
     <main class="main-content" id="main">
         <div class="review-section">
             <h3>訂單編號&nbsp;&nbsp;<span th:text="${comment.orderId}"></span></h3><br>
-            <h4>飯店&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.hotelName}"></span></h4>
-            <h4>評論時間&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></span></h4>
-            <h4>顧客姓名&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.clientLastName} + ${comment.clientFirstName}"></h4>
+            <h4>飯店:&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.hotelName}"></span></h4>
+            <h4>評論時間:&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></span></h4>
+            <h4>顧客姓名:&nbsp;&nbsp;<span style="font-weight: normal;" th:text="${comment.clientLastName} + ${comment.clientFirstName}"></h4>
             <input type="hidden" id="orderId" th:value="${comment.orderId}" />
             <div class="review-item">
-                <p th:text="${comment.commentContent}"></p>
+                <p>
+    				<strong>評論內容: </strong>
+    				<span th:text="${comment.commentContent}"></span>
+				</p>
             </div>
         </div>
 
