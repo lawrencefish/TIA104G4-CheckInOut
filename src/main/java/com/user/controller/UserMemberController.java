@@ -16,6 +16,7 @@ import javax.validation.Valid;
 import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,6 +48,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.member.model.MemberService;
 import com.member.model.MemberVO;
 import com.order.model.OrderVO;
+import com.coupon.model.CouponService;
+import com.event.*;
+
 
 @RestController
 @RequestMapping("/user/api")
@@ -55,6 +59,14 @@ public class UserMemberController {
 	MemberService memServ;
 	@Autowired
 	private Validator validator;
+	
+	@Autowired
+	private CouponService couponService;
+	
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
+	
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(UserMemberController.class);
 
@@ -289,9 +301,13 @@ public class UserMemberController {
 		
 		// 更新會員資料
 		try {
-			memServ.addMember(memberInfo);
+			MemberVO savedMember = memServ.addMember(memberInfo);
+			
+			// 註冊成功後發布事件
+//		    eventPublisher.publishEvent(new MemberRegisteredEvent(this, member));
+	        
 			response.put("success", "success");
-			response.put("message", "註冊成功");
+			response.put("message", "註冊成功 恭喜獲得一張新會員優惠券");
 			return response;
 		} catch (Exception e) {
 			response.put("message", "註冊失敗：" + e.getMessage());

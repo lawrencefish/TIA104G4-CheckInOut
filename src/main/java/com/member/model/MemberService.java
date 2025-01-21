@@ -65,6 +65,11 @@ public class MemberService {
 	public byte[] findAvatarByAccount(String account) {
 		return repository.findByAccount(account).getAvatar();
 	}
+	
+	public MemberVO findByAccount(String account) {
+		return repository.findByAccount(account);
+	}
+
 
 	public MemberVO findByMemberId(Integer memberId) {
 		Optional<MemberVO> optional = repository.findById(memberId);

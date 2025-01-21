@@ -126,7 +126,7 @@
         console.error('客戶名稱未正確加載，無法建立 WebSocket 連接。');
     } else {
         // 建立 WebSocket 連接
-        const ws = new WebSocket(`ws://localhost:8080/chat/${username}`);
+        const ws = new WebSocket(`ws://${window.location.host}/chat/${username}`);
 
         const chatArea = document.getElementById('chatArea');
         const replyInput = document.getElementById('replyInput');
