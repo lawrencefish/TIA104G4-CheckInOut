@@ -80,6 +80,11 @@ public class UserMemberController {
 	    Map<String, String> response = new HashMap<>();
 	    if (memServ.existsByAccount(account)) {
 	        MemberVO member = memServ.login(account, password);
+	        if (member.getStatus() != 1) {
+	            response.put("status", "failed");
+	            response.put("message", "你已經被停權，請洽詢管理人員");
+	            return response;
+	        }
 	        if (member != null) {
 	            System.out.println("登入成功: " + member.getAccount());
 

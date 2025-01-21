@@ -139,16 +139,20 @@ public class UserOrderController {
 			OrderVO order = orderService.queryOrder(Integer.valueOf(orderId));
 			LocalDate checkInDate = new Date(order.getCheckInDate().getTime()).toLocalDate();
 			LocalDate checkOutDate = new Date(order.getCheckOutDate().getTime()).toLocalDate();
+
 			List<OrderDetailVO> details = order.getOrderDetail();
 			for (OrderDetailVO detail : details) {
 				for (LocalDate date = checkInDate; !date.isEqual(checkOutDate); date = date.plusDays(1)) {
 					RoomInventoryVO ri = RIservice.findByRoomTypeIdAndDate(detail.getRoomTypeId(), date);
+					System.out.println(ri);
 					Integer newQuantity = ri.getAvailableQuantity() + detail.getRoomNum();
 					ri.setAvailableQuantity(newQuantity);
 					RIservice.roomTransaction(ri);
 				}
 			}
-			mCService.returnCoupon(order.getMemberCouponId());
+			if(order.getMemberCouponId() != null) {
+				mCService.returnCoupon(order.getMemberCouponId());
+			}
 			orderService.cancelOrder(Integer.valueOf(orderId));
 		} catch (Exception e) {
 			response.put("error",e.getMessage());
