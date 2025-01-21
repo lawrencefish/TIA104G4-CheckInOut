@@ -366,7 +366,7 @@ $(document).ready(function () {
                     <label>權限：</label>
                     <select name="permissions" ${admin.permissions === 1 ? 'disabled' : ''}>
                         <option value="0" ${admin.permissions === 0 ? 'selected' : ''}>管理員</option>
-                        <option value="1" ${admin.permissions === 1 ? 'selected' : ''}>資深管理員</option>
+                        <option value="1" ${admin.permissions === 1 ? 'selected' : ''}>主管</option>
                     </select>
                 </div>
                 
