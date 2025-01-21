@@ -162,7 +162,12 @@ function login(e) {
                     redirectUrl = "";
                 }
             } else {
+                let modalInstance = bootstrap.Modal.getInstance(document.getElementById("loginModal"));
+                if (modalInstance) {
+                    modalInstance.hide();
+                }        
                 showModal(data.message);
+                showModal();
             }
         })
         .catch(error => {

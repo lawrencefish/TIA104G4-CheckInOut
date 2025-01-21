@@ -15,6 +15,7 @@ let dateArray = [];
             console.log(data)
             dateArray = data.date;
             // 等資料加載完後再生成日曆
+            disableDate = [];
             generateCalendar('#calendar-wrapper', today.getFullYear(), today.getMonth());
         })
         .catch(function (error) {

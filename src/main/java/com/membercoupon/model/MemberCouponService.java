@@ -81,6 +81,20 @@ public class MemberCouponService {
         memberCoupon.setCouponStatus((byte) 2); // 假設 2 表示已使用
         memberCouponRepository.save(memberCoupon);
     }
+    
+    @Transactional
+    public void returnCoupon(Integer memberCouponId) {
+        MemberCouponVO memberCoupon = memberCouponRepository.findById(memberCouponId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member coupon not found"));
+
+        if (memberCoupon.getCouponStatus() != 2) {
+            throw new IllegalStateException("This coupon is not valid");
+        }
+
+        memberCoupon.setCouponStatus((byte) 1); // 假設 2 表示已使用
+        memberCouponRepository.save(memberCoupon);
+    }
+
 
     @Transactional
     public void deleteMemberCoupon(Integer memberCouponId) {

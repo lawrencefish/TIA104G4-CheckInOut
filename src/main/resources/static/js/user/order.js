@@ -139,6 +139,7 @@ function updateTab(dataArray) {
     $('#past').html("");
     $('#future').html("");
     $('#cancelled').html("");
+    let minDate;
     dataArray.forEach((data) => {
         let hotelId = data.hotelId;
         let hotelName = data.hotelName;
@@ -213,7 +214,15 @@ function updateTab(dataArray) {
         if (today > inputCID && (status !== 3)) {
             $('#past').append(tabHtml);
         } else if (today < inputCID && status == 0) {
-            $('#future').append(tabHtml)
+            if(minDate == null || minDate== ""){
+                minDate = today;
+            }
+            if (inputCID <= minDate){
+                $('#future').append(tabHtml);
+                minDate = inputCID;
+            }else{
+                $('#future').prepend(tabHtml);
+            }
         } else if (status == 3) {
             $('#cancelled').append(tabHtml);
         }
@@ -264,7 +273,7 @@ function cancelOrder(id) {
         existingModal.hide(); // ✅ 關閉舊的 Modal
     }
     let html = `
-        <div class="modal-content border">
+        <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
                 <h5 class="modal-title fw-bold" id="cancelOrderLabel">確認取消編號${id}號訂單？</h5>
@@ -273,10 +282,10 @@ function cancelOrder(id) {
 
             <!-- Modal Body -->
             <div class="modal-body">
-                <p class="text-muted">請確認是否要取消此訂單，取消後無法復原。</p>
+                <p class="fs-5">請確認是否要取消此訂單，取消後無法復原。</p>
                 
             <!-- Modal Footer -->
-            <div class="modal-footer">
+            <div class="modal-footer border-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">返回</button>
                 <button type="button" class="btn btn-danger" id="confirmCancelBtn">確認取消</button>
             </div>

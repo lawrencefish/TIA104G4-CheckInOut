@@ -148,6 +148,7 @@ public class UserOrderController {
 					RIservice.roomTransaction(ri);
 				}
 			}
+			mCService.returnCoupon(order.getMemberCouponId());
 			orderService.cancelOrder(Integer.valueOf(orderId));
 		} catch (Exception e) {
 			response.put("error",e.getMessage());
