@@ -4267,34 +4267,24 @@ INSERT INTO order_detail (
 (1800, 175, 900, 1, 2, 0);
 
 CREATE TABLE contact_us (
-    contact_us_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT DEFAULT NULL,
-    hotel_id INT DEFAULT NULL,
-    member_id INT DEFAULT NULL,
-    name VARCHAR(255),
-    contact_us_text TEXT NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    complaint_pic MEDIUMBLOB DEFAULT NULL,
+    contact_us_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    review_status TINYINT NOT NULL COMMENT '0=未審核, 1=已處理, 2=不處理',
-    review_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
-    reply_content TEXT DEFAULT NULL,
-    admin_id INT NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id),
-    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id),
-    FOREIGN KEY (member_id) REFERENCES member(member_id),
-    FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
-);
+    message TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(1) NOT NULL DEFAULT 0 COMMENT '0=未審核, 1=已處理, 2=不處理',
+    reply TEXT(200),
+    admin_id INT ,
+    processed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES admin(admin_id));
 
 INSERT INTO contact_us (
-    order_id, hotel_id, member_id, contact_us_text, email, review_status, reply_content, admin_id
-) VALUES
-(1, 1, 1, '房間內空調不冷，請協助處理。', 'xiao.ming@example.com', 1, '已派遣技術人員檢查。', 1),
-(2, 2, 2, '預訂時使用的優惠券未正確折抵金額。', 'mei.li@example.com', 0, NULL, 2),
-(3, 3, 3, '入住後發現廁所內有清潔問題。', 'da.hua@example.com', 2, '我們會改進清潔標準，感謝您的反饋。', 3),
-(NULL, 1, 1, '想了解房型相關優惠，請提供詳細資訊。', 'xiao.ming@example.com', 1, '優惠詳情已通過Email發送。', 1),
-(NULL, NULL, 3, '對於上次的旅館服務有些意見，想直接聯繫管理員。', 'da.hua@example.com', 1, '已將您的意見轉達給相關人員。', 2);
-
+   name, email, message, status, reply, admin_id)
+VALUES
+('全圓佑', 'svt@example.com', '房間內空調不冷，請協助處理。', '1', '已派人過去處理', 1),
+('周杰倫', 'jay@example.com', '預訂時使用的優惠券未正確折抵金額。', '1', '已回覆客戶', 2),
+('河北彩花', 'hana@example.com', '想了解房型相關優惠，請提供詳細資訊。', '0', 'null', null),
+('方大同', 'fang@example.com', '需要退費。', '0', 'null', null);
 
 CREATE TABLE room (
     room_id INT AUTO_INCREMENT PRIMARY KEY,
