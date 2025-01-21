@@ -126,5 +126,14 @@ public class RoomInventoryDTO {
 	}
 	public void setBreakfast(Byte breakfast) {
 		this.breakfast = breakfast;
+	}
+
+	@Override
+	public String toString() {
+		return "RoomInventoryDTO [inventoryId=" + inventoryId + ", date=" + date + ", availableQuantity="
+				+ availableQuantity + ", hotelId=" + hotelId + ", name=" + name + ", city=" + city + ", district="
+				+ district + ", address=" + address + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", roomTypeId=" + roomTypeId + ", breakfast=" + breakfast + ", maxPerson=" + maxPerson + "]";
 	}	
+	
 }

@@ -163,7 +163,7 @@ public class UserSearchController {
 
 			// 5. 依各飯店處理資料
 			for (Map.Entry<Integer, Map<Integer, List<RoomInventoryDTO>>> hotelEntry : groupedData.entrySet()) {
-				Integer hotelId = hotelEntry.getKey();
+				Integer hotelId = Integer.valueOf(hotelEntry.getKey());
 				Map<Integer, List<RoomInventoryDTO>> roomMap = hotelEntry.getValue();
 
 				// 準備飯店的資料結構
@@ -240,8 +240,10 @@ public class UserSearchController {
 					roomDetails.put("total_price", priceSum);
 					rooms.add(roomDetails);
 				}
+				if (!rooms.isEmpty()) {
 				hotelData.put("rooms", rooms);
 				hotels.add(hotelData);
+				}
 			}
 
 			// 將飯店清單加入回傳結構
