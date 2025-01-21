@@ -2494,7 +2494,8 @@ CREATE TABLE checkinout.contact_us (
     admin_id INT ,
     processed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (admin_id) REFERENCES admin(admin_id));
-    INSERT INTO checkinout.contact_us (
+    
+INSERT INTO checkinout.contact_us (
    name, email, message, status, reply, admin_id)
 VALUES
 ('全圓佑', 'svt@example.com', '房間內空調不冷，請協助處理。', '1', '已派人過去處理', 1),
