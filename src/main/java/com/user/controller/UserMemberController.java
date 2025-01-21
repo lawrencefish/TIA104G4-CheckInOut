@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,6 +16,7 @@ import javax.validation.Valid;
 import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,12 +44,13 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.Lawrencefish.email.VerificationCodeController;
-import com.Lawrencefish.email.VerificationCodeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.member.model.MemberService;
 import com.member.model.MemberVO;
 import com.order.model.OrderVO;
+import com.coupon.model.CouponService;
+import com.event.*;
+
 
 @RestController
 @RequestMapping("/user/api")
@@ -58,8 +59,14 @@ public class UserMemberController {
 	MemberService memServ;
 	@Autowired
 	private Validator validator;
+	
 	@Autowired
-	VerificationCodeService vCService;
+	private CouponService couponService;
+	
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
+	
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(UserMemberController.class);
 
@@ -292,16 +299,15 @@ public class UserMemberController {
 		memberInfo.setStatus((byte) 1);
 		memberInfo.setCreateTime(timestamp);
 		
-		if( session.getAttribute(memberInfo.getAccount()) != "checked"){
-			response.put("message","請驗證email!");
-			return response;
-		}
-		
 		// 更新會員資料
 		try {
-			memServ.addMember(memberInfo);
+			MemberVO savedMember = memServ.addMember(memberInfo);
+			
+			// 註冊成功後發布事件
+//		    eventPublisher.publishEvent(new MemberRegisteredEvent(this, member));
+	        
 			response.put("success", "success");
-			response.put("message", "註冊成功");
+			response.put("message", "註冊成功 恭喜獲得一張新會員優惠券");
 			return response;
 		} catch (Exception e) {
 			response.put("message", "註冊失敗：" + e.getMessage());
@@ -321,15 +327,8 @@ public class UserMemberController {
 	    }
 	}
 
-	@GetMapping("/cart/get")
-	public ResponseEntity<Map<String, String>> getCartLength(HttpSession session) {
-		List<Map<String, Object>> cartList = (List<Map<String, Object>>) session.getAttribute("cartList");
-		Map<String, String> response = new HashMap<>();
-		String cartSize = cartList != null ? String.valueOf(cartList.size()) : "0";
-		response.put("cartLength", cartSize);
-		return ResponseEntity.ok(response);
-	}
-		
+	
+	
 	//更新訂單狀態時觸發檢查優惠券
 //    @PutMapping("/updateStatus/{orderId}")
 //    public String updateOrderStatus(@PathVariable Integer orderId, 

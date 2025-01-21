@@ -14,11 +14,13 @@ import javax.persistence.Table;
 
 import com.coupon.model.CouponVO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.member.model.MemberVO;
 
 @Entity
 @Table(name = "member_coupon")
 public class MemberCouponVO {
+	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_coupon_id")
