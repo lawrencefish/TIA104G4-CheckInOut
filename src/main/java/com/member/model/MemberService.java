@@ -1,38 +1,51 @@
 package com.member.model;
 
-import java.io.IOException;
-import java.sql.Date;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.persistence.RollbackException;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.coupon.model.CouponService;
 
 @Service("MemberService")
 public class MemberService {
 
 	@Autowired
 	private MemberRepository repository;
+	
+	@Autowired
+	private CouponService couponService;
+	;
 
+
+//	@Transactional
+//	public void addMember(MemberVO memberVO) {
+//	    try {
+//	        repository.save(memberVO);
+//	    } catch (Exception e) {
+//	    	System.out.println(e);
+//	        throw new RuntimeException("註冊會員資料失敗", e);
+//	    }
+//	}
+	
 	@Transactional
-	public MemberVO addMember(MemberVO memberVO) {
+	public MemberVO addMember(MemberVO memberVO) {		
 	    try {
-	        repository.save(memberVO);
-	        return memberVO;
+	        MemberVO savedMember = repository.save(memberVO);
+	        return savedMember;
+	        
 	    } catch (Exception e) {
-	    	System.out.println(e);
-	        throw new RuntimeException("註冊會員資料失敗!", e);
-	    }
-	}
+	        System.out.println("註冊會員資料失敗" + e.getMessage());
+	        throw new RuntimeException("註冊會員資料失敗", e);
+	
+	
+	
+	
 
 	@Transactional
 	public void updateMember(MemberVO memberVO){
