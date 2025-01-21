@@ -471,14 +471,14 @@
                     <label for="employee-number">員工編號</label>
                     <input type="text" id="employee-number" name="employeeNumber"
                            placeholder="請輸入員工編號" th:value="${employeeNumber}">
-                    <p th:if="${employeeNumberError != null}" th:text="${employeeNumberError}" class="field-error"></p>
+                    <p th:if="${employeeNumberError != null}" th:text="${employeeNumberError}" class="error"></p>
                 </div>
 
                 <!-- 密碼欄位 -->
                 <div class="form-group">
                     <label for="password">密碼</label>
                     <input type="password" id="password" name="password" placeholder="請輸入密碼">
-                    <p th:if="${passwordError != null}" th:text="${passwordError}" class="field-error"></p>
+                    <p th:if="${passwordError != null}" th:text="${passwordError}" class="error"></p>
                 </div>
 
                 <button type="submit">登入</button>
