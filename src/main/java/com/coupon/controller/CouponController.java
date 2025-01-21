@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.coupon.dto.MemberCouponDTO;
 import com.coupon.model.CouponService;
 import com.coupon.model.CouponVO;
 import com.membercoupon.model.MemberCouponVO;
@@ -49,11 +51,11 @@ public class CouponController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/issue-new-member/{memberId}")
-    public ResponseEntity<Void> issueNewMemberCoupon(@PathVariable Integer memberId) {
-        couponService.issueNewMemberCoupon(memberId);
-        return ResponseEntity.ok().build();
-    }
+//    @PostMapping("/issue-new-member/{memberId}")
+//    public ResponseEntity<Void> issueNewMemberCoupon(@PathVariable Integer memberId) {
+//        couponService.issueNewMemberCoupon(memberId);
+//        return ResponseEntity.ok().build();
+//    }
 
     @PostMapping("/issue-travel-city/{memberId}/{cityCount}")
     public ResponseEntity<Void> issueTravelCityCoupon(@PathVariable Integer memberId, @PathVariable Integer cityCount) {
@@ -61,37 +63,37 @@ public class CouponController {
         return ResponseEntity.ok().build();
     }
     
-    @PostMapping("/test/create")
-    public ResponseEntity<CouponVO> testCreateCoupon() {
-        CouponVO coupon = new CouponVO();
-        coupon.setCouponName("測試優惠券");
-        coupon.setActiveDate(LocalDateTime.now());
-        coupon.setExpiryDate(LocalDateTime.now().plusDays(30));
-        coupon.setMinSpend(100);
-        coupon.setTravelCityNum(1);
-        coupon.setCouponDetail("這是一個測試優惠券");
-        coupon.setDiscountAmount(50);
-        
-        couponService.createCoupon(coupon);
-        return ResponseEntity.ok(coupon);
-    }
+//    @PostMapping("/test/create")
+//    public ResponseEntity<CouponVO> testCreateCoupon() {
+//        CouponVO coupon = new CouponVO();
+//        coupon.setCouponName("測試優惠券");
+//        coupon.setActiveDate(LocalDateTime.now());
+//        coupon.setExpiryDate(LocalDateTime.now().plusDays(30));
+//        coupon.setMinSpend(100);
+//        coupon.setTravelCityNum(1);
+//        coupon.setCouponDetail("這是一個測試優惠券");
+//        coupon.setDiscountAmount(50);
+//        
+//        couponService.createCoupon(coupon);
+//        return ResponseEntity.ok(coupon);
+//    }
 
-    @PostMapping("/test/issue/{memberId}")
-    public ResponseEntity<Void> testIssueCoupon(@PathVariable Integer memberId) {
-        couponService.issueNewMemberCoupon(memberId);
-        return ResponseEntity.ok().build();
-    }
+//    @PostMapping("/test/issue/{memberId}")
+//    public ResponseEntity<Void> testIssueCoupon(@PathVariable Integer memberId) {
+//        couponService.issueNewMemberCoupon(memberId);
+//        return ResponseEntity.ok().build();
+//    }
 
-    @GetMapping("/test/check-expiry")
-    public ResponseEntity<String> testCheckExpiry() {
-        couponService.checkCouponExpiry();
-        return ResponseEntity.ok("優惠券過期檢查已執行");
-    }
+//    @GetMapping("/test/check-expiry")
+//    public ResponseEntity<String> testCheckExpiry() {
+//        couponService.checkCouponExpiry();
+//        return ResponseEntity.ok("優惠券過期檢查已執行");
+//    }
 
-    @GetMapping("/test/member-coupons/{memberId}")
-    public ResponseEntity<List<MemberCouponVO>> getMemberCoupons(@PathVariable Integer memberId) {
+    @GetMapping("/member-coupons/{memberId}")
+    public ResponseEntity<List<MemberCouponDTO>> getMemberCoupons(@PathVariable Integer memberId) {
         try {
-            List<MemberCouponVO> memberCoupons = couponService.getMemberCoupons(memberId);
+            List<MemberCouponDTO> memberCoupons = couponService.getMemberCoupons(memberId);
             System.out.println("Returning " + memberCoupons.size() + " coupons for member " + memberId);
             if (memberCoupons.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -112,5 +114,6 @@ public class CouponController {
     public ResponseEntity<String> issueCouponToAllMembers(@PathVariable Integer couponId) {
         couponService.issueCouponToAllMembers(couponId);
         return ResponseEntity.ok("優惠券已成功發送給所有會員");
-    }
+    
+}
 }
