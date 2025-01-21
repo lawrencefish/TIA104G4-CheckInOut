@@ -109,11 +109,13 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">電子信箱</label>
-                        <input type="email" class="form-control" name="account" required placeholder="example@gmail.com">
-                        <div class="input-help">此信箱將作為您的登入帳號</div>
+                    <label class="form-label">電子信箱</label>
+                    <div class="input-group">
+                        <input type="email" class="form-control border-end-0" name="account" id="email" required placeholder="example@gmail.com">
+                        <button class="btn btn-outline-secondary" type="button" id="emailBtn">寄送驗證信</button>
                     </div>
+                    <div class="input-help mb-4">此信箱將作為您的登入帳號</div>
+
 
                     <div class="mb-4">
                         <label class="form-label">設定密碼</label>
