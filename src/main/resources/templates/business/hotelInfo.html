@@ -566,7 +566,7 @@ footer {
         });
 
         document.querySelector(".submit").addEventListener("click",function(){
-            alert("儲存成功！");
+            // alert("儲存成功！");
         })
 
         // 縣市與地區 API
@@ -650,7 +650,32 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 		}
 
-    </script>
+		document.querySelector(".submit").addEventListener("click", function (event) {
+			// 防止表單提交
+			event.preventDefault();
+
+			// 定義必填欄位（排除圖片類型的欄位）
+			const requiredFields = ["name", "tax-id", "phone", "email", "city", "district", "address-detail", "owner"];
+			let isValid = true;
+
+			requiredFields.forEach(function (fieldId) {
+				const field = document.getElementById(fieldId);
+				if (!field || field.value.trim() === "") {
+					isValid = false;
+					field.style.borderColor = "red"; // 標記為紅色
+					alert(`欄位 ${field.previousElementSibling.innerText} 為必填！`);
+				} else {
+					field.style.borderColor = ""; // 清除紅色標記
+				}
+			});
+
+			if (isValid) {
+				// 表單通過驗證後可以提交
+				alert("儲存成功！");
+				document.getElementById("mianform").submit();
+			}
+		});
+	</script>
 </body>
 
 </html>
