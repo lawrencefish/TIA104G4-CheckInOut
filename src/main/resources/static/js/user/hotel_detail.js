@@ -91,10 +91,12 @@ function clickOnNum(e) {
     } else if ($(this).hasClass('minus') && currentVal > 1) {
         num.val(currentVal - 1);
     }
-    if ($('#room_num').val() > $('#people_num').val() && $('#people_num').val() != "" && $('#room_num').val() != "") {
-        showModal("房數大於入住人數，請重新輸入");
-        $('#room_num').val($('#people_num').val());
-    }
+    setTimeout(function () {
+        if ($('#room_num').val() > $('#people_num').val() && $('#people_num').val() != "" && $('#room_num').val() != "") {
+            showModal("房數大於入住人數，請重新輸入");
+            $('#room_num').val($('#people_num').val());
+        }
+    }, 100)
 }
 
 
@@ -282,7 +284,7 @@ function updateRoom(Array) {
             if (breakfast != 0) {
                 totalPrice += totalBreakfastPrice;
             }
-            html =`
+            html = `
                 <div class="card shadow-lg">
                     <div class="row g-0 align-items-center">
                         <!-- 跑馬燈區域 -->
@@ -372,7 +374,7 @@ function updateRoom(Array) {
                 </div>
             `
         } else {
-            html =`
+            html = `
 <div class="card shadow-lg">
     <div class="row g-0 align-items-center">
         <!-- 跑馬燈區域 -->
@@ -413,13 +415,13 @@ function updateRoom(Array) {
                         <hr>
 
                         <!-- 房間設施 -->
-                        <div class="mb-3 ${facilityNum == 0 ? " d-none" : "" }" id="roomfacility${roomTypeId}">
+                        <div class="mb-3 ${facilityNum == 0 ? " d-none" : ""}" id="roomfacility${roomTypeId}">
                             <h6 class="mb-2">房間設施：</h6>
                             <!-- 此處填入房間設施內容 -->
                         </div>
 
                         <!-- 房間服務 -->
-                        <div class="mb-3 ${serviceNum == 0 ? " d-none" : "" }" id="roomService${roomTypeId}">
+                        <div class="mb-3 ${serviceNum == 0 ? " d-none" : ""}" id="roomService${roomTypeId}">
                             <h6 class="mb-2">房間服務：</h6>
                             <!-- 此處填入房間服務內容 -->
                         </div>
@@ -439,7 +441,7 @@ function updateRoom(Array) {
             let fName = rf.facilityName;
             let id = "#roomfacility" + roomTypeId;
             let html = `
-                <span class="badge rounded-pill bg-success me-1" > ${ fName }</span>
+                <span class="badge rounded-pill bg-success me-1" > ${fName}</span>
                     `;
             $(id).append(html);
         })
@@ -447,7 +449,7 @@ function updateRoom(Array) {
             let fName = rf.facilityName;
             let id = "#roomService" + roomTypeId;
             let html = `
-                    <span class="badge rounded-pill bg-secondary me-1" > ${ fName }</span>
+                    <span class="badge rounded-pill bg-secondary me-1" > ${fName}</span>
                         `;
             $(id).append(html);
         })

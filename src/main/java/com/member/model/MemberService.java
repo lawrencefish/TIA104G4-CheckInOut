@@ -24,12 +24,13 @@ public class MemberService {
 	private MemberRepository repository;
 
 	@Transactional
-	public void addMember(MemberVO memberVO) {
+	public MemberVO addMember(MemberVO memberVO) {
 	    try {
 	        repository.save(memberVO);
+	        return memberVO;
 	    } catch (Exception e) {
 	    	System.out.println(e);
-	        throw new RuntimeException("註冊會員資料失敗", e);
+	        throw new RuntimeException("註冊會員資料失敗!", e);
 	    }
 	}
 
