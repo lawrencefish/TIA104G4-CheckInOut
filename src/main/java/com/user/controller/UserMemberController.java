@@ -44,6 +44,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.Lawrencefish.email.VerificationCodeController;
+import com.Lawrencefish.email.VerificationCodeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.member.model.MemberService;
 import com.member.model.MemberVO;
@@ -56,6 +58,8 @@ public class UserMemberController {
 	MemberService memServ;
 	@Autowired
 	private Validator validator;
+	@Autowired
+	VerificationCodeService vCService;
 
 	private static final Logger logger = LoggerFactory.getLogger(UserMemberController.class);
 
@@ -288,6 +292,11 @@ public class UserMemberController {
 		memberInfo.setStatus((byte) 1);
 		memberInfo.setCreateTime(timestamp);
 		
+		if( session.getAttribute(memberInfo.getAccount()) != "checked"){
+			response.put("message","請驗證email!");
+			return response;
+		}
+		
 		// 更新會員資料
 		try {
 			memServ.addMember(memberInfo);
@@ -320,8 +329,7 @@ public class UserMemberController {
 		response.put("cartLength", cartSize);
 		return ResponseEntity.ok(response);
 	}
-	
-	
+		
 	//更新訂單狀態時觸發檢查優惠券
 //    @PutMapping("/updateStatus/{orderId}")
 //    public String updateOrderStatus(@PathVariable Integer orderId, 
