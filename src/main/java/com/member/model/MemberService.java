@@ -42,9 +42,8 @@ public class MemberService {
 	    } catch (Exception e) {
 	        System.out.println("註冊會員資料失敗" + e.getMessage());
 	        throw new RuntimeException("註冊會員資料失敗", e);
-	
-	
-	
+	    }
+	}
 	
 
 	@Transactional
