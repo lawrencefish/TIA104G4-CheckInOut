@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -26,5 +28,23 @@ public class CommentService {
 
         return ResponseEntity.ok(new HashMap<>());
     }
+    public String getCommentContentByHotelAndMember(Integer hotelId, Integer memberId) {
+        List<String> comments = commentRepository.findCommentsByHotelIdAndMemberId(hotelId, memberId);
+        if (comments.isEmpty()) {
+            return "無備註";
+        }
+
+        // 處理評論，加上編號並換行
+        StringBuilder formattedComments = new StringBuilder();
+        for (int i = 0; i < comments.size(); i++) {
+            formattedComments.append(i + 1) // 編號從 1 開始
+                    .append(". ")
+                    .append(comments.get(i))
+                    .append("\n"); // 換行符號
+        }
+
+        return formattedComments.toString().trim(); // 去掉最後的多餘換行
+    }
+
 }
 
