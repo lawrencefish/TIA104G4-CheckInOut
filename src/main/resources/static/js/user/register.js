@@ -145,7 +145,7 @@ function registerMemberInfo() {
         contentType: false,
         success: function (res) {
             if (res.success === 'success') {
-                showModal('會員資料註冊成功！');
+                showModal('會員資料註冊成功！，送你一張新會員優惠券');
                 setTimeout(function () {
                     window.location.href = "/user/";
                 }, 3000);

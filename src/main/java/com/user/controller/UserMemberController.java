@@ -237,8 +237,7 @@ public class UserMemberController {
 			System.out.println(response);
 			return response;
 		}
-
-		// 更新會員資料
+				// 更新會員資料
 		try {
 			memServ.updateMember(member);
 			response.put("success", "success");
@@ -305,6 +304,11 @@ public class UserMemberController {
 		memberInfo.setStatus((byte) 1);
 		memberInfo.setCreateTime(timestamp);
 		
+		if( session.getAttribute(memberInfo.getAccount()) != "checked"){
+			response.put("message","請驗證email!");
+			return response;
+		}
+		
 		// 更新會員資料
 		try {
 			MemberVO savedMember = memServ.addMember(memberInfo);
@@ -313,7 +317,7 @@ public class UserMemberController {
 		    eventPublisher.publishEvent(new MemberRegisteredEvent(savedMember));
 	        
 			response.put("success", "success");
-			response.put("message", "註冊成功 恭喜獲得一張新會員優惠券");
+			response.put("message", "註冊成功 恭喜獲得一張新會員優惠券！");
 			return response;
 		} catch (Exception e) {
 			response.put("message", "註冊失敗：" + e.getMessage());
