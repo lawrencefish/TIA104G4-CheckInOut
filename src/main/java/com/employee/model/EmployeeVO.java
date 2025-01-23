@@ -49,14 +49,14 @@ public class EmployeeVO {
     // phone_number VARCHAR(15) NOT NULL UNIQUE
     @NotBlank(message = "電話不可為空")
     @Size(max = 15, message = "電話長度不可超過 15")
-    @Column(name = "phone_number", length = 15, nullable = false, unique = true)
+    @Column(name = "phone_number", length = 15, nullable = false)
     private String phoneNumber;
 
     // email VARCHAR(100) NOT NULL UNIQUE
     @NotBlank(message = "Email 不可為空")
     @Email(message = "Email 格式不正確")
     @Size(max = 100, message = "Email 長度不可超過 100")
-    @Column(name = "email", length = 100, nullable = false, unique = true)
+    @Column(name = "email", length = 100, nullable = false)
     private String email;
 
     // title VARCHAR(50) NOT NULL
