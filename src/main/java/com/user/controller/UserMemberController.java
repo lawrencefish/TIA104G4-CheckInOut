@@ -80,7 +80,14 @@ public class UserMemberController {
 	    Map<String, String> response = new HashMap<>();
 	    if (memServ.existsByAccount(account)) {
 	        MemberVO member = memServ.login(account, password);
+	        System.out.println(member);
 	        if (member != null) {
+		        if (member.getStatus() != 1) {
+		            response.put("status", "failed");
+		            response.put("message", "你已經被停權，請洽詢管理人員");
+		            return response;
+		        }
+
 	            System.out.println("登入成功: " + member.getAccount());
 
 	            // 組合客戶名稱
@@ -232,8 +239,7 @@ public class UserMemberController {
 			System.out.println(response);
 			return response;
 		}
-
-		// 更新會員資料
+				// 更新會員資料
 		try {
 			memServ.updateMember(member);
 			response.put("success", "success");
@@ -300,6 +306,11 @@ public class UserMemberController {
 		memberInfo.setStatus((byte) 1);
 		memberInfo.setCreateTime(timestamp);
 		
+		if( session.getAttribute(memberInfo.getAccount()) != "checked"){
+			response.put("message","請驗證email!");
+			return response;
+		}
+		
 		// 更新會員資料
 		try {
 			MemberVO savedMember = memServ.addMember(memberInfo);
@@ -308,7 +319,7 @@ public class UserMemberController {
 		    eventPublisher.publishEvent(new MemberRegisteredEvent(savedMember));
 	        
 			response.put("success", "success");
-			response.put("message", "註冊成功 恭喜獲得一張新會員優惠券");
+			response.put("message", "註冊成功 恭喜獲得一張新會員優惠券！");
 			return response;
 		} catch (Exception e) {
 			response.put("message", "註冊失敗：" + e.getMessage());

@@ -509,14 +509,17 @@ function updateDetail(data, id) {
                 </div>
             </div>
     `
-        totalPriceAdd += (parseInt(totalPrice) + parseInt(totalBreakfastPrice));
+        totalPriceAdd += (parseInt(totalPrice));
         $modal.find('.roomType').append(roomTypeHtml);
     })
+    if(discount != 0 ){
+        totalPriceAdd -= discount;
+    }
     $modal.find('#totalPrice').text("NT$"+totalPriceAdd);
     let html = $modal.prop("outerHTML");
 
     showModal(html, false);
-}
+} 
 
 
 function setRating(rating) {
